@@ -1,0 +1,30 @@
+# PROJECT CONTEXT: MigrantHub (Immigration Ecosystem)
+
+## 1. CORE IDENTITY
+We are building a High-Load Ecosystem for migrants in Russia.
+Target: 1.2M users (UZ, TJ, KG).
+Stack: TypeScript Monorepo.
+- Backend: NestJS (Microservices via RabbitMQ).
+- Frontend: Next.js (Mobile-First, Telegram Mini App compatible).
+- DB: PostgreSQL (Encrypted columns), Redis, MinIO (S3).
+
+## 2. STRICT UI/UX RULES (TOKEN SAVER MODE)
+- **Layout**: "One-Thumb Interaction". Critical controls at the bottom.
+- **Scrolling**: MINIMIZE. Use Tabs, Bottom Sheets, and Collapsible Cards instead of long pages .
+- **Visuals**: High contrast, large buttons (for heavy usage conditions).
+- **Language**: Multi-language support structure (RU, UZ, TJ, KG) hardcoded from start.
+
+## 3. ARCHITECTURE & PRIVACY
+- **Privacy by Design**: No storing sensitive JSON in clear text. Use `pgcrypto`.
+- **Microservices**:
+  1. Identity (Auth/Profile)
+  2. Legal Core (Legislation/Deadlines - CRITICAL)
+  3. Docflow (OCR/PDF)
+  4. Fintech (Payments)
+  5. Marketplace (Jobs/Housing)
+  6. Intelligence (AI/Knowledge Base)
+
+## 4. CODING STANDARDS
+- **Strict TypeScript**: No `any`. Interfaces shared between Front/Back via libs.
+- **Error Handling**: Graceful degradation. [cite_start]If Fintech dies, Legal Core must survive[cite: 15].
+- **Comments**: Minimal, only for complex logic.
