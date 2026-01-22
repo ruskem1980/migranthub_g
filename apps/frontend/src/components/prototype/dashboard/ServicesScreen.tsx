@@ -1,23 +1,30 @@
 'use client';
 
-import { Shield, Calculator, FileText, Briefcase, Home, MapPin, Languages, CreditCard, Wand2, Plus } from 'lucide-react';
+import { Shield, Calculator, FileText, Briefcase, Home, MapPin, Languages, CreditCard, Wand2, Plus, Grid3x3, X } from 'lucide-react';
 import { useState } from 'react';
 import { DocumentGenerator } from '../services/DocumentGenerator';
 
 export function ServicesScreen() {
   const [showMapModal, setShowMapModal] = useState(false);
   const [showDocGenerator, setShowDocGenerator] = useState(false);
+  const [showOtherServices, setShowOtherServices] = useState(false);
 
-  const services = [
-    { icon: Wand2, title: '✍️ Автозаполнение', subtitle: 'Генерация заявлений', color: 'purple', special: true },
-    { icon: Shield, title: 'Проверка запретов', subtitle: 'Базы МВД/ФССП', color: 'red' },
-    { icon: FileText, title: 'Конструктор Договоров', subtitle: 'RU + Родной язык', color: 'orange' },
-    { icon: Calculator, title: 'Калькулятор 90/180', subtitle: 'Дни пребывания', color: 'blue' },
-    { icon: Home, title: 'Поиск Жилья', subtitle: 'С регистрацией', color: 'purple', badge: '🏠 С регистрацией' },
-    { icon: MapPin, title: 'Карта Мигранта', subtitle: 'МВД, ММЦ, Маршруты', color: 'pink', hasModal: true },
-    { icon: Languages, title: 'AI-Переводчик', subtitle: 'Фото/Голос', color: 'indigo' },
-    { icon: Briefcase, title: 'Поиск Работы', subtitle: 'С патентом', color: 'green' },
-    { icon: CreditCard, title: 'Оплата штрафов', subtitle: 'Интеграция Госуслуги', color: 'red' },
+  // Core Services (Main Grid)
+  const coreServices = [
+    { id: 'autofill', icon: Wand2, title: '✍️ Мои Заявления', subtitle: 'Генерация документов', color: 'purple', special: true },
+    { id: 'check', icon: Shield, title: 'Проверка запретов', subtitle: 'Базы МВД/ФССП', color: 'red' },
+    { id: 'payment', icon: CreditCard, title: 'Оплата патента', subtitle: 'Быстрая оплата', color: 'green' },
+    { id: 'map', icon: MapPin, title: 'Карта Мигранта', subtitle: 'МВД, ММЦ, Маршруты', color: 'pink', hasModal: true },
+    { id: 'other', icon: Grid3x3, title: '🧩 Другие услуги', subtitle: '5 дополнительных', color: 'gray' },
+  ];
+
+  // Secondary Services (Hidden in "Other Services")
+  const otherServices = [
+    { id: 'translator', icon: Languages, title: '🗣️ Переводчик', subtitle: 'Текст/Голос/Фото', color: 'indigo' },
+    { id: 'contracts', icon: FileText, title: '📝 Конструктор договоров', subtitle: 'RU + Родной язык', color: 'orange' },
+    { id: 'jobs', icon: Briefcase, title: '💼 Поиск работы', subtitle: 'Вакансии с патентом', color: 'green' },
+    { id: 'housing', icon: Home, title: '🏠 Поиск жилья', subtitle: 'С регистрацией', color: 'purple' },
+    { id: 'calculator', icon: Calculator, title: '🧮 Калькулятор', subtitle: '90/180 дней', color: 'blue' },
   ];
 
   const colorClasses: Record<string, { bg: string; icon: string }> = {
@@ -28,6 +35,7 @@ export function ServicesScreen() {
     purple: { bg: 'bg-purple-50', icon: 'text-purple-600' },
     pink: { bg: 'bg-pink-50', icon: 'text-pink-600' },
     indigo: { bg: 'bg-indigo-50', icon: 'text-indigo-600' },
+    gray: { bg: 'bg-gray-50', icon: 'text-gray-600' },
   };
 
   return (
@@ -38,10 +46,13 @@ export function ServicesScreen() {
         <p className="text-sm text-gray-500">Инструменты и услуги</p>
       </div>
 
-      {/* Services Grid */}
+      {/* Core Services Grid */}
       <div className="px-4 py-6">
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          Основные сервисы
+        </h3>
         <div className="grid grid-cols-2 gap-4">
-          {services.map((service, index) => {
+          {coreServices.map((service, index) => {
             const Icon = service.icon;
             const colors = colorClasses[service.color];
 
@@ -49,13 +60,15 @@ export function ServicesScreen() {
               <button
                 key={index}
                 onClick={() => {
-                  if (service.hasModal) {
+                  if (service.id === 'map') {
                     setShowMapModal(true);
-                  } else if (service.special) {
+                  } else if (service.id === 'autofill') {
                     setShowDocGenerator(true);
+                  } else if (service.id === 'other') {
+                    setShowOtherServices(true);
                   }
                 }}
-                className={`${colors.bg} border-2 ${service.special ? 'border-purple-400 ring-2 ring-purple-200' : 'border-gray-200'} rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md hover:shadow-xl relative`}
+                className={`${colors.bg} border-2 ${service.special ? 'border-purple-400 ring-2 ring-purple-200' : service.id === 'other' ? 'border-gray-300 border-dashed' : 'border-gray-200'} rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md hover:shadow-xl relative`}
               >
                 {service.special && (
                   <div className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
@@ -127,6 +140,66 @@ export function ServicesScreen() {
               className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-colors"
             >
               Открыть карту
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Other Services Modal */}
+      {showOtherServices && (
+        <div className="fixed inset-0 bg-black/50 flex items-end z-50 animate-in fade-in duration-200">
+          <div className="w-full bg-white rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-300 max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">🧩 Другие услуги</h3>
+                <p className="text-sm text-gray-500">Дополнительные инструменты</p>
+              </div>
+              <button 
+                onClick={() => setShowOtherServices(false)} 
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-600" />
+              </button>
+            </div>
+
+            {/* Secondary Services Grid */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {otherServices.map((service, index) => {
+                const Icon = service.icon;
+                const colors = colorClasses[service.color];
+
+                return (
+                  <button
+                    key={index}
+                    className={`${colors.bg} border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md hover:shadow-xl`}
+                  >
+                    <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
+                      <Icon className={`w-7 h-7 ${colors.icon}`} strokeWidth={2} />
+                    </div>
+                    <h3 className="text-sm font-bold text-gray-900 text-center mb-1">
+                      {service.title}
+                    </h3>
+                    <p className="text-xs text-gray-600 text-center">
+                      {service.subtitle}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Info Card */}
+            <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl mb-4">
+              <p className="text-sm text-blue-800">
+                💡 <strong>Совет:</strong> Эти инструменты помогут вам в повседневной жизни в России.
+              </p>
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setShowOtherServices(false)}
+              className="w-full bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition-colors"
+            >
+              Закрыть
             </button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { QrCode, ChevronRight, Volume2, History, Lock, Edit2, Globe, Trash2, X, Rocket } from 'lucide-react';
+import { QrCode, ChevronRight, Volume2, History, Lock, Edit2, Globe, Trash2, X, Rocket, FileText, AlertTriangle, CreditCard, Grid3x3, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check } from 'lucide-react';
 import { useState } from 'react';
 import { LegalizationWizard } from '../wizard/LegalizationWizard';
 
@@ -8,8 +8,12 @@ export function HomeScreen() {
   const [showHistory, setShowHistory] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
+  const [showOtherServices, setShowOtherServices] = useState(false);
   const [editEntryDate, setEditEntryDate] = useState('2024-01-01');
   const [editPurpose, setEditPurpose] = useState('work');
+  const [editFullName, setEditFullName] = useState('Алишер Усманов');
+  const [editCitizenship, setEditCitizenship] = useState('Узбекистан');
+  const [checkedDocs, setCheckedDocs] = useState<string[]>(['passport', 'mig_card']);
 
   return (
     <div className="h-full overflow-y-auto pb-4">
@@ -101,37 +105,65 @@ export function HomeScreen() {
         </div>
       </div>
 
-      {/* Primary CTA - Legalization Wizard */}
+      {/* Quick Actions Row */}
       <div className="px-4 pb-4">
-        <button
-          onClick={() => setShowWizard(true)}
-          className="w-full bg-gradient-to-r from-green-600 via-green-500 to-emerald-600 text-white rounded-2xl p-6 shadow-2xl hover:shadow-3xl transition-all active:scale-98 relative overflow-hidden group"
-        >
-          {/* Animated Background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          
-          {/* Content */}
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
-                  <Rocket className="w-6 h-6 text-white" />
-                </div>
-                <div className="text-left">
-                  <h3 className="text-xl font-bold">🚀 Оформить документы</h3>
-                  <p className="text-sm text-green-100">Старт легализации</p>
-                </div>
-              </div>
-              <ChevronRight className="w-6 h-6 text-white" />
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          Быстрые действия
+        </h3>
+        <div className="flex items-center justify-between gap-2 bg-white rounded-2xl p-4 shadow-md border-2 border-gray-200">
+          {/* 1. Оформить */}
+          <button
+            onClick={() => setShowWizard(true)}
+            className="flex flex-col items-center gap-2 flex-1 p-3 rounded-xl hover:bg-green-50 transition-colors active:scale-95"
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-md">
+              <Rocket className="w-6 h-6 text-white" />
             </div>
-            
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-left">
-              <p className="text-xs text-white/90 leading-relaxed">
-                На основе вашего первичного аудита мы сгенерируем все заявления и покажем точный план действий
-              </p>
+            <span className="text-xs font-semibold text-gray-700 text-center">Оформить</span>
+          </button>
+
+          {/* 2. Заявления */}
+          <button
+            onClick={() => setShowWizard(true)}
+            className="flex flex-col items-center gap-2 flex-1 p-3 rounded-xl hover:bg-purple-50 transition-colors active:scale-95"
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-md">
+              <FileText className="w-6 h-6 text-white" />
             </div>
-          </div>
-        </button>
+            <span className="text-xs font-semibold text-gray-700 text-center">Заявления</span>
+          </button>
+
+          {/* 3. SOS */}
+          <button
+            className="flex flex-col items-center gap-2 flex-1 p-3 rounded-xl hover:bg-red-50 transition-colors active:scale-95"
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-md">
+              <AlertTriangle className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-xs font-semibold text-gray-700 text-center">SOS</span>
+          </button>
+
+          {/* 4. Оплата */}
+          <button
+            className="flex flex-col items-center gap-2 flex-1 p-3 rounded-xl hover:bg-blue-50 transition-colors active:scale-95"
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
+              <CreditCard className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-xs font-semibold text-gray-700 text-center">Оплата</span>
+          </button>
+
+          {/* 5. Другое */}
+          <button
+            onClick={() => setShowOtherServices(true)}
+            className="flex flex-col items-center gap-2 flex-1 p-3 rounded-xl hover:bg-gray-50 transition-colors active:scale-95"
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center shadow-md">
+              <Grid3x3 className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-xs font-semibold text-gray-700 text-center">Другое</span>
+          </button>
+        </div>
       </div>
 
       {/* Task Carousel */}
@@ -276,6 +308,39 @@ export function HomeScreen() {
             </div>
 
             <div className="space-y-5">
+              {/* Full Name */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  ФИО (Полное имя)
+                </label>
+                <input
+                  type="text"
+                  value={editFullName}
+                  onChange={(e) => setEditFullName(e.target.value)}
+                  placeholder="Иванов Иван Иванович"
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Citizenship */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Гражданство
+                </label>
+                <select
+                  value={editCitizenship}
+                  onChange={(e) => setEditCitizenship(e.target.value)}
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="Узбекистан">🇺🇿 Узбекистан</option>
+                  <option value="Таджикистан">🇹🇯 Таджикистан</option>
+                  <option value="Киргизия">🇰🇬 Киргизия</option>
+                  <option value="Армения">🇦🇲 Армения (ЕАЭС)</option>
+                  <option value="Беларусь">🇧🇾 Беларусь (ЕАЭС)</option>
+                  <option value="Казахстан">🇰🇿 Казахстан (ЕАЭС)</option>
+                </select>
+              </div>
+
               {/* Entry Date */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -358,6 +423,81 @@ export function HomeScreen() {
                 </div>
               </div>
 
+              {/* Document Checklist */}
+              <div className="pt-4 border-t-2 border-gray-200">
+                <h4 className="text-sm font-bold text-gray-900 mb-3">Мои документы</h4>
+                <p className="text-xs text-gray-500 mb-3">Отметьте документы, которые у вас есть</p>
+                
+                <div className="space-y-2">
+                  {[
+                    { id: 'passport', label: '🛂 Паспорт' },
+                    { id: 'mig_card', label: '🎫 Миграционная карта' },
+                    { id: 'registration', label: '📋 Регистрация' },
+                    { id: 'green_card', label: '💳 Зеленая карта' },
+                    { id: 'patent', label: '📄 Патент' },
+                    { id: 'receipts', label: '🧾 Чеки (НДФЛ)' },
+                    { id: 'contract', label: '📝 Трудовой договор' },
+                  ].map((doc) => {
+                    const isChecked = checkedDocs.includes(doc.id);
+                    
+                    return (
+                      <button
+                        key={doc.id}
+                        onClick={() => {
+                          if (isChecked) {
+                            setCheckedDocs(checkedDocs.filter(d => d !== doc.id));
+                          } else {
+                            setCheckedDocs([...checkedDocs, doc.id]);
+                          }
+                        }}
+                        className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
+                          isChecked
+                            ? 'bg-green-50 border-green-300'
+                            : 'bg-white border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                          isChecked
+                            ? 'bg-green-500 border-green-500'
+                            : 'border-gray-300'
+                        }`}>
+                          {isChecked && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
+                        </div>
+                        <span className={`text-sm font-medium ${isChecked ? 'text-green-700' : 'text-gray-700'}`}>
+                          {doc.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Status Calculation */}
+                <div className="mt-4 p-3 rounded-xl border-2 bg-gradient-to-br from-gray-50 to-gray-100">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-gray-700">Статус:</span>
+                    {checkedDocs.length >= 5 ? (
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-green-500 rounded-full">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                        <span className="text-xs font-bold text-white">Legal</span>
+                      </div>
+                    ) : checkedDocs.length >= 3 ? (
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-yellow-500 rounded-full">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                        <span className="text-xs font-bold text-white">Risk</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-red-500 rounded-full">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                        <span className="text-xs font-bold text-white">Illegal</span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Документов: {checkedDocs.length} из 7
+                  </p>
+                </div>
+              </div>
+
               {/* Settings Section */}
               <div className="pt-4 border-t-2 border-gray-200">
                 <h4 className="text-sm font-bold text-gray-900 mb-3">Настройки</h4>
@@ -403,6 +543,116 @@ export function HomeScreen() {
                 Отмена
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Other Services Modal */}
+      {showOtherServices && (
+        <div className="fixed inset-0 bg-black/50 flex items-end z-50 animate-in fade-in duration-200">
+          <div className="w-full bg-white rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-300 max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">🧩 Другие услуги</h3>
+                <p className="text-sm text-gray-500">Дополнительные инструменты</p>
+              </div>
+              <button 
+                onClick={() => setShowOtherServices(false)} 
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-600" />
+              </button>
+            </div>
+
+            {/* Secondary Services Grid */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {/* Translator */}
+              <button className="bg-indigo-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md">
+                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
+                  <Languages className="w-7 h-7 text-indigo-600" strokeWidth={2} />
+                </div>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">🗣️ Переводчик</h3>
+                <p className="text-xs text-gray-600 text-center">Текст/Голос/Фото</p>
+              </button>
+
+              {/* Contracts */}
+              <button className="bg-orange-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md">
+                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
+                  <FileCheck className="w-7 h-7 text-orange-600" strokeWidth={2} />
+                </div>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">📝 Договоры</h3>
+                <p className="text-xs text-gray-600 text-center">Шаблоны</p>
+              </button>
+
+              {/* Jobs */}
+              <button className="bg-green-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md">
+                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
+                  <Briefcase className="w-7 h-7 text-green-600" strokeWidth={2} />
+                </div>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">💼 Работа</h3>
+                <p className="text-xs text-gray-600 text-center">Вакансии</p>
+              </button>
+
+              {/* Housing */}
+              <button className="bg-purple-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md">
+                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
+                  <HomeIcon className="w-7 h-7 text-purple-600" strokeWidth={2} />
+                </div>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">🏠 Жилье</h3>
+                <p className="text-xs text-gray-600 text-center">С регистрацией</p>
+              </button>
+
+              {/* Calculator */}
+              <button className="bg-blue-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md">
+                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
+                  <Calculator className="w-7 h-7 text-blue-600" strokeWidth={2} />
+                </div>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">🧮 Калькулятор</h3>
+                <p className="text-xs text-gray-600 text-center">90/180 дней</p>
+              </button>
+
+              {/* Medical/Insurance */}
+              <button className="bg-pink-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md">
+                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
+                  <Shield className="w-7 h-7 text-pink-600" strokeWidth={2} />
+                </div>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">🏥 ДМС / Мед</h3>
+                <p className="text-xs text-gray-600 text-center">Страхование</p>
+              </button>
+
+              {/* Map */}
+              <button className="bg-red-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md">
+                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
+                  <MapPin className="w-7 h-7 text-red-600" strokeWidth={2} />
+                </div>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">🗺️ Карта</h3>
+                <p className="text-xs text-gray-600 text-center">МВД, ММЦ</p>
+              </button>
+
+              {/* Ban Check */}
+              <button className="bg-yellow-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md">
+                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
+                  <Shield className="w-7 h-7 text-yellow-600" strokeWidth={2} />
+                </div>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">🛡️ Проверка</h3>
+                <p className="text-xs text-gray-600 text-center">МВД/ФССП</p>
+              </button>
+            </div>
+
+            {/* Info Card */}
+            <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl mb-4 mt-6">
+              <p className="text-sm text-blue-800">
+                💡 <strong>Совет:</strong> Эти инструменты помогут вам в повседневной жизни в России.
+              </p>
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setShowOtherServices(false)}
+              className="w-full bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition-colors"
+            >
+              Закрыть
+            </button>
           </div>
         </div>
       )}
