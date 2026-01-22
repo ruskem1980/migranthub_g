@@ -1,6 +1,6 @@
 'use client';
 
-import { Camera, CheckCircle2, AlertTriangle, XCircle, Share2, Info } from 'lucide-react';
+import { Camera, CheckCircle2, AlertTriangle, XCircle, Share2, Info, Lock } from 'lucide-react';
 
 export function DocumentsScreen() {
   const documents = [
@@ -10,6 +10,15 @@ export function DocumentsScreen() {
       statusText: 'Активен',
       icon: '🛂',
       color: 'green',
+      hasFile: true,
+    },
+    {
+      title: 'Миграционная карта',
+      status: 'active',
+      statusText: 'Активна',
+      icon: '🎫',
+      color: 'green',
+      hasFile: true,
     },
     {
       title: 'Патент',
@@ -18,6 +27,7 @@ export function DocumentsScreen() {
       icon: '📄',
       color: 'yellow',
       action: 'Продлить',
+      hasFile: true,
     },
     {
       title: 'Регистрация',
@@ -26,6 +36,34 @@ export function DocumentsScreen() {
       icon: '📋',
       color: 'red',
       action: 'Обновить',
+      hasFile: false,
+    },
+    {
+      title: 'Медицинская справка',
+      status: 'missing',
+      statusText: 'Отсутствует',
+      icon: '🏥',
+      color: 'gray',
+      action: 'Добавить',
+      hasFile: false,
+    },
+    {
+      title: 'Экзамен (Язык)',
+      status: 'missing',
+      statusText: 'Не сдан',
+      icon: '🎓',
+      color: 'gray',
+      action: 'Записаться',
+      hasFile: false,
+    },
+    {
+      title: 'ДМС',
+      status: 'missing',
+      statusText: 'Отсутствует',
+      icon: '🩺',
+      color: 'gray',
+      action: 'Оформить',
+      hasFile: false,
     },
   ];
 
@@ -33,7 +71,13 @@ export function DocumentsScreen() {
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="px-4 py-4 bg-white border-b border-gray-200">
-        <h1 className="text-xl font-bold text-gray-900">Документы</h1>
+        <div className="flex items-center justify-between mb-1">
+          <h1 className="text-xl font-bold text-gray-900">Документы</h1>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 rounded-lg">
+            <Lock className="w-3.5 h-3.5 text-green-600" />
+            <span className="text-xs font-semibold text-green-700">Зашифровано</span>
+          </div>
+        </div>
         <p className="text-sm text-gray-500">Активный реестр</p>
       </div>
 
@@ -66,6 +110,14 @@ export function DocumentsScreen() {
                 textColor: 'text-red-700',
                 button: 'bg-red-600 hover:bg-red-700',
               },
+              gray: {
+                bg: 'bg-gray-50',
+                border: 'border-gray-300',
+                icon: XCircle,
+                iconColor: 'text-gray-500',
+                textColor: 'text-gray-600',
+                button: 'bg-blue-600 hover:bg-blue-700',
+              },
             }[doc.color];
 
             const StatusIcon = statusConfig.icon;
@@ -93,17 +145,28 @@ export function DocumentsScreen() {
 
                 {/* Action Buttons */}
                 <div className="space-y-2">
-                  <button
-                    className={`w-full ${statusConfig.button} text-white font-semibold py-3 px-4 rounded-xl transition-colors active:scale-98 shadow-lg`}
-                  >
-                    {doc.action}
-                  </button>
+                  {doc.hasFile ? (
+                    <button
+                      className={`w-full ${statusConfig.button} text-white font-semibold py-3 px-4 rounded-xl transition-colors active:scale-98 shadow-lg`}
+                    >
+                      {doc.action}
+                    </button>
+                  ) : (
+                    <button
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors active:scale-98 shadow-lg flex items-center justify-center gap-2"
+                    >
+                      <Camera className="w-5 h-5" />
+                      📸 Сканировать / OCR
+                    </button>
+                  )}
                   
                   <div className="flex gap-2">
-                    <button className="flex-1 bg-gray-100 text-gray-700 font-medium py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors active:scale-98 flex items-center justify-center gap-1 text-sm">
-                      <Share2 className="w-4 h-4" />
-                      Поделиться
-                    </button>
+                    {doc.hasFile && (
+                      <button className="flex-1 bg-gray-100 text-gray-700 font-medium py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors active:scale-98 flex items-center justify-center gap-1 text-sm">
+                        <Share2 className="w-4 h-4" />
+                        Поделиться
+                      </button>
+                    )}
                     <button className="flex-1 bg-gray-100 text-gray-700 font-medium py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors active:scale-98 flex items-center justify-center gap-1 text-sm">
                       <Info className="w-4 h-4" />
                       Инструкция
@@ -121,7 +184,10 @@ export function DocumentsScreen() {
         className="fixed bottom-24 right-6 w-16 h-16 bg-blue-600 text-white rounded-full shadow-2xl hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center z-40"
         aria-label="Сканировать документ"
       >
-        <Camera className="w-7 h-7" />
+        <div className="flex flex-col items-center">
+          <Camera className="w-6 h-6" />
+          <span className="text-xs mt-0.5">OCR</span>
+        </div>
       </button>
     </div>
   );

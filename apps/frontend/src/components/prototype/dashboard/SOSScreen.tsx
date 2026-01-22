@@ -135,28 +135,62 @@ export function SOSScreen() {
 
             {policeReason && (
               <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl mb-4">
-                <h4 className="font-bold text-blue-900 mb-2">Алгоритм действий:</h4>
+                <h4 className="font-bold text-blue-900 mb-2">⚖️ Ваши права и алгоритм действий:</h4>
                 <div className="text-sm text-blue-800 space-y-2">
                   {policeReason === 'Проверка документов' && (
-                    <p className="font-semibold">
-                      Предъявите паспорт и регистрацию. Не грубите.
-                    </p>
+                    <>
+                      <div className="bg-white p-3 rounded-lg mb-2">
+                        <p className="font-bold text-blue-900 mb-1">✅ Что делать:</p>
+                        <ul className="list-disc list-inside space-y-1">
+                          <li>Предъявите паспорт и регистрацию спокойно</li>
+                          <li>Вы имеете право снимать на видео (ст. 29 Конституции РФ)</li>
+                          <li>Требуйте составить протокол на понятном языке</li>
+                        </ul>
+                      </div>
+                      <div className="bg-red-100 p-3 rounded-lg">
+                        <p className="font-bold text-red-900 mb-1">❌ Чего НЕ делать:</p>
+                        <ul className="list-disc list-inside space-y-1">
+                          <li>Не грубите и не сопротивляйтесь</li>
+                          <li>Не давайте взятки (уголовная статья)</li>
+                        </ul>
+                      </div>
+                    </>
                   )}
                   {policeReason === 'Нет документов' && (
-                    <p className="font-semibold">
-                      Не подписывайте протокол без переводчика. Звоните юристу.
-                    </p>
+                    <>
+                      <div className="bg-white p-3 rounded-lg mb-2">
+                        <p className="font-bold text-blue-900 mb-1">✅ Ваши права:</p>
+                        <ul className="list-disc list-inside space-y-1">
+                          <li>Право на переводчика (ст. 25.10 КоАП РФ)</li>
+                          <li>Право на звонок юристу/родным</li>
+                          <li>Право не подписывать протокол без понимания</li>
+                        </ul>
+                      </div>
+                      <div className="bg-yellow-100 p-3 rounded-lg">
+                        <p className="font-bold text-yellow-900 mb-1">⚠️ Важно:</p>
+                        <p>Скажите: "Я требую переводчика и юриста. Протокол не подписываю."</p>
+                      </div>
+                    </>
                   )}
                   {(policeReason === 'Нарушение ПДД' || policeReason === 'Другое') && (
-                    <p className="font-semibold">
-                      Требуйте консула. Ничего не подписывайте.
-                    </p>
+                    <>
+                      <div className="bg-white p-3 rounded-lg mb-2">
+                        <p className="font-bold text-blue-900 mb-1">✅ Немедленно:</p>
+                        <ul className="list-disc list-inside space-y-1">
+                          <li>Требуйте связи с консульством (Венская конвенция)</li>
+                          <li>Ничего не подписывайте без переводчика</li>
+                          <li>Запишите ФИО сотрудников и номер отдела</li>
+                        </ul>
+                      </div>
+                    </>
                   )}
-                  <ol className="list-decimal list-inside mt-2 space-y-1">
-                    <li>Сохраняйте спокойствие</li>
-                    <li>Запомните номер отдела</li>
-                    <li>Позвоните юристу: +7 (XXX) XXX-XX-XX</li>
-                  </ol>
+                  <div className="bg-purple-100 p-3 rounded-lg mt-2">
+                    <p className="font-bold text-purple-900 mb-1">📞 Контакты:</p>
+                    <ul className="space-y-1">
+                      <li>Юрист 24/7: <span className="font-mono">+7 (495) 123-45-67</span></li>
+                      <li>Консульство: <span className="font-mono">+7 (495) 234-56-78</span></li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             )}

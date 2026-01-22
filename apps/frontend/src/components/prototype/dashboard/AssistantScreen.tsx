@@ -37,6 +37,19 @@ export function AssistantScreen() {
 
       {/* Chat Area */}
       <div className="flex-1 overflow-y-auto px-4 py-4 bg-gray-50">
+        {/* Legal Disclaimer */}
+        <div className="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+          <div className="flex items-start gap-2">
+            <span className="text-lg">⚠️</span>
+            <div>
+              <p className="text-xs font-semibold text-yellow-900 mb-1">Юридический дисклеймер</p>
+              <p className="text-xs text-yellow-800 leading-relaxed">
+                Консультации ИИ носят справочный характер. Для юридически значимых решений обращайтесь к лицензированному юристу.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="flex justify-start mb-4">
           <div className="max-w-[80%] bg-white text-gray-900 rounded-2xl rounded-bl-sm px-4 py-3 shadow-md border border-gray-200">
             <p className="text-sm leading-relaxed">

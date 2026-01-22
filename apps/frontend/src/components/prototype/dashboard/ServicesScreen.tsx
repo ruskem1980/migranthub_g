@@ -1,17 +1,21 @@
 'use client';
 
-import { Shield, Calculator, FileText, Briefcase, Home, MapPin, Languages, CreditCard } from 'lucide-react';
+import { Shield, Calculator, FileText, Briefcase, Home, MapPin, Languages, CreditCard, Wand2 } from 'lucide-react';
+import { useState } from 'react';
 
 export function ServicesScreen() {
+  const [showMapModal, setShowMapModal] = useState(false);
+
   const services = [
-    { icon: Shield, title: 'Проверка запретов', subtitle: 'МВД/ФССП', color: 'red' },
-    { icon: FileText, title: 'Конструктор Договоров', subtitle: 'Скачать PDF', color: 'orange' },
+    { icon: Wand2, title: '✍️ Автозаполнение', subtitle: 'Генерация заявлений', color: 'purple', special: true },
+    { icon: Shield, title: 'Проверка запретов', subtitle: 'Базы МВД/ФССП', color: 'red' },
+    { icon: FileText, title: 'Конструктор Договоров', subtitle: 'RU + Родной язык', color: 'orange' },
     { icon: Calculator, title: 'Калькулятор 90/180', subtitle: 'Дни пребывания', color: 'blue' },
-    { icon: Home, title: 'Поиск Жилья', subtitle: 'С регистрацией', color: 'purple' },
-    { icon: MapPin, title: 'Карта Мигранта', subtitle: 'МВД, ММЦ, Маршруты', color: 'pink' },
+    { icon: Home, title: 'Поиск Жилья', subtitle: 'С регистрацией', color: 'purple', badge: '🏠 С регистрацией' },
+    { icon: MapPin, title: 'Карта Мигранта', subtitle: 'МВД, ММЦ, Маршруты', color: 'pink', hasModal: true },
     { icon: Languages, title: 'AI-Переводчик', subtitle: 'Фото/Голос', color: 'indigo' },
     { icon: Briefcase, title: 'Поиск Работы', subtitle: 'С патентом', color: 'green' },
-    { icon: CreditCard, title: 'Оплата штрафов', subtitle: 'Госуслуги', color: 'red' },
+    { icon: CreditCard, title: 'Оплата штрафов', subtitle: 'Интеграция Госуслуги', color: 'red' },
   ];
 
   const colorClasses: Record<string, { bg: string; icon: string }> = {
@@ -42,8 +46,14 @@ export function ServicesScreen() {
             return (
               <button
                 key={index}
-                className={`${colors.bg} border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md hover:shadow-xl`}
+                onClick={() => service.hasModal && setShowMapModal(true)}
+                className={`${colors.bg} border-2 ${service.special ? 'border-purple-400 ring-2 ring-purple-200' : 'border-gray-200'} rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md hover:shadow-xl relative`}
               >
+                {service.special && (
+                  <div className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    NEW
+                  </div>
+                )}
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
                   <Icon className={`w-7 h-7 ${colors.icon}`} strokeWidth={2} />
                 </div>
@@ -58,6 +68,61 @@ export function ServicesScreen() {
           })}
         </div>
       </div>
+
+      {/* Map Modal */}
+      {showMapModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-end z-50 animate-in fade-in duration-200">
+          <div className="w-full bg-white rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-300">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-gray-900">Карта Мигранта</h3>
+              <button onClick={() => setShowMapModal(false)} className="p-2 hover:bg-gray-100 rounded-full">
+                ✕
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-600 mb-4">Выберите категорию точек:</p>
+
+            <div className="space-y-3 mb-6">
+              <button className="w-full flex items-center gap-3 p-4 bg-red-50 border-2 border-red-200 rounded-xl hover:bg-red-100 transition-colors">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md">
+                  <span className="text-2xl">👮‍♂️</span>
+                </div>
+                <div className="flex-1 text-left">
+                  <h4 className="font-bold text-gray-900">МВД / ММТ</h4>
+                  <p className="text-xs text-gray-600">Отделы миграции</p>
+                </div>
+              </button>
+
+              <button className="w-full flex items-center gap-3 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl hover:bg-blue-100 transition-colors">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md">
+                  <span className="text-2xl">🏥</span>
+                </div>
+                <div className="flex-1 text-left">
+                  <h4 className="font-bold text-gray-900">Медцентры</h4>
+                  <p className="text-xs text-gray-600">Только авторизованные</p>
+                </div>
+              </button>
+
+              <button className="w-full flex items-center gap-3 p-4 bg-green-50 border-2 border-green-200 rounded-xl hover:bg-green-100 transition-colors">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md">
+                  <span className="text-2xl">🎓</span>
+                </div>
+                <div className="flex-1 text-left">
+                  <h4 className="font-bold text-gray-900">Экзамены</h4>
+                  <p className="text-xs text-gray-600">Центры тестирования</p>
+                </div>
+              </button>
+            </div>
+
+            <button
+              onClick={() => setShowMapModal(false)}
+              className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-colors"
+            >
+              Открыть карту
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

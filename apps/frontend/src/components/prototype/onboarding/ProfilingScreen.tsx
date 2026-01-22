@@ -1,6 +1,6 @@
 'use client';
 
-import { Volume2 } from 'lucide-react';
+import { Volume2, AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
 
 interface ProfilingScreenProps {
@@ -33,8 +33,9 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
           <div>
             <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-2">
               <span>Гражданство</span>
-              <button className="text-blue-600 hover:text-blue-700">
+              <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
+                <span className="text-xs font-medium">Озвучить</span>
               </button>
             </label>
             <select
@@ -54,8 +55,9 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
           <div>
             <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-2">
               <span>Страна выезда</span>
-              <button className="text-blue-600 hover:text-blue-700">
+              <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
+                <span className="text-xs font-medium">Озвучить</span>
               </button>
             </label>
             <select
@@ -75,8 +77,9 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
           <div>
             <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-2">
               <span>Дата въезда</span>
-              <button className="text-blue-600 hover:text-blue-700">
+              <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
+                <span className="text-xs font-medium">Озвучить</span>
               </button>
             </label>
             <input
@@ -91,8 +94,9 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
           <div>
             <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-2">
               <span>Регион</span>
-              <button className="text-blue-600 hover:text-blue-700">
+              <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
+                <span className="text-xs font-medium">Озвучить</span>
               </button>
             </label>
             <select
@@ -113,37 +117,60 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
           <div>
             <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-3">
               <span>Цель визита</span>
-              <button className="text-blue-600 hover:text-blue-700">
+              <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
+                <span className="text-xs font-medium">Озвучить</span>
               </button>
             </label>
-            <div className="space-y-3">
+            
+            {/* 2-Column Grid for 7 Options */}
+            <div className="grid grid-cols-2 gap-3">
               {[
-                { value: 'work', label: '💼 Работа' },
-                { value: 'study', label: '📚 Учеба' },
-                { value: 'tourism', label: '✈️ Туризм' },
+                { value: 'work', label: '💼 Работа', subtitle: 'Трудовая деятельность' },
+                { value: 'study', label: '📚 Учеба', subtitle: 'Вузы/колледжи' },
+                { value: 'tourism', label: '✈️ Туризм', subtitle: 'Отдых, путешествия' },
+                { value: 'private', label: '🏠 Частный', subtitle: 'Гости, лечение' },
+                { value: 'business', label: '💼 Коммерческий', subtitle: 'Переговоры, бизнес' },
+                { value: 'official', label: '🏛️ Служебный', subtitle: 'Делегации' },
+                { value: 'transit', label: '🚗 Транзит', subtitle: 'Проезд через РФ' },
               ].map((option) => (
                 <button
                   key={option.value}
                   onClick={() => setPurpose(option.value)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all ${
+                  className={`flex flex-col items-start gap-1 px-3 py-3 rounded-xl border-2 transition-all ${
                     purpose === option.value
                       ? 'bg-blue-50 border-blue-500 text-blue-700'
                       : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    purpose === option.value
-                      ? 'border-blue-500'
-                      : 'border-gray-300'
-                  }`}>
-                    {purpose === option.value && (
-                      <div className="w-3 h-3 bg-blue-500 rounded-full" />
-                    )}
+                  <div className="flex items-center gap-2 w-full">
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                      purpose === option.value
+                        ? 'border-blue-500'
+                        : 'border-gray-300'
+                    }`}>
+                      {purpose === option.value && (
+                        <div className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
+                      )}
+                    </div>
+                    <span className="font-semibold text-sm">{option.label}</span>
                   </div>
-                  <span className="font-medium">{option.label}</span>
+                  <span className="text-xs text-gray-500 ml-6">{option.subtitle}</span>
                 </button>
               ))}
+            </div>
+
+            {/* Legal Warning */}
+            <div className="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs font-semibold text-yellow-900 mb-1">⚠️ Важно</p>
+                  <p className="text-xs text-yellow-800 leading-relaxed">
+                    Для получения патента выбирайте «Работа». Изменить цель визита без выезда из РФ нельзя (кроме граждан ЕАЭС).
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
