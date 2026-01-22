@@ -1,13 +1,44 @@
 'use client';
 
-import { AlertTriangle, Phone, FileX, MapPin, X } from 'lucide-react';
+import { AlertTriangle, Phone, FileX, MapPin, X, Check } from 'lucide-react';
 import { useState } from 'react';
+
+// Strict bureaucratic priority order (0 = highest priority)
+const PRIORITY_ORDER = ['passport', 'mig_card', 'green_card', 'registration', 'patent', 'receipts'] as const;
+
+type DocumentKey = typeof PRIORITY_ORDER[number];
+
+interface DocumentOption {
+  key: DocumentKey;
+  label: string;
+  icon: string;
+}
+
+const DOCUMENT_OPTIONS: DocumentOption[] = [
+  { key: 'passport', label: 'Паспорт', icon: '🛂' },
+  { key: 'mig_card', label: 'Миграционная карта', icon: '🎫' },
+  { key: 'registration', label: 'Регистрация', icon: '📋' },
+  { key: 'green_card', label: 'Зеленая карта/Дакт.карта', icon: '💳' },
+  { key: 'patent', label: 'Патент', icon: '📄' },
+  { key: 'receipts', label: 'Чеки', icon: '🧾' },
+];
+
+// Hardcoded recovery instructions by document type
+const RECOVERY_INSTRUCTIONS: Record<DocumentKey, string> = {
+  passport: 'Паспорт. Идите в полицию за справкой о потере, затем в Консульство для восстановления.',
+  mig_card: 'Миграционная карта. Восстанавливается в отделе МВД (строго после паспорта).',
+  green_card: 'Зеленая карта. Дубликат выдается в ММЦ/МВД.',
+  registration: 'Регистрация. Делает принимающая сторона (хост) в МВД.',
+  patent: 'Патент. В ММЦ, выдавшем патент (нужен полный пакет документов).',
+  receipts: 'Чеки. В ММЦ, выдавшем патент (нужен полный пакет документов).',
+};
 
 export function SOSScreen() {
   const [showPoliceModal, setShowPoliceModal] = useState(false);
   const [showLostDocsModal, setShowLostDocsModal] = useState(false);
   const [policeReason, setPoliceReason] = useState('');
-  const [lostDocType, setLostDocType] = useState('');
+  const [selectedDocs, setSelectedDocs] = useState<Set<DocumentKey>>(new Set());
+  const [showRecoveryPlan, setShowRecoveryPlan] = useState(false);
 
   return (
     <div className="h-full overflow-y-auto pb-4 bg-gradient-to-b from-red-50 to-white relative">
@@ -211,53 +242,180 @@ export function SOSScreen() {
           <div className="w-full bg-white rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-300 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-gray-900">Потерял документы</h3>
-              <button onClick={() => setShowLostDocsModal(false)} className="p-2 hover:bg-gray-100 rounded-full">
+              <button 
+                onClick={() => {
+                  setShowLostDocsModal(false);
+                  setSelectedDocs(new Set());
+                  setShowRecoveryPlan(false);
+                }} 
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
-            <p className="text-sm text-gray-600 mb-4">Что потеряли?</p>
+            {!showRecoveryPlan ? (
+              <>
+                <p className="text-sm text-gray-600 mb-4">Отметьте все потерянные документы:</p>
 
-            <div className="space-y-3 mb-6">
-              {['Паспорт', 'Миграционная карта', 'Патент', 'Регистрация'].map((doc) => (
-                <button
-                  key={doc}
-                  onClick={() => setLostDocType(doc)}
-                  className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
-                    lostDocType === doc
-                      ? 'bg-orange-50 border-orange-500 text-orange-700'
-                      : 'bg-white border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  {doc}
-                </button>
-              ))}
-            </div>
-
-            {lostDocType && (
-              <div className="space-y-3 mb-4">
-                <div className="p-4 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
-                  <h4 className="font-bold text-yellow-900 mb-2">Шаги восстановления:</h4>
-                  <ol className="text-sm text-yellow-800 space-y-1 list-decimal list-inside">
-                    <li>Обратитесь в полицию (заявление о потере)</li>
-                    <li>Получите справку</li>
-                    <li>Обратитесь в консульство</li>
-                    <li>Подготовьте документы</li>
-                  </ol>
+                {/* Multi-select Checkboxes */}
+                <div className="space-y-3 mb-6">
+                  {DOCUMENT_OPTIONS.map((doc) => {
+                    const isSelected = selectedDocs.has(doc.key);
+                    
+                    return (
+                      <button
+                        key={doc.key}
+                        onClick={() => {
+                          const newSelected = new Set(selectedDocs);
+                          if (isSelected) {
+                            newSelected.delete(doc.key);
+                          } else {
+                            newSelected.add(doc.key);
+                          }
+                          setSelectedDocs(newSelected);
+                        }}
+                        className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                          isSelected
+                            ? 'bg-orange-50 border-orange-500'
+                            : 'bg-white border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        {/* Checkbox */}
+                        <div className={`w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                          isSelected
+                            ? 'bg-orange-500 border-orange-500'
+                            : 'border-gray-300'
+                        }`}>
+                          {isSelected && <Check className="w-4 h-4 text-white" strokeWidth={3} />}
+                        </div>
+                        
+                        {/* Icon and Label */}
+                        <span className="text-2xl">{doc.icon}</span>
+                        <span className={`font-semibold ${isSelected ? 'text-orange-700' : 'text-gray-700'}`}>
+                          {doc.label}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
 
-                <button className="w-full bg-orange-600 text-white font-bold py-4 rounded-xl hover:bg-orange-700 transition-colors">
-                  Сгенерировать заявление
+                {/* Warning */}
+                <div className="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-yellow-800 leading-relaxed">
+                      Восстановление документов имеет строгую последовательность. Мы покажем правильный порядок действий.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Calculate Button */}
+                <button
+                  onClick={() => {
+                    if (selectedDocs.size > 0) {
+                      setShowRecoveryPlan(true);
+                    }
+                  }}
+                  disabled={selectedDocs.size === 0}
+                  className={`w-full font-bold py-4 rounded-xl transition-colors mb-3 ${
+                    selectedDocs.size > 0
+                      ? 'bg-orange-600 text-white hover:bg-orange-700'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  Рассчитать план восстановления
                 </button>
-              </div>
+              </>
+            ) : (
+              <>
+                {/* Recovery Plan - Numbered Vertical Stepper */}
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FileX className="w-5 h-5 text-orange-600" />
+                    <h4 className="font-bold text-gray-900">План восстановления</h4>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    Выполняйте шаги строго в указанном порядке:
+                  </p>
+                </div>
+
+                {/* Sorted Steps */}
+                <div className="space-y-4 mb-6">
+                  {PRIORITY_ORDER
+                    .filter(key => selectedDocs.has(key))
+                    .map((key, index) => {
+                      const doc = DOCUMENT_OPTIONS.find(d => d.key === key)!;
+                      const instruction = RECOVERY_INSTRUCTIONS[key];
+                      
+                      return (
+                        <div key={key} className="relative flex gap-4">
+                          {/* Step Number */}
+                          <div className="flex-shrink-0">
+                            <div className="w-10 h-10 rounded-full bg-orange-500 text-white font-bold flex items-center justify-center text-lg shadow-md">
+                              {index + 1}
+                            </div>
+                            {/* Vertical Line */}
+                            {index < Array.from(selectedDocs).length - 1 && (
+                              <div className="absolute left-5 top-10 bottom-0 w-0.5 bg-orange-200" />
+                            )}
+                          </div>
+
+                          {/* Step Content */}
+                          <div className="flex-1 bg-white border-2 border-orange-200 rounded-xl p-4 shadow-sm">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-xl">{doc.icon}</span>
+                              <h5 className="font-bold text-gray-900">{doc.label}</h5>
+                            </div>
+                            <p className="text-sm text-gray-700 leading-relaxed">
+                              {instruction}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+
+                {/* Important Notice */}
+                <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
+                  <h4 className="font-bold text-red-900 mb-2 flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5" />
+                    Критически важно
+                  </h4>
+                  <ul className="text-sm text-red-800 space-y-1 list-disc list-inside">
+                    <li>Без паспорта невозможно восстановить другие документы</li>
+                    <li>Миграционная карта восстанавливается только после паспорта</li>
+                    <li>Патент требует полный пакет документов (паспорт, мигр.карта, регистрация)</li>
+                  </ul>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <button className="w-full bg-orange-600 text-white font-bold py-4 rounded-xl hover:bg-orange-700 transition-colors">
+                    Сгенерировать заявления
+                  </button>
+                  
+                  <button
+                    onClick={() => setShowRecoveryPlan(false)}
+                    className="w-full bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-300 transition-colors"
+                  >
+                    ← Назад к выбору
+                  </button>
+                </div>
+              </>
             )}
 
-            <button
-              onClick={() => setShowLostDocsModal(false)}
-              className="w-full bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition-colors"
-            >
-              Закрыть
-            </button>
+            {!showRecoveryPlan && (
+              <button
+                onClick={() => {
+                  setShowLostDocsModal(false);
+                  setSelectedDocs(new Set());
+                }}
+                className="w-full bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition-colors"
+              >
+                Закрыть
+              </button>
+            )}
           </div>
         </div>
       )}

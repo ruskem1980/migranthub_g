@@ -88,6 +88,28 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
               onChange={(e) => setEntryDate(e.target.value)}
               className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
+            {/* Quick Action Chips */}
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => {
+                  const today = new Date().toISOString().split('T')[0];
+                  setEntryDate(today);
+                }}
+                className="px-3 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-100 transition-colors active:scale-95 border border-blue-200"
+              >
+                Сегодня
+              </button>
+              <button
+                onClick={() => {
+                  const yesterday = new Date();
+                  yesterday.setDate(yesterday.getDate() - 1);
+                  setEntryDate(yesterday.toISOString().split('T')[0]);
+                }}
+                className="px-3 py-1.5 bg-gray-50 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors active:scale-95 border border-gray-200"
+              >
+                Вчера
+              </button>
+            </div>
           </div>
 
           {/* Region */}
