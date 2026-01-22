@@ -26,6 +26,7 @@ export interface Document {
 }
 
 export const DOCUMENTS_LIST: Document[] = [
+  // УРОВЕНЬ 1: ОСНОВА (Без этого ничего нельзя)
   {
     id: 'passport',
     title: 'Паспорт',
@@ -33,6 +34,8 @@ export const DOCUMENTS_LIST: Document[] = [
     description: 'Действующий загранпаспорт',
     requiredFor: ['work', 'study', 'tourism', 'private'],
   },
+  
+  // УРОВЕНЬ 2: ВЪЕЗД И ПРЕБЫВАНИЕ (Легальное нахождение в РФ)
   {
     id: 'mig_card',
     title: 'Миграционная карта',
@@ -48,11 +51,21 @@ export const DOCUMENTS_LIST: Document[] = [
     description: 'Уведомление о прибытии',
     requiredFor: ['work', 'study', 'tourism', 'private'],
   },
+  
+  // УРОВЕНЬ 3: РАБОТА (Для трудоустройства)
   {
     id: 'green_card',
     title: 'Зеленая карта (Дактилоскопия)',
     icon: '💳',
     description: 'Медосмотр + дактилоскопия',
+    requiredFor: ['work'],
+    isEAEUExempt: true,
+  },
+  {
+    id: 'education',
+    title: 'Сертификат / Диплом',
+    icon: '🎓',
+    description: 'Сертификат о владении русским языком или диплом об образовании',
     requiredFor: ['work'],
     isEAEUExempt: true,
   },
@@ -65,19 +78,21 @@ export const DOCUMENTS_LIST: Document[] = [
     isEAEUExempt: true,
   },
   {
+    id: 'contract',
+    title: 'Трудовой договор',
+    icon: '📝',
+    description: 'Договор с работодателем',
+    requiredFor: ['work'],
+  },
+  
+  // УРОВЕНЬ 4: ПОДДЕРЖКА (Дополнительные документы)
+  {
     id: 'receipts',
     title: 'Чеки (НДФЛ)',
     icon: '🧾',
     description: 'Квитанции об оплате патента',
     requiredFor: ['work'],
     isEAEUExempt: true,
-  },
-  {
-    id: 'contract',
-    title: 'Трудовой договор',
-    icon: '📝',
-    description: 'Договор с работодателем',
-    requiredFor: ['work'],
   },
   {
     id: 'insurance',
@@ -93,14 +108,6 @@ export const DOCUMENTS_LIST: Document[] = [
     icon: '🔢',
     description: 'Налоговый номер',
     requiredFor: ['work'],
-  },
-  {
-    id: 'education',
-    title: 'Сертификат / Диплом',
-    icon: '🎓',
-    description: 'Сертификат о владении русским языком или диплом об образовании',
-    requiredFor: ['work'],
-    isEAEUExempt: true,
   },
   {
     id: 'family',

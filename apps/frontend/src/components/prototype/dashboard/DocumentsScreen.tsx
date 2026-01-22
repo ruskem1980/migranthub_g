@@ -4,6 +4,7 @@ import { Camera, CheckCircle2, AlertTriangle, XCircle, Share2, Info, Lock } from
 
 export function DocumentsScreen() {
   const documents = [
+    // УРОВЕНЬ 1: ОСНОВА
     {
       key: 'passport',
       title: 'Паспорт',
@@ -13,6 +14,8 @@ export function DocumentsScreen() {
       color: 'green',
       hasFile: true,
     },
+    
+    // УРОВЕНЬ 2: ВЪЕЗД И ПРЕБЫВАНИЕ
     {
       key: 'mig_card',
       title: 'Миграционная карта',
@@ -32,25 +35,8 @@ export function DocumentsScreen() {
       action: 'Обновить',
       hasFile: false,
     },
-    {
-      key: 'patent',
-      title: 'Патент',
-      status: 'warning',
-      statusText: 'Оплатить через 3 дня',
-      icon: '📄',
-      color: 'yellow',
-      action: 'Продлить',
-      hasFile: true,
-    },
-    {
-      key: 'receipts',
-      title: 'Чеки (НДФЛ)',
-      status: 'active',
-      statusText: 'Актуальны',
-      icon: '🧾',
-      color: 'green',
-      hasFile: true,
-    },
+    
+    // УРОВЕНЬ 3: РАБОТА
     {
       key: 'green_card',
       title: 'Зеленая карта (Дактилоскопия)',
@@ -62,6 +48,26 @@ export function DocumentsScreen() {
       hasFile: false,
     },
     {
+      key: 'education',
+      title: 'Сертификат / Диплом',
+      status: 'missing',
+      statusText: 'Отсутствует',
+      icon: '🎓',
+      color: 'gray',
+      action: 'Добавить',
+      hasFile: false,
+    },
+    {
+      key: 'patent',
+      title: 'Патент',
+      status: 'warning',
+      statusText: 'Оплатить через 3 дня',
+      icon: '📄',
+      color: 'yellow',
+      action: 'Продлить',
+      hasFile: true,
+    },
+    {
       key: 'contract',
       title: 'Трудовой договор',
       status: 'missing',
@@ -70,6 +76,17 @@ export function DocumentsScreen() {
       color: 'gray',
       action: 'Добавить',
       hasFile: false,
+    },
+    
+    // УРОВЕНЬ 4: ПОДДЕРЖКА
+    {
+      key: 'receipts',
+      title: 'Чеки (НДФЛ)',
+      status: 'active',
+      statusText: 'Актуальны',
+      icon: '🧾',
+      color: 'green',
+      hasFile: true,
     },
     {
       key: 'insurance',
@@ -89,6 +106,16 @@ export function DocumentsScreen() {
       icon: '🔢',
       color: 'gray',
       action: 'Получить',
+      hasFile: false,
+    },
+    {
+      key: 'family',
+      title: 'Св-во о браке / рождении',
+      status: 'missing',
+      statusText: 'Отсутствует',
+      icon: '💍',
+      color: 'gray',
+      action: 'Добавить',
       hasFile: false,
     },
   ];

@@ -18,10 +18,13 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
   const [checked, setChecked] = useState<string[]>([]);
 
   const items: DocumentItem[] = [
+    // УРОВЕНЬ 1: ОСНОВА
     { 
       id: 'passport', 
       label: '🛂 Паспорт',
     },
+    
+    // УРОВЕНЬ 2: ВЪЕЗД И ПРЕБЫВАНИЕ
     { 
       id: 'mig_card', 
       label: '🎫 Миграционная карта',
@@ -30,6 +33,8 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
       id: 'registration', 
       label: '📋 Регистрация (Уведомление)',
     },
+    
+    // УРОВЕНЬ 3: РАБОТА
     { 
       id: 'green_card', 
       label: '💳 Зеленая карта (Дактилоскопия)',
@@ -37,17 +42,39 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
       isNew: true,
     },
     { 
-      id: 'patent', 
-      label: '📄 Патент',
+      id: 'education', 
+      label: '🎓 Сертификат / Диплом',
+      subtitle: 'Русский язык или образование',
+      isNew: true,
     },
     { 
-      id: 'receipts', 
-      label: '🧾 Чеки (НДФЛ)',
+      id: 'patent', 
+      label: '📄 Патент',
     },
     { 
       id: 'contract', 
       label: '📝 Трудовой договор',
       subtitle: 'Критично для граждан ЕАЭС',
+      isNew: true,
+    },
+    
+    // УРОВЕНЬ 4: ПОДДЕРЖКА
+    { 
+      id: 'receipts', 
+      label: '🧾 Чеки (НДФЛ)',
+    },
+    { 
+      id: 'insurance', 
+      label: '🩺 Полис ДМС',
+    },
+    { 
+      id: 'inn', 
+      label: '🔢 ИНН / СНИЛС',
+    },
+    { 
+      id: 'family', 
+      label: '💍 Св-во о браке / рождении',
+      subtitle: 'Для РВП/ВНЖ',
       isNew: true,
     },
   ];

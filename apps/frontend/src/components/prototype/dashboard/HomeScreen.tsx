@@ -40,12 +40,12 @@ export function HomeScreen() {
         {/* Right: Status Badge + Edit Button + Days Counter */}
         <div className="flex items-center gap-3">
           {/* Status Badge */}
-          {checkedDocs.length >= 5 ? (
+          {checkedDocs.length >= 7 ? (
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-500 rounded-full">
               <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
               <span className="text-xs font-bold text-white">Legal</span>
             </div>
-          ) : checkedDocs.length >= 3 ? (
+          ) : checkedDocs.length >= 4 ? (
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-yellow-500 rounded-full">
               <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
               <span className="text-xs font-bold text-white">Risk</span>
@@ -420,13 +420,24 @@ export function HomeScreen() {
                 
                 <div className="space-y-2">
                   {[
+                    // УРОВЕНЬ 1: ОСНОВА
                     { id: 'passport', label: '🛂 Паспорт' },
+                    
+                    // УРОВЕНЬ 2: ВЪЕЗД И ПРЕБЫВАНИЕ
                     { id: 'mig_card', label: '🎫 Миграционная карта' },
                     { id: 'registration', label: '📋 Регистрация' },
+                    
+                    // УРОВЕНЬ 3: РАБОТА
                     { id: 'green_card', label: '💳 Зеленая карта' },
+                    { id: 'education', label: '🎓 Сертификат / Диплом' },
                     { id: 'patent', label: '📄 Патент' },
-                    { id: 'receipts', label: '🧾 Чеки (НДФЛ)' },
                     { id: 'contract', label: '📝 Трудовой договор' },
+                    
+                    // УРОВЕНЬ 4: ПОДДЕРЖКА
+                    { id: 'receipts', label: '🧾 Чеки (НДФЛ)' },
+                    { id: 'insurance', label: '🩺 Полис ДМС' },
+                    { id: 'inn', label: '🔢 ИНН / СНИЛС' },
+                    { id: 'family', label: '💍 Св-во о браке / рождении' },
                   ].map((doc) => {
                     const isChecked = checkedDocs.includes(doc.id);
                     
@@ -465,12 +476,12 @@ export function HomeScreen() {
                 <div className="mt-4 p-3 rounded-xl border-2 bg-gradient-to-br from-gray-50 to-gray-100">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-gray-700">Статус:</span>
-                    {checkedDocs.length >= 5 ? (
+                    {checkedDocs.length >= 7 ? (
                       <div className="flex items-center gap-1.5 px-3 py-1 bg-green-500 rounded-full">
                         <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                         <span className="text-xs font-bold text-white">Legal</span>
                       </div>
-                    ) : checkedDocs.length >= 3 ? (
+                    ) : checkedDocs.length >= 4 ? (
                       <div className="flex items-center gap-1.5 px-3 py-1 bg-yellow-500 rounded-full">
                         <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                         <span className="text-xs font-bold text-white">Risk</span>
@@ -483,7 +494,7 @@ export function HomeScreen() {
                     )}
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
-                    Документов: {checkedDocs.length} из 7
+                    Документов: {checkedDocs.length} из 11
                   </p>
                 </div>
               </div>

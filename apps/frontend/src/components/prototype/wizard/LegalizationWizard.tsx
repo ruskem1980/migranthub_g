@@ -311,9 +311,28 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
         </p>
       </div>
 
-      {/* Document Checklist */}
+      {/* Document Checklist - ALL 11 DOCUMENTS */}
       <div className="space-y-3">
-        {allPossibleDocuments.map((doc) => {
+        {[
+          // УРОВЕНЬ 1: ОСНОВА
+          { id: 'passport', title: 'Паспорт', icon: '🛂', description: 'Действующий загранпаспорт', level: 'Основа' },
+          
+          // УРОВЕНЬ 2: ВЪЕЗД И ПРЕБЫВАНИЕ
+          { id: 'mig_card', title: 'Миграционная карта', icon: '🎫', description: 'Карта, выданная на границе при въезде', level: 'Въезд' },
+          { id: 'registration', title: 'Регистрация (Уведомление)', icon: '📋', description: 'Подтверждение регистрации по месту пребывания', level: 'Въезд' },
+          
+          // УРОВЕНЬ 3: РАБОТА
+          { id: 'green_card', title: 'Зеленая карта (Дактилоскопия)', icon: '💳', description: 'Медосмотр + дактилоскопия из ММЦ', level: 'Работа' },
+          { id: 'education', title: 'Сертификат / Диплом', icon: '🎓', description: 'Сертификат о владении русским языком', level: 'Работа' },
+          { id: 'patent', title: 'Патент', icon: '📄', description: 'Разрешение на работу', level: 'Работа' },
+          { id: 'contract', title: 'Трудовой договор', icon: '📝', description: 'Договор с работодателем', level: 'Работа' },
+          
+          // УРОВЕНЬ 4: ПОДДЕРЖКА
+          { id: 'receipts', title: 'Чеки (НДФЛ)', icon: '🧾', description: 'Квитанции об оплате патента', level: 'Поддержка' },
+          { id: 'insurance', title: 'Полис ДМС', icon: '🩺', description: 'Медицинское страхование', level: 'Поддержка' },
+          { id: 'inn', title: 'ИНН / СНИЛС', icon: '🔢', description: 'Налоговый номер', level: 'Поддержка' },
+          { id: 'family', title: 'Св-во о браке / рождении', icon: '💍', description: 'Свидетельство для РВП/ВНЖ', level: 'Поддержка' },
+        ].map((doc) => {
           const isSelected = selectedDocsToScan.includes(doc.id);
           
           return (
@@ -326,14 +345,14 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
                   setSelectedDocsToScan([...selectedDocsToScan, doc.id]);
                 }
               }}
-              className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all ${
+              className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all ${
                 isSelected
                   ? 'bg-green-50 border-green-300 shadow-md'
                   : 'bg-white border-gray-200 hover:border-gray-300'
               }`}
             >
               {/* Checkbox */}
-              <div className={`w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+              <div className={`w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0 mt-1 ${
                 isSelected
                   ? 'bg-green-500 border-green-500'
                   : 'border-gray-300'
@@ -342,12 +361,17 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
               </div>
               
               {/* Icon and Info */}
-              <span className="text-2xl">{doc.icon}</span>
               <div className="flex-1 text-left">
-                <p className={`font-semibold ${isSelected ? 'text-green-700' : 'text-gray-700'}`}>
-                  {doc.title}
-                </p>
-                <p className="text-xs text-gray-500">{doc.description}</p>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-2xl">{doc.icon}</span>
+                  <p className={`font-semibold ${isSelected ? 'text-green-700' : 'text-gray-700'}`}>
+                    {doc.title}
+                  </p>
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed">{doc.description}</p>
+                <span className="inline-block mt-1 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
+                  {doc.level}
+                </span>
               </div>
             </button>
           );
