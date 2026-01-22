@@ -13,23 +13,187 @@ interface LegalizationWizardProps {
   };
 }
 
-type WizardStep = 'intro' | 'data-intake' | 'scanning' | 'verification' | 'processing' | 'action-plan';
+type WizardStep = 'intro' | 'document-scan' | 'scanning' | 'verification' | 'processing' | 'action-plan';
+
+interface DocumentToScan {
+  id: string;
+  title: string;
+  icon: string;
+  description: string;
+  fields: string[];
+}
 
 export function LegalizationWizard({ onClose, profileData }: LegalizationWizardProps) {
   const [currentStep, setCurrentStep] = useState<WizardStep>('intro');
+  const [currentDocIndex, setCurrentDocIndex] = useState(0);
   const [dataMethod, setDataMethod] = useState<'scan' | 'manual' | null>(null);
-  const [passportData, setPassportData] = useState({
-    lastName: '',
-    firstName: '',
-    passportNumber: '',
-    issueDate: '',
-    citizenship: 'Узбекистан',
-  });
+  const [scannedDocuments, setScannedDocuments] = useState<Record<string, any>>({});
+  const [currentDocData, setCurrentDocData] = useState<Record<string, string>>({});
   const [isConfirmed, setIsConfirmed] = useState(false);
 
   // Calculate missing documents
   const allRequiredDocs = ['passport', 'mig_card', 'registration', 'green_card', 'patent', 'receipts'];
   const missingDocs = allRequiredDocs.filter(doc => !profileData.checkedDocs.includes(doc));
+
+  // Define documents to scan based on purpose (Russian Federation legislation)
+  const getDocumentsToScan = (purpose: string, citizenship: string): DocumentToScan[] => {
+    const docs: DocumentToScan[] = [];
+    const isEAEU = ['Армения', 'Беларусь', 'Казахстан', 'Киргизия'].includes(citizenship);
+
+    // 1. ПАСПОРТ (Всегда обязателен)
+    if (!profileData.checkedDocs.includes('passport')) {
+      docs.push({
+        id: 'passport',
+        title: 'Паспорт',
+        icon: '🛂',
+        description: 'Разворот с фото и личными данными',
+        fields: ['lastName', 'firstName', 'middleName', 'passportNumber', 'issueDate', 'birthDate', 'birthPlace'],
+      });
+    }
+
+    // 2. МИГРАЦИОННАЯ КАРТА (Всегда обязательна для не-ЕАЭС)
+    if (!isEAEU && !profileData.checkedDocs.includes('mig_card')) {
+      docs.push({
+        id: 'mig_card',
+        title: 'Миграционная карта',
+        icon: '🎫',
+        description: 'Карта, выданная на границе при въезде',
+        fields: ['cardNumber', 'entryDate', 'borderPoint', 'purpose'],
+      });
+    }
+
+    // ДЛЯ ЦЕЛИ "РАБОТА"
+    if (purpose === 'Работа') {
+      // 3. МЕДИЦИНСКАЯ СПРАВКА + ДАКТИЛОСКОПИЯ (Зеленая карта)
+      if (!profileData.checkedDocs.includes('green_card')) {
+        docs.push({
+          id: 'green_card',
+          title: 'Зеленая карта (Медосмотр + Дактилоскопия)',
+          icon: '💳',
+          description: 'Карта из авторизованного медицинского центра',
+          fields: ['cardNumber', 'issueDate', 'expiryDate', 'medicalCenter', 'doctorName'],
+        });
+      }
+
+      // 4. СЕРТИФИКАТ О ВЛАДЕНИИ РУССКИМ ЯЗЫКОМ
+      if (!profileData.checkedDocs.includes('exam')) {
+        docs.push({
+          id: 'exam',
+          title: 'Сертификат (Экзамен по русскому языку)',
+          icon: '🎓',
+          description: 'Сертификат из центра тестирования',
+          fields: ['certificateNumber', 'issueDate', 'testCenter', 'score'],
+        });
+      }
+
+      // 5. ПОЛИС ДМС (Добровольное медицинское страхование)
+      if (!profileData.checkedDocs.includes('insurance')) {
+        docs.push({
+          id: 'insurance',
+          title: 'Полис ДМС',
+          icon: '🩺',
+          description: 'Договор медицинского страхования',
+          fields: ['policyNumber', 'issueDate', 'expiryDate', 'insuranceCompany'],
+        });
+      }
+
+      // 6. ТРУДОВОЙ ДОГОВОР (Если есть работодатель)
+      if (!isEAEU && !profileData.checkedDocs.includes('contract')) {
+        docs.push({
+          id: 'contract',
+          title: 'Трудовой договор',
+          icon: '📝',
+          description: 'Договор с работодателем',
+          fields: ['employerName', 'employerINN', 'jobTitle', 'salary', 'startDate'],
+        });
+      }
+
+      // 7. УВЕДОМЛЕНИЕ О ПРИБЫТИИ (Регистрация)
+      if (!profileData.checkedDocs.includes('registration')) {
+        docs.push({
+          id: 'registration',
+          title: 'Уведомление о прибытии (Регистрация)',
+          icon: '📋',
+          description: 'Подтверждение регистрации по месту пребывания',
+          fields: ['hostFullName', 'hostAddress', 'registrationDate', 'expiryDate'],
+        });
+      }
+
+      // 8. ФОТО 3x4 (Для патента)
+      docs.push({
+        id: 'photo',
+        title: 'Фотография 3x4',
+        icon: '📸',
+        description: 'Цветное фото на белом фоне',
+        fields: ['photoConfirm'],
+      });
+    }
+
+    // ДЛЯ ЦЕЛИ "УЧЕБА"
+    if (purpose === 'Учеба') {
+      // Приглашение от учебного заведения
+      if (!profileData.checkedDocs.includes('invitation')) {
+        docs.push({
+          id: 'invitation',
+          title: 'Приглашение от ВУЗа',
+          icon: '📨',
+          description: 'Официальное приглашение на обучение',
+          fields: ['universityName', 'invitationNumber', 'issueDate', 'studyPeriod'],
+        });
+      }
+
+      // Медицинская справка
+      if (!profileData.checkedDocs.includes('medical')) {
+        docs.push({
+          id: 'medical',
+          title: 'Медицинская справка (форма 086/у)',
+          icon: '🏥',
+          description: 'Справка о состоянии здоровья',
+          fields: ['certificateNumber', 'issueDate', 'clinicName'],
+        });
+      }
+    }
+
+    // ДЛЯ ЦЕЛИ "ТУРИЗМ"
+    if (purpose === 'Туризм') {
+      // Обратный билет
+      docs.push({
+        id: 'ticket',
+        title: 'Обратный билет',
+        icon: '✈️',
+        description: 'Билет на выезд из РФ',
+        fields: ['ticketNumber', 'departureDate', 'destination'],
+      });
+
+      // Бронь гостиницы
+      docs.push({
+        id: 'hotel',
+        title: 'Бронь гостиницы',
+        icon: '🏨',
+        description: 'Подтверждение бронирования',
+        fields: ['hotelName', 'hotelAddress', 'checkIn', 'checkOut'],
+      });
+    }
+
+    // ДЛЯ ЦЕЛИ "ЧАСТНЫЙ"
+    if (purpose === 'Частный') {
+      // Приглашение от физлица
+      if (!profileData.checkedDocs.includes('private_invitation')) {
+        docs.push({
+          id: 'private_invitation',
+          title: 'Приглашение от гражданина РФ',
+          icon: '💌',
+          description: 'Нотариально заверенное приглашение',
+          fields: ['inviterFullName', 'inviterPassport', 'inviterAddress', 'notaryName'],
+        });
+      }
+    }
+
+    return docs;
+  };
+
+  const documentsToScan = getDocumentsToScan(profileData.purpose, profileData.citizenship);
+  const currentDocument = documentsToScan[currentDocIndex];
   
   // Calculate deadline (mock - 90 days from entry)
   const entryDate = new Date(profileData.entryDate);
@@ -108,7 +272,14 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
 
       {/* CTA */}
       <button
-        onClick={() => setCurrentStep('data-intake')}
+        onClick={() => {
+          if (documentsToScan.length > 0) {
+            setCurrentStep('document-scan');
+            setCurrentDocIndex(0);
+          } else {
+            setCurrentStep('processing');
+          }
+        }}
         className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-5 px-6 rounded-2xl hover:from-green-700 hover:to-green-800 transition-all active:scale-98 shadow-xl flex items-center justify-center gap-2"
       >
         <span className="text-lg">Начать оформление</span>
@@ -120,6 +291,220 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
       </p>
     </div>
   );
+
+  const renderDocumentScan = () => {
+    if (!currentDocument) {
+      setCurrentStep('processing');
+      return null;
+    }
+
+    return (
+      <div className="space-y-6">
+        {/* Progress Indicator */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            {documentsToScan.map((doc, index) => (
+              <div
+                key={doc.id}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                  index < currentDocIndex
+                    ? 'bg-green-500 text-white'
+                    : index === currentDocIndex
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200 text-gray-500'
+                }`}
+              >
+                {index < currentDocIndex ? '✓' : index + 1}
+              </div>
+            ))}
+          </div>
+          <span className="text-sm text-gray-600">
+            {currentDocIndex + 1} из {documentsToScan.length}
+          </span>
+        </div>
+
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-4xl">{currentDocument.icon}</span>
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">{currentDocument.title}</h3>
+          <p className="text-sm text-gray-600">
+            {currentDocument.description}
+          </p>
+        </div>
+
+        {!dataMethod ? (
+          <div className="grid grid-cols-1 gap-4">
+            {/* Scan Option */}
+            <button
+              onClick={() => setDataMethod('scan')}
+              className="relative p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-3 border-blue-300 rounded-2xl hover:from-blue-100 hover:to-blue-200 transition-all active:scale-98 text-left group"
+            >
+              <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                Рекомендуется
+              </div>
+              
+              <div className="flex items-start gap-4">
+                <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <Camera className="w-7 h-7 text-white" />
+                </div>
+                
+                <div className="flex-1">
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">📸 Сканировать</h4>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Автоматическое распознавание данных. Быстро и без ошибок.
+                  </p>
+                </div>
+              </div>
+            </button>
+
+            {/* Manual Option */}
+            <button
+              onClick={() => setDataMethod('manual')}
+              className="p-6 bg-white border-2 border-gray-200 rounded-2xl hover:border-gray-300 transition-all active:scale-98 text-left"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Edit3 className="w-7 h-7 text-gray-600" />
+                </div>
+                
+                <div className="flex-1">
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">✍️ Ввести вручную</h4>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Введите данные самостоятельно.
+                  </p>
+                </div>
+              </div>
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {dataMethod === 'scan' && (
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6">
+                <div className="text-center mb-4">
+                  <div className="w-32 h-32 bg-blue-100 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                    <Camera className="w-16 h-16 text-blue-600" />
+                  </div>
+                  <h4 className="font-bold text-gray-900 mb-2">Сфотографируйте документ</h4>
+                  <p className="text-sm text-gray-600">
+                    Убедитесь, что нет бликов и все данные читаемы
+                  </p>
+                </div>
+
+                <button 
+                  onClick={() => {
+                    setCurrentStep('scanning');
+                  }}
+                  className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-colors"
+                >
+                  Открыть камеру
+                </button>
+              </div>
+            )}
+
+            {dataMethod === 'manual' && (
+              <div className="space-y-4">
+                {currentDocument.fields.map((field) => (
+                  <div key={field}>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      {field === 'lastName' && 'Фамилия'}
+                      {field === 'firstName' && 'Имя'}
+                      {field === 'middleName' && 'Отчество'}
+                      {field === 'passportNumber' && 'Номер паспорта'}
+                      {field === 'issueDate' && 'Дата выдачи'}
+                      {field === 'birthDate' && 'Дата рождения'}
+                      {field === 'birthPlace' && 'Место рождения'}
+                      {field === 'citizenship' && 'Гражданство'}
+                      {field === 'cardNumber' && 'Номер карты'}
+                      {field === 'entryDate' && 'Дата въезда'}
+                      {field === 'borderPoint' && 'Пункт пропуска'}
+                      {field === 'purpose' && 'Цель визита'}
+                      {field === 'medicalCenter' && 'Медицинский центр'}
+                      {field === 'expiryDate' && 'Срок действия'}
+                      {field === 'doctorName' && 'ФИО врача'}
+                      {field === 'certificateNumber' && 'Номер сертификата'}
+                      {field === 'testCenter' && 'Центр тестирования'}
+                      {field === 'score' && 'Балл'}
+                      {field === 'policyNumber' && 'Номер полиса'}
+                      {field === 'insuranceCompany' && 'Страховая компания'}
+                      {field === 'employerName' && 'Название работодателя'}
+                      {field === 'employerINN' && 'ИНН работодателя'}
+                      {field === 'jobTitle' && 'Должность'}
+                      {field === 'salary' && 'Зарплата (руб/мес)'}
+                      {field === 'startDate' && 'Дата начала работы'}
+                      {field === 'hostFullName' && 'ФИО принимающего'}
+                      {field === 'hostAddress' && 'Адрес регистрации'}
+                      {field === 'registrationDate' && 'Дата регистрации'}
+                      {field === 'universityName' && 'Название ВУЗа'}
+                      {field === 'invitationNumber' && 'Номер приглашения'}
+                      {field === 'studyPeriod' && 'Срок обучения'}
+                      {field === 'clinicName' && 'Название клиники'}
+                      {field === 'ticketNumber' && 'Номер билета'}
+                      {field === 'departureDate' && 'Дата вылета'}
+                      {field === 'destination' && 'Пункт назначения'}
+                      {field === 'hotelName' && 'Название гостиницы'}
+                      {field === 'hotelAddress' && 'Адрес гостиницы'}
+                      {field === 'checkIn' && 'Дата заезда'}
+                      {field === 'checkOut' && 'Дата выезда'}
+                      {field === 'inviterFullName' && 'ФИО приглашающего'}
+                      {field === 'inviterPassport' && 'Паспорт приглашающего'}
+                      {field === 'inviterAddress' && 'Адрес приглашающего'}
+                      {field === 'notaryName' && 'ФИО нотариуса'}
+                      {field === 'photoConfirm' && 'Подтверждение фото'}
+                    </label>
+                    {field === 'photoConfirm' ? (
+                      <div className="flex items-center gap-3 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                        <input
+                          type="checkbox"
+                          checked={currentDocData[field] === 'true'}
+                          onChange={(e) => setCurrentDocData({...currentDocData, [field]: e.target.checked ? 'true' : ''})}
+                          className="w-5 h-5"
+                        />
+                        <span className="text-sm text-gray-700">У меня есть фото 3x4 на белом фоне</span>
+                      </div>
+                    ) : field === 'hostAddress' || field === 'inviterAddress' || field === 'hotelAddress' ? (
+                      <textarea
+                        value={currentDocData[field] || ''}
+                        onChange={(e) => setCurrentDocData({...currentDocData, [field]: e.target.value})}
+                        rows={3}
+                        className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                      />
+                    ) : (
+                      <input
+                        type={field.includes('Date') ? 'date' : field === 'salary' || field === 'score' ? 'number' : 'text'}
+                        value={currentDocData[field] || ''}
+                        onChange={(e) => setCurrentDocData({...currentDocData, [field]: e.target.value})}
+                        className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <button
+              onClick={() => setCurrentStep('verification')}
+              disabled={dataMethod === 'manual' && !currentDocument.fields.every(f => currentDocData[f])}
+              className={`w-full font-bold py-4 rounded-xl transition-colors ${
+                dataMethod === 'scan' || currentDocument.fields.every(f => currentDocData[f])
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              }`}
+            >
+              Продолжить
+            </button>
+
+            <button
+              onClick={() => setDataMethod(null)}
+              className="w-full bg-gray-100 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-200 transition-colors"
+            >
+              ← Назад к выбору способа
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderDataIntake = () => (
     <div className="space-y-6">
@@ -319,24 +704,43 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
   );
 
   const renderScanning = () => {
+    if (!currentDocument) return null;
+
     // Auto-advance after 2 seconds (simulating OCR)
     setTimeout(() => {
-      // Pre-fill with mock OCR data
-      setPassportData({
-        lastName: 'УСМАНОВ',
-        firstName: 'АЛИШЕР',
-        passportNumber: 'AA 1234567',
-        issueDate: '2020-03-15',
-        citizenship: 'Узбекистан',
-      });
+      // Pre-fill with mock OCR data based on document type
+      const mockData: Record<string, any> = {};
+      
+      if (currentDocument.id === 'passport') {
+        mockData.lastName = 'УСМАНОВ';
+        mockData.firstName = 'АЛИШЕР';
+        mockData.passportNumber = 'AA 1234567';
+        mockData.issueDate = '2020-03-15';
+        mockData.citizenship = 'Узбекистан';
+      } else if (currentDocument.id === 'mig_card') {
+        mockData.cardNumber = 'МК 7654321';
+        mockData.entryDate = '2024-01-01';
+        mockData.borderPoint = 'Домодедово';
+      } else if (currentDocument.id === 'green_card') {
+        mockData.cardNumber = 'ЗК 9876543';
+        mockData.issueDate = '2024-01-15';
+        mockData.medicalCenter = 'ММЦ Сахарово';
+      }
+      
+      setCurrentDocData(mockData);
       setCurrentStep('verification');
     }, 2000);
 
     return (
       <div className="flex flex-col items-center justify-center py-12">
+        <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+          <span className="text-5xl">{currentDocument.icon}</span>
+        </div>
+        
         <Loader2 className="w-16 h-16 text-blue-600 animate-spin mb-6" />
         
-        <h3 className="text-2xl font-bold text-gray-900 mb-4">Распознаем данные...</h3>
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">Распознаем {currentDocument.title}...</h3>
+        <p className="text-sm text-gray-600 mb-6">{currentDocument.description}</p>
         
         <div className="space-y-3 text-center max-w-md">
           <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
@@ -363,13 +767,38 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
   };
 
   const renderVerification = () => {
-    const isValid = passportData.lastName && passportData.firstName && passportData.passportNumber && passportData.issueDate;
+    if (!currentDocument) return null;
+
+    const isValid = currentDocument.fields.every(field => currentDocData[field]);
 
     return (
       <div className="space-y-6">
+        {/* Progress Indicator */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            {documentsToScan.map((doc, index) => (
+              <div
+                key={doc.id}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                  index < currentDocIndex
+                    ? 'bg-green-500 text-white'
+                    : index === currentDocIndex
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200 text-gray-500'
+                }`}
+              >
+                {index < currentDocIndex ? '✓' : index + 1}
+              </div>
+            ))}
+          </div>
+          <span className="text-sm text-gray-600">
+            {currentDocIndex + 1} из {documentsToScan.length}
+          </span>
+        </div>
+
         <div className="text-center mb-4">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Check className="w-8 h-8 text-green-600" />
+            <span className="text-4xl">{currentDocument.icon}</span>
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-2">Проверьте данные</h3>
           <p className="text-sm text-gray-600">
@@ -391,72 +820,30 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
 
         {/* Editable Form */}
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Фамилия
-            </label>
-            <input
-              type="text"
-              value={passportData.lastName}
-              onChange={(e) => setPassportData({...passportData, lastName: e.target.value})}
-              placeholder="УСМАНОВ"
-              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono uppercase"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Имя
-            </label>
-            <input
-              type="text"
-              value={passportData.firstName}
-              onChange={(e) => setPassportData({...passportData, firstName: e.target.value})}
-              placeholder="АЛИШЕР"
-              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono uppercase"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Номер паспорта
-            </label>
-            <input
-              type="text"
-              value={passportData.passportNumber}
-              onChange={(e) => setPassportData({...passportData, passportNumber: e.target.value})}
-              placeholder="AA 1234567"
-              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Дата выдачи
-            </label>
-            <input
-              type="date"
-              value={passportData.issueDate}
-              onChange={(e) => setPassportData({...passportData, issueDate: e.target.value})}
-              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Гражданство
-            </label>
-            <select
-              value={passportData.citizenship}
-              onChange={(e) => setPassportData({...passportData, citizenship: e.target.value})}
-              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="Узбекистан">🇺🇿 Узбекистан</option>
-              <option value="Таджикистан">🇹🇯 Таджикистан</option>
-              <option value="Киргизия">🇰🇬 Киргизия</option>
-              <option value="Другая">Другая</option>
-            </select>
-          </div>
+          {currentDocument.fields.map((field) => (
+            <div key={field}>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                {field === 'lastName' && 'Фамилия'}
+                {field === 'firstName' && 'Имя'}
+                {field === 'passportNumber' && 'Номер паспорта'}
+                {field === 'issueDate' && 'Дата выдачи'}
+                {field === 'citizenship' && 'Гражданство'}
+                {field === 'cardNumber' && 'Номер карты'}
+                {field === 'entryDate' && 'Дата въезда'}
+                {field === 'borderPoint' && 'Пункт пропуска'}
+                {field === 'medicalCenter' && 'Медицинский центр'}
+              </label>
+              <input
+                type={field.includes('Date') ? 'date' : 'text'}
+                value={currentDocData[field] || ''}
+                onChange={(e) => setCurrentDocData({...currentDocData, [field]: e.target.value})}
+                placeholder={field === 'lastName' ? 'УСМАНОВ' : field === 'firstName' ? 'АЛИШЕР' : ''}
+                className={`w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  field.includes('Name') || field.includes('Number') ? 'font-mono uppercase' : ''
+                }`}
+              />
+            </div>
+          ))}
         </div>
 
         {/* Warning */}
@@ -490,8 +877,23 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
         <div className="space-y-3">
           <button
             onClick={() => {
-              if (isConfirmed) {
-                setCurrentStep('processing');
+              if (isConfirmed && isValid) {
+                // Save current document data
+                setScannedDocuments({
+                  ...scannedDocuments,
+                  [currentDocument.id]: currentDocData,
+                });
+
+                // Move to next document or processing
+                if (currentDocIndex < documentsToScan.length - 1) {
+                  setCurrentDocIndex(currentDocIndex + 1);
+                  setCurrentStep('document-scan');
+                  setDataMethod(null);
+                  setCurrentDocData({});
+                  setIsConfirmed(false);
+                } else {
+                  setCurrentStep('processing');
+                }
               }
             }}
             disabled={!isConfirmed || !isValid}
@@ -501,13 +903,15 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'
             }`}
           >
-            Всё верно, продолжить
+            {currentDocIndex < documentsToScan.length - 1 
+              ? 'Следующий документ →' 
+              : 'Всё верно, продолжить'}
           </button>
 
           {dataMethod === 'scan' && (
             <button
               onClick={() => {
-                setCurrentStep('data-intake');
+                setCurrentStep('document-scan');
                 setDataMethod('scan');
                 setIsConfirmed(false);
               }}
@@ -521,7 +925,7 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
           <button
             onClick={() => {
               setDataMethod(null);
-              setCurrentStep('data-intake');
+              setCurrentStep('document-scan');
               setIsConfirmed(false);
             }}
             className="w-full bg-gray-100 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-200 transition-colors"
@@ -735,10 +1139,10 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
               <h2 className="text-xl font-bold text-white">Мастер легализации</h2>
               <p className="text-xs text-blue-100">
                 {currentStep === 'intro' && 'Анализ ситуации'}
-                {currentStep === 'data-intake' && 'Шаг 1: Выбор способа'}
-                {currentStep === 'scanning' && 'Шаг 2: Сканирование...'}
-                {currentStep === 'verification' && 'Шаг 3: Проверка данных'}
-                {currentStep === 'processing' && 'Шаг 4: Генерация...'}
+                {currentStep === 'document-scan' && `Документ ${currentDocIndex + 1} из ${documentsToScan.length}`}
+                {currentStep === 'scanning' && 'Сканирование...'}
+                {currentStep === 'verification' && 'Проверка данных'}
+                {currentStep === 'processing' && 'Генерация...'}
                 {currentStep === 'action-plan' && 'Готово!'}
               </p>
             </div>
@@ -754,7 +1158,7 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {currentStep === 'intro' && renderIntro()}
-          {currentStep === 'data-intake' && renderDataIntake()}
+          {currentStep === 'document-scan' && renderDocumentScan()}
           {currentStep === 'scanning' && renderScanning()}
           {currentStep === 'verification' && renderVerification()}
           {currentStep === 'processing' && renderProcessing()}
