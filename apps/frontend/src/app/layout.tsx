@@ -22,6 +22,10 @@ export const metadata: Metadata = {
   },
 }
 
+// --- DEMO MODE CONFIG ---
+// Set to 'false' to enable real Telegram Auth
+const IS_DEMO = true;
+
 export default function RootLayout({
   children,
 }: {
@@ -29,6 +33,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
+      <head>
+        <script src="https://telegram.org/js/telegram-web-app.js" async></script>
+      </head>
       <body className={inter.className}>
         {children}
       </body>
