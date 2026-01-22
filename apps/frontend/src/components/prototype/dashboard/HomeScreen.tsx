@@ -9,6 +9,9 @@ export function HomeScreen() {
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
   const [showOtherServices, setShowOtherServices] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('ru');
+  const [showAILanguages, setShowAILanguages] = useState(false);
   const [editEntryDate, setEditEntryDate] = useState('2024-01-01');
   const [editPurpose, setEditPurpose] = useState('work');
   const [editFullName, setEditFullName] = useState('Алишер Усманов');
@@ -494,10 +497,19 @@ export function HomeScreen() {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Язык интерфейса
                   </label>
-                  <button className="w-full flex items-center justify-between px-4 py-3 bg-white border-2 border-gray-200 rounded-xl hover:border-gray-300 transition-colors">
+                  <button 
+                    onClick={() => setShowLanguageModal(true)}
+                    className="w-full flex items-center justify-between px-4 py-3 bg-white border-2 border-gray-200 rounded-xl hover:border-gray-300 transition-colors"
+                  >
                     <div className="flex items-center gap-2">
                       <Globe className="w-5 h-5 text-gray-600" />
-                      <span className="font-medium text-gray-700">🇷🇺 Русский</span>
+                      <span className="font-medium text-gray-700">
+                        {selectedLanguage === 'ru' && '🇷🇺 Русский'}
+                        {selectedLanguage === 'uz' && '🇺🇿 O\'zbek'}
+                        {selectedLanguage === 'tj' && '🇹🇯 Тоҷикӣ'}
+                        {selectedLanguage === 'kg' && '🇰🇬 Кыргызча'}
+                        {!['ru', 'uz', 'tj', 'kg'].includes(selectedLanguage) && `🌐 ${selectedLanguage}`}
+                      </span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </button>
@@ -637,6 +649,144 @@ export function HomeScreen() {
             <button
               onClick={() => setShowOtherServices(false)}
               className="w-full bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition-colors"
+            >
+              Закрыть
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Language Selection Modal */}
+      {showLanguageModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-end z-50 animate-in fade-in duration-200">
+          <div className="w-full bg-white rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-300 max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">🌐 Язык интерфейса</h3>
+                <p className="text-sm text-gray-500">Выберите язык приложения</p>
+              </div>
+              <button 
+                onClick={() => {
+                  setShowLanguageModal(false);
+                  setShowAILanguages(false);
+                }} 
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-600" />
+              </button>
+            </div>
+
+            {/* Base 4 Languages */}
+            <div className="space-y-3 mb-6">
+              <h4 className="text-sm font-semibold text-gray-600 mb-3">Основные языки</h4>
+              
+              {[
+                { code: 'ru', flag: '🇷🇺', name: 'Русский', native: 'Русский' },
+                { code: 'uz', flag: '🇺🇿', name: 'Узбекский', native: 'O\'zbek' },
+                { code: 'tj', flag: '🇹🇯', name: 'Таджикский', native: 'Тоҷикӣ' },
+                { code: 'kg', flag: '🇰🇬', name: 'Киргизский', native: 'Кыргызча' },
+              ].map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    setSelectedLanguage(lang.code);
+                    setShowLanguageModal(false);
+                  }}
+                  className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
+                    selectedLanguage === lang.code
+                      ? 'bg-blue-50 border-blue-500 shadow-md'
+                      : 'bg-white border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{lang.flag}</span>
+                    <div className="text-left">
+                      <p className="font-semibold text-gray-900">{lang.native}</p>
+                      <p className="text-xs text-gray-500">{lang.name}</p>
+                    </div>
+                  </div>
+                  {selectedLanguage === lang.code && (
+                    <Check className="w-5 h-5 text-blue-600" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* AI Translation Option */}
+            <div className="pt-4 border-t-2 border-gray-200">
+              <button
+                onClick={() => setShowAILanguages(!showAILanguages)}
+                className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200 rounded-xl hover:from-purple-100 hover:to-blue-100 transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                    <Globe className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-semibold text-gray-900">🌍 Другой язык (AI)</p>
+                    <p className="text-xs text-gray-600">Перевод на лету</p>
+                  </div>
+                </div>
+                <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${showAILanguages ? 'rotate-90' : ''}`} />
+              </button>
+
+              {/* AI Languages List */}
+              {showAILanguages && (
+                <div className="mt-3 space-y-2 pl-4">
+                  {[
+                    { code: 'en', flag: '🇬🇧', name: 'English' },
+                    { code: 'ar', flag: '🇸🇦', name: 'العربية' },
+                    { code: 'fa', flag: '🇮🇷', name: 'فارسی' },
+                    { code: 'tr', flag: '🇹🇷', name: 'Türkçe' },
+                    { code: 'hi', flag: '🇮🇳', name: 'हिन्दी' },
+                    { code: 'zh', flag: '🇨🇳', name: '中文' },
+                    { code: 'vi', flag: '🇻🇳', name: 'Tiếng Việt' },
+                    { code: 'am', flag: '🇦🇲', name: 'Հայերեն' },
+                    { code: 'az', flag: '🇦🇿', name: 'Azərbaycan' },
+                    { code: 'ka', flag: '🇬🇪', name: 'ქართული' },
+                  ].map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        setSelectedLanguage(lang.code);
+                        setShowLanguageModal(false);
+                        setShowAILanguages(false);
+                      }}
+                      className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
+                        selectedLanguage === lang.code
+                          ? 'bg-purple-50 border-purple-300'
+                          : 'bg-white border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">{lang.flag}</span>
+                        <span className="text-sm font-medium text-gray-700">{lang.name}</span>
+                      </div>
+                      {selectedLanguage === lang.code && (
+                        <Check className="w-4 h-4 text-purple-600" />
+                      )}
+                    </button>
+                  ))}
+                  
+                  <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <Globe className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-purple-800 leading-relaxed">
+                        <strong>AI Перевод:</strong> Интерфейс будет переведён автоматически. Возможны небольшие неточности.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => {
+                setShowLanguageModal(false);
+                setShowAILanguages(false);
+              }}
+              className="w-full mt-6 bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition-colors"
             >
               Закрыть
             </button>

@@ -13,7 +13,7 @@ interface LegalizationWizardProps {
   };
 }
 
-type WizardStep = 'intro' | 'document-scan' | 'scanning' | 'verification' | 'processing' | 'action-plan';
+type WizardStep = 'intro' | 'quick-select' | 'document-scan' | 'scanning' | 'verification' | 'processing' | 'action-plan';
 
 interface DocumentToScan {
   id: string;
@@ -25,6 +25,8 @@ interface DocumentToScan {
 
 export function LegalizationWizard({ onClose, profileData }: LegalizationWizardProps) {
   const [currentStep, setCurrentStep] = useState<WizardStep>('intro');
+  const [scanMode, setScanMode] = useState<'step-by-step' | 'quick-select' | null>(null);
+  const [selectedDocsToScan, setSelectedDocsToScan] = useState<string[]>([]);
   const [currentDocIndex, setCurrentDocIndex] = useState(0);
   const [dataMethod, setDataMethod] = useState<'scan' | 'manual' | null>(null);
   const [scannedDocuments, setScannedDocuments] = useState<Record<string, any>>({});
@@ -271,20 +273,19 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
       </div>
 
       {/* CTA */}
-      <button
-        onClick={() => {
-          if (documentsToScan.length > 0) {
-            setCurrentStep('document-scan');
-            setCurrentDocIndex(0);
-          } else {
-            setCurrentStep('processing');
-          }
-        }}
-        className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-5 px-6 rounded-2xl hover:from-green-700 hover:to-green-800 transition-all active:scale-98 shadow-xl flex items-center justify-center gap-2"
-      >
-        <span className="text-lg">Начать оформление</span>
-        <ChevronRight className="w-6 h-6" />
-      </button>
+      <div className="space-y-3">
+        <button
+          onClick={() => setCurrentStep('quick-select')}
+          className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-5 px-6 rounded-2xl hover:from-green-700 hover:to-green-800 transition-all active:scale-98 shadow-xl flex items-center justify-center gap-2"
+        >
+          <span className="text-lg">Начать оформление</span>
+          <ChevronRight className="w-6 h-6" />
+        </button>
+
+        <p className="text-xs text-center text-gray-500">
+          Мы проведём вас шаг за шагом через все необходимые документы
+        </p>
+      </div>
 
       <p className="text-xs text-center text-gray-500">
         Мы сгенерируем все необходимые заявления и покажем точный план действий
@@ -334,11 +335,11 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
         </div>
 
         {!dataMethod ? (
-          <div className="grid grid-cols-1 gap-4">
+          <div className="space-y-4">
             {/* Scan Option */}
             <button
               onClick={() => setDataMethod('scan')}
-              className="relative p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-3 border-blue-300 rounded-2xl hover:from-blue-100 hover:to-blue-200 transition-all active:scale-98 text-left group"
+              className="relative w-full p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-3 border-blue-300 rounded-2xl hover:from-blue-100 hover:to-blue-200 transition-all active:scale-98 text-left group"
             >
               <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                 Рекомендуется
@@ -361,7 +362,7 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
             {/* Manual Option */}
             <button
               onClick={() => setDataMethod('manual')}
-              className="p-6 bg-white border-2 border-gray-200 rounded-2xl hover:border-gray-300 transition-all active:scale-98 text-left"
+              className="w-full p-6 bg-white border-2 border-gray-200 rounded-2xl hover:border-gray-300 transition-all active:scale-98 text-left"
             >
               <div className="flex items-start gap-4">
                 <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -374,6 +375,27 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
                     Введите данные самостоятельно.
                   </p>
                 </div>
+              </div>
+            </button>
+
+            {/* Skip Option - NEW */}
+            <button
+              onClick={() => {
+                // Skip this document and move to next
+                if (currentDocIndex < documentsToScan.length - 1) {
+                  setCurrentDocIndex(currentDocIndex + 1);
+                  setDataMethod(null);
+                  setCurrentDocData({});
+                  setIsConfirmed(false);
+                } else {
+                  setCurrentStep('processing');
+                }
+              }}
+              className="w-full p-4 bg-orange-50 border-2 border-orange-200 rounded-xl hover:bg-orange-100 transition-all active:scale-98"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <X className="w-5 h-5 text-orange-600" />
+                <span className="font-semibold text-orange-700">Нет документа, пропустить</span>
               </div>
             </button>
           </div>
@@ -714,17 +736,68 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
       if (currentDocument.id === 'passport') {
         mockData.lastName = 'УСМАНОВ';
         mockData.firstName = 'АЛИШЕР';
+        mockData.middleName = 'БАХТИЯРОВИЧ';
         mockData.passportNumber = 'AA 1234567';
         mockData.issueDate = '2020-03-15';
-        mockData.citizenship = 'Узбекистан';
+        mockData.birthDate = '1990-05-20';
+        mockData.birthPlace = 'г. Ташкент';
       } else if (currentDocument.id === 'mig_card') {
-        mockData.cardNumber = 'МК 7654321';
+        mockData.cardNumber = '1234567890123';
         mockData.entryDate = '2024-01-01';
-        mockData.borderPoint = 'Домодедово';
+        mockData.borderPoint = 'Аэропорт Домодедово';
+        mockData.purpose = 'Работа';
       } else if (currentDocument.id === 'green_card') {
-        mockData.cardNumber = 'ЗК 9876543';
+        mockData.cardNumber = 'ЗК-2024-001234';
         mockData.issueDate = '2024-01-15';
+        mockData.expiryDate = '2025-01-15';
         mockData.medicalCenter = 'ММЦ Сахарово';
+        mockData.doctorName = 'Иванов И.И.';
+      } else if (currentDocument.id === 'exam') {
+        mockData.certificateNumber = 'РЯ-2024-5678';
+        mockData.issueDate = '2024-01-10';
+        mockData.testCenter = 'Центр тестирования РУДН';
+        mockData.score = '85';
+      } else if (currentDocument.id === 'insurance') {
+        mockData.policyNumber = 'ДМС-2024-9999';
+        mockData.issueDate = '2024-01-01';
+        mockData.expiryDate = '2025-01-01';
+        mockData.insuranceCompany = 'СОГАЗ';
+      } else if (currentDocument.id === 'contract') {
+        mockData.employerName = 'ООО "Стройкомплекс"';
+        mockData.employerINN = '7701234567';
+        mockData.jobTitle = 'Строитель';
+        mockData.salary = '50000';
+        mockData.startDate = '2024-02-01';
+      } else if (currentDocument.id === 'registration') {
+        mockData.hostFullName = 'Петров Петр Петрович';
+        mockData.hostAddress = 'г. Москва, ул. Ленина, д. 1, кв. 10';
+        mockData.registrationDate = '2024-01-05';
+        mockData.expiryDate = '2024-04-05';
+      } else if (currentDocument.id === 'photo') {
+        mockData.photoConfirm = 'true';
+      } else if (currentDocument.id === 'invitation') {
+        mockData.universityName = 'МГУ им. Ломоносова';
+        mockData.invitationNumber = 'ПР-2024-001';
+        mockData.issueDate = '2023-12-15';
+        mockData.studyPeriod = '2024-2028';
+      } else if (currentDocument.id === 'medical') {
+        mockData.certificateNumber = '086-2024-123';
+        mockData.issueDate = '2024-01-05';
+        mockData.clinicName = 'Городская поликлиника №1';
+      } else if (currentDocument.id === 'ticket') {
+        mockData.ticketNumber = 'SU1234';
+        mockData.departureDate = '2024-03-15';
+        mockData.destination = 'Ташкент';
+      } else if (currentDocument.id === 'hotel') {
+        mockData.hotelName = 'Гостиница "Космос"';
+        mockData.hotelAddress = 'г. Москва, пр-т Мира, д. 150';
+        mockData.checkIn = '2024-01-01';
+        mockData.checkOut = '2024-01-15';
+      } else if (currentDocument.id === 'private_invitation') {
+        mockData.inviterFullName = 'Сидоров Сидор Сидорович';
+        mockData.inviterPassport = '4512 345678';
+        mockData.inviterAddress = 'г. Москва, ул. Пушкина, д. 5, кв. 20';
+        mockData.notaryName = 'Нотариус Смирнова А.А.';
       }
       
       setCurrentDocData(mockData);
