@@ -313,7 +313,7 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
 
       {/* Document Checklist */}
       <div className="space-y-3">
-        {documentsToScan.map((doc) => {
+        {allPossibleDocuments.map((doc) => {
           const isSelected = selectedDocsToScan.includes(doc.id);
           
           return (
