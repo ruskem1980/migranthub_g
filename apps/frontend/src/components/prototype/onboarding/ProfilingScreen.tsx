@@ -1,6 +1,6 @@
 'use client';
 
-import { Volume2, AlertTriangle } from 'lucide-react';
+import { Volume2, AlertTriangle, Check } from 'lucide-react';
 import { useState } from 'react';
 
 interface ProfilingScreenProps {
