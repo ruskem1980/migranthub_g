@@ -13,7 +13,7 @@ interface LegalizationWizardProps {
   };
 }
 
-type WizardStep = 'intro' | 'quick-select' | 'document-scan' | 'scanning' | 'verification' | 'processing' | 'action-plan';
+type WizardStep = 'intro' | 'required-docs' | 'additional-docs' | 'document-scan' | 'scanning' | 'verification' | 'processing' | 'action-plan';
 
 interface DocumentToScan {
   id: string;
@@ -21,12 +21,14 @@ interface DocumentToScan {
   icon: string;
   description: string;
   fields: string[];
+  isRequired?: boolean;
 }
 
 export function LegalizationWizard({ onClose, profileData }: LegalizationWizardProps) {
   const [currentStep, setCurrentStep] = useState<WizardStep>('intro');
-  const [scanMode, setScanMode] = useState<'step-by-step' | 'quick-select' | null>(null);
+  const [scanMode, setScanMode] = useState<'required' | 'additional' | null>(null);
   const [selectedDocsToScan, setSelectedDocsToScan] = useState<string[]>([]);
+  const [selectedAdditionalDocs, setSelectedAdditionalDocs] = useState<string[]>([]);
   const [currentDocIndex, setCurrentDocIndex] = useState(0);
   const [dataMethod, setDataMethod] = useState<'scan' | 'manual' | null>(null);
   const [scannedDocuments, setScannedDocuments] = useState<Record<string, any>>({});
@@ -196,9 +198,20 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
 
   const allPossibleDocuments = getDocumentsToScan(profileData.purpose, profileData.citizenship);
   
-  // Filter based on quick-select if documents are selected
-  const documentsToScan = selectedDocsToScan.length > 0
-    ? allPossibleDocuments.filter(doc => selectedDocsToScan.includes(doc.id))
+  // Separate required (missing) and additional (for other forms) documents
+  const requiredDocuments = allPossibleDocuments.filter(doc => 
+    !profileData.checkedDocs.includes(doc.id)
+  );
+  
+  const additionalDocuments = allPossibleDocuments.filter(doc => 
+    profileData.checkedDocs.includes(doc.id)
+  );
+  
+  // Determine which documents to scan based on mode
+  const documentsToScan = scanMode === 'required' 
+    ? requiredDocuments
+    : scanMode === 'additional' && selectedAdditionalDocs.length > 0
+    ? allPossibleDocuments.filter(doc => selectedAdditionalDocs.includes(doc.id))
     : allPossibleDocuments;
     
   const currentDocument = documentsToScan[currentDocIndex];
@@ -281,7 +294,15 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
       {/* CTA */}
       <div className="space-y-3">
         <button
-          onClick={() => setCurrentStep('quick-select')}
+          onClick={() => {
+            if (requiredDocuments.length > 0) {
+              setScanMode('required');
+              setCurrentDocIndex(0);
+              setCurrentStep('required-docs');
+            } else {
+              setCurrentStep('additional-docs');
+            }
+          }}
           className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-5 px-6 rounded-2xl hover:from-green-700 hover:to-green-800 transition-all active:scale-98 shadow-xl flex items-center justify-center gap-2"
         >
           <span className="text-lg">Начать оформление</span>
@@ -289,13 +310,178 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
         </button>
 
         <p className="text-xs text-center text-gray-500">
-          Мы проведём вас шаг за шагом через все необходимые документы
+          Сначала отсканируем недостающие документы ({requiredDocuments.length}), затем предложим дополнительные
         </p>
       </div>
 
       <p className="text-xs text-center text-gray-500">
         Мы сгенерируем все необходимые заявления и покажем точный план действий
       </p>
+    </div>
+  );
+
+  const renderRequiredDocs = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertTriangle className="w-8 h-8 text-red-600" />
+        </div>
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">Недостающие документы</h3>
+        <p className="text-sm text-gray-600">
+          Для легализации вам нужно отсканировать эти документы
+        </p>
+      </div>
+
+      {/* Required Documents List */}
+      <div className="space-y-3">
+        {requiredDocuments.map((doc, index) => (
+          <div
+            key={doc.id}
+            className="flex items-start gap-4 p-4 bg-orange-50 border-2 border-orange-200 rounded-xl"
+          >
+            <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold">
+              {index + 1}
+            </div>
+            
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-2xl">{doc.icon}</span>
+                <p className="font-semibold text-gray-900">{doc.title}</p>
+              </div>
+              <p className="text-xs text-gray-600 leading-relaxed">{doc.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Info */}
+      <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+        <p className="text-sm text-blue-800">
+          💡 <strong>Важно:</strong> Эти документы необходимы для легального пребывания и работы в РФ.
+        </p>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="space-y-3">
+        <button
+          onClick={() => {
+            setCurrentDocIndex(0);
+            setCurrentStep('document-scan');
+          }}
+          className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-colors"
+        >
+          Начать сканирование ({requiredDocuments.length} документов)
+        </button>
+
+        <button
+          onClick={() => setCurrentStep('intro')}
+          className="w-full text-gray-500 text-sm hover:text-gray-700"
+        >
+          ← Назад
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderAdditionalDocs = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <FileText className="w-8 h-8 text-purple-600" />
+        </div>
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">Дополнительные документы</h3>
+        <p className="text-sm text-gray-600">
+          Отметьте документы, которые хотите добавить для других форм
+        </p>
+      </div>
+
+      {/* Additional Documents Checklist */}
+      <div className="space-y-3">
+        {allPossibleDocuments.map((doc) => {
+          const isSelected = selectedAdditionalDocs.includes(doc.id);
+          const isAlreadyScanned = scannedDocuments[doc.id];
+          
+          return (
+            <button
+              key={doc.id}
+              onClick={() => {
+                if (isAlreadyScanned) return; // Already scanned, skip
+                
+                if (isSelected) {
+                  setSelectedAdditionalDocs(selectedAdditionalDocs.filter(id => id !== doc.id));
+                } else {
+                  setSelectedAdditionalDocs([...selectedAdditionalDocs, doc.id]);
+                }
+              }}
+              disabled={isAlreadyScanned}
+              className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all ${
+                isAlreadyScanned
+                  ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
+                  : isSelected
+                  ? 'bg-green-50 border-green-300 shadow-md'
+                  : 'bg-white border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              {/* Checkbox */}
+              <div className={`w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0 mt-1 ${
+                isAlreadyScanned
+                  ? 'bg-gray-400 border-gray-400'
+                  : isSelected
+                  ? 'bg-green-500 border-green-500'
+                  : 'border-gray-300'
+              }`}>
+                {(isSelected || isAlreadyScanned) && <Check className="w-4 h-4 text-white" strokeWidth={3} />}
+              </div>
+              
+              {/* Icon and Info */}
+              <div className="flex-1 text-left">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-2xl">{doc.icon}</span>
+                  <p className={`font-semibold ${isAlreadyScanned ? 'text-gray-500' : isSelected ? 'text-green-700' : 'text-gray-700'}`}>
+                    {doc.title}
+                  </p>
+                  {isAlreadyScanned && (
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                      Уже отсканирован
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed">{doc.description}</p>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Info */}
+      <div className="p-4 bg-purple-50 border-2 border-purple-200 rounded-xl">
+        <p className="text-sm text-purple-800">
+          💡 <strong>Совет:</strong> Дополнительные документы помогут при генерации других форм (РВП, ВНЖ, договоры).
+        </p>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="space-y-3">
+        {selectedAdditionalDocs.length > 0 && (
+          <button
+            onClick={() => {
+              setScanMode('additional');
+              setCurrentDocIndex(0);
+              setCurrentStep('document-scan');
+            }}
+            className="w-full bg-purple-600 text-white font-bold py-4 rounded-xl hover:bg-purple-700 transition-colors"
+          >
+            Сканировать выбранные ({selectedAdditionalDocs.length})
+          </button>
+        )}
+
+        <button
+          onClick={() => setCurrentStep('processing')}
+          className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-colors"
+        >
+          {selectedAdditionalDocs.length > 0 ? 'Пропустить дополнительные' : 'Продолжить без дополнительных'}
+        </button>
+      </div>
     </div>
   );
 
@@ -519,13 +705,24 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
             {/* Skip Option - NEW */}
             <button
               onClick={() => {
+                console.log('Skip clicked:', {
+                  currentDocIndex,
+                  totalDocs: documentsToScan.length,
+                  hasMore: currentDocIndex < documentsToScan.length - 1
+                });
+                
                 // Skip this document and move to next
-                if (currentDocIndex < documentsToScan.length - 1) {
+                const hasMoreDocuments = currentDocIndex < documentsToScan.length - 1;
+                
+                if (hasMoreDocuments) {
+                  // Move to next document
                   setCurrentDocIndex(currentDocIndex + 1);
                   setDataMethod(null);
                   setCurrentDocData({});
                   setIsConfirmed(false);
+                  // Stay on document-scan step
                 } else {
+                  // This was the last document, go to processing
                   setCurrentStep('processing');
                 }
               }}
@@ -533,7 +730,9 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
             >
               <div className="flex items-center justify-center gap-2">
                 <X className="w-5 h-5 text-orange-600" />
-                <span className="font-semibold text-orange-700">Нет документа, пропустить</span>
+                <span className="font-semibold text-orange-700">
+                  Нет документа, пропустить ({currentDocIndex + 1}/{documentsToScan.length})
+                </span>
               </div>
             </button>
           </div>
@@ -1095,14 +1294,19 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
                   [currentDocument.id]: currentDocData,
                 });
 
-                // Move to next document or processing
+                // Move to next document or to additional docs selection
                 if (currentDocIndex < documentsToScan.length - 1) {
+                  // More documents in current batch
                   setCurrentDocIndex(currentDocIndex + 1);
                   setCurrentStep('document-scan');
                   setDataMethod(null);
                   setCurrentDocData({});
                   setIsConfirmed(false);
+                } else if (scanMode === 'required') {
+                  // Finished required docs, offer additional
+                  setCurrentStep('additional-docs');
                 } else {
+                  // Finished all scanning
                   setCurrentStep('processing');
                 }
               }
@@ -1116,6 +1320,8 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
           >
             {currentDocIndex < documentsToScan.length - 1 
               ? 'Следующий документ →' 
+              : scanMode === 'required'
+              ? 'Готово, далее →'
               : 'Всё верно, продолжить'}
           </button>
 
@@ -1350,7 +1556,8 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
               <h2 className="text-xl font-bold text-white">Мастер легализации</h2>
               <p className="text-xs text-blue-100">
                 {currentStep === 'intro' && 'Анализ ситуации'}
-                {currentStep === 'quick-select' && 'Выбор документов'}
+                {currentStep === 'required-docs' && 'Обязательные документы'}
+                {currentStep === 'additional-docs' && 'Дополнительные документы'}
                 {currentStep === 'document-scan' && `Документ ${currentDocIndex + 1} из ${documentsToScan.length}`}
                 {currentStep === 'scanning' && 'Сканирование...'}
                 {currentStep === 'verification' && 'Проверка данных'}
@@ -1370,7 +1577,8 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {currentStep === 'intro' && renderIntro()}
-          {currentStep === 'quick-select' && renderQuickSelect()}
+          {currentStep === 'required-docs' && renderRequiredDocs()}
+          {currentStep === 'additional-docs' && renderAdditionalDocs()}
           {currentStep === 'document-scan' && renderDocumentScan()}
           {currentStep === 'scanning' && renderScanning()}
           {currentStep === 'verification' && renderVerification()}
