@@ -157,13 +157,46 @@ const TEMPLATES: DocumentTemplate[] = [
 ];
 
 const FIELD_LABELS: Record<string, string> = {
+  // Personal data
   passportNumber: 'Номер паспорта',
   fullName: 'ФИО',
   entryDate: 'Дата въезда',
   citizenship: 'Гражданство',
-  hostAddress: 'Адрес регистрации',
+  birthDate: 'Дата рождения',
+  birthPlace: 'Место рождения',
+  
+  // Employment
   employerName: 'Название работодателя',
+  employerINN: 'ИНН работодателя',
   jobTitle: 'Должность',
+  salary: 'Зарплата (руб/мес)',
+  startDate: 'Дата начала работы',
+  contractDate: 'Дата заключения договора',
+  terminationDate: 'Дата расторжения',
+  reason: 'Причина',
+  
+  // Housing
+  hostAddress: 'Адрес регистрации',
+  hostFullName: 'ФИО принимающего',
+  employeeFullName: 'ФИО работника',
+  employeePassport: 'Паспорт работника',
+  ownerFullName: 'ФИО собственника',
+  ownerPassport: 'Паспорт собственника',
+  propertyAddress: 'Адрес недвижимости',
+  guestFullName: 'ФИО гостя',
+  guestPassport: 'Паспорт гостя',
+  
+  // Long-term status
+  rvpNumber: 'Номер РВП',
+  rvpDate: 'Дата выдачи РВП',
+  address: 'Адрес проживания',
+  income: 'Доход за год',
+  employer: 'Работодатель',
+  
+  // Requests
+  lostDocType: 'Тип утерянного документа',
+  lostDate: 'Дата утери',
+  circumstances: 'Обстоятельства утери',
 };
 
 export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorProps) {
@@ -311,7 +344,7 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
             {missingFields.map((field) => (
               <div key={field}>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  {FIELD_LABELS[field]}
+                  {FIELD_LABELS[field] || field}
                 </label>
                 
                 {field === 'entryDate' ? (
@@ -345,7 +378,7 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
                     type="text"
                     value={tempData[field] || ''}
                     onChange={(e) => setTempData({...tempData, [field]: e.target.value})}
-                    placeholder={`Введите ${FIELD_LABELS[field].toLowerCase()}`}
+                    placeholder={FIELD_LABELS[field] ? `Введите ${FIELD_LABELS[field].toLowerCase()}` : 'Введите значение'}
                     className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 )}
