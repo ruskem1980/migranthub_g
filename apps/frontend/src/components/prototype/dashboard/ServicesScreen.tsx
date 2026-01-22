@@ -1,10 +1,12 @@
 'use client';
 
-import { Shield, Calculator, FileText, Briefcase, Home, MapPin, Languages, CreditCard, Wand2 } from 'lucide-react';
+import { Shield, Calculator, FileText, Briefcase, Home, MapPin, Languages, CreditCard, Wand2, Plus } from 'lucide-react';
 import { useState } from 'react';
+import { DocumentGenerator } from '../services/DocumentGenerator';
 
 export function ServicesScreen() {
   const [showMapModal, setShowMapModal] = useState(false);
+  const [showDocGenerator, setShowDocGenerator] = useState(false);
 
   const services = [
     { icon: Wand2, title: '✍️ Автозаполнение', subtitle: 'Генерация заявлений', color: 'purple', special: true },
@@ -46,7 +48,13 @@ export function ServicesScreen() {
             return (
               <button
                 key={index}
-                onClick={() => service.hasModal && setShowMapModal(true)}
+                onClick={() => {
+                  if (service.hasModal) {
+                    setShowMapModal(true);
+                  } else if (service.special) {
+                    setShowDocGenerator(true);
+                  }
+                }}
                 className={`${colors.bg} border-2 ${service.special ? 'border-purple-400 ring-2 ring-purple-200' : 'border-gray-200'} rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md hover:shadow-xl relative`}
               >
                 {service.special && (
@@ -122,6 +130,20 @@ export function ServicesScreen() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Document Generator */}
+      {showDocGenerator && (
+        <DocumentGenerator
+          onClose={() => setShowDocGenerator(false)}
+          profileData={{
+            fullName: 'Усманов Алишер Бахтиярович',
+            passportNumber: 'AA 1234567',
+            entryDate: '2024-01-01',
+            citizenship: 'Узбекистан',
+            // hostAddress and employerName intentionally missing to demo the flow
+          }}
+        />
       )}
     </div>
   );
