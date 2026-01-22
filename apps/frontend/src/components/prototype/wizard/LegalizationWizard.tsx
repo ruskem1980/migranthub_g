@@ -196,8 +196,8 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
 
   const allPossibleDocuments = getDocumentsToScan(profileData.purpose, profileData.citizenship);
   
-  // Filter based on quick-select if mode is chosen
-  const documentsToScan = scanMode === 'quick-select' && selectedDocsToScan.length > 0
+  // Filter based on quick-select if documents are selected
+  const documentsToScan = selectedDocsToScan.length > 0
     ? allPossibleDocuments.filter(doc => selectedDocsToScan.includes(doc.id))
     : allPossibleDocuments;
     
@@ -372,8 +372,7 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
         <button
           onClick={() => {
             if (selectedDocsToScan.length > 0) {
-              // Filter documents to scan based on selection
-              const filteredDocs = documentsToScan.filter(doc => selectedDocsToScan.includes(doc.id));
+              setScanMode('quick-select');
               setCurrentDocIndex(0);
               setCurrentStep('document-scan');
             }
@@ -390,7 +389,7 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
 
         <button
           onClick={() => {
-            // Skip all scanning, go straight to processing
+            setScanMode('step-by-step');
             setCurrentStep('processing');
           }}
           className="w-full bg-gray-100 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-200 transition-colors"
