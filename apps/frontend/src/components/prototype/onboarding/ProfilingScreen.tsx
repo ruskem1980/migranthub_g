@@ -31,46 +31,77 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
         <div className="space-y-5">
           {/* Citizenship */}
           <div>
-            <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-2">
+            <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-3">
               <span>Гражданство</span>
               <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
                 <span className="text-xs font-medium">Озвучить</span>
               </button>
             </label>
-            <select
-              value={citizenship}
-              onChange={(e) => setCitizenship(e.target.value)}
-              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">Выберите страну</option>
-              <option value="uz">🇺🇿 Узбекистан</option>
-              <option value="tj">🇹🇯 Таджикистан</option>
-              <option value="kg">🇰🇬 Киргизия</option>
-              <option value="other">Другая</option>
-            </select>
+            
+            {/* Button Group (3+1) */}
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setCitizenship('uz')}
+                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
+                  citizenship === 'uz'
+                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
+                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <span className="text-2xl">🇺🇿</span>
+                <span className="font-semibold text-sm">Узбекистан</span>
+              </button>
+
+              <button
+                onClick={() => setCitizenship('tj')}
+                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
+                  citizenship === 'tj'
+                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
+                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <span className="text-2xl">🇹🇯</span>
+                <span className="font-semibold text-sm">Таджикистан</span>
+              </button>
+
+              <button
+                onClick={() => setCitizenship('kg')}
+                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
+                  citizenship === 'kg'
+                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
+                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <span className="text-2xl">🇰🇬</span>
+                <span className="font-semibold text-sm">Кыргызстан</span>
+              </button>
+
+              <button
+                onClick={() => setCitizenship('other')}
+                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
+                  citizenship === 'other'
+                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
+                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <span className="text-2xl">🌍</span>
+                <span className="font-semibold text-sm">Другое</span>
+              </button>
+            </div>
           </div>
 
-          {/* Departure Country */}
-          <div>
-            <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-2">
-              <span>Страна выезда</span>
-              <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
-                <Volume2 className="w-4 h-4" />
-                <span className="text-xs font-medium">Озвучить</span>
-              </button>
-            </label>
-            <select
-              value={departureCountry}
-              onChange={(e) => setDepartureCountry(e.target.value)}
-              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">Откуда приехали</option>
-              <option value="uz">🇺🇿 Узбекистан</option>
-              <option value="tj">🇹🇯 Таджикистан</option>
-              <option value="kg">🇰🇬 Киргизия</option>
-              <option value="other">Другая</option>
-            </select>
+          {/* Departure Country - Auto-fill from Citizenship */}
+          <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+            <div className="flex items-start gap-2">
+              <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-blue-900 mb-1">Страна выезда</p>
+                <p className="text-xs text-blue-800">
+                  Автоматически: {citizenship === 'uz' ? '🇺🇿 Узбекистан' : citizenship === 'tj' ? '🇹🇯 Таджикистан' : citizenship === 'kg' ? '🇰🇬 Кыргызстан' : 'Не выбрано'}
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Entry Date */}
@@ -114,25 +145,64 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
 
           {/* Region */}
           <div>
-            <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-2">
-              <span>Регион</span>
+            <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-3">
+              <span>Регион пребывания</span>
               <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
                 <span className="text-xs font-medium">Озвучить</span>
               </button>
             </label>
-            <select
-              value={region}
-              onChange={(e) => setRegion(e.target.value)}
-              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">Где находитесь</option>
-              <option value="moscow">Москва</option>
-              <option value="spb">Санкт-Петербург</option>
-              <option value="ekb">Екатеринбург</option>
-              <option value="nsk">Новосибирск</option>
-              <option value="other">Другой регион</option>
-            </select>
+            
+            {/* Button Group (3+1) */}
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setRegion('moscow')}
+                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
+                  region === 'moscow'
+                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
+                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <span className="text-2xl">🏙️</span>
+                <span className="font-semibold text-sm">Москва</span>
+              </button>
+
+              <button
+                onClick={() => setRegion('spb')}
+                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
+                  region === 'spb'
+                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
+                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <span className="text-2xl">🏛️</span>
+                <span className="font-semibold text-sm">С-Петербург</span>
+              </button>
+
+              <button
+                onClick={() => setRegion('nsk')}
+                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
+                  region === 'nsk'
+                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
+                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <span className="text-2xl">❄️</span>
+                <span className="font-semibold text-sm">Новосибирск</span>
+              </button>
+
+              <button
+                onClick={() => setRegion('other')}
+                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
+                  region === 'other'
+                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
+                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <span className="text-2xl">📍</span>
+                <span className="font-semibold text-sm">Другое</span>
+              </button>
+            </div>
           </div>
 
           {/* Purpose */}
