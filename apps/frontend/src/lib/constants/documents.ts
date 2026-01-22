@@ -12,7 +12,9 @@ export type DocumentId =
   | 'green_card' 
   | 'contract' 
   | 'insurance' 
-  | 'inn';
+  | 'inn'
+  | 'education'
+  | 'family';
 
 export interface Document {
   id: DocumentId;
@@ -90,6 +92,21 @@ export const DOCUMENTS_LIST: Document[] = [
     title: 'ИНН / СНИЛС',
     icon: '🔢',
     description: 'Налоговый номер',
+    requiredFor: ['work'],
+  },
+  {
+    id: 'education',
+    title: 'Сертификат / Диплом',
+    icon: '🎓',
+    description: 'Сертификат о владении русским языком или диплом об образовании',
+    requiredFor: ['work'],
+    isEAEUExempt: true,
+  },
+  {
+    id: 'family',
+    title: 'Св-во о браке / рождении',
+    icon: '💍',
+    description: 'Свидетельство о браке или рождении детей',
     requiredFor: ['work'],
   },
 ];

@@ -6,13 +6,35 @@ import { X, FileText, Home, Briefcase, FileCheck, Plus, Download, AlertCircle, C
 interface DocumentGeneratorProps {
   onClose: () => void;
   profileData: {
+    // Personal data
     passportNumber?: string;
     fullName?: string;
     entryDate?: string;
     citizenship?: string;
-    hostAddress?: string;
+    birthDate?: string;
+    birthPlace?: string;
+    
+    // Employment data
     employerName?: string;
+    employerINN?: string;
+    employerAddress?: string;
     jobTitle?: string;
+    salary?: string;
+    
+    // Housing data
+    hostAddress?: string;
+    hostFullName?: string;
+    hostPassport?: string;
+    
+    // Education data
+    certificateNumber?: string;
+    testCenter?: string;
+    educationLevel?: string;
+    
+    // Family data
+    spouseName?: string;
+    marriageDate?: string;
+    childrenCount?: string;
   };
 }
 
@@ -168,6 +190,7 @@ const FIELD_LABELS: Record<string, string> = {
   // Employment
   employerName: 'Название работодателя',
   employerINN: 'ИНН работодателя',
+  employerAddress: 'Адрес работодателя',
   jobTitle: 'Должность',
   salary: 'Зарплата (руб/мес)',
   startDate: 'Дата начала работы',
@@ -178,6 +201,7 @@ const FIELD_LABELS: Record<string, string> = {
   // Housing
   hostAddress: 'Адрес регистрации',
   hostFullName: 'ФИО принимающего',
+  hostPassport: 'Паспорт принимающего',
   employeeFullName: 'ФИО работника',
   employeePassport: 'Паспорт работника',
   ownerFullName: 'ФИО собственника',
@@ -189,9 +213,22 @@ const FIELD_LABELS: Record<string, string> = {
   // Long-term status
   rvpNumber: 'Номер РВП',
   rvpDate: 'Дата выдачи РВП',
+  vnzhNumber: 'Номер ВНЖ',
   address: 'Адрес проживания',
-  income: 'Доход за год',
+  income: 'Доход за год (руб)',
   employer: 'Работодатель',
+  
+  // Education
+  certificateNumber: 'Номер сертификата',
+  testCenter: 'Центр тестирования',
+  score: 'Балл',
+  educationLevel: 'Уровень образования',
+  
+  // Family
+  spouseName: 'ФИО супруга/супруги',
+  marriageDate: 'Дата заключения брака',
+  marriageCertNumber: 'Номер свидетельства о браке',
+  childrenCount: 'Количество детей',
   
   // Requests
   lostDocType: 'Тип утерянного документа',
@@ -337,6 +374,23 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
             <p className="text-sm text-gray-600">
               Для документа <strong>"{template.title}"</strong> нужно добавить недостающую информацию
             </p>
+
+            {/* Counterparty Data Warning */}
+            {(missingFields.includes('employerName') || missingFields.includes('employerINN') || missingFields.includes('hostFullName')) && (
+              <div className="mt-3 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-xs font-semibold text-yellow-900 mb-1">Данные третьих лиц</p>
+                    <p className="text-xs text-yellow-800">
+                      {missingFields.includes('employerName') && 'Введите данные работодателя. '}
+                      {missingFields.includes('hostFullName') && 'Введите данные принимающей стороны. '}
+                      Эти данные не сохраняются в вашем профиле.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Missing Fields Form */}

@@ -78,9 +78,9 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
       }
 
       // 4. СЕРТИФИКАТ О ВЛАДЕНИИ РУССКИМ ЯЗЫКОМ
-      if (!profileData.checkedDocs.includes('exam')) {
+      if (!profileData.checkedDocs.includes('education')) {
         docs.push({
-          id: 'exam',
+          id: 'education',
           title: 'Сертификат (Экзамен по русскому языку)',
           icon: '🎓',
           description: 'Сертификат из центра тестирования',
