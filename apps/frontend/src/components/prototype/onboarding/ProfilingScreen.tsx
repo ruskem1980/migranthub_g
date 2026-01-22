@@ -13,8 +13,19 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
   const [entryDate, setEntryDate] = useState('');
   const [region, setRegion] = useState('');
   const [purpose, setPurpose] = useState('');
+  const [showOtherCitizenship, setShowOtherCitizenship] = useState(false);
+  const [showOtherRegion, setShowOtherRegion] = useState(false);
+  const [otherCitizenshipValue, setOtherCitizenshipValue] = useState('');
+  const [otherRegionValue, setOtherRegionValue] = useState('');
 
-  const isValid = citizenship && departureCountry && entryDate && region && purpose;
+  // Auto-fill departure country from citizenship
+  const effectiveDepartureCountry = citizenship;
+
+  // Validation: all fields must be filled
+  // For "other" options, check if the specific value is selected
+  const isCitizenshipValid = citizenship && (citizenship !== 'other' || otherCitizenshipValue);
+  const isRegionValid = region && (region !== 'other' || otherRegionValue);
+  const isValid = isCitizenshipValid && entryDate && isRegionValid && purpose;
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col p-6">
@@ -78,17 +89,55 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
               </button>
 
               <button
-                onClick={() => setCitizenship('other')}
+                onClick={() => setShowOtherCitizenship(true)}
                 className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
-                  citizenship === 'other'
+                  citizenship === 'other' || otherCitizenshipValue
                     ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
                     : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
                 }`}
               >
                 <span className="text-2xl">🌍</span>
-                <span className="font-semibold text-sm">Другое</span>
+                <span className="font-semibold text-sm">
+                  {otherCitizenshipValue || 'Другое'}
+                </span>
               </button>
             </div>
+
+            {/* Other Citizenship Dropdown */}
+            {showOtherCitizenship && (
+              <div className="mt-3 p-4 bg-white border-2 border-blue-200 rounded-xl">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Выберите страну
+                </label>
+                <select
+                  value={otherCitizenshipValue}
+                  onChange={(e) => {
+                    setOtherCitizenshipValue(e.target.value);
+                    setCitizenship('other');
+                    setShowOtherCitizenship(false);
+                  }}
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Выберите страну</option>
+                  <option value="🇦🇲 Армения">🇦🇲 Армения (ЕАЭС)</option>
+                  <option value="🇦🇿 Азербайджан">🇦🇿 Азербайджан</option>
+                  <option value="🇧🇾 Беларусь">🇧🇾 Беларусь (ЕАЭС)</option>
+                  <option value="🇬🇪 Грузия">🇬🇪 Грузия</option>
+                  <option value="🇰🇿 Казахстан">🇰🇿 Казахстан (ЕАЭС)</option>
+                  <option value="🇲🇩 Молдова">🇲🇩 Молдова</option>
+                  <option value="🇺🇦 Украина">🇺🇦 Украина</option>
+                  <option value="🇨🇳 Китай">🇨🇳 Китай</option>
+                  <option value="🇮🇳 Индия">🇮🇳 Индия</option>
+                  <option value="🇻🇳 Вьетнам">🇻🇳 Вьетнам</option>
+                </select>
+                <button
+                  onClick={() => setShowOtherCitizenship(false)}
+                  className="mt-2 text-xs text-gray-500 hover:text-gray-700"
+                >
+                  Отмена
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Departure Country - Auto-fill from Citizenship */}
@@ -98,7 +147,13 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
               <div>
                 <p className="text-sm font-semibold text-blue-900 mb-1">Страна выезда</p>
                 <p className="text-xs text-blue-800">
-                  Автоматически: {citizenship === 'uz' ? '🇺🇿 Узбекистан' : citizenship === 'tj' ? '🇹🇯 Таджикистан' : citizenship === 'kg' ? '🇰🇬 Кыргызстан' : 'Не выбрано'}
+                  Автоматически: {
+                    citizenship === 'uz' ? '🇺🇿 Узбекистан' : 
+                    citizenship === 'tj' ? '🇹🇯 Таджикистан' : 
+                    citizenship === 'kg' ? '🇰🇬 Кыргызстан' : 
+                    citizenship === 'other' && otherCitizenshipValue ? otherCitizenshipValue :
+                    'Не выбрано'
+                  }
                 </p>
               </div>
             </div>
@@ -192,17 +247,57 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
               </button>
 
               <button
-                onClick={() => setRegion('other')}
+                onClick={() => setShowOtherRegion(true)}
                 className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
-                  region === 'other'
+                  region === 'other' || otherRegionValue
                     ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
                     : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
                 }`}
               >
                 <span className="text-2xl">📍</span>
-                <span className="font-semibold text-sm">Другое</span>
+                <span className="font-semibold text-sm">
+                  {otherRegionValue || 'Другое'}
+                </span>
               </button>
             </div>
+
+            {/* Other Region Dropdown */}
+            {showOtherRegion && (
+              <div className="mt-3 p-4 bg-white border-2 border-blue-200 rounded-xl">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Выберите регион
+                </label>
+                <select
+                  value={otherRegionValue}
+                  onChange={(e) => {
+                    setOtherRegionValue(e.target.value);
+                    setRegion('other');
+                    setShowOtherRegion(false);
+                  }}
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Выберите регион</option>
+                  <option value="Екатеринбург">Екатеринбург</option>
+                  <option value="Казань">Казань</option>
+                  <option value="Нижний Новгород">Нижний Новгород</option>
+                  <option value="Самара">Самара</option>
+                  <option value="Омск">Омск</option>
+                  <option value="Челябинск">Челябинск</option>
+                  <option value="Ростов-на-Дону">Ростов-на-Дону</option>
+                  <option value="Уфа">Уфа</option>
+                  <option value="Красноярск">Красноярск</option>
+                  <option value="Воронеж">Воронеж</option>
+                  <option value="Пермь">Пермь</option>
+                  <option value="Волгоград">Волгоград</option>
+                </select>
+                <button
+                  onClick={() => setShowOtherRegion(false)}
+                  className="mt-2 text-xs text-gray-500 hover:text-gray-700"
+                >
+                  Отмена
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Purpose */}

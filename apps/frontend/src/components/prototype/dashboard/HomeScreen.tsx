@@ -13,6 +13,7 @@ export function HomeScreen() {
   const [editPurpose, setEditPurpose] = useState('work');
   const [editFullName, setEditFullName] = useState('Алишер Усманов');
   const [editCitizenship, setEditCitizenship] = useState('Узбекистан');
+  const [editRegion, setEditRegion] = useState('Москва');
   const [checkedDocs, setCheckedDocs] = useState<string[]>(['passport', 'mig_card']);
 
   return (
@@ -21,22 +22,53 @@ export function HomeScreen() {
       <div className="flex items-center justify-between px-4 py-4 bg-white border-b border-gray-200 sticky top-0 z-10">
         {/* Left: User Info */}
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
+          <button
+            onClick={() => setShowProfileEdit(true)}
+            className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md hover:from-blue-600 hover:to-blue-700 transition-all active:scale-95"
+          >
             АУ
-          </div>
-          <div>
+          </button>
+          <div className="flex-1">
             <h2 className="text-base font-bold text-gray-900">Алишер Усманов</h2>
             <p className="text-xs text-gray-500">🇺🇿 Узбекистан</p>
           </div>
         </div>
 
-        {/* Right: Days Counter */}
-        <div className="text-right">
-          <p className="text-xs text-gray-500 mb-0.5">Осталось</p>
-          <div className={`text-2xl font-bold ${88 > 30 ? 'text-green-600' : 88 > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
-            88
+        {/* Right: Status Badge + Edit Button + Days Counter */}
+        <div className="flex items-center gap-3">
+          {/* Status Badge */}
+          {checkedDocs.length >= 5 ? (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-500 rounded-full">
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              <span className="text-xs font-bold text-white">Legal</span>
+            </div>
+          ) : checkedDocs.length >= 3 ? (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-yellow-500 rounded-full">
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              <span className="text-xs font-bold text-white">Risk</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-500 rounded-full">
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              <span className="text-xs font-bold text-white">Illegal</span>
+            </div>
+          )}
+
+          <button
+            onClick={() => setShowProfileEdit(true)}
+            className="p-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors active:scale-95"
+            title="Редактировать профиль"
+          >
+            <Edit2 className="w-5 h-5" />
+          </button>
+          
+          <div className="text-right">
+            <p className="text-xs text-gray-500 mb-0.5">Осталось</p>
+            <div className={`text-2xl font-bold ${88 > 30 ? 'text-green-600' : 88 > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
+              88
+            </div>
+            <p className="text-xs text-gray-500">дней</p>
           </div>
-          <p className="text-xs text-gray-500">дней</p>
         </div>
       </div>
 
@@ -235,69 +267,65 @@ export function HomeScreen() {
 
               {/* Citizenship */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Гражданство
                 </label>
-                
-                {/* Button Group (3+1) */}
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <button
-                    onClick={() => setEditCitizenship('Узбекистан')}
-                    className={`flex items-center justify-center gap-2 px-3 py-3 rounded-xl border-2 transition-all ${
-                      editCitizenship === 'Узбекистан'
-                        ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
-                        : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    <span className="text-xl">🇺🇿</span>
-                    <span className="font-semibold text-xs">Узбекистан</span>
-                  </button>
-
-                  <button
-                    onClick={() => setEditCitizenship('Таджикистан')}
-                    className={`flex items-center justify-center gap-2 px-3 py-3 rounded-xl border-2 transition-all ${
-                      editCitizenship === 'Таджикистан'
-                        ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
-                        : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    <span className="text-xl">🇹🇯</span>
-                    <span className="font-semibold text-xs">Таджикистан</span>
-                  </button>
-
-                  <button
-                    onClick={() => setEditCitizenship('Киргизия')}
-                    className={`flex items-center justify-center gap-2 px-3 py-3 rounded-xl border-2 transition-all ${
-                      editCitizenship === 'Киргизия'
-                        ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
-                        : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    <span className="text-xl">🇰🇬</span>
-                    <span className="font-semibold text-xs">Кыргызстан</span>
-                  </button>
-
-                  <button
-                    onClick={() => setEditCitizenship('Другое')}
-                    className={`flex items-center justify-center gap-2 px-3 py-3 rounded-xl border-2 transition-all ${
-                      editCitizenship === 'Другое'
-                        ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
-                        : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    <span className="text-xl">🌍</span>
-                    <span className="font-semibold text-xs">Другое</span>
-                  </button>
-                </div>
+                <select
+                  value={editCitizenship}
+                  onChange={(e) => setEditCitizenship(e.target.value)}
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="Узбекистан">🇺🇿 Узбекистан</option>
+                  <option value="Таджикистан">🇹🇯 Таджикистан</option>
+                  <option value="Киргизия">🇰🇬 Кыргызстан</option>
+                  <option value="Армения">🇦🇲 Армения (ЕАЭС)</option>
+                  <option value="Азербайджан">🇦🇿 Азербайджан</option>
+                  <option value="Беларусь">🇧🇾 Беларусь (ЕАЭС)</option>
+                  <option value="Грузия">🇬🇪 Грузия</option>
+                  <option value="Казахстан">🇰🇿 Казахстан (ЕАЭС)</option>
+                  <option value="Молдова">🇲🇩 Молдова</option>
+                  <option value="Украина">🇺🇦 Украина</option>
+                  <option value="Китай">🇨🇳 Китай</option>
+                  <option value="Индия">🇮🇳 Индия</option>
+                  <option value="Вьетнам">🇻🇳 Вьетнам</option>
+                </select>
                 
                 {/* EAEU Note */}
                 {['Армения', 'Беларусь', 'Казахстан'].includes(editCitizenship) && (
-                  <div className="p-2 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg">
                     <p className="text-xs text-green-800">
                       ✅ ЕАЭС: Патент не требуется
                     </p>
                   </div>
                 )}
+              </div>
+
+              {/* Region */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Куда прибыл (Регион)
+                </label>
+                <select
+                  value={editRegion}
+                  onChange={(e) => setEditRegion(e.target.value)}
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="Москва">🏙️ Москва</option>
+                  <option value="Санкт-Петербург">🏛️ Санкт-Петербург</option>
+                  <option value="Новосибирск">❄️ Новосибирск</option>
+                  <option value="Екатеринбург">Екатеринбург</option>
+                  <option value="Казань">Казань</option>
+                  <option value="Нижний Новгород">Нижний Новгород</option>
+                  <option value="Самара">Самара</option>
+                  <option value="Омск">Омск</option>
+                  <option value="Челябинск">Челябинск</option>
+                  <option value="Ростов-на-Дону">Ростов-на-Дону</option>
+                  <option value="Уфа">Уфа</option>
+                  <option value="Красноярск">Красноярск</option>
+                  <option value="Воронеж">Воронеж</option>
+                  <option value="Пермь">Пермь</option>
+                  <option value="Волгоград">Волгоград</option>
+                </select>
               </div>
 
               {/* Entry Date */}
