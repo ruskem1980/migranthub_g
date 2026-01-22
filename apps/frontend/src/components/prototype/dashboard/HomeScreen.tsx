@@ -19,26 +19,24 @@ export function HomeScreen() {
     <div className="h-full overflow-y-auto pb-4">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-4 bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">Главная</h1>
-          <p className="text-sm text-gray-500">Статус миграционного учета</p>
+        {/* Left: User Info */}
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
+            АУ
+          </div>
+          <div>
+            <h2 className="text-base font-bold text-gray-900">Алишер Усманов</h2>
+            <p className="text-xs text-gray-500">🇺🇿 Узбекистан</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={() => setShowProfileEdit(true)}
-            className="p-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors active:scale-95"
-          >
-            <Edit2 className="w-6 h-6" />
-          </button>
-          <button 
-            onClick={() => setShowHistory(true)}
-            className="p-2 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors active:scale-95"
-          >
-            <History className="w-6 h-6" />
-          </button>
-          <button className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors active:scale-95">
-            <QrCode className="w-6 h-6" />
-          </button>
+
+        {/* Right: Days Counter */}
+        <div className="text-right">
+          <p className="text-xs text-gray-500 mb-0.5">Осталось</p>
+          <div className={`text-2xl font-bold ${88 > 30 ? 'text-green-600' : 88 > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
+            88
+          </div>
+          <p className="text-xs text-gray-500">дней</p>
         </div>
       </div>
 
