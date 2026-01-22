@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, FileText, Home, Briefcase, FileCheck, Plus, Download, AlertCircle, Camera, Edit3, Check, ChevronRight } from 'lucide-react';
+import { X, FileText, Home, Briefcase, FileCheck, Plus, Download, AlertCircle, Camera, Edit3, Check, ChevronRight, AlertTriangle } from 'lucide-react';
 
 interface DocumentGeneratorProps {
   onClose: () => void;
@@ -16,7 +16,15 @@ interface DocumentGeneratorProps {
   };
 }
 
-type TemplateId = 'patent' | 'arrival' | 'contract' | 'rvp';
+type TemplateId = 
+  // Work
+  | 'patent' | 'contract' | 'employment_notification' | 'termination_notification'
+  // Housing
+  | 'arrival' | 'employer_petition' | 'owner_consent'
+  // Long-term
+  | 'rvp' | 'vnzh' | 'annual_notification'
+  // Requests
+  | 'lost_docs' | 'inn_application';
 
 interface DocumentTemplate {
   id: TemplateId;
@@ -24,41 +32,127 @@ interface DocumentTemplate {
   subtitle: string;
   icon: string;
   formNumber: string;
+  category: 'work' | 'housing' | 'longterm' | 'requests';
+  isCritical?: boolean;
   requiredFields: string[];
 }
 
 const TEMPLATES: DocumentTemplate[] = [
+  // CATEGORY 1: WORK (РАБОТА)
   {
     id: 'patent',
     title: 'Заявление на патент',
-    subtitle: 'Разрешение на работу',
+    subtitle: 'Первичное получение или переоформление',
     icon: '📄',
     formNumber: 'Форма 26.5-1',
-    requiredFields: ['passportNumber', 'fullName', 'entryDate', 'citizenship'],
-  },
-  {
-    id: 'arrival',
-    title: 'Уведомление о прибытии',
-    subtitle: 'Миграционный учет',
-    icon: '🏠',
-    formNumber: 'Форма 21',
-    requiredFields: ['passportNumber', 'fullName', 'entryDate', 'hostAddress'],
+    category: 'work',
+    requiredFields: ['passportNumber', 'fullName', 'entryDate', 'citizenship', 'jobTitle', 'employerName'],
   },
   {
     id: 'contract',
     title: 'Трудовой договор',
-    subtitle: 'Шаблон для работодателя',
-    icon: '📝',
+    subtitle: 'Стандартный договор с физлицом или юрлицом',
+    icon: '🤝',
     formNumber: 'Типовой шаблон',
-    requiredFields: ['fullName', 'passportNumber', 'employerName', 'jobTitle'],
+    category: 'work',
+    requiredFields: ['fullName', 'passportNumber', 'employerName', 'employerINN', 'jobTitle', 'salary', 'startDate'],
   },
+  {
+    id: 'employment_notification',
+    title: 'Уведомление о заключении договора',
+    subtitle: '⚠️ Обязательно отправить в МВД в течение 2 месяцев!',
+    icon: '📢',
+    formNumber: 'Приказ МВД №846',
+    category: 'work',
+    isCritical: true,
+    requiredFields: ['fullName', 'passportNumber', 'employerName', 'employerINN', 'contractDate', 'jobTitle'],
+  },
+  {
+    id: 'termination_notification',
+    title: 'Уведомление о расторжении договора',
+    subtitle: 'Подавать при увольнении в течение 3 дней',
+    icon: '💔',
+    formNumber: 'Приказ МВД №846',
+    category: 'work',
+    requiredFields: ['fullName', 'passportNumber', 'employerName', 'terminationDate', 'reason'],
+  },
+
+  // CATEGORY 2: HOUSING & REGISTRATION (ЖИЛЬЕ)
+  {
+    id: 'arrival',
+    title: 'Уведомление о прибытии',
+    subtitle: 'Первичная регистрация или продление',
+    icon: '🏠',
+    formNumber: 'Форма 21',
+    category: 'housing',
+    requiredFields: ['passportNumber', 'fullName', 'entryDate', 'hostAddress', 'hostFullName'],
+  },
+  {
+    id: 'employer_petition',
+    title: 'Ходатайство от работодателя',
+    subtitle: 'Основание для продления регистрации',
+    icon: '🏢',
+    formNumber: 'Свободная форма',
+    category: 'housing',
+    requiredFields: ['employerName', 'employerINN', 'employeeFullName', 'employeePassport', 'reason'],
+  },
+  {
+    id: 'owner_consent',
+    title: 'Согласие собственника на регистрацию',
+    subtitle: 'Заявление от владельца квартиры',
+    icon: '✍️',
+    formNumber: 'Типовой бланк',
+    category: 'housing',
+    requiredFields: ['ownerFullName', 'ownerPassport', 'propertyAddress', 'guestFullName', 'guestPassport'],
+  },
+
+  // CATEGORY 3: LONG-TERM STATUS (РВП / ВНЖ)
   {
     id: 'rvp',
     title: 'Заявление на РВП',
-    subtitle: 'Временное проживание',
-    icon: '📑',
+    subtitle: 'Разрешение на временное проживание',
+    icon: '📘',
     formNumber: 'Форма РВП',
-    requiredFields: ['passportNumber', 'fullName', 'citizenship', 'entryDate'],
+    category: 'longterm',
+    requiredFields: ['passportNumber', 'fullName', 'citizenship', 'entryDate', 'birthDate', 'birthPlace'],
+  },
+  {
+    id: 'vnzh',
+    title: 'Заявление на ВНЖ',
+    subtitle: 'Вид на жительство',
+    icon: '📗',
+    formNumber: 'Форма ВНЖ',
+    category: 'longterm',
+    requiredFields: ['passportNumber', 'fullName', 'citizenship', 'rvpNumber', 'rvpDate', 'address'],
+  },
+  {
+    id: 'annual_notification',
+    title: 'Ежегодное уведомление (РВП/ВНЖ)',
+    subtitle: 'Подтверждение проживания',
+    icon: '📅',
+    formNumber: 'Форма уведомления',
+    category: 'longterm',
+    requiredFields: ['fullName', 'rvpNumber', 'address', 'income', 'employer'],
+  },
+
+  // CATEGORY 4: REQUESTS & SOS (РАЗНОЕ)
+  {
+    id: 'lost_docs',
+    title: 'Заявление об утере документов',
+    subtitle: 'Для полиции и восстановления',
+    icon: '🆘',
+    formNumber: 'Свободная форма',
+    category: 'requests',
+    requiredFields: ['fullName', 'passportNumber', 'lostDocType', 'lostDate', 'circumstances'],
+  },
+  {
+    id: 'inn_application',
+    title: 'Заявление на ИНН',
+    subtitle: 'Постановка на налоговый учет',
+    icon: '🔢',
+    formNumber: 'Форма №2-2-Учет',
+    category: 'requests',
+    requiredFields: ['fullName', 'passportNumber', 'birthDate', 'address'],
   },
 ];
 
@@ -119,47 +213,82 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
     }
   };
 
-  const renderTemplateSelector = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-4">
-        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <FileText className="w-8 h-8 text-purple-600" />
+  const renderTemplateSelector = () => {
+    const categories = [
+      { id: 'work', title: '👔 Работа', templates: TEMPLATES.filter(t => t.category === 'work') },
+      { id: 'housing', title: '🏠 Проживание', templates: TEMPLATES.filter(t => t.category === 'housing') },
+      { id: 'longterm', title: '📘 РВП / ВНЖ', templates: TEMPLATES.filter(t => t.category === 'longterm') },
+      { id: 'requests', title: '📋 Разное', templates: TEMPLATES.filter(t => t.category === 'requests') },
+    ];
+
+    return (
+      <div className="space-y-6">
+        <div className="text-center mb-4">
+          <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FileText className="w-8 h-8 text-purple-600" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">Выберите документ</h3>
+          <p className="text-sm text-gray-600">
+            Мы автоматически заполним форму вашими данными
+          </p>
         </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">Выберите документ</h3>
-        <p className="text-sm text-gray-600">
-          Мы автоматически заполним форму вашими данными
-        </p>
-      </div>
 
-      <div className="space-y-3">
-        {TEMPLATES.map((template) => (
-          <button
-            key={template.id}
-            onClick={() => handleTemplateSelect(template)}
-            className="w-full flex items-start gap-4 p-5 bg-white border-2 border-gray-200 rounded-2xl hover:border-purple-300 hover:bg-purple-50 transition-all active:scale-98"
-          >
-            <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-              <span className="text-3xl">{template.icon}</span>
+        {/* Categorized Templates */}
+        {categories.map((category) => (
+          <div key={category.id}>
+            <h4 className="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">
+              {category.title}
+            </h4>
+            <div className="space-y-3 mb-6">
+              {category.templates.map((template) => (
+                <button
+                  key={template.id}
+                  onClick={() => handleTemplateSelect(template)}
+                  className={`w-full flex items-start gap-4 p-5 rounded-2xl border-2 transition-all active:scale-98 relative ${
+                    template.isCritical
+                      ? 'bg-red-50 border-red-300 hover:border-red-400 hover:bg-red-100'
+                      : 'bg-white border-gray-200 hover:border-purple-300 hover:bg-purple-50'
+                  }`}
+                >
+                  {/* Critical Badge */}
+                  {template.isCritical && (
+                    <div className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md flex items-center gap-1">
+                      <AlertTriangle className="w-3 h-3" />
+                      Важно
+                    </div>
+                  )}
+
+                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                    template.isCritical ? 'bg-red-100' : 'bg-purple-100'
+                  }`}>
+                    <span className="text-3xl">{template.icon}</span>
+                  </div>
+                  
+                  <div className="flex-1 text-left">
+                    <h4 className="font-bold text-gray-900 mb-1">{template.title}</h4>
+                    <p className={`text-sm mb-2 ${template.isCritical ? 'text-red-700 font-medium' : 'text-gray-600'}`}>
+                      {template.subtitle}
+                    </p>
+                    <span className={`text-xs font-medium ${template.isCritical ? 'text-red-600' : 'text-purple-600'}`}>
+                      {template.formNumber}
+                    </span>
+                  </div>
+                  
+                  <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 mt-2" />
+                </button>
+              ))}
             </div>
-            
-            <div className="flex-1 text-left">
-              <h4 className="font-bold text-gray-900 mb-1">{template.title}</h4>
-              <p className="text-sm text-gray-600 mb-2">{template.subtitle}</p>
-              <span className="text-xs text-purple-600 font-medium">{template.formNumber}</span>
-            </div>
-            
-            <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 mt-2" />
-          </button>
+          </div>
         ))}
-      </div>
 
-      <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
-        <p className="text-sm text-blue-800">
-          💡 <strong>Совет:</strong> Все формы генерируются автоматически на основе ваших данных. Вам останется только распечатать.
-        </p>
+        <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+          <p className="text-sm text-blue-800">
+            💡 <strong>Совет:</strong> Все формы генерируются автоматически на основе ваших данных. Вам останется только распечатать.
+          </p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderMissingDataModal = () => {
     const template = TEMPLATES.find(t => t.id === selectedTemplate)!;

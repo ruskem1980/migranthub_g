@@ -194,7 +194,13 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
     return docs;
   };
 
-  const documentsToScan = getDocumentsToScan(profileData.purpose, profileData.citizenship);
+  const allPossibleDocuments = getDocumentsToScan(profileData.purpose, profileData.citizenship);
+  
+  // Filter based on quick-select if mode is chosen
+  const documentsToScan = scanMode === 'quick-select' && selectedDocsToScan.length > 0
+    ? allPossibleDocuments.filter(doc => selectedDocsToScan.includes(doc.id))
+    : allPossibleDocuments;
+    
   const currentDocument = documentsToScan[currentDocIndex];
   
   // Calculate deadline (mock - 90 days from entry)
@@ -290,6 +296,115 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
       <p className="text-xs text-center text-gray-500">
         Мы сгенерируем все необходимые заявления и покажем точный план действий
       </p>
+    </div>
+  );
+
+  const renderQuickSelect = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <FileText className="w-8 h-8 text-purple-600" />
+        </div>
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">Какие документы будем сканировать?</h3>
+        <p className="text-sm text-gray-600">
+          Отметьте документы, которые у вас есть и вы готовы отсканировать
+        </p>
+      </div>
+
+      {/* Document Checklist */}
+      <div className="space-y-3">
+        {documentsToScan.map((doc) => {
+          const isSelected = selectedDocsToScan.includes(doc.id);
+          
+          return (
+            <button
+              key={doc.id}
+              onClick={() => {
+                if (isSelected) {
+                  setSelectedDocsToScan(selectedDocsToScan.filter(id => id !== doc.id));
+                } else {
+                  setSelectedDocsToScan([...selectedDocsToScan, doc.id]);
+                }
+              }}
+              className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all ${
+                isSelected
+                  ? 'bg-green-50 border-green-300 shadow-md'
+                  : 'bg-white border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              {/* Checkbox */}
+              <div className={`w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                isSelected
+                  ? 'bg-green-500 border-green-500'
+                  : 'border-gray-300'
+              }`}>
+                {isSelected && <Check className="w-4 h-4 text-white" strokeWidth={3} />}
+              </div>
+              
+              {/* Icon and Info */}
+              <span className="text-2xl">{doc.icon}</span>
+              <div className="flex-1 text-left">
+                <p className={`font-semibold ${isSelected ? 'text-green-700' : 'text-gray-700'}`}>
+                  {doc.title}
+                </p>
+                <p className="text-xs text-gray-500">{doc.description}</p>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Info Card */}
+      <div className="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+        <div className="flex items-start gap-2">
+          <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-yellow-900 mb-1">Важно</p>
+            <p className="text-xs text-yellow-800 leading-relaxed">
+              Если у вас нет какого-то документа - не отмечайте его. Мы сгенерируем заявления на основе имеющихся данных.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="space-y-3">
+        <button
+          onClick={() => {
+            if (selectedDocsToScan.length > 0) {
+              // Filter documents to scan based on selection
+              const filteredDocs = documentsToScan.filter(doc => selectedDocsToScan.includes(doc.id));
+              setCurrentDocIndex(0);
+              setCurrentStep('document-scan');
+            }
+          }}
+          disabled={selectedDocsToScan.length === 0}
+          className={`w-full font-bold py-4 rounded-xl transition-colors ${
+            selectedDocsToScan.length > 0
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+          }`}
+        >
+          Сканировать выбранные ({selectedDocsToScan.length})
+        </button>
+
+        <button
+          onClick={() => {
+            // Skip all scanning, go straight to processing
+            setCurrentStep('processing');
+          }}
+          className="w-full bg-gray-100 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-200 transition-colors"
+        >
+          Пропустить сканирование
+        </button>
+
+        <button
+          onClick={() => setCurrentStep('intro')}
+          className="w-full text-gray-500 text-sm hover:text-gray-700"
+        >
+          ← Назад
+        </button>
+      </div>
     </div>
   );
 
@@ -1212,6 +1327,7 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
               <h2 className="text-xl font-bold text-white">Мастер легализации</h2>
               <p className="text-xs text-blue-100">
                 {currentStep === 'intro' && 'Анализ ситуации'}
+                {currentStep === 'quick-select' && 'Выбор документов'}
                 {currentStep === 'document-scan' && `Документ ${currentDocIndex + 1} из ${documentsToScan.length}`}
                 {currentStep === 'scanning' && 'Сканирование...'}
                 {currentStep === 'verification' && 'Проверка данных'}
@@ -1231,6 +1347,7 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {currentStep === 'intro' && renderIntro()}
+          {currentStep === 'quick-select' && renderQuickSelect()}
           {currentStep === 'document-scan' && renderDocumentScan()}
           {currentStep === 'scanning' && renderScanning()}
           {currentStep === 'verification' && renderVerification()}
