@@ -2,15 +2,17 @@
 
 import { Mic, Send, Sparkles, UserCheck } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 
 export function AssistantScreen() {
+  const { t } = useTranslation();
   const [message, setMessage] = useState('');
 
   const quickChips = [
-    { label: 'Патент', emoji: '📄' },
-    { label: 'РВП', emoji: '🏠' },
-    { label: 'Семья', emoji: '👨‍👩‍👧' },
-    { label: 'Медицина', emoji: '🏥' },
+    { label: t('assistant.quickChips.patent'), emoji: '📄' },
+    { label: t('assistant.quickChips.registration'), emoji: '🏠' },
+    { label: t('assistant.quickChips.documents'), emoji: '📋' },
+    { label: t('assistant.quickChips.ban'), emoji: '🛡️' },
   ];
 
   return (
@@ -23,15 +25,15 @@ export function AssistantScreen() {
               <Sparkles className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Вопросы</h1>
-              <p className="text-sm text-white/80">AI/Lawyer</p>
+              <h1 className="text-xl font-bold">{t('assistant.title')}</h1>
+              <p className="text-sm text-white/80">{t('assistant.subtitle')}</p>
             </div>
           </div>
         </div>
-        
+
         <button className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 rounded-xl py-3 px-4 transition-all active:scale-98 flex items-center justify-center gap-2">
           <UserCheck className="w-5 h-5" />
-          <span className="font-semibold">Нанять живого юриста ($)</span>
+          <span className="font-semibold">{t('sos.lawyer')} ($)</span>
         </button>
       </div>
 
@@ -42,9 +44,9 @@ export function AssistantScreen() {
           <div className="flex items-start gap-2">
             <span className="text-lg">⚠️</span>
             <div>
-              <p className="text-xs font-semibold text-yellow-900 mb-1">Юридический дисклеймер</p>
+              <p className="text-xs font-semibold text-yellow-900 mb-1">{t('sos.legalHelp.title')}</p>
               <p className="text-xs text-yellow-800 leading-relaxed">
-                Консультации ИИ носят справочный характер. Для юридически значимых решений обращайтесь к лицензированному юристу.
+                {t('sos.legalHelp.subtitle')}
               </p>
             </div>
           </div>
@@ -53,7 +55,7 @@ export function AssistantScreen() {
         <div className="flex justify-start mb-4">
           <div className="max-w-[80%] bg-white text-gray-900 rounded-2xl rounded-bl-sm px-4 py-3 shadow-md border border-gray-200">
             <p className="text-sm leading-relaxed">
-              Я ИИ-юрист. Знаю все законы РФ. Чем помочь?
+              {t('assistant.greeting')}
             </p>
             <p className="text-xs text-gray-400 mt-1">10:30</p>
           </div>
@@ -62,12 +64,12 @@ export function AssistantScreen() {
 
       {/* KB Chips */}
       <div className="px-4 py-3 bg-white border-t border-gray-200">
-        <p className="text-xs text-gray-500 mb-2 font-medium">База знаний:</p>
+        <p className="text-xs text-gray-500 mb-2 font-medium">{t('assistant.quickQuestions.title')}:</p>
         <div className="flex flex-wrap gap-2">
           {quickChips.map((chip, index) => (
             <button
               key={index}
-              onClick={() => setMessage(`Расскажи про ${chip.label}`)}
+              onClick={() => setMessage(chip.label)}
               className="px-3 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors active:scale-95 flex items-center gap-1"
             >
               <span>{chip.emoji}</span>
@@ -83,15 +85,15 @@ export function AssistantScreen() {
           <button className="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center hover:bg-purple-200 transition-colors active:scale-95">
             <Mic className="w-5 h-5" />
           </button>
-          
+
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Задайте вопрос юристу или ИИ..."
+            placeholder={t('assistant.placeholder')}
             className="flex-1 px-4 py-3 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
           />
-          
+
           <button
             disabled={!message.trim()}
             className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-95 ${

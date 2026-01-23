@@ -10,115 +10,115 @@ export function DocumentsScreen() {
     // УРОВЕНЬ 1: ОСНОВА
     {
       key: 'passport',
-      title: 'Паспорт',
+      title: t('documents.types.passport'),
       status: 'active',
-      statusText: 'Активен',
+      statusText: t('documents.statusText.active'),
       icon: '🛂',
       color: 'green',
       hasFile: true,
     },
-    
+
     // УРОВЕНЬ 2: ВЪЕЗД И ПРЕБЫВАНИЕ
     {
       key: 'mig_card',
-      title: 'Миграционная карта',
+      title: t('documents.types.migCard'),
       status: 'active',
-      statusText: 'Активна',
+      statusText: t('documents.statusText.activeF'),
       icon: '🎫',
       color: 'green',
       hasFile: true,
     },
     {
       key: 'registration',
-      title: 'Регистрация (Уведомление)',
+      title: t('documents.types.registration'),
       status: 'error',
-      statusText: 'Истекла',
+      statusText: t('documents.statusText.expired'),
       icon: '📋',
       color: 'red',
-      action: 'Обновить',
+      action: t('documents.actions.update'),
       hasFile: false,
     },
-    
+
     // УРОВЕНЬ 3: РАБОТА
     {
       key: 'green_card',
-      title: 'Зеленая карта (Дактилоскопия)',
+      title: t('documents.types.greenCard'),
       status: 'missing',
-      statusText: 'Отсутствует',
+      statusText: t('documents.statusText.missing'),
       icon: '💳',
       color: 'gray',
-      action: 'Добавить',
+      action: t('documents.actions.add'),
       hasFile: false,
     },
     {
       key: 'education',
-      title: 'Сертификат / Диплом',
+      title: t('documents.types.education'),
       status: 'missing',
-      statusText: 'Отсутствует',
+      statusText: t('documents.statusText.missing'),
       icon: '🎓',
       color: 'gray',
-      action: 'Добавить',
+      action: t('documents.actions.add'),
       hasFile: false,
     },
     {
       key: 'patent',
-      title: 'Патент',
+      title: t('documents.types.patent'),
       status: 'warning',
-      statusText: 'Оплатить через 3 дня',
+      statusText: t('documents.statusText.payIn', { days: '3' }),
       icon: '📄',
       color: 'yellow',
-      action: 'Продлить',
+      action: t('documents.actions.extend'),
       hasFile: true,
     },
     {
       key: 'contract',
-      title: 'Трудовой договор',
+      title: t('documents.types.contract'),
       status: 'missing',
-      statusText: 'Отсутствует',
+      statusText: t('documents.statusText.missing'),
       icon: '📝',
       color: 'gray',
-      action: 'Добавить',
+      action: t('documents.actions.add'),
       hasFile: false,
     },
-    
+
     // УРОВЕНЬ 4: ПОДДЕРЖКА
     {
       key: 'receipts',
-      title: 'Чеки (НДФЛ)',
+      title: t('documents.types.receipts'),
       status: 'active',
-      statusText: 'Актуальны',
+      statusText: t('documents.statusText.activePl'),
       icon: '🧾',
       color: 'green',
       hasFile: true,
     },
     {
       key: 'insurance',
-      title: 'Полис ДМС',
+      title: t('documents.types.insurance'),
       status: 'missing',
-      statusText: 'Отсутствует',
+      statusText: t('documents.statusText.missing'),
       icon: '🩺',
       color: 'gray',
-      action: 'Оформить',
+      action: t('documents.actions.apply'),
       hasFile: false,
     },
     {
       key: 'inn',
-      title: 'ИНН / СНИЛС',
+      title: t('documents.types.inn'),
       status: 'missing',
-      statusText: 'Отсутствует',
+      statusText: t('documents.statusText.missing'),
       icon: '🔢',
       color: 'gray',
-      action: 'Получить',
+      action: t('documents.actions.get'),
       hasFile: false,
     },
     {
       key: 'family',
-      title: 'Св-во о браке / рождении',
+      title: t('documents.types.family'),
       status: 'missing',
-      statusText: 'Отсутствует',
+      statusText: t('documents.statusText.missing'),
       icon: '💍',
       color: 'gray',
-      action: 'Добавить',
+      action: t('documents.actions.add'),
       hasFile: false,
     },
   ];
@@ -238,7 +238,7 @@ export function DocumentsScreen() {
       {/* Floating Action Button */}
       <button
         className="fixed bottom-24 right-6 w-16 h-16 bg-blue-600 text-white rounded-full shadow-2xl hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center z-40"
-        aria-label="Сканировать документ"
+        aria-label={t('documents.scanOcr')}
       >
         <div className="flex flex-col items-center">
           <Camera className="w-6 h-6" />

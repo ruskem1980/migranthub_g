@@ -62,7 +62,10 @@
     "start": "Boshlash",
     "saving": "Saqlanmoqda...",
     "urgent": "SHOSHILINCH",
-    "extend": "Uzaytirish"
+    "extend": "Uzaytirish",
+    "encrypted": "Shifrlangan",
+    "status": "Holat",
+    "outOf": "dan"
   },
   "auth": {
     "title": "MigrantHub ga kirish",
@@ -132,7 +135,13 @@
     "hy": "Armancha",
     "ka": "Gruzincha",
     "vi": "Vyetnamcha",
-    "zh": "Xitoycha"
+    "zh": "Xitoycha",
+    "selectTitle": "Tilni tanlang",
+    "selectSubtitle": "Ilova interfeysi tili",
+    "mainLanguages": "Asosiy tillar",
+    "otherLanguages": "Boshqa til (AI)",
+    "aiTranslation": "Tezkor tarjima",
+    "aiNote": "Interfeys avtomatik tarjima qilinadi. Kichik noaniqliklar bo'lishi mumkin."
   },
   "countries": {
     "UZ": "O'zbekiston",
@@ -272,7 +281,7 @@
     "tomsk": "Tomsk",
     "orenburg": "Orenburg",
     "kemerovo": "Kemerovo",
-    "naberezhnyChelny": "Nabereжnыe Chelnы",
+    "naberezhnyChelny": "Naberejnыe Chelnы",
     "ryazan": "Ryazan",
     "astrakhan": "Astraxan",
     "penza": "Penza",
@@ -314,6 +323,7 @@
   },
   "profile": {
     "title": "Mening profilim",
+    "editTitle": "Profilni tahrirlash",
     "scanPassport": "Pasportni skanerlash",
     "scanPassportDesc": "Ma'lumotlarni avtomatik to'ldirish",
     "completeness": "Profil to'ldirilganligi",
@@ -325,6 +335,7 @@
     },
     "fields": {
       "fullName": "F.I.Sh. (pasportdagi kabi)",
+      "fullNamePlaceholder": "Ivanov Ivan Ivanovich",
       "fullNameLatin": "F.I.Sh. (lotincha)",
       "firstName": "Ism",
       "lastName": "Familiya",
@@ -366,7 +377,8 @@
       "workStartDate": "Ishga kirish sanasi",
       "inn": "INN",
       "snils": "SNILS",
-      "omsPolicy": "OMS polisi"
+      "omsPolicy": "OMS polisi",
+      "region": "Qayerga keldi (Hudud)"
     },
     "genders": {
       "male": "Erkak",
@@ -374,21 +386,42 @@
     },
     "purposes": {
       "work": "Ish",
+      "workSubtitle": "Mehnat faoliyati",
       "study": "O'qish",
+      "studySubtitle": "Universitetlar/kollejlar",
       "tourist": "Turizm",
+      "touristSubtitle": "Dam olish",
       "private": "Shaxsiy tashrif",
+      "privateSubtitle": "Mehmonlar",
       "business": "Biznes tashrif",
       "treatment": "Davolanish",
       "transit": "Tranzit",
       "other": "Boshqa"
-    }
+    },
+    "settings": {
+      "title": "Sozlamalar",
+      "interfaceLanguage": "Interfeys tili",
+      "deleteData": "Barcha ma'lumotlarni o'chirish",
+      "deleteDataWarning": "Bu amal qaytarib bo'lmaydi. Barcha hujjatlar va tarix o'chiriladi."
+    },
+    "saveChanges": "O'zgarishlarni saqlash",
+    "dateHint": "Kirish sanasini o'zgartirish 90/180 kun hisoblagichini qayta hisoblaydi",
+    "purposeHint": "Tashrif maqsadini o'zgartirish patent olish huquqiga ta'sir qilishi mumkin",
+    "eaeuNote": "YEAES: Patent talab qilinmaydi",
+    "myDocuments": "Mening hujjatlarim",
+    "markDocuments": "Sizda mavjud hujjatlarni belgilang",
+    "documentsCount": "Hujjatlar"
   },
   "documents": {
     "title": "Mening hujjatlarim",
+    "encrypted": "Shifrlangan",
+    "activeRegistry": "Hujjatlar reestri",
     "create": "Hujjat yaratish",
     "createNew": "Yangi hujjat yaratish",
     "available": "Mavjud shakllar",
     "generated": "Yaratilgan hujjatlar",
+    "scanOcr": "Skanerlash (OCR)",
+    "instruction": "Ko'rsatma",
     "categories": {
       "registration": "Ro'yxatdan o'tish",
       "patent": "Patent",
@@ -400,7 +433,38 @@
       "completed": "Tayyor",
       "submitted": "Yuborildi",
       "approved": "Tasdiqlandi",
-      "rejected": "Rad etildi"
+      "rejected": "Rad etildi",
+      "active": "Faol",
+      "expired": "Muddati tugagan",
+      "missing": "Yo'q"
+    },
+    "types": {
+      "passport": "Pasport",
+      "migCard": "Migratsiya kartasi",
+      "registration": "Ro'yxatdan o'tish (Xabarnoma)",
+      "greenCard": "Yashil karta (Daktiloskopiya)",
+      "education": "Sertifikat / Diplom",
+      "patent": "Patent",
+      "contract": "Mehnat shartnomasi",
+      "receipts": "Cheklar (NDFL)",
+      "insurance": "DMS polisi",
+      "inn": "INN / SNILS",
+      "family": "Nikoh / tug'ilish guvohnomasi"
+    },
+    "statusText": {
+      "active": "Faol",
+      "activeF": "Faol",
+      "activePl": "Dolzarb",
+      "expired": "Muddati tugagan",
+      "missing": "Yo'q",
+      "payIn": "{{days}} kundan keyin to'lang"
+    },
+    "actions": {
+      "update": "Yangilash",
+      "add": "Qo'shish",
+      "extend": "Uzaytirish",
+      "get": "Olish",
+      "apply": "Rasmiylashtirish"
     },
     "wizard": {
       "selectDocument": "Hujjatni tanlang",
@@ -473,12 +537,86 @@
       }
     },
     "estimatedTime": "To'ldirish vaqti",
-    "minutes": "daq"
+    "minutes": "daq",
+    "patent": {
+      "title": "Patent"
+    },
+    "registration": {
+      "title": "Ro'yxatdan o'tish"
+    }
   },
   "services": {
     "title": "Xizmatlar",
     "subtitle": "Vositalar va xizmatlar",
-    "otherServices": "Boshqa xizmatlar",
+    "mainServices": "Asosiy xizmatlar",
+    "otherServices": {
+      "title": "Boshqa xizmatlar",
+      "subtitle": "Qo'shimcha vositalar",
+      "tip": "💡 Maslahat: Bu vositalar Rossiyadagi kundalik hayotingizda yordam beradi."
+    },
+    "items": {
+      "autofill": {
+        "title": "✍️ Mening arizalarim",
+        "subtitle": "Hujjatlar yaratish"
+      },
+      "check": {
+        "title": "Taqiqlarni tekshirish",
+        "subtitle": "IIV/FSSP bazalari"
+      },
+      "payment": {
+        "title": "Patent to'lovi",
+        "subtitle": "Tezkor to'lov"
+      },
+      "map": {
+        "title": "Migrant xaritasi",
+        "subtitle": "IIV, MMM, Yo'nalishlar"
+      },
+      "other": {
+        "title": "🧩 Boshqa xizmatlar",
+        "subtitle": "qo'shimcha"
+      },
+      "translator": {
+        "title": "🗣️ Tarjimon",
+        "subtitle": "Matn/Ovoz/Rasm"
+      },
+      "contracts": {
+        "title": "📝 Shartnoma konstruktori",
+        "subtitle": "RU + Ona tili"
+      },
+      "jobs": {
+        "title": "💼 Ish qidirish",
+        "subtitle": "Patentli vakansiyalar"
+      },
+      "housing": {
+        "title": "🏠 Uy-joy qidirish",
+        "subtitle": "Ro'yxat bilan"
+      },
+      "calculator": {
+        "title": "🧮 Kalkulyator",
+        "subtitle": "90/180 kun"
+      },
+      "exam": {
+        "title": "📚 Rus tili imtihoni",
+        "subtitle": "Test trenajyori"
+      },
+      "mosques": {
+        "title": "🕌 Masjidlar xaritasi",
+        "subtitle": "Masjid topish"
+      },
+      "insurance": {
+        "title": "🏥 DMS / Tibbiy",
+        "subtitle": "Sug'urta"
+      },
+      "banCheck": {
+        "title": "🛡️ Tekshirish",
+        "subtitle": "IIV/FSSP"
+      }
+    },
+    "migrantMap": {
+      "title": "Migrant xaritasi",
+      "selectCategory": "Qidiruv kategoriyasini tanlang:",
+      "openMap": "Xaritani ochish"
+    },
     "banCheck": {
       "title": "Taqiqlarni tekshirish",
       "subtitle": "IIV / FSSP",
@@ -564,6 +702,7 @@
     "total": "Jami to'lov",
     "perMonth": "oyiga",
     "months": "oy",
+    "pay": "To'lash",
     "monthsCount": {
       "1": "1 oy",
       "2": "2 oy",
@@ -604,12 +743,28 @@
       "title": "Meni ushladilar",
       "description": "Ushlanganda ko'rsatmalar va kontaktlar"
     },
+    "lostDocuments": {
+      "title": "Hujjatlarni yo'qotdim",
+      "subtitle": "Hujjatlarni tiklash",
+      "selectDocument": "Qaysi hujjatni yo'qotdingiz?",
+      "recoverySteps": "Tiklash bosqichlari",
+      "importantNote": "Muhim",
+      "timeLimit": "Hujjatni 3 kun ichida tiklash kerak",
+      "startRecovery": "Tiklashni boshlash"
+    },
+    "legalHelp": {
+      "title": "Yuridik yordam",
+      "subtitle": "Advokat maslahati"
+    },
+    "embassy": {
+      "title": "Elchixona bilan aloqa",
+      "subtitle": "Konsullik yordami"
+    },
     "emergency": "Favqulodda xizmatlar",
     "police": "Politsiya",
     "ambulance": "Tez yordam",
     "fire": "O't o'chirish xizmati",
     "hotline": "IIV ishonch telefoni",
-    "embassy": "Elchixona",
     "lawyer": "Yurist chaqirish",
     "call": "Qo'ng'iroq qilish",
     "instructions": {
@@ -627,6 +782,36 @@
       "right2": "Elchixonaga qo'ng'iroq qilish huquqi",
       "right3": "Yuridik yordam huquqi",
       "right4": "O'zingizga qarshi guvohlik bermaslik huquqi"
+    },
+    "documentRecovery": {
+      "passport": {
+        "steps": [
+          "O'z mamlakatiningiz elchixonasi/konsulxonasiga murojaat qiling",
+          "Yo'qotish to'g'risida ariza bering",
+          "Chiqish uchun ma'lumotnoma yoki yangi pasport oling"
+        ]
+      },
+      "migCard": {
+        "steps": [
+          "Turish joyi bo'yicha IIV bo'limiga murojaat qiling",
+          "Yo'qotish to'g'risida ariza yozing",
+          "Migratsiya kartasi dublikatini oling"
+        ]
+      },
+      "registration": {
+        "steps": [
+          "Qabul qiluvchi tomonga murojaat qiling",
+          "Kelish to'g'risida qayta xabarnoma bering",
+          "Yangi uzilma talon oling"
+        ]
+      },
+      "patent": {
+        "steps": [
+          "Migratsiya markaziga (MMM) murojaat qiling",
+          "Dublikat berish to'g'risida ariza bering",
+          "Dublikat uchun davlat boji to'lang"
+        ]
+      }
     }
   },
   "dashboard": {
@@ -637,6 +822,28 @@
     "recentDocuments": "So'nggi hujjatlar",
     "notifications": "Bildirishnomalar",
     "noNotifications": "Yangi bildirishnomalar yo'q",
+    "daysRemaining": "Qoldi",
+    "attentionRequired": "E'tibor kerak",
+    "tabs": {
+      "home": "Bosh sahifa",
+      "documents": "Hujjatlar",
+      "services": "Xizmatlar",
+      "assistant": "Yordamchi",
+      "sos": "SOS"
+    },
+    "hero": {
+      "title": "Legalizatsiya ustasi",
+      "subtitle": "Shaxsiy hujjatlar rejasi",
+      "description": "Bir necha savollarga javob bering va barcha kerakli hujjatlarni rasmiylashtirish bo'yicha bosqichma-bosqich reja oling"
+    },
+    "cards": {
+      "patent": {
+        "expiresIn": "{{days}} kundan keyin to'lang"
+      },
+      "registration": {
+        "needExtend": "Ro'yxatni uzaytirish kerak"
+      }
+    },
     "statusCards": {
       "registration": "Ro'yxat",
       "patent": "Patent",
@@ -648,14 +855,41 @@
       "expiringSoon": "Tez tugaydi",
       "notRegistered": "Ro'yxatdan o'tmagan",
       "paid": "To'langan",
-      "unpaid": "To'lanmagan"
+      "unpaid": "To'lanmagan",
+      "legal": "Legal",
+      "risk": "Risk",
+      "illegal": "Illegal"
+    }
+  },
+  "history": {
+    "title": "Tarix",
+    "subtitle": "Operatsiyalar va to'lovlar jurnali",
+    "items": {
+      "patentPayment": "Patent to'lovi",
+      "registrationExtension": "Ro'yxatni uzaytirish",
+      "medicalCertificate": "Tibbiy ma'lumotnoma",
+      "entryRF": "RFga kirish"
+    },
+    "details": {
+      "amount": "Summa",
+      "documentsSubmitted": "Hujjatlar IIVga topshirildi",
+      "receivedAt": "Olingan joy",
+      "border": "Chegara"
     }
   },
   "assistant": {
-    "title": "Yordamchi",
-    "subtitle": "Savol bering",
-    "placeholder": "Savolingizni yozing...",
+    "title": "AI-Yordamchi",
+    "subtitle": "24/7 yordam",
+    "placeholder": "Migratsiya haqida savol bering...",
     "send": "Yuborish",
+    "thinking": "O'ylayapman...",
+    "greeting": "Assalomu alaykum! Men migratsiya masalalarida shaxsiy yordamchingizman. Qanday yordam bera olaman?",
+    "quickChips": {
+      "patent": "Patentni qanday olish?",
+      "registration": "Ro'yxatni uzaytirish",
+      "documents": "Qanday hujjatlar kerak?",
+      "ban": "Taqiqni tekshirish"
+    },
     "quickQuestions": {
       "title": "Tez-tez beriladigan savollar",
       "registration": "Ro'yxatni qanday uzaytirish mumkin?",
@@ -663,7 +897,8 @@
       "documents": "Qanday hujjatlar kerak?",
       "ban": "Kirish taqiqini qanday tekshirish mumkin?",
       "work": "Ish qanday topish mumkin?"
-    }
+    },
+    "voiceInput": "Ovozli kiritish"
   },
   "notifications": {
     "patentExpiry": "Patent muddati tugayapti",
@@ -692,6 +927,12 @@
     "retry": "Qayta urinish"
   },
   "poi": {
+    "mvd": "IIV bo'limlari",
+    "migrationDepts": "Migratsiya bo'limlari",
+    "medCenters": "Tibbiyot markazlari (MMM)",
+    "authorizedOnly": "Faqat akkreditatsiyalangan",
+    "examCenters": "Rus tili/tarix imtihoni",
+    "testingCenters": "Sinov markazlari",
     "types": {
       "mvd": "IIV bo'limi",
       "mmc": "Migratsiya markazi",

@@ -62,7 +62,7 @@ export function HomeScreen() {
           <button
             onClick={() => setShowProfileEdit(true)}
             className="p-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors active:scale-95"
-            title="Редактировать профиль"
+            title={t('profile.editTitle')}
           >
             <Edit2 className="w-5 h-5" />
           </button>
@@ -171,62 +171,62 @@ export function HomeScreen() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <History className="w-6 h-6 text-purple-600" />
-                <h3 className="text-xl font-bold text-gray-900">📜 История</h3>
+                <h3 className="text-xl font-bold text-gray-900">📜 {t('history.title')}</h3>
               </div>
               <button onClick={() => setShowHistory(false)} className="p-2 hover:bg-gray-100 rounded-full">
                 ✕
               </button>
             </div>
 
-            <p className="text-sm text-gray-600 mb-4">Журнал операций и платежей</p>
+            <p className="text-sm text-gray-600 mb-4">{t('history.subtitle')}</p>
 
             <div className="space-y-3">
               {/* History Items */}
               <div className="p-4 bg-green-50 border-l-4 border-green-500 rounded-lg">
                 <div className="flex items-start justify-between mb-1">
-                  <h4 className="font-bold text-gray-900">Оплата патента</h4>
+                  <h4 className="font-bold text-gray-900">{t('history.items.patentPayment')}</h4>
                   <span className="text-xs text-gray-500">15.01.2024</span>
                 </div>
-                <p className="text-sm text-gray-600">Сумма: 5,000₽</p>
+                <p className="text-sm text-gray-600">{t('history.details.amount')}: 5,000₽</p>
                 <div className="flex items-center gap-1 mt-1">
                   <Lock className="w-3 h-3 text-green-600" />
-                  <span className="text-xs text-green-600 font-medium">Зашифровано</span>
+                  <span className="text-xs text-green-600 font-medium">{t('common.encrypted')}</span>
                 </div>
               </div>
 
               <div className="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
                 <div className="flex items-start justify-between mb-1">
-                  <h4 className="font-bold text-gray-900">Продление регистрации</h4>
+                  <h4 className="font-bold text-gray-900">{t('history.items.registrationExtension')}</h4>
                   <span className="text-xs text-gray-500">10.01.2024</span>
                 </div>
-                <p className="text-sm text-gray-600">Документы поданы в МВД</p>
+                <p className="text-sm text-gray-600">{t('history.details.documentsSubmitted')}</p>
                 <div className="flex items-center gap-1 mt-1">
                   <Lock className="w-3 h-3 text-blue-600" />
-                  <span className="text-xs text-blue-600 font-medium">Зашифровано</span>
+                  <span className="text-xs text-blue-600 font-medium">{t('common.encrypted')}</span>
                 </div>
               </div>
 
               <div className="p-4 bg-purple-50 border-l-4 border-purple-500 rounded-lg">
                 <div className="flex items-start justify-between mb-1">
-                  <h4 className="font-bold text-gray-900">Медицинская справка</h4>
+                  <h4 className="font-bold text-gray-900">{t('history.items.medicalCertificate')}</h4>
                   <span className="text-xs text-gray-500">05.01.2024</span>
                 </div>
-                <p className="text-sm text-gray-600">Получена в ММЦ №3</p>
+                <p className="text-sm text-gray-600">{t('history.details.receivedAt')} ММЦ №3</p>
                 <div className="flex items-center gap-1 mt-1">
                   <Lock className="w-3 h-3 text-purple-600" />
-                  <span className="text-xs text-purple-600 font-medium">Зашифровано</span>
+                  <span className="text-xs text-purple-600 font-medium">{t('common.encrypted')}</span>
                 </div>
               </div>
 
               <div className="p-4 bg-orange-50 border-l-4 border-orange-500 rounded-lg">
                 <div className="flex items-start justify-between mb-1">
-                  <h4 className="font-bold text-gray-900">Въезд в РФ</h4>
+                  <h4 className="font-bold text-gray-900">{t('history.items.entryRF')}</h4>
                   <span className="text-xs text-gray-500">01.01.2024</span>
                 </div>
-                <p className="text-sm text-gray-600">Граница: Домодедово</p>
+                <p className="text-sm text-gray-600">{t('history.details.border')}: Домодедово</p>
                 <div className="flex items-center gap-1 mt-1">
                   <Lock className="w-3 h-3 text-orange-600" />
-                  <span className="text-xs text-orange-600 font-medium">Зашифровано</span>
+                  <span className="text-xs text-orange-600 font-medium">{t('common.encrypted')}</span>
                 </div>
               </div>
             </div>
@@ -235,7 +235,7 @@ export function HomeScreen() {
               onClick={() => setShowHistory(false)}
               className="w-full mt-6 bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition-colors"
             >
-              Закрыть
+              {t('common.close')}
             </button>
           </div>
         </div>
@@ -248,7 +248,7 @@ export function HomeScreen() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Edit2 className="w-6 h-6 text-blue-600" />
-                <h3 className="text-xl font-bold text-gray-900">Редактировать профиль</h3>
+                <h3 className="text-xl font-bold text-gray-900">{t('profile.editTitle')}</h3>
               </div>
               <button onClick={() => setShowProfileEdit(false)} className="p-2 hover:bg-gray-100 rounded-full">
                 <X className="w-6 h-6" />
@@ -259,13 +259,13 @@ export function HomeScreen() {
               {/* Full Name */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  ФИО (Полное имя)
+                  {t('profile.fields.fullName')}
                 </label>
                 <input
                   type="text"
                   value={editFullName}
                   onChange={(e) => setEditFullName(e.target.value)}
-                  placeholder="Иванов Иван Иванович"
+                  placeholder={t('profile.fields.fullNamePlaceholder')}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -273,33 +273,33 @@ export function HomeScreen() {
               {/* Citizenship */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Гражданство
+                  {t('profile.fields.citizenship')}
                 </label>
                 <select
                   value={editCitizenship}
                   onChange={(e) => setEditCitizenship(e.target.value)}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="Узбекистан">🇺🇿 Узбекистан</option>
-                  <option value="Таджикистан">🇹🇯 Таджикистан</option>
-                  <option value="Киргизия">🇰🇬 Кыргызстан</option>
-                  <option value="Армения">🇦🇲 Армения (ЕАЭС)</option>
-                  <option value="Азербайджан">🇦🇿 Азербайджан</option>
-                  <option value="Беларусь">🇧🇾 Беларусь (ЕАЭС)</option>
-                  <option value="Грузия">🇬🇪 Грузия</option>
-                  <option value="Казахстан">🇰🇿 Казахстан (ЕАЭС)</option>
-                  <option value="Молдова">🇲🇩 Молдова</option>
-                  <option value="Украина">🇺🇦 Украина</option>
-                  <option value="Китай">🇨🇳 Китай</option>
-                  <option value="Индия">🇮🇳 Индия</option>
-                  <option value="Вьетнам">🇻🇳 Вьетнам</option>
+                  <option value="UZ">🇺🇿 {t('countries.UZ')}</option>
+                  <option value="TJ">🇹🇯 {t('countries.TJ')}</option>
+                  <option value="KG">🇰🇬 {t('countries.KG')}</option>
+                  <option value="AM">🇦🇲 {t('countries.AM')} (ЕАЭС)</option>
+                  <option value="AZ">🇦🇿 {t('countries.AZ')}</option>
+                  <option value="BY">🇧🇾 {t('countries.BY')} (ЕАЭС)</option>
+                  <option value="GE">🇬🇪 {t('countries.GE')}</option>
+                  <option value="KZ">🇰🇿 {t('countries.KZ')} (ЕАЭС)</option>
+                  <option value="MD">🇲🇩 {t('countries.MD')}</option>
+                  <option value="UA">🇺🇦 {t('countries.UA')}</option>
+                  <option value="CN">🇨🇳 {t('countries.CN')}</option>
+                  <option value="IN">🇮🇳 {t('countries.IN')}</option>
+                  <option value="VN">🇻🇳 {t('countries.VN')}</option>
                 </select>
-                
+
                 {/* EAEU Note */}
-                {['Армения', 'Беларусь', 'Казахстан'].includes(editCitizenship) && (
+                {['AM', 'BY', 'KZ'].includes(editCitizenship) && (
                   <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg">
                     <p className="text-xs text-green-800">
-                      ✅ ЕАЭС: Патент не требуется
+                      ✅ {t('profile.eaeuNote')}
                     </p>
                   </div>
                 )}
@@ -308,35 +308,35 @@ export function HomeScreen() {
               {/* Region */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Куда прибыл (Регион)
+                  {t('profile.fields.region')}
                 </label>
                 <select
                   value={editRegion}
                   onChange={(e) => setEditRegion(e.target.value)}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="Москва">🏙️ Москва</option>
-                  <option value="Санкт-Петербург">🏛️ Санкт-Петербург</option>
-                  <option value="Новосибирск">❄️ Новосибирск</option>
-                  <option value="Екатеринбург">Екатеринбург</option>
-                  <option value="Казань">Казань</option>
-                  <option value="Нижний Новгород">Нижний Новгород</option>
-                  <option value="Самара">Самара</option>
-                  <option value="Омск">Омск</option>
-                  <option value="Челябинск">Челябинск</option>
-                  <option value="Ростов-на-Дону">Ростов-на-Дону</option>
-                  <option value="Уфа">Уфа</option>
-                  <option value="Красноярск">Красноярск</option>
-                  <option value="Воронеж">Воронеж</option>
-                  <option value="Пермь">Пермь</option>
-                  <option value="Волгоград">Волгоград</option>
+                  <option value="moscow">🏙️ {t('cities.moscow')}</option>
+                  <option value="saintPetersburg">🏛️ {t('cities.saintPetersburg')}</option>
+                  <option value="novosibirsk">❄️ {t('cities.novosibirsk')}</option>
+                  <option value="yekaterinburg">{t('cities.yekaterinburg')}</option>
+                  <option value="kazan">{t('cities.kazan')}</option>
+                  <option value="nizhnyNovgorod">{t('cities.nizhnyNovgorod')}</option>
+                  <option value="samara">{t('cities.samara')}</option>
+                  <option value="omsk">{t('cities.omsk')}</option>
+                  <option value="chelyabinsk">{t('cities.chelyabinsk')}</option>
+                  <option value="rostovOnDon">{t('cities.rostovOnDon')}</option>
+                  <option value="ufa">{t('cities.ufa')}</option>
+                  <option value="krasnoyarsk">{t('cities.krasnoyarsk')}</option>
+                  <option value="voronezh">{t('cities.voronezh')}</option>
+                  <option value="perm">{t('cities.perm')}</option>
+                  <option value="volgograd">{t('cities.volgograd')}</option>
                 </select>
               </div>
 
               {/* Entry Date */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Дата въезда
+                  {t('profile.fields.entryDate')}
                 </label>
                 <input
                   type="date"
@@ -353,7 +353,7 @@ export function HomeScreen() {
                     }}
                     className="px-3 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-100 transition-colors active:scale-95 border border-blue-200"
                   >
-                    Сегодня
+                    {t('common.today')}
                   </button>
                   <button
                     onClick={() => {
@@ -363,25 +363,25 @@ export function HomeScreen() {
                     }}
                     className="px-3 py-1.5 bg-gray-50 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors active:scale-95 border border-gray-200"
                   >
-                    Вчера
+                    {t('common.yesterday')}
                   </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
-                  ⚠️ Изменение даты въезда пересчитает счетчик 90/180 дней
+                  ⚠️ {t('profile.dateHint')}
                 </p>
               </div>
 
               {/* Purpose of Visit */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Цель визита
+                  {t('profile.fields.purpose')}
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { value: 'work', label: '💼 Работа', subtitle: 'Трудовая деятельность' },
-                    { value: 'study', label: '📚 Учеба', subtitle: 'Вузы/колледжи' },
-                    { value: 'tourism', label: '✈️ Туризм', subtitle: 'Отдых' },
-                    { value: 'private', label: '🏠 Частный', subtitle: 'Гости' },
+                    { value: 'work', label: `💼 ${t('profile.purposes.work')}`, subtitle: t('profile.purposes.workSubtitle') },
+                    { value: 'study', label: `📚 ${t('profile.purposes.study')}`, subtitle: t('profile.purposes.studySubtitle') },
+                    { value: 'tourism', label: `✈️ ${t('profile.purposes.tourist')}`, subtitle: t('profile.purposes.touristSubtitle') },
+                    { value: 'private', label: `🏠 ${t('profile.purposes.private')}`, subtitle: t('profile.purposes.privateSubtitle') },
                   ].map((option) => (
                     <button
                       key={option.value}
@@ -410,36 +410,36 @@ export function HomeScreen() {
                 </div>
                 <div className="mt-3 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
                   <p className="text-xs text-yellow-800">
-                    ⚠️ Изменение цели визита может повлиять на право получения патента
+                    ⚠️ {t('profile.purposeHint')}
                   </p>
                 </div>
               </div>
 
               {/* Document Checklist */}
               <div className="pt-4 border-t-2 border-gray-200">
-                <h4 className="text-sm font-bold text-gray-900 mb-3">Мои документы</h4>
-                <p className="text-xs text-gray-500 mb-3">Отметьте документы, которые у вас есть</p>
-                
+                <h4 className="text-sm font-bold text-gray-900 mb-3">{t('profile.myDocuments')}</h4>
+                <p className="text-xs text-gray-500 mb-3">{t('profile.markDocuments')}</p>
+
                 <div className="space-y-2">
                   {[
                     // УРОВЕНЬ 1: ОСНОВА
-                    { id: 'passport', label: '🛂 Паспорт' },
-                    
+                    { id: 'passport', label: `🛂 ${t('documents.types.passport')}` },
+
                     // УРОВЕНЬ 2: ВЪЕЗД И ПРЕБЫВАНИЕ
-                    { id: 'mig_card', label: '🎫 Миграционная карта' },
-                    { id: 'registration', label: '📋 Регистрация' },
-                    
+                    { id: 'mig_card', label: `🎫 ${t('documents.types.migCard')}` },
+                    { id: 'registration', label: `📋 ${t('documents.types.registration')}` },
+
                     // УРОВЕНЬ 3: РАБОТА
-                    { id: 'green_card', label: '💳 Зеленая карта' },
-                    { id: 'education', label: '🎓 Сертификат / Диплом' },
-                    { id: 'patent', label: '📄 Патент' },
-                    { id: 'contract', label: '📝 Трудовой договор' },
-                    
+                    { id: 'green_card', label: `💳 ${t('documents.types.greenCard')}` },
+                    { id: 'education', label: `🎓 ${t('documents.types.education')}` },
+                    { id: 'patent', label: `📄 ${t('documents.types.patent')}` },
+                    { id: 'contract', label: `📝 ${t('documents.types.contract')}` },
+
                     // УРОВЕНЬ 4: ПОДДЕРЖКА
-                    { id: 'receipts', label: '🧾 Чеки (НДФЛ)' },
-                    { id: 'insurance', label: '🩺 Полис ДМС' },
-                    { id: 'inn', label: '🔢 ИНН / СНИЛС' },
-                    { id: 'family', label: '💍 Св-во о браке / рождении' },
+                    { id: 'receipts', label: `🧾 ${t('documents.types.receipts')}` },
+                    { id: 'insurance', label: `🩺 ${t('documents.types.insurance')}` },
+                    { id: 'inn', label: `🔢 ${t('documents.types.inn')}` },
+                    { id: 'family', label: `💍 ${t('documents.types.family')}` },
                   ].map((doc) => {
                     const isChecked = checkedDocs.includes(doc.id);
                     
@@ -477,38 +477,38 @@ export function HomeScreen() {
                 {/* Status Calculation */}
                 <div className="mt-4 p-3 rounded-xl border-2 bg-gradient-to-br from-gray-50 to-gray-100">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-gray-700">Статус:</span>
+                    <span className="text-sm font-semibold text-gray-700">{t('common.status')}:</span>
                     {checkedDocs.length >= 7 ? (
                       <div className="flex items-center gap-1.5 px-3 py-1 bg-green-500 rounded-full">
                         <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                        <span className="text-xs font-bold text-white">Legal</span>
+                        <span className="text-xs font-bold text-white">{t('dashboard.statusValues.legal')}</span>
                       </div>
                     ) : checkedDocs.length >= 4 ? (
                       <div className="flex items-center gap-1.5 px-3 py-1 bg-yellow-500 rounded-full">
                         <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                        <span className="text-xs font-bold text-white">Risk</span>
+                        <span className="text-xs font-bold text-white">{t('dashboard.statusValues.risk')}</span>
                       </div>
                     ) : (
                       <div className="flex items-center gap-1.5 px-3 py-1 bg-red-500 rounded-full">
                         <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                        <span className="text-xs font-bold text-white">Illegal</span>
+                        <span className="text-xs font-bold text-white">{t('dashboard.statusValues.illegal')}</span>
                       </div>
                     )}
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
-                    Документов: {checkedDocs.length} из 11
+                    {t('profile.documentsCount')}: {checkedDocs.length} {t('common.outOf')} 11
                   </p>
                 </div>
               </div>
 
               {/* Settings Section */}
               <div className="pt-4 border-t-2 border-gray-200">
-                <h4 className="text-sm font-bold text-gray-900 mb-3">Настройки</h4>
-                
+                <h4 className="text-sm font-bold text-gray-900 mb-3">{t('profile.settings.title')}</h4>
+
                 {/* Language Selector */}
                 <div className="mb-4">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Язык интерфейса
+                    {t('profile.settings.interfaceLanguage')}
                   </label>
                   <button 
                     onClick={() => setShowLanguageModal(true)}
@@ -517,11 +517,11 @@ export function HomeScreen() {
                     <div className="flex items-center gap-2">
                       <Globe className="w-5 h-5 text-gray-600" />
                       <span className="font-medium text-gray-700">
-                        {selectedLanguage === 'ru' && '🇷🇺 Русский'}
-                        {selectedLanguage === 'uz' && '🇺🇿 O\'zbek'}
-                        {selectedLanguage === 'tj' && '🇹🇯 Тоҷикӣ'}
-                        {selectedLanguage === 'kg' && '🇰🇬 Кыргызча'}
-                        {!['ru', 'uz', 'tj', 'kg'].includes(selectedLanguage) && `🌐 ${selectedLanguage}`}
+                        {language === 'ru' && '🇷🇺 Русский'}
+                        {language === 'uz' && '🇺🇿 O\'zbek'}
+                        {language === 'tg' && '🇹🇯 Тоҷикӣ'}
+                        {language === 'ky' && '🇰🇬 Кыргызча'}
+                        {!['ru', 'uz', 'tg', 'ky'].includes(language) && `🌐 ${language}`}
                       </span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-gray-400" />
@@ -531,10 +531,10 @@ export function HomeScreen() {
                 {/* Delete Data */}
                 <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 border-2 border-red-200 rounded-xl hover:bg-red-100 transition-colors">
                   <Trash2 className="w-5 h-5 text-red-600" />
-                  <span className="font-semibold text-red-600">Удалить все данные</span>
+                  <span className="font-semibold text-red-600">{t('profile.settings.deleteData')}</span>
                 </button>
                 <p className="text-xs text-gray-500 text-center mt-2">
-                  Это действие необратимо. Все документы и история будут удалены.
+                  {t('profile.settings.deleteDataWarning')}
                 </p>
               </div>
             </div>
@@ -545,14 +545,14 @@ export function HomeScreen() {
                 onClick={() => setShowProfileEdit(false)}
                 className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-colors"
               >
-                Сохранить изменения
+                {t('profile.saveChanges')}
               </button>
-              
+
               <button
                 onClick={() => setShowProfileEdit(false)}
                 className="w-full bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-300 transition-colors"
               >
-                Отмена
+                {t('common.cancel')}
               </button>
             </div>
           </div>
@@ -565,11 +565,11 @@ export function HomeScreen() {
           <div className="w-full bg-white rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-300 max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-xl font-bold text-gray-900">🧩 Другие услуги</h3>
-                <p className="text-sm text-gray-500">Дополнительные инструменты</p>
+                <h3 className="text-xl font-bold text-gray-900">{t('services.otherServices.title')}</h3>
+                <p className="text-sm text-gray-500">{t('services.otherServices.subtitle')}</p>
               </div>
-              <button 
-                onClick={() => setShowOtherServices(false)} 
+              <button
+                onClick={() => setShowOtherServices(false)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
                 <X className="w-6 h-6 text-gray-600" />
@@ -583,8 +583,8 @@ export function HomeScreen() {
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
                   <Languages className="w-7 h-7 text-indigo-600" strokeWidth={2} />
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">🗣️ Переводчик</h3>
-                <p className="text-xs text-gray-600 text-center">Текст/Голос/Фото</p>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">{t('services.items.translator.title')}</h3>
+                <p className="text-xs text-gray-600 text-center">{t('services.items.translator.subtitle')}</p>
               </button>
 
               {/* Contracts */}
@@ -592,8 +592,8 @@ export function HomeScreen() {
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
                   <FileCheck className="w-7 h-7 text-orange-600" strokeWidth={2} />
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">📝 Договоры</h3>
-                <p className="text-xs text-gray-600 text-center">Шаблоны</p>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">{t('services.items.contracts.title')}</h3>
+                <p className="text-xs text-gray-600 text-center">{t('services.items.contracts.subtitle')}</p>
               </button>
 
               {/* Jobs */}
@@ -601,8 +601,8 @@ export function HomeScreen() {
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
                   <Briefcase className="w-7 h-7 text-green-600" strokeWidth={2} />
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">💼 Работа</h3>
-                <p className="text-xs text-gray-600 text-center">Вакансии</p>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">{t('services.items.jobs.title')}</h3>
+                <p className="text-xs text-gray-600 text-center">{t('services.items.jobs.subtitle')}</p>
               </button>
 
               {/* Housing */}
@@ -610,8 +610,8 @@ export function HomeScreen() {
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
                   <HomeIcon className="w-7 h-7 text-purple-600" strokeWidth={2} />
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">🏠 Жилье</h3>
-                <p className="text-xs text-gray-600 text-center">С регистрацией</p>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">{t('services.items.housing.title')}</h3>
+                <p className="text-xs text-gray-600 text-center">{t('services.items.housing.subtitle')}</p>
               </button>
 
               {/* Calculator */}
@@ -619,8 +619,8 @@ export function HomeScreen() {
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
                   <Calculator className="w-7 h-7 text-blue-600" strokeWidth={2} />
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">🧮 Калькулятор</h3>
-                <p className="text-xs text-gray-600 text-center">90/180 дней</p>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">{t('services.items.calculator.title')}</h3>
+                <p className="text-xs text-gray-600 text-center">{t('services.items.calculator.subtitle')}</p>
               </button>
 
               {/* Medical/Insurance */}
@@ -628,8 +628,8 @@ export function HomeScreen() {
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
                   <Shield className="w-7 h-7 text-pink-600" strokeWidth={2} />
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">🏥 ДМС / Мед</h3>
-                <p className="text-xs text-gray-600 text-center">Страхование</p>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">{t('services.items.insurance.title')}</h3>
+                <p className="text-xs text-gray-600 text-center">{t('services.items.insurance.subtitle')}</p>
               </button>
 
               {/* Map */}
@@ -637,8 +637,8 @@ export function HomeScreen() {
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
                   <MapPin className="w-7 h-7 text-red-600" strokeWidth={2} />
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">🗺️ Карта</h3>
-                <p className="text-xs text-gray-600 text-center">МВД, ММЦ</p>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">{t('services.items.map.title')}</h3>
+                <p className="text-xs text-gray-600 text-center">{t('services.items.map.subtitle')}</p>
               </button>
 
               {/* Ban Check */}
@@ -646,15 +646,15 @@ export function HomeScreen() {
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
                   <Shield className="w-7 h-7 text-yellow-600" strokeWidth={2} />
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">🛡️ Проверка</h3>
-                <p className="text-xs text-gray-600 text-center">МВД/ФССП</p>
+                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">{t('services.items.banCheck.title')}</h3>
+                <p className="text-xs text-gray-600 text-center">{t('services.items.banCheck.subtitle')}</p>
               </button>
             </div>
 
             {/* Info Card */}
             <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl mb-4 mt-6">
               <p className="text-sm text-blue-800">
-                💡 <strong>Совет:</strong> Эти инструменты помогут вам в повседневной жизни в России.
+                {t('services.otherServices.tip')}
               </p>
             </div>
 
@@ -663,7 +663,7 @@ export function HomeScreen() {
               onClick={() => setShowOtherServices(false)}
               className="w-full bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition-colors"
             >
-              Закрыть
+              {t('common.close')}
             </button>
           </div>
         </div>
@@ -691,22 +691,22 @@ export function HomeScreen() {
 
             {/* Base 4 Languages */}
             <div className="space-y-3 mb-6">
-              <h4 className="text-sm font-semibold text-gray-600 mb-3">Основные языки</h4>
+              <h4 className="text-sm font-semibold text-gray-600 mb-3">{t('languages.mainLanguages')}</h4>
               
               {[
                 { code: 'ru', flag: '🇷🇺', name: 'Русский', native: 'Русский' },
                 { code: 'uz', flag: '🇺🇿', name: 'Узбекский', native: 'O\'zbek' },
-                { code: 'tj', flag: '🇹🇯', name: 'Таджикский', native: 'Тоҷикӣ' },
-                { code: 'kg', flag: '🇰🇬', name: 'Киргизский', native: 'Кыргызча' },
+                { code: 'tg', flag: '🇹🇯', name: 'Таджикский', native: 'Тоҷикӣ' },
+                { code: 'ky', flag: '🇰🇬', name: 'Киргизский', native: 'Кыргызча' },
               ].map((lang) => (
                 <button
                   key={lang.code}
                   onClick={() => {
-                    setSelectedLanguage(lang.code);
+                    setAppLanguage(lang.code);
                     setShowLanguageModal(false);
                   }}
                   className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
-                    selectedLanguage === lang.code
+                    language === lang.code
                       ? 'bg-blue-50 border-blue-500 shadow-md'
                       : 'bg-white border-gray-200 hover:border-gray-300'
                   }`}
@@ -718,7 +718,7 @@ export function HomeScreen() {
                       <p className="text-xs text-gray-500">{lang.name}</p>
                     </div>
                   </div>
-                  {selectedLanguage === lang.code && (
+                  {language === lang.code && (
                     <Check className="w-5 h-5 text-blue-600" />
                   )}
                 </button>
@@ -736,8 +736,8 @@ export function HomeScreen() {
                     <Globe className="w-5 h-5 text-white" />
                   </div>
                   <div className="text-left">
-                    <p className="font-semibold text-gray-900">🌍 Другой язык (AI)</p>
-                    <p className="text-xs text-gray-600">Перевод на лету</p>
+                    <p className="font-semibold text-gray-900">🌍 {t('languages.otherLanguages')}</p>
+                    <p className="text-xs text-gray-600">{t('languages.aiTranslation')}</p>
                   </div>
                 </div>
                 <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${showAILanguages ? 'rotate-90' : ''}`} />
@@ -761,12 +761,12 @@ export function HomeScreen() {
                     <button
                       key={lang.code}
                       onClick={() => {
-                        setSelectedLanguage(lang.code);
+                        setAppLanguage(lang.code);
                         setShowLanguageModal(false);
                         setShowAILanguages(false);
                       }}
                       className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
-                        selectedLanguage === lang.code
+                        language === lang.code
                           ? 'bg-purple-50 border-purple-300'
                           : 'bg-white border-gray-200 hover:border-gray-300'
                       }`}
@@ -775,7 +775,7 @@ export function HomeScreen() {
                         <span className="text-xl">{lang.flag}</span>
                         <span className="text-sm font-medium text-gray-700">{lang.name}</span>
                       </div>
-                      {selectedLanguage === lang.code && (
+                      {language === lang.code && (
                         <Check className="w-4 h-4 text-purple-600" />
                       )}
                     </button>
@@ -785,7 +785,7 @@ export function HomeScreen() {
                     <div className="flex items-start gap-2">
                       <Globe className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" />
                       <p className="text-xs text-purple-800 leading-relaxed">
-                        <strong>AI Перевод:</strong> Интерфейс будет переведён автоматически. Возможны небольшие неточности.
+                        {t('languages.aiNote')}
                       </p>
                     </div>
                   </div>

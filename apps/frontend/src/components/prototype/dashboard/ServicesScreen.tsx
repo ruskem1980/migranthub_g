@@ -13,22 +13,22 @@ export function ServicesScreen() {
 
   // Core Services (Main Grid)
   const coreServices = [
-    { id: 'autofill', icon: Wand2, title: '✍️ Мои Заявления', subtitle: 'Генерация документов', color: 'purple', special: true },
-    { id: 'check', icon: Shield, title: 'Проверка запретов', subtitle: 'Базы МВД/ФССП', color: 'red' },
-    { id: 'payment', icon: CreditCard, title: 'Оплата патента', subtitle: 'Быстрая оплата', color: 'green' },
-    { id: 'map', icon: MapPin, title: 'Карта Мигранта', subtitle: 'МВД, ММЦ, Маршруты', color: 'pink', hasModal: true },
-    { id: 'other', icon: Grid3x3, title: '🧩 Другие услуги', subtitle: '7 дополнительных', color: 'gray' },
+    { id: 'autofill', icon: Wand2, title: t('services.items.autofill.title'), subtitle: t('services.items.autofill.subtitle'), color: 'purple', special: true },
+    { id: 'check', icon: Shield, title: t('services.items.check.title'), subtitle: t('services.items.check.subtitle'), color: 'red' },
+    { id: 'payment', icon: CreditCard, title: t('services.items.payment.title'), subtitle: t('services.items.payment.subtitle'), color: 'green' },
+    { id: 'map', icon: MapPin, title: t('services.items.map.title'), subtitle: t('services.items.map.subtitle'), color: 'pink', hasModal: true },
+    { id: 'other', icon: Grid3x3, title: t('services.items.other.title'), subtitle: `7 ${t('services.items.other.subtitle')}`, color: 'gray' },
   ];
 
   // Secondary Services (Hidden in "Other Services")
   const otherServices = [
-    { id: 'translator', icon: Languages, title: '🗣️ Переводчик', subtitle: 'Текст/Голос/Фото', color: 'indigo' },
-    { id: 'contracts', icon: FileText, title: '📝 Конструктор договоров', subtitle: 'RU + Родной язык', color: 'orange' },
-    { id: 'jobs', icon: Briefcase, title: '💼 Поиск работы', subtitle: 'Вакансии с патентом', color: 'green' },
-    { id: 'housing', icon: Home, title: '🏠 Поиск жилья', subtitle: 'С регистрацией', color: 'purple' },
-    { id: 'calculator', icon: Calculator, title: '🧮 Калькулятор', subtitle: '90/180 дней', color: 'blue' },
-    { id: 'exam', icon: GraduationCap, title: '📚 Экзамен по русскому', subtitle: 'Тренажер тестов', color: 'emerald' },
-    { id: 'mosques', icon: Map, title: '🕌 Карта мечетей', subtitle: 'Найти мечеть', color: 'teal' },
+    { id: 'translator', icon: Languages, title: t('services.items.translator.title'), subtitle: t('services.items.translator.subtitle'), color: 'indigo' },
+    { id: 'contracts', icon: FileText, title: t('services.items.contracts.title'), subtitle: t('services.items.contracts.subtitle'), color: 'orange' },
+    { id: 'jobs', icon: Briefcase, title: t('services.items.jobs.title'), subtitle: t('services.items.jobs.subtitle'), color: 'green' },
+    { id: 'housing', icon: Home, title: t('services.items.housing.title'), subtitle: t('services.items.housing.subtitle'), color: 'purple' },
+    { id: 'calculator', icon: Calculator, title: t('services.items.calculator.title'), subtitle: t('services.items.calculator.subtitle'), color: 'blue' },
+    { id: 'exam', icon: GraduationCap, title: t('services.items.exam.title'), subtitle: t('services.items.exam.subtitle'), color: 'emerald' },
+    { id: 'mosques', icon: Map, title: t('services.items.mosques.title'), subtitle: t('services.items.mosques.subtitle'), color: 'teal' },
   ];
 
   const colorClasses: Record<string, { bg: string; icon: string }> = {

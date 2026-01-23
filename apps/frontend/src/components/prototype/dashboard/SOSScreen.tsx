@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Phone, FileX, MapPin, X, Check } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 
 // Strict bureaucratic priority order (0 = highest priority)
 const PRIORITY_ORDER = ['passport', 'mig_card', 'green_card', 'education', 'registration', 'patent', 'receipts', 'contract', 'insurance', 'inn', 'family'] as const;
@@ -51,6 +52,7 @@ const RECOVERY_INSTRUCTIONS: Record<DocumentKey, string> = {
 };
 
 export function SOSScreen() {
+  const { t } = useTranslation();
   const [showPoliceModal, setShowPoliceModal] = useState(false);
   const [showLostDocsModal, setShowLostDocsModal] = useState(false);
   const [policeReason, setPoliceReason] = useState('');
@@ -64,15 +66,15 @@ export function SOSScreen() {
         <div className="flex items-center gap-3">
           <AlertTriangle className="w-8 h-8" />
           <div>
-            <h1 className="text-xl font-bold">🚨 SOS</h1>
-            <p className="text-sm text-red-100">Экстренная помощь</p>
+            <h1 className="text-xl font-bold">🚨 {t('sos.title')}</h1>
+            <p className="text-sm text-red-100">{t('sos.subtitle')}</p>
           </div>
         </div>
       </div>
 
       {/* Main Emergency Button */}
       <div className="px-4 py-8">
-        <button 
+        <button
           onClick={() => setShowPoliceModal(true)}
           className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all active:scale-98 border-4 border-red-800"
         >
@@ -80,16 +82,16 @@ export function SOSScreen() {
             <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 animate-pulse">
               <AlertTriangle className="w-12 h-12" strokeWidth={3} />
             </div>
-            <h2 className="text-2xl font-bold mb-2">ЗАДЕРЖАЛА ПОЛИЦИЯ</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('sos.detained.title')}</h2>
             <p className="text-sm text-red-100">
-              Нажмите для получения инструкций
+              {t('sos.detained.description')}
             </p>
           </div>
         </button>
 
         <div className="mt-4 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
           <p className="text-sm text-yellow-900 font-medium text-center">
-            ⚠️ При задержании: сохраняйте спокойствие, не подписывайте документы без юриста
+            ⚠️ {t('sos.instructions.step1')}, {t('sos.instructions.step3')}
           </p>
         </div>
       </div>
@@ -97,10 +99,10 @@ export function SOSScreen() {
       {/* Secondary Actions */}
       <div className="px-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-3">
-          Другие ситуации
+          {t('sos.lostDocuments.subtitle')}
         </h3>
         <div className="space-y-3 mb-6">
-          <button 
+          <button
             onClick={() => setShowLostDocsModal(true)}
             className="w-full flex items-center gap-4 p-4 bg-orange-50 border-2 border-orange-200 rounded-2xl transition-all hover:scale-102 active:scale-98 shadow-md"
           >
@@ -108,8 +110,8 @@ export function SOSScreen() {
               <FileX className="w-6 h-6 text-orange-600" strokeWidth={2} />
             </div>
             <div className="flex-1 text-left">
-              <h4 className="font-bold text-gray-900">ПОТЕРЯЛ ДОКУМЕНТЫ</h4>
-              <p className="text-sm text-gray-600">Генерация заявления</p>
+              <h4 className="font-bold text-gray-900">{t('sos.lostDocuments.title')}</h4>
+              <p className="text-sm text-gray-600">{t('sos.lostDocuments.startRecovery')}</p>
             </div>
           </button>
 
@@ -118,36 +120,36 @@ export function SOSScreen() {
               <MapPin className="w-6 h-6 text-purple-600" strokeWidth={2} />
             </div>
             <div className="flex-1 text-left">
-              <h4 className="font-bold text-gray-900">Я в беде</h4>
-              <p className="text-sm text-gray-600">Отправить гео родным</p>
+              <h4 className="font-bold text-gray-900">{t('sos.emergency')}</h4>
+              <p className="text-sm text-gray-600">{t('sos.embassy.subtitle')}</p>
             </div>
           </button>
         </div>
 
         {/* Quick Calls */}
         <h3 className="text-lg font-semibold text-gray-900 mb-3">
-          Экстренные контакты
+          {t('sos.emergency')}
         </h3>
         <div className="grid grid-cols-2 gap-3 mb-6">
           <button className="flex flex-col items-center p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-red-300 transition-colors shadow-sm active:scale-95">
             <Phone className="w-6 h-6 text-red-600 mb-2" />
-            <div className="text-xs font-medium text-gray-600 mb-1">Полиция</div>
+            <div className="text-xs font-medium text-gray-600 mb-1">{t('sos.police')}</div>
             <div className="text-lg font-bold text-red-600">102</div>
           </button>
           <button className="flex flex-col items-center p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-red-300 transition-colors shadow-sm active:scale-95">
             <Phone className="w-6 h-6 text-red-600 mb-2" />
-            <div className="text-xs font-medium text-gray-600 mb-1">Экстренная</div>
+            <div className="text-xs font-medium text-gray-600 mb-1">{t('sos.ambulance')}</div>
             <div className="text-lg font-bold text-red-600">112</div>
           </button>
           <button className="flex flex-col items-center p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-blue-300 transition-colors shadow-sm active:scale-95">
             <span className="text-2xl mb-2">🏛</span>
-            <div className="text-xs font-medium text-gray-600 mb-1">Консульство</div>
-            <div className="text-xs font-bold text-blue-600">Связаться</div>
+            <div className="text-xs font-medium text-gray-600 mb-1">{t('sos.embassy.title')}</div>
+            <div className="text-xs font-bold text-blue-600">{t('sos.call')}</div>
           </button>
           <button className="flex flex-col items-center p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-blue-300 transition-colors shadow-sm active:scale-95">
             <span className="text-2xl mb-2">👨‍⚖️</span>
-            <div className="text-xs font-medium text-gray-600 mb-1">Юрист</div>
-            <div className="text-xs font-bold text-blue-600">Позвонить</div>
+            <div className="text-xs font-medium text-gray-600 mb-1">{t('sos.lawyer')}</div>
+            <div className="text-xs font-bold text-blue-600">{t('sos.call')}</div>
           </button>
         </div>
       </div>
@@ -157,13 +159,13 @@ export function SOSScreen() {
         <div className="fixed inset-0 bg-black/50 flex items-end z-50 animate-in fade-in duration-200">
           <div className="w-full bg-white rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-300">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Задержала полиция</h3>
+              <h3 className="text-xl font-bold text-gray-900">{t('sos.detained.title')}</h3>
               <button onClick={() => setShowPoliceModal(false)} className="p-2 hover:bg-gray-100 rounded-full">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
-            <p className="text-sm text-gray-600 mb-4">Выберите причину задержания:</p>
+            <p className="text-sm text-gray-600 mb-4">{t('sos.detained.description')}:</p>
 
             <div className="space-y-3 mb-6">
               {['Проверка документов', 'Нет документов', 'Нарушение ПДД', 'Другое'].map((reason) => (
@@ -247,7 +249,7 @@ export function SOSScreen() {
               onClick={() => setShowPoliceModal(false)}
               className="w-full bg-red-600 text-white font-bold py-4 rounded-xl hover:bg-red-700 transition-colors"
             >
-              Понятно
+              {t('common.ok')}
             </button>
           </div>
         </div>
@@ -258,13 +260,13 @@ export function SOSScreen() {
         <div className="fixed inset-0 bg-black/50 flex items-end z-50 animate-in fade-in duration-200">
           <div className="w-full bg-white rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-300 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Потерял документы</h3>
-              <button 
+              <h3 className="text-xl font-bold text-gray-900">{t('sos.lostDocuments.title')}</h3>
+              <button
                 onClick={() => {
                   setShowLostDocsModal(false);
                   setSelectedDocs(new Set());
                   setShowRecoveryPlan(false);
-                }} 
+                }}
                 className="p-2 hover:bg-gray-100 rounded-full"
               >
                 <X className="w-6 h-6" />
@@ -273,7 +275,7 @@ export function SOSScreen() {
 
             {!showRecoveryPlan ? (
               <>
-                <p className="text-sm text-gray-600 mb-4">Отметьте все потерянные документы:</p>
+                <p className="text-sm text-gray-600 mb-4">{t('sos.lostDocuments.selectDocument')}</p>
 
                 {/* Multi-select Checkboxes */}
                 <div className="space-y-3 mb-6">
@@ -322,7 +324,7 @@ export function SOSScreen() {
                   <div className="flex items-start gap-2">
                     <AlertTriangle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-yellow-800 leading-relaxed">
-                      Восстановление документов имеет строгую последовательность. Мы покажем правильный порядок действий.
+                      {t('sos.lostDocuments.importantNote')}: {t('sos.lostDocuments.timeLimit')}
                     </p>
                   </div>
                 </div>
@@ -341,7 +343,7 @@ export function SOSScreen() {
                       : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   }`}
                 >
-                  Рассчитать план восстановления
+                  {t('sos.lostDocuments.startRecovery')}
                 </button>
               </>
             ) : (
@@ -350,10 +352,10 @@ export function SOSScreen() {
                 <div className="mb-4">
                   <div className="flex items-center gap-2 mb-2">
                     <FileX className="w-5 h-5 text-orange-600" />
-                    <h4 className="font-bold text-gray-900">План восстановления</h4>
+                    <h4 className="font-bold text-gray-900">{t('sos.lostDocuments.recoverySteps')}</h4>
                   </div>
                   <p className="text-sm text-gray-600">
-                    Выполняйте шаги строго в указанном порядке:
+                    {t('sos.lostDocuments.importantNote')}:
                   </p>
                 </div>
 
@@ -397,26 +399,24 @@ export function SOSScreen() {
                 <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
                   <h4 className="font-bold text-red-900 mb-2 flex items-center gap-2">
                     <AlertTriangle className="w-5 h-5" />
-                    Критически важно
+                    {t('sos.lostDocuments.importantNote')}
                   </h4>
                   <ul className="text-sm text-red-800 space-y-1 list-disc list-inside">
-                    <li>Без паспорта невозможно восстановить другие документы</li>
-                    <li>Миграционная карта восстанавливается только после паспорта</li>
-                    <li>Патент требует полный пакет документов (паспорт, мигр.карта, регистрация)</li>
+                    <li>{t('sos.lostDocuments.timeLimit')}</li>
                   </ul>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="space-y-3">
                   <button className="w-full bg-orange-600 text-white font-bold py-4 rounded-xl hover:bg-orange-700 transition-colors">
-                    Сгенерировать заявления
+                    {t('sos.lostDocuments.startRecovery')}
                   </button>
-                  
+
                   <button
                     onClick={() => setShowRecoveryPlan(false)}
                     className="w-full bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-300 transition-colors"
                   >
-                    ← Назад к выбору
+                    ← {t('common.back')}
                   </button>
                 </div>
               </>
@@ -430,7 +430,7 @@ export function SOSScreen() {
                 }}
                 className="w-full bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition-colors"
               >
-                Закрыть
+                {t('common.close')}
               </button>
             )}
           </div>
