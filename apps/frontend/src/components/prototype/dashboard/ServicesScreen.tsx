@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, Calculator, FileText, Briefcase, Home, MapPin, Languages, CreditCard, Wand2, Plus, Grid3x3, X } from 'lucide-react';
+import { Shield, Calculator, FileText, Briefcase, Home, MapPin, Languages, CreditCard, Wand2, Plus, Grid3x3, X, GraduationCap, Map } from 'lucide-react';
 import { useState } from 'react';
 import { DocumentGenerator } from '../services/DocumentGenerator';
 
@@ -15,7 +15,7 @@ export function ServicesScreen() {
     { id: 'check', icon: Shield, title: 'Проверка запретов', subtitle: 'Базы МВД/ФССП', color: 'red' },
     { id: 'payment', icon: CreditCard, title: 'Оплата патента', subtitle: 'Быстрая оплата', color: 'green' },
     { id: 'map', icon: MapPin, title: 'Карта Мигранта', subtitle: 'МВД, ММЦ, Маршруты', color: 'pink', hasModal: true },
-    { id: 'other', icon: Grid3x3, title: '🧩 Другие услуги', subtitle: '5 дополнительных', color: 'gray' },
+    { id: 'other', icon: Grid3x3, title: '🧩 Другие услуги', subtitle: '7 дополнительных', color: 'gray' },
   ];
 
   // Secondary Services (Hidden in "Other Services")
@@ -25,6 +25,8 @@ export function ServicesScreen() {
     { id: 'jobs', icon: Briefcase, title: '💼 Поиск работы', subtitle: 'Вакансии с патентом', color: 'green' },
     { id: 'housing', icon: Home, title: '🏠 Поиск жилья', subtitle: 'С регистрацией', color: 'purple' },
     { id: 'calculator', icon: Calculator, title: '🧮 Калькулятор', subtitle: '90/180 дней', color: 'blue' },
+    { id: 'exam', icon: GraduationCap, title: '📚 Экзамен по русскому', subtitle: 'Тренажер тестов', color: 'emerald' },
+    { id: 'mosques', icon: Map, title: '🕌 Карта мечетей', subtitle: 'Найти мечеть', color: 'teal' },
   ];
 
   const colorClasses: Record<string, { bg: string; icon: string }> = {
@@ -36,6 +38,8 @@ export function ServicesScreen() {
     pink: { bg: 'bg-pink-50', icon: 'text-pink-600' },
     indigo: { bg: 'bg-indigo-50', icon: 'text-indigo-600' },
     gray: { bg: 'bg-gray-50', icon: 'text-gray-600' },
+    emerald: { bg: 'bg-emerald-50', icon: 'text-emerald-600' },
+    teal: { bg: 'bg-teal-50', icon: 'text-teal-600' },
   };
 
   return (

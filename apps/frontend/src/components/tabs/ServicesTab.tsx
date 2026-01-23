@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, Calculator, Briefcase, Home, FileText, MapPin } from 'lucide-react';
+import { Shield, Calculator, Briefcase, Home, FileText, MapPin, GraduationCap, Map } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Service {
@@ -60,6 +60,22 @@ const services: Service[] = [
     icon: MapPin,
     color: 'text-pink-600',
     bgColor: 'bg-pink-50',
+  },
+  {
+    id: '7',
+    title: 'Экзамен по русскому',
+    description: 'Тренажер',
+    icon: GraduationCap,
+    color: 'text-emerald-600',
+    bgColor: 'bg-emerald-50',
+  },
+  {
+    id: '8',
+    title: 'Карта мечетей',
+    description: 'Найти мечеть',
+    icon: Map,
+    color: 'text-teal-600',
+    bgColor: 'bg-teal-50',
   },
 ];
 
