@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Phone, ArrowRight, MessageCircle } from 'lucide-react';
 import { useAuthStore } from '@/lib/stores';
 import { useTranslation } from '@/lib/i18n';
+import { authApi } from '@/lib/api/client';
 
 export default function PhonePage() {
   const router = useRouter();
@@ -49,11 +50,11 @@ export default function PhonePage() {
     setLoading(true);
 
     try {
-      // Simulate API call - in production, call authApi.sendOtp
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const cleanPhone = '+' + getDigits();
+      await authApi.sendOtp(cleanPhone);
 
       // Store phone for OTP page
-      sessionStorage.setItem('auth_phone', getDigits());
+      sessionStorage.setItem('auth_phone', cleanPhone);
 
       router.push('/auth/otp');
     } catch {

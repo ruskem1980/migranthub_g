@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '@/lib/stores';
 import { useTranslation } from '@/lib/i18n';
+import { authApi } from '@/lib/api/client';
 
 const OTP_LENGTH = 4;
 const RESEND_TIMEOUT = 60;
@@ -95,48 +96,54 @@ export default function OtpPage() {
   };
 
   const handleSubmit = async (code: string) => {
+    if (code.length !== OTP_LENGTH || isLoading) return;
+
     setIsLoading(true);
+    setError('');
 
     try {
-      // Demo: accept code "1234"
-      if (code === '1234') {
-        // Simulate successful auth
-        const mockUser = {
-          id: crypto.randomUUID(),
-          phone: phone,
-          createdAt: new Date().toISOString(),
-        };
-
-        setUser(mockUser);
-        setToken('demo_token_' + Date.now());
-
-        // Clear session storage
-        sessionStorage.removeItem('auth_phone');
-
-        // Navigate to onboarding
-        router.push('/auth/onboarding');
-      } else {
-        setError(t('auth.otp.wrongCode'));
-        setOtp(Array(OTP_LENGTH).fill(''));
-        inputRefs.current[0]?.focus();
+      if (!phone) {
+        router.replace('/auth/phone');
+        return;
       }
+
+      const response = await authApi.verifyOtp(phone, code);
+
+      // Save data from server response
+      const user = response.user as { id: string; phone: string; createdAt?: string };
+      setUser({
+        id: user.id,
+        phone: user.phone,
+        createdAt: user.createdAt || new Date().toISOString(),
+      });
+      setToken(response.token);
+
+      // Clear session storage
+      sessionStorage.removeItem('auth_phone');
+
+      // Navigate to onboarding
+      router.push('/auth/onboarding');
     } catch {
-      setError(t('auth.otp.verifyError'));
+      setError(t('auth.otp.wrongCode'));
+      setOtp(Array(OTP_LENGTH).fill(''));
+      inputRefs.current[0]?.focus();
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleResend = async () => {
-    if (resendTimer > 0) return;
+    if (resendTimer > 0 || !phone) return;
 
-    setResendTimer(RESEND_TIMEOUT);
-    setOtp(Array(OTP_LENGTH).fill(''));
-    setError('');
-    inputRefs.current[0]?.focus();
-
-    // In production, call authApi.sendOtp
-    // For demo, just show success message
+    try {
+      await authApi.sendOtp(phone);
+      setResendTimer(RESEND_TIMEOUT);
+      setOtp(Array(OTP_LENGTH).fill(''));
+      setError('');
+      inputRefs.current[0]?.focus();
+    } catch {
+      setError(t('auth.otp.verifyError'));
+    }
   };
 
   const handleBack = () => {
@@ -205,7 +212,7 @@ export default function OtpPage() {
       <div className="text-center">
         {resendTimer > 0 ? (
           <p className="text-gray-500">
-            {t('auth.otp.resendIn', { seconds: resendTimer.toString() })}
+            {t('auth.otp.resendIn', { seconds: resendTimer })}
           </p>
         ) : (
           <button

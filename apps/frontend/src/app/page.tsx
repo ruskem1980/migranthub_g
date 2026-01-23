@@ -12,9 +12,12 @@ export default function Home() {
     const checkAuth = () => {
       try {
         const stored = localStorage.getItem('migranthub-auth');
+        const legalAgreed = localStorage.getItem('migranthub-legal-agreed');
+
         if (stored) {
           const parsed = JSON.parse(stored);
-          if (parsed?.state?.isAuthenticated) {
+          // Only redirect to prototype if BOTH authenticated AND legal agreed
+          if (parsed?.state?.isAuthenticated && legalAgreed === 'true') {
             router.replace('/prototype');
             return;
           }
@@ -23,19 +26,19 @@ export default function Home() {
         console.error('Auth check error:', e);
       }
       // Start from welcome screen (language selection + app description)
-      router.replace('/auth/welcome');
+      router.replace('/welcome');
     };
 
     // Small delay to ensure localStorage is available
     const timer = setTimeout(() => {
       checkAuth();
       setChecked(true);
-    }, 300);
+    }, 100);
 
     return () => clearTimeout(timer);
   }, [router]);
 
-  // Show loading splash screen
+  // Show loading splash screen with reset option
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center">
       <div className="text-center">
@@ -44,7 +47,19 @@ export default function Home() {
         </div>
         <h1 className="text-3xl font-bold text-white mb-2">MigrantHub</h1>
         <p className="text-white/80 mb-6">Экосистема для мигрантов в России</p>
-        <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto" />
+        <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+
+        {/* Debug reset button */}
+        <button
+          onClick={() => {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = '/welcome';
+          }}
+          className="text-white/60 text-sm underline hover:text-white"
+        >
+          🔄 Сбросить и начать заново
+        </button>
       </div>
     </div>
   );

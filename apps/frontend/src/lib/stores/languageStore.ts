@@ -34,7 +34,10 @@ export const useLanguageStore = create<LanguageState>()(
       language: 'ru',
       _hasHydrated: false,
 
-      setLanguage: (language) => set({ language }),
+      setLanguage: (language) => {
+        console.log('[LanguageStore] Setting language to:', language);
+        set({ language });
+      },
 
       setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),

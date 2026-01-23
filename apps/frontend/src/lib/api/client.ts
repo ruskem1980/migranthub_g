@@ -10,6 +10,28 @@ interface ApiError {
   status: number;
 }
 
+// User type for validation response
+export interface User {
+  id: string;
+  phone: string;
+  telegramId?: string;
+  createdAt?: string;
+}
+
+// Profile type
+export interface Profile {
+  id?: string;
+  userId?: string;
+  citizenship?: string;
+  language?: string;
+  entryDate?: string;
+  region?: string;
+  purpose?: string;
+  onboardingCompleted?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 class ApiClient {
   private baseUrl: string;
   private token: string | null = null;
@@ -149,10 +171,20 @@ export const authApi = {
 
   logout: () =>
     apiClient.post('/auth/logout'),
+
+  validateToken: () =>
+    apiClient.get<{ valid: boolean; user?: User }>('/auth/validate'),
 };
 
 // Profile API
 export const profileApi = {
+  getProfile: () =>
+    apiClient.get<Profile>('/profile'),
+
+  updateProfile: (data: Partial<Profile>) =>
+    apiClient.put<Profile>('/profile', data),
+
+  // Legacy methods for backwards compatibility
   get: () =>
     apiClient.get<{ profile: unknown }>('/profile'),
 

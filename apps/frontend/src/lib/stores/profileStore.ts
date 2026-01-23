@@ -23,7 +23,10 @@ export interface UserProfile {
   entryDate?: string;
   migrationCardNumber?: string;
   migrationCardExpiry?: string;
-  purpose?: 'work' | 'study' | 'tourist' | 'private';
+  purpose?: 'work' | 'study' | 'tourist' | 'private' | 'business' | 'transit';
+
+  // Region
+  region?: string;
 
   // Registration
   registrationAddress?: string;

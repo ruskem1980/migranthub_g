@@ -59,6 +59,7 @@
     "rubles": "₽",
     "rublesShort": "rubl",
     "or": "yoki",
+    "and": "va",
     "start": "Boshlash",
     "saving": "Saqlanmoqda...",
     "urgent": "SHOSHILINCH",
@@ -105,7 +106,12 @@
     },
     "terms": "Davom etish orqali siz foydalanish shartlari va maxfiylik siyosatiga rozilik bildirasiz",
     "logout": "Chiqish",
-    "logoutConfirm": "Rostdan ham chiqmoqchimisiz?"
+    "logoutConfirm": "Rostdan ham chiqmoqchimisiz?",
+    "footer": {
+      "agreement": "Davom etish orqali siz rozilik bildirasiz",
+      "terms": "foydalanish shartlari",
+      "privacy": "maxfiylik siyosati"
+    }
   },
   "welcome": {
     "tagline": "Shaxsiy himoyachingiz. Hujjatlarni tez rasmiylashtirish, jarimalardan qochish va legalizatsiya jarayonini nazorat qilishda yordam beramiz.",
@@ -165,6 +171,25 @@
     "welcome": {
       "title": "MigrantHub ga xush kelibsiz!",
       "subtitle": "Migratsiya masalalarida yordamchingiz"
+    },
+    "profiling": {
+      "title": "Profillash",
+      "subtitle": "Shaxsiylashtirish uchun o'zingiz haqingizda ayting",
+      "citizenship": "Fuqarolik",
+      "voiceOver": "Ovoz berish",
+      "other": "Boshqa",
+      "selectCountry": "Mamlakatni tanlang",
+      "departureCountry": "Chiqish mamlakati",
+      "autoFill": "Avtomatik",
+      "notSelected": "Tanlanmagan",
+      "entryDate": "Kirish sanasi",
+      "today": "Bugun",
+      "yesterday": "Kecha",
+      "region": "Turish hududi",
+      "selectRegion": "Hududni tanlang",
+      "purpose": "Tashrif maqsadi",
+      "purposeWarning": "Patent olish uchun «Ish» ni tanlang. RFdan chiqmasdan tashrif maqsadini o'zgartirish mumkin emas (YEAES fuqarolaridan tashqari).",
+      "important": "Muhim"
     }
   },
   "languages": {

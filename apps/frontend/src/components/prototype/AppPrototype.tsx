@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { WelcomeScreen } from './onboarding/WelcomeScreen';
 import { LegalScreen } from './onboarding/LegalScreen';
 import { ProfilingScreen } from './onboarding/ProfilingScreen';
@@ -8,40 +8,67 @@ import { AuditScreen } from './onboarding/AuditScreen';
 import { RoadmapScreen } from './onboarding/RoadmapScreen';
 import { DashboardLayout } from './DashboardLayout';
 
-type Screen = 'welcome' | 'legal' | 'profiling' | 'audit' | 'roadmap' | 'dashboard';
+type Screen = 'welcome' | 'legal' | 'profiling' | 'audit' | 'roadmap' | 'dashboard' | null;
 
 export function AppPrototype() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
+  const [currentScreen, setCurrentScreen] = useState<Screen | null>(null);
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
 
+  // Determine starting screen based on completed steps
+  useEffect(() => {
+    const profileCompleted = localStorage.getItem('migranthub-profile-completed');
+
+    if (profileCompleted) {
+      // User completed profiling, go to dashboard
+      setCurrentScreen('dashboard');
+    } else {
+      // Start from profiling (welcome/legal handled in auth flow)
+      setCurrentScreen('profiling');
+    }
+  }, []);
+
   const renderScreen = () => {
+    // Loading state - wait for useEffect to determine starting screen
+    if (currentScreen === null) {
+      return (
+        <div className="h-screen bg-blue-600 flex items-center justify-center">
+          <div className="text-center text-white">
+            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">🛡️</span>
+            </div>
+            <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
+          </div>
+        </div>
+      );
+    }
+
     switch (currentScreen) {
       case 'welcome':
         return <WelcomeScreen onNext={() => setCurrentScreen('legal')} />;
-      
+
       case 'legal':
         return <LegalScreen onNext={() => setCurrentScreen('profiling')} />;
-      
+
       case 'profiling':
         return <ProfilingScreen onNext={() => setCurrentScreen('audit')} />;
-      
+
       case 'audit':
         return <AuditScreen onNext={(items) => {
           setCheckedItems(items);
           setCurrentScreen('roadmap');
         }} />;
-      
+
       case 'roadmap':
-        return <RoadmapScreen 
+        return <RoadmapScreen
           checkedItems={checkedItems}
-          onComplete={() => setCurrentScreen('dashboard')} 
+          onComplete={() => setCurrentScreen('dashboard')}
         />;
-      
+
       case 'dashboard':
         return <DashboardLayout />;
-      
+
       default:
-        return <WelcomeScreen onNext={() => setCurrentScreen('legal')} />;
+        return <ProfilingScreen onNext={() => setCurrentScreen('audit')} />;
     }
   };
 

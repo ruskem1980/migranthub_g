@@ -2,6 +2,19 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { authApi, apiClient } from '@/lib/api/client';
+
+// Cookie helper functions for middleware auth
+const setCookie = (name: string, value: string, days: number = 7) => {
+  if (typeof document === 'undefined') return;
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+};
+
+const deleteCookie = (name: string) => {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+};
 
 export interface User {
   id: string;
@@ -26,6 +39,7 @@ interface AuthState {
   logout: () => void;
   reset: () => void;
   setHasHydrated: (state: boolean) => void;
+  validateSession: () => Promise<boolean>;
 }
 
 const initialState = {
@@ -39,7 +53,7 @@ const initialState = {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...initialState,
 
       setUser: (user) =>
@@ -49,8 +63,14 @@ export const useAuthStore = create<AuthState>()(
           error: null,
         }),
 
-      setToken: (token) =>
-        set({ token }),
+      setToken: (token) => {
+        if (token) {
+          setCookie('migranthub-token', token);
+        } else {
+          deleteCookie('migranthub-token');
+        }
+        set({ token, isAuthenticated: !!token });
+      },
 
       setLoading: (isLoading) =>
         set({ isLoading }),
@@ -58,17 +78,45 @@ export const useAuthStore = create<AuthState>()(
       setError: (error) =>
         set({ error, isLoading: false }),
 
-      logout: () =>
+      logout: () => {
+        deleteCookie('migranthub-token');
         set({
           ...initialState,
           _hasHydrated: true,
-        }),
+        });
+      },
 
       reset: () =>
         set({ ...initialState, _hasHydrated: true }),
 
       setHasHydrated: (state) =>
         set({ _hasHydrated: state }),
+
+      validateSession: async () => {
+        const state = get();
+        if (!state.token) return false;
+
+        // Set token in API client
+        apiClient.setToken(state.token);
+
+        try {
+          const { valid, user } = await authApi.validateToken();
+          if (valid && user) {
+            set({
+              user: { ...user, createdAt: user.createdAt || new Date().toISOString() },
+              isAuthenticated: true
+            });
+            return true;
+          } else {
+            // Token is invalid - logout
+            get().logout();
+            return false;
+          }
+        } catch {
+          // On network error - keep current state (offline mode)
+          return state.isAuthenticated;
+        }
+      },
     }),
     {
       name: 'migranthub-auth',

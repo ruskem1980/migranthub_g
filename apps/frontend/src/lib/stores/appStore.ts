@@ -2,8 +2,8 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { Language } from './languageStore';
 
-type Language = 'ru' | 'uz-Latn' | 'uz-Cyrl' | 'tg' | 'ky';
 type Theme = 'light' | 'dark' | 'system';
 
 interface Notification {

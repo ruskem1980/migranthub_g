@@ -2,14 +2,15 @@
 
 import { Volume2, AlertTriangle, Check } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 
 interface ProfilingScreenProps {
   onNext: () => void;
 }
 
 export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
+  const { t } = useTranslation();
   const [citizenship, setCitizenship] = useState('');
-  const [departureCountry, setDepartureCountry] = useState('');
   const [entryDate, setEntryDate] = useState('');
   const [region, setRegion] = useState('');
   const [purpose, setPurpose] = useState('');
@@ -18,23 +19,84 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
   const [otherCitizenshipValue, setOtherCitizenshipValue] = useState('');
   const [otherRegionValue, setOtherRegionValue] = useState('');
 
-  // Auto-fill departure country from citizenship
-  const effectiveDepartureCountry = citizenship;
+  // Main citizenships
+  const MAIN_CITIZENSHIPS = [
+    { code: 'uz', name: t('countries.UZ'), flag: '🇺🇿' },
+    { code: 'tj', name: t('countries.TJ'), flag: '🇹🇯' },
+    { code: 'kg', name: t('countries.KG'), flag: '🇰🇬' },
+  ];
 
-  // Validation: all fields must be filled
-  // For "other" options, check if the specific value is selected
+  // Other citizenships
+  const OTHER_CITIZENSHIPS = [
+    { code: 'AM', name: t('countries.AM'), flag: '🇦🇲', note: '(ЕАЭС)' },
+    { code: 'AZ', name: t('countries.AZ'), flag: '🇦🇿' },
+    { code: 'BY', name: t('countries.BY'), flag: '🇧🇾', note: '(ЕАЭС)' },
+    { code: 'GE', name: t('countries.GE'), flag: '🇬🇪' },
+    { code: 'KZ', name: t('countries.KZ'), flag: '🇰🇿', note: '(ЕАЭС)' },
+    { code: 'MD', name: t('countries.MD'), flag: '🇲🇩' },
+    { code: 'UA', name: t('countries.UA'), flag: '🇺🇦' },
+    { code: 'CN', name: t('countries.CN'), flag: '🇨🇳' },
+    { code: 'IN', name: t('countries.IN'), flag: '🇮🇳' },
+    { code: 'VN', name: t('countries.VN'), flag: '🇻🇳' },
+  ];
+
+  // Regions
+  const MAIN_REGIONS = [
+    { code: 'moscow', name: t('cities.moscow'), icon: '🏙️' },
+    { code: 'spb', name: t('cities.saintPetersburg'), icon: '🏛️' },
+    { code: 'nsk', name: t('cities.novosibirsk'), icon: '❄️' },
+  ];
+
+  const OTHER_REGIONS = [
+    { code: 'ekb', name: t('cities.yekaterinburg') },
+    { code: 'kazan', name: t('cities.kazan') },
+    { code: 'nn', name: t('cities.nizhnyNovgorod') },
+    { code: 'samara', name: t('cities.samara') },
+    { code: 'omsk', name: t('cities.omsk') },
+    { code: 'chelyabinsk', name: t('cities.chelyabinsk') },
+    { code: 'rostov', name: t('cities.rostovOnDon') },
+    { code: 'ufa', name: t('cities.ufa') },
+    { code: 'krasnoyarsk', name: t('cities.krasnoyarsk') },
+    { code: 'voronezh', name: t('cities.voronezh') },
+    { code: 'perm', name: t('cities.perm') },
+    { code: 'volgograd', name: t('cities.volgograd') },
+  ];
+
+  // Purposes
+  const PURPOSES = [
+    { value: 'work', label: `💼 ${t('profile.purposes.work')}`, subtitle: t('profile.purposes.workSubtitle') },
+    { value: 'study', label: `📚 ${t('profile.purposes.study')}`, subtitle: t('profile.purposes.studySubtitle') },
+    { value: 'tourism', label: `✈️ ${t('profile.purposes.tourist')}`, subtitle: t('profile.purposes.touristSubtitle') },
+    { value: 'private', label: `🏠 ${t('profile.purposes.private')}`, subtitle: t('profile.purposes.privateSubtitle') },
+    { value: 'business', label: `💼 ${t('profile.purposes.business')}`, subtitle: '' },
+    { value: 'transit', label: `🚗 ${t('profile.purposes.transit')}`, subtitle: '' },
+  ];
+
+  // Validation
   const isCitizenshipValid = citizenship && (citizenship !== 'other' || otherCitizenshipValue);
   const isRegionValid = region && (region !== 'other' || otherRegionValue);
   const isValid = isCitizenshipValid && entryDate && isRegionValid && purpose;
+
+  // Get departure country display
+  const getDepartureCountryDisplay = () => {
+    if (citizenship && citizenship !== 'other') {
+      const country = MAIN_CITIZENSHIPS.find(c => c.code === citizenship);
+      return country ? `${country.flag} ${country.name}` : t('onboarding.profiling.notSelected');
+    }
+    if (otherCitizenshipValue) {
+      return otherCitizenshipValue;
+    }
+    return t('onboarding.profiling.notSelected');
+  };
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col p-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Профилирование
+          {t('onboarding.profiling.title')}
         </h2>
         <p className="text-gray-600">
-          Расскажите о себе для персонализации
+          {t('onboarding.profiling.subtitle')}
         </p>
       </div>
 
@@ -43,50 +105,31 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
           {/* Citizenship */}
           <div>
             <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-3">
-              <span>Гражданство</span>
+              <span>{t('onboarding.profiling.citizenship')}</span>
               <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
-                <span className="text-xs font-medium">Озвучить</span>
+                <span className="text-xs font-medium">{t('onboarding.profiling.voiceOver')}</span>
               </button>
             </label>
-            
-            {/* Button Group (3+1) */}
+
             <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => setCitizenship('uz')}
-                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
-                  citizenship === 'uz'
-                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
-                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <span className="text-2xl">🇺🇿</span>
-                <span className="font-semibold text-sm">Узбекистан</span>
-              </button>
-
-              <button
-                onClick={() => setCitizenship('tj')}
-                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
-                  citizenship === 'tj'
-                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
-                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <span className="text-2xl">🇹🇯</span>
-                <span className="font-semibold text-sm">Таджикистан</span>
-              </button>
-
-              <button
-                onClick={() => setCitizenship('kg')}
-                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
-                  citizenship === 'kg'
-                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
-                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <span className="text-2xl">🇰🇬</span>
-                <span className="font-semibold text-sm">Кыргызстан</span>
-              </button>
+              {MAIN_CITIZENSHIPS.map((country) => (
+                <button
+                  key={country.code}
+                  onClick={() => {
+                    setCitizenship(country.code);
+                    setOtherCitizenshipValue('');
+                  }}
+                  className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
+                    citizenship === country.code
+                      ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
+                      : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <span className="text-2xl">{country.flag}</span>
+                  <span className="font-semibold text-sm">{country.name}</span>
+                </button>
+              ))}
 
               <button
                 onClick={() => setShowOtherCitizenship(true)}
@@ -98,16 +141,15 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
               >
                 <span className="text-2xl">🌍</span>
                 <span className="font-semibold text-sm">
-                  {otherCitizenshipValue || 'Другое'}
+                  {otherCitizenshipValue || t('onboarding.profiling.other')}
                 </span>
               </button>
             </div>
 
-            {/* Other Citizenship Dropdown */}
             {showOtherCitizenship && (
               <div className="mt-3 p-4 bg-white border-2 border-blue-200 rounded-xl">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Выберите страну
+                  {t('onboarding.profiling.selectCountry')}
                 </label>
                 <select
                   value={otherCitizenshipValue}
@@ -118,42 +160,31 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                   }}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Выберите страну</option>
-                  <option value="🇦🇲 Армения">🇦🇲 Армения (ЕАЭС)</option>
-                  <option value="🇦🇿 Азербайджан">🇦🇿 Азербайджан</option>
-                  <option value="🇧🇾 Беларусь">🇧🇾 Беларусь (ЕАЭС)</option>
-                  <option value="🇬🇪 Грузия">🇬🇪 Грузия</option>
-                  <option value="🇰🇿 Казахстан">🇰🇿 Казахстан (ЕАЭС)</option>
-                  <option value="🇲🇩 Молдова">🇲🇩 Молдова</option>
-                  <option value="🇺🇦 Украина">🇺🇦 Украина</option>
-                  <option value="🇨🇳 Китай">🇨🇳 Китай</option>
-                  <option value="🇮🇳 Индия">🇮🇳 Индия</option>
-                  <option value="🇻🇳 Вьетнам">🇻🇳 Вьетнам</option>
+                  <option value="">{t('onboarding.profiling.selectCountry')}</option>
+                  {OTHER_CITIZENSHIPS.map((c) => (
+                    <option key={c.code} value={`${c.flag} ${c.name}`}>
+                      {c.flag} {c.name} {c.note || ''}
+                    </option>
+                  ))}
                 </select>
                 <button
                   onClick={() => setShowOtherCitizenship(false)}
                   className="mt-2 text-xs text-gray-500 hover:text-gray-700"
                 >
-                  Отмена
+                  {t('common.cancel')}
                 </button>
               </div>
             )}
           </div>
 
-          {/* Departure Country - Auto-fill from Citizenship */}
+          {/* Departure Country - Auto-fill */}
           <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
             <div className="flex items-start gap-2">
               <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-blue-900 mb-1">Страна выезда</p>
+                <p className="text-sm font-semibold text-blue-900 mb-1">{t('onboarding.profiling.departureCountry')}</p>
                 <p className="text-xs text-blue-800">
-                  Автоматически: {
-                    citizenship === 'uz' ? '🇺🇿 Узбекистан' : 
-                    citizenship === 'tj' ? '🇹🇯 Таджикистан' : 
-                    citizenship === 'kg' ? '🇰🇬 Кыргызстан' : 
-                    citizenship === 'other' && otherCitizenshipValue ? otherCitizenshipValue :
-                    'Не выбрано'
-                  }
+                  {t('onboarding.profiling.autoFill')}: {getDepartureCountryDisplay()}
                 </p>
               </div>
             </div>
@@ -162,10 +193,10 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
           {/* Entry Date */}
           <div>
             <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-2">
-              <span>Дата въезда</span>
+              <span>{t('onboarding.profiling.entryDate')}</span>
               <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
-                <span className="text-xs font-medium">Озвучить</span>
+                <span className="text-xs font-medium">{t('onboarding.profiling.voiceOver')}</span>
               </button>
             </label>
             <input
@@ -174,16 +205,12 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
               onChange={(e) => setEntryDate(e.target.value)}
               className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            {/* Quick Action Chips */}
             <div className="flex gap-2 mt-2">
               <button
-                onClick={() => {
-                  const today = new Date().toISOString().split('T')[0];
-                  setEntryDate(today);
-                }}
+                onClick={() => setEntryDate(new Date().toISOString().split('T')[0])}
                 className="px-3 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-100 transition-colors active:scale-95 border border-blue-200"
               >
-                Сегодня
+                {t('onboarding.profiling.today')}
               </button>
               <button
                 onClick={() => {
@@ -193,7 +220,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                 }}
                 className="px-3 py-1.5 bg-gray-50 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors active:scale-95 border border-gray-200"
               >
-                Вчера
+                {t('onboarding.profiling.yesterday')}
               </button>
             </div>
           </div>
@@ -201,50 +228,31 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
           {/* Region */}
           <div>
             <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-3">
-              <span>Регион пребывания</span>
+              <span>{t('onboarding.profiling.region')}</span>
               <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
-                <span className="text-xs font-medium">Озвучить</span>
+                <span className="text-xs font-medium">{t('onboarding.profiling.voiceOver')}</span>
               </button>
             </label>
-            
-            {/* Button Group (3+1) */}
+
             <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => setRegion('moscow')}
-                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
-                  region === 'moscow'
-                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
-                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <span className="text-2xl">🏙️</span>
-                <span className="font-semibold text-sm">Москва</span>
-              </button>
-
-              <button
-                onClick={() => setRegion('spb')}
-                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
-                  region === 'spb'
-                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
-                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <span className="text-2xl">🏛️</span>
-                <span className="font-semibold text-sm">С-Петербург</span>
-              </button>
-
-              <button
-                onClick={() => setRegion('nsk')}
-                className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
-                  region === 'nsk'
-                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
-                    : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <span className="text-2xl">❄️</span>
-                <span className="font-semibold text-sm">Новосибирск</span>
-              </button>
+              {MAIN_REGIONS.map((r) => (
+                <button
+                  key={r.code}
+                  onClick={() => {
+                    setRegion(r.code);
+                    setOtherRegionValue('');
+                  }}
+                  className={`flex items-center justify-center gap-2 px-4 py-4 rounded-xl border-2 transition-all ${
+                    region === r.code
+                      ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-md'
+                      : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <span className="text-2xl">{r.icon}</span>
+                  <span className="font-semibold text-sm">{r.name}</span>
+                </button>
+              ))}
 
               <button
                 onClick={() => setShowOtherRegion(true)}
@@ -256,16 +264,15 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
               >
                 <span className="text-2xl">📍</span>
                 <span className="font-semibold text-sm">
-                  {otherRegionValue || 'Другое'}
+                  {otherRegionValue || t('onboarding.profiling.other')}
                 </span>
               </button>
             </div>
 
-            {/* Other Region Dropdown */}
             {showOtherRegion && (
               <div className="mt-3 p-4 bg-white border-2 border-blue-200 rounded-xl">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Выберите регион
+                  {t('onboarding.profiling.selectRegion')}
                 </label>
                 <select
                   value={otherRegionValue}
@@ -276,25 +283,18 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                   }}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Выберите регион</option>
-                  <option value="Екатеринбург">Екатеринбург</option>
-                  <option value="Казань">Казань</option>
-                  <option value="Нижний Новгород">Нижний Новгород</option>
-                  <option value="Самара">Самара</option>
-                  <option value="Омск">Омск</option>
-                  <option value="Челябинск">Челябинск</option>
-                  <option value="Ростов-на-Дону">Ростов-на-Дону</option>
-                  <option value="Уфа">Уфа</option>
-                  <option value="Красноярск">Красноярск</option>
-                  <option value="Воронеж">Воронеж</option>
-                  <option value="Пермь">Пермь</option>
-                  <option value="Волгоград">Волгоград</option>
+                  <option value="">{t('onboarding.profiling.selectRegion')}</option>
+                  {OTHER_REGIONS.map((r) => (
+                    <option key={r.code} value={r.name}>
+                      {r.name}
+                    </option>
+                  ))}
                 </select>
                 <button
                   onClick={() => setShowOtherRegion(false)}
                   className="mt-2 text-xs text-gray-500 hover:text-gray-700"
                 >
-                  Отмена
+                  {t('common.cancel')}
                 </button>
               </div>
             )}
@@ -303,24 +303,15 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
           {/* Purpose */}
           <div>
             <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-3">
-              <span>Цель визита</span>
+              <span>{t('onboarding.profiling.purpose')}</span>
               <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
-                <span className="text-xs font-medium">Озвучить</span>
+                <span className="text-xs font-medium">{t('onboarding.profiling.voiceOver')}</span>
               </button>
             </label>
-            
-            {/* 2-Column Grid for 7 Options */}
+
             <div className="grid grid-cols-2 gap-3">
-              {[
-                { value: 'work', label: '💼 Работа', subtitle: 'Трудовая деятельность' },
-                { value: 'study', label: '📚 Учеба', subtitle: 'Вузы/колледжи' },
-                { value: 'tourism', label: '✈️ Туризм', subtitle: 'Отдых, путешествия' },
-                { value: 'private', label: '🏠 Частный', subtitle: 'Гости, лечение' },
-                { value: 'business', label: '💼 Коммерческий', subtitle: 'Переговоры, бизнес' },
-                { value: 'official', label: '🏛️ Служебный', subtitle: 'Делегации' },
-                { value: 'transit', label: '🚗 Транзит', subtitle: 'Проезд через РФ' },
-              ].map((option) => (
+              {PURPOSES.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => setPurpose(option.value)}
@@ -342,7 +333,9 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                     </div>
                     <span className="font-semibold text-sm">{option.label}</span>
                   </div>
-                  <span className="text-xs text-gray-500 ml-6">{option.subtitle}</span>
+                  {option.subtitle && (
+                    <span className="text-xs text-gray-500 ml-6">{option.subtitle}</span>
+                  )}
                 </button>
               ))}
             </div>
@@ -352,9 +345,9 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-semibold text-yellow-900 mb-1">⚠️ Важно</p>
+                  <p className="text-xs font-semibold text-yellow-900 mb-1">⚠️ {t('onboarding.profiling.important')}</p>
                   <p className="text-xs text-yellow-800 leading-relaxed">
-                    Для получения патента выбирайте «Работа». Изменить цель визита без выезда из РФ нельзя (кроме граждан ЕАЭС).
+                    {t('onboarding.profiling.purposeWarning')}
                   </p>
                 </div>
               </div>
@@ -364,7 +357,10 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
       </div>
 
       <button
-        onClick={onNext}
+        onClick={() => {
+          localStorage.setItem('migranthub-profile-completed', 'true');
+          onNext();
+        }}
         disabled={!isValid}
         className={`w-full font-bold py-4 px-6 rounded-2xl transition-all mt-6 ${
           isValid
@@ -372,7 +368,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
             : 'bg-gray-200 text-gray-400 cursor-not-allowed'
         }`}
       >
-        Далее
+        {t('common.next')}
       </button>
     </div>
   );
