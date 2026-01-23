@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+apps/frontend/out/
+apps/frontend/.next/
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Cache
+.cache/
+.turbo/
+
+# Testing
+coverage/
+
+# Misc
+*.tgz
+.npmrc
