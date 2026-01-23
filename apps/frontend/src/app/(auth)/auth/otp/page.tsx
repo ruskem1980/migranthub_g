@@ -4,12 +4,14 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '@/lib/stores';
+import { useTranslation } from '@/lib/i18n';
 
 const OTP_LENGTH = 4;
 const RESEND_TIMEOUT = 60;
 
 export default function OtpPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -114,12 +116,12 @@ export default function OtpPage() {
         // Navigate to onboarding
         router.push('/auth/onboarding');
       } else {
-        setError('Неверный код. Попробуйте ещё раз.');
+        setError(t('auth.otp.wrongCode'));
         setOtp(Array(OTP_LENGTH).fill(''));
         inputRefs.current[0]?.focus();
       }
     } catch {
-      setError('Ошибка проверки кода. Попробуйте позже.');
+      setError(t('auth.otp.verifyError'));
     } finally {
       setIsLoading(false);
     }
@@ -150,15 +152,15 @@ export default function OtpPage() {
         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
       >
         <ArrowLeft className="w-5 h-5" />
-        Изменить номер
+        {t('auth.otp.changeNumber')}
       </button>
 
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Введите код
+          {t('auth.otp.title')}
         </h2>
         <p className="text-gray-500">
-          Код отправлен на номер
+          {t('auth.otp.codeSent')}
           <br />
           <span className="font-semibold text-gray-900">
             {formatPhone(phone)}
@@ -203,8 +205,7 @@ export default function OtpPage() {
       <div className="text-center">
         {resendTimer > 0 ? (
           <p className="text-gray-500">
-            Отправить код повторно через{' '}
-            <span className="font-semibold">{resendTimer} сек</span>
+            {t('auth.otp.resendIn', { seconds: resendTimer.toString() })}
           </p>
         ) : (
           <button
@@ -212,7 +213,7 @@ export default function OtpPage() {
             className="flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 font-semibold mx-auto"
           >
             <RefreshCw className="w-4 h-4" />
-            Отправить код повторно
+            {t('auth.otp.resend')}
           </button>
         )}
       </div>
@@ -220,7 +221,7 @@ export default function OtpPage() {
       {/* Demo hint */}
       <div className="mt-8 p-4 bg-yellow-50 rounded-xl border-2 border-yellow-200">
         <p className="text-sm text-yellow-800 text-center">
-          <strong>Демо:</strong> Введите код <strong>1234</strong>
+          <strong>{t('auth.demo.title')}:</strong> {t('auth.demo.otpHint')}
         </p>
       </div>
     </div>

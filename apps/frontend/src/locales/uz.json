@@ -1,0 +1,703 @@
+{
+  "app": {
+    "name": "MigrantHub",
+    "tagline": "Rossiyada migrantlar uchun ekotizim",
+    "version": "1.0.0"
+  },
+  "common": {
+    "loading": "Yuklanmoqda...",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "back": "Orqaga",
+    "next": "Keyingi",
+    "continue": "Davom etish",
+    "done": "Tayyor",
+    "error": "Xato",
+    "retry": "Qayta urinish",
+    "close": "Yopish",
+    "search": "Qidirish",
+    "noResults": "Hech narsa topilmadi",
+    "yes": "Ha",
+    "no": "Yo'q",
+    "ok": "OK",
+    "delete": "O'chirish",
+    "edit": "Tahrirlash",
+    "add": "Qo'shish",
+    "remove": "Olib tashlash",
+    "select": "Tanlash",
+    "selected": "Tanlangan",
+    "all": "Hammasi",
+    "none": "Hech biri",
+    "more": "Ko'proq",
+    "less": "Kamroq",
+    "show": "Ko'rsatish",
+    "hide": "Yashirish",
+    "download": "Yuklab olish",
+    "upload": "Yuklash",
+    "share": "Ulashish",
+    "copy": "Nusxalash",
+    "copied": "Nusxalandi",
+    "send": "Yuborish",
+    "sent": "Yuborildi",
+    "required": "Majburiy maydon",
+    "optional": "Ixtiyoriy",
+    "today": "Bugun",
+    "yesterday": "Kecha",
+    "tomorrow": "Ertaga",
+    "day": "kun",
+    "days": "kun",
+    "month": "oy",
+    "months": "oy",
+    "year": "yil",
+    "years": "yil",
+    "hour": "soat",
+    "hours": "soat",
+    "minute": "daqiqa",
+    "minutes": "daqiqa",
+    "second": "soniya",
+    "seconds": "soniya",
+    "rubles": "₽",
+    "rublesShort": "rubl",
+    "or": "yoki",
+    "start": "Boshlash",
+    "saving": "Saqlanmoqda...",
+    "urgent": "SHOSHILINCH",
+    "extend": "Uzaytirish"
+  },
+  "auth": {
+    "title": "MigrantHub ga kirish",
+    "welcome": "Xush kelibsiz",
+    "phone": {
+      "title": "Telefon raqami bilan kirish",
+      "subtitle": "Kod olish uchun telefon raqamingizni kiriting",
+      "placeholder": "+7 (___) ___-__-__",
+      "phoneLabel": "Telefon raqami",
+      "getCode": "Kod olish",
+      "sendCode": "Kod olish",
+      "invalidPhone": "To'g'ri telefon raqamini kiriting",
+      "sendError": "SMS yuborishda xato. Keyinroq urinib ko'ring.",
+      "sending": "Yuborilmoqda...",
+      "telegramLogin": "Telegram orqali kirish"
+    },
+    "otp": {
+      "title": "Kodni kiriting",
+      "subtitle": "Kod quyidagi raqamga yuborildi",
+      "codeSent": "Kod quyidagi raqamga yuborildi",
+      "resend": "Kodni qayta yuborish",
+      "resendIn": "Kodni {seconds} soniyadan keyin qayta yuborish",
+      "invalidCode": "Noto'g'ri kod",
+      "wrongCode": "Noto'g'ri kod. Qayta urinib ko'ring.",
+      "verifyError": "Kodni tekshirishda xato. Keyinroq urinib ko'ring.",
+      "changeNumber": "Raqamni o'zgartirish",
+      "checking": "Tekshirilmoqda..."
+    },
+    "telegram": {
+      "button": "Telegram orqali kirish",
+      "connecting": "Telegram ga ulanmoqda..."
+    },
+    "demo": {
+      "title": "Demo",
+      "phoneHint": "+7 (XXX) XXX-XX-XX formatida istalgan raqamni kiriting. Tasdiqlash kodi: 1234",
+      "otpHint": "1234 kodini kiriting"
+    },
+    "terms": "Davom etish orqali siz foydalanish shartlari va maxfiylik siyosatiga rozilik bildirasiz",
+    "logout": "Chiqish",
+    "logoutConfirm": "Rostdan ham chiqmoqchimisiz?"
+  },
+  "onboarding": {
+    "language": {
+      "title": "Tilni tanlang",
+      "subtitle": "Qaysi tilda qulay?"
+    },
+    "citizenship": {
+      "title": "Fuqaroligingiz",
+      "subtitle": "Bu sizga kerakli ma'lumotlarni topishga yordam beradi"
+    },
+    "welcome": {
+      "title": "MigrantHub ga xush kelibsiz!",
+      "subtitle": "Migratsiya masalalarida yordamchingiz"
+    }
+  },
+  "languages": {
+    "ru": "Ruscha",
+    "uz": "O'zbekcha",
+    "tg": "Tojikcha",
+    "ky": "Qirg'izcha",
+    "kk": "Qozoqcha",
+    "en": "Inglizcha",
+    "ar": "Arabcha",
+    "fa": "Forscha",
+    "tr": "Turkcha",
+    "az": "Ozarbayjoncha",
+    "hy": "Armancha",
+    "ka": "Gruzincha",
+    "vi": "Vyetnamcha",
+    "zh": "Xitoycha"
+  },
+  "countries": {
+    "UZ": "O'zbekiston",
+    "TJ": "Tojikiston",
+    "KG": "Qirg'iziston",
+    "KZ": "Qozog'iston",
+    "AZ": "Ozarbayjon",
+    "AM": "Armaniston",
+    "GE": "Gruziya",
+    "MD": "Moldova",
+    "UA": "Ukraina",
+    "BY": "Belarus",
+    "TM": "Turkmaniston",
+    "AF": "Afg'oniston",
+    "PK": "Pokiston",
+    "IN": "Hindiston",
+    "BD": "Bangladesh",
+    "VN": "Vyetnam",
+    "CN": "Xitoy",
+    "TR": "Turkiya",
+    "SY": "Suriya",
+    "IQ": "Iroq",
+    "IR": "Eron",
+    "EG": "Misr",
+    "RU": "Rossiya",
+    "OTHER": "Boshqa mamlakat"
+  },
+  "regions": {
+    "77": {
+      "name": "Moskva",
+      "fullName": "Moskva shahri"
+    },
+    "50": {
+      "name": "Moskva viloyati",
+      "fullName": "Moskva viloyati"
+    },
+    "78": {
+      "name": "Sankt-Peterburg",
+      "fullName": "Sankt-Peterburg shahri"
+    },
+    "47": {
+      "name": "Leningrad viloyati",
+      "fullName": "Leningrad viloyati"
+    },
+    "23": {
+      "name": "Krasnodar o'lkasi",
+      "fullName": "Krasnodar o'lkasi"
+    },
+    "66": {
+      "name": "Sverdlovsk viloyati",
+      "fullName": "Sverdlovsk viloyati"
+    },
+    "54": {
+      "name": "Novosibirsk viloyati",
+      "fullName": "Novosibirsk viloyati"
+    },
+    "16": {
+      "name": "Tatariston",
+      "fullName": "Tatariston Respublikasi"
+    },
+    "52": {
+      "name": "Nijniy Novgorod viloyati",
+      "fullName": "Nijniy Novgorod viloyati"
+    },
+    "63": {
+      "name": "Samara viloyati",
+      "fullName": "Samara viloyati"
+    },
+    "61": {
+      "name": "Rostov viloyati",
+      "fullName": "Rostov viloyati"
+    },
+    "74": {
+      "name": "Chelyabinsk viloyati",
+      "fullName": "Chelyabinsk viloyati"
+    },
+    "02": {
+      "name": "Boshqirdiston",
+      "fullName": "Boshqirdiston Respublikasi"
+    },
+    "59": {
+      "name": "Perm o'lkasi",
+      "fullName": "Perm o'lkasi"
+    },
+    "34": {
+      "name": "Volgograd viloyati",
+      "fullName": "Volgograd viloyati"
+    },
+    "36": {
+      "name": "Voronej viloyati",
+      "fullName": "Voronej viloyati"
+    },
+    "55": {
+      "name": "Omsk viloyati",
+      "fullName": "Omsk viloyati"
+    },
+    "72": {
+      "name": "Tyumen viloyati",
+      "fullName": "Tyumen viloyati"
+    },
+    "86": {
+      "name": "XMAO",
+      "fullName": "Xanti-Mansiysk avtonom okrugi"
+    },
+    "89": {
+      "name": "YNAO",
+      "fullName": "Yamalo-Nenets avtonom okrugi"
+    }
+  },
+  "cities": {
+    "moscow": "Moskva",
+    "saintPetersburg": "Sankt-Peterburg",
+    "novosibirsk": "Novosibirsk",
+    "yekaterinburg": "Yekaterinburg",
+    "kazan": "Qazon",
+    "nizhnyNovgorod": "Nijniy Novgorod",
+    "chelyabinsk": "Chelyabinsk",
+    "samara": "Samara",
+    "omsk": "Omsk",
+    "rostovOnDon": "Rostov-na-Donu",
+    "ufa": "Ufa",
+    "krasnoyarsk": "Krasnoyarsk",
+    "voronezh": "Voronej",
+    "perm": "Perm",
+    "volgograd": "Volgograd",
+    "krasnodar": "Krasnodar",
+    "tyumen": "Tyumen",
+    "saratov": "Saratov",
+    "tolyatti": "Tolyatti",
+    "izhevsk": "Ijevsk",
+    "barnaul": "Barnaul",
+    "irkutsk": "Irkutsk",
+    "khabarovsk": "Xabarovsk",
+    "vladivostok": "Vladivostok",
+    "yaroslavl": "Yaroslavl",
+    "makhachkala": "Maxachqala",
+    "tomsk": "Tomsk",
+    "orenburg": "Orenburg",
+    "kemerovo": "Kemerovo",
+    "naberezhnyChelny": "Nabereжnыe Chelnы",
+    "ryazan": "Ryazan",
+    "astrakhan": "Astraxan",
+    "penza": "Penza",
+    "lipetsk": "Lipetsk",
+    "tula": "Tula",
+    "kirov": "Kirov",
+    "cheboksary": "Cheboksarы",
+    "kaliningrad": "Kaliningrad",
+    "bryansk": "Bryansk",
+    "ivanovo": "Ivanovo",
+    "magnitogorsk": "Magnitogorsk",
+    "kursk": "Kursk",
+    "tver": "Tver",
+    "nizhniTagil": "Nijniy Tagil",
+    "stavropol": "Stavropol",
+    "ulanUde": "Ulan-Ude",
+    "belgorod": "Belgorod",
+    "sochi": "Sochi",
+    "surgut": "Surgut",
+    "vladimir": "Vladimir",
+    "chita": "Chita",
+    "arkhangelsk": "Arxangelsk",
+    "smolensk": "Smolensk",
+    "kurgan": "Kurgan",
+    "kaluga": "Kaluga",
+    "oryol": "Oryol",
+    "vologda": "Vologda",
+    "saransk": "Saransk",
+    "yoshkarOla": "Yoshkar-Ola",
+    "murmansk": "Murmansk",
+    "kostroma": "Kostroma",
+    "tambov": "Tambov",
+    "petrozavodsk": "Petrozavodsk",
+    "nizhnevartovsk": "Nijniy Vartovsk",
+    "norilsk": "Norilsk",
+    "komsomolskOnAmur": "Komsomolsk-na-Amure",
+    "yakutsk": "Yakutsk",
+    "grozny": "Grozniy"
+  },
+  "profile": {
+    "title": "Mening profilim",
+    "scanPassport": "Pasportni skanerlash",
+    "scanPassportDesc": "Ma'lumotlarni avtomatik to'ldirish",
+    "completeness": "Profil to'ldirilganligi",
+    "sections": {
+      "personal": "Shaxsiy ma'lumotlar",
+      "documents": "Hujjatlar",
+      "work": "Ish",
+      "registration": "Ro'yxatdan o'tish"
+    },
+    "fields": {
+      "fullName": "F.I.Sh. (pasportdagi kabi)",
+      "fullNameLatin": "F.I.Sh. (lotincha)",
+      "firstName": "Ism",
+      "lastName": "Familiya",
+      "patronymic": "Otasining ismi",
+      "birthDate": "Tug'ilgan sana",
+      "birthPlace": "Tug'ilgan joy",
+      "gender": "Jinsi",
+      "citizenship": "Fuqarolik",
+      "nationality": "Millati",
+      "phone": "Telefon",
+      "email": "Email",
+      "passportNumber": "Pasport raqami",
+      "passportSeries": "Pasport seriyasi",
+      "passportIssueDate": "Pasport berilgan sana",
+      "passportExpiryDate": "Amal qilish muddati",
+      "passportIssuedBy": "Kim tomonidan berilgan",
+      "entryDate": "Rossiyaga kirish sanasi",
+      "entryPoint": "Kirish punkti",
+      "migrationCardNumber": "Migratsiya kartasi raqami",
+      "migrationCardIssueDate": "Migratsiya kartasi berilgan sana",
+      "purpose": "Tashrif maqsadi",
+      "stayDuration": "Turish muddati",
+      "registrationAddress": "Ro'yxatdan o'tish manzili",
+      "registrationExpiry": "Ro'yxatdan o'tish muddati",
+      "actualAddress": "Haqiqiy yashash manzili",
+      "hostFullName": "Qabul qiluvchi tomonning F.I.Sh.",
+      "hostAddress": "Qabul qiluvchi tomonning manzili",
+      "hostPhone": "Qabul qiluvchi tomonning telefoni",
+      "hasPatent": "Ish patenti bor",
+      "patentNumber": "Patent raqami",
+      "patentRegion": "Patent hududi",
+      "patentIssueDate": "Patent berilgan sana",
+      "patentExpiry": "Patent amal qilish muddati",
+      "employerName": "Ish beruvchi nomi",
+      "employerINN": "Ish beruvchi INN",
+      "employerAddress": "Ish beruvchi manzili",
+      "position": "Lavozim",
+      "salary": "Maosh",
+      "workStartDate": "Ishga kirish sanasi",
+      "inn": "INN",
+      "snils": "SNILS",
+      "omsPolicy": "OMS polisi"
+    },
+    "genders": {
+      "male": "Erkak",
+      "female": "Ayol"
+    },
+    "purposes": {
+      "work": "Ish",
+      "study": "O'qish",
+      "tourist": "Turizm",
+      "private": "Shaxsiy tashrif",
+      "business": "Biznes tashrif",
+      "treatment": "Davolanish",
+      "transit": "Tranzit",
+      "other": "Boshqa"
+    }
+  },
+  "documents": {
+    "title": "Mening hujjatlarim",
+    "create": "Hujjat yaratish",
+    "createNew": "Yangi hujjat yaratish",
+    "available": "Mavjud shakllar",
+    "generated": "Yaratilgan hujjatlar",
+    "categories": {
+      "registration": "Ro'yxatdan o'tish",
+      "patent": "Patent",
+      "work": "Ishga joylashish",
+      "other": "Boshqa hujjatlar"
+    },
+    "status": {
+      "draft": "Qoralama",
+      "completed": "Tayyor",
+      "submitted": "Yuborildi",
+      "approved": "Tasdiqlandi",
+      "rejected": "Rad etildi"
+    },
+    "wizard": {
+      "selectDocument": "Hujjatni tanlang",
+      "fillMissing": "Ma'lumotlarni to'ldiring",
+      "review": "Ma'lumotlarni tekshiring",
+      "complete": "Tayyor!",
+      "downloadPdf": "PDF yuklab olish",
+      "startOver": "Qaytadan boshlash"
+    },
+    "forms": {
+      "notificationArrival": {
+        "title": "Xorijiy fuqaro kelganligi to'g'risida xabarnoma",
+        "titleShort": "Kelish xabarnomasi",
+        "description": "Kirganidan keyin 7 ish kuni ichida migratsiya hisobiga qo'yish"
+      },
+      "registrationExtension": {
+        "title": "Turish muddatini uzaytirish to'g'risida ariza",
+        "titleShort": "Ro'yxatni uzaytirish",
+        "description": "Asoslar mavjud bo'lganda migratsiya hisobini uzaytirish"
+      },
+      "departureNotification": {
+        "title": "Ketish to'g'risida xabarnoma",
+        "titleShort": "Ketish xabarnomasi",
+        "description": "Turish joyini o'zgartirganda yoki RFdan chiqqanda"
+      },
+      "patentInitial": {
+        "title": "Patent berish to'g'risida ariza",
+        "titleShort": "Patentga ariza",
+        "description": "Ish patentini birinchi marta olish"
+      },
+      "patentReissue": {
+        "title": "Patentni qayta rasmiylashtirish to'g'risida ariza",
+        "titleShort": "Patentni uzaytirish",
+        "description": "Keyingi yilga patentni uzaytirish"
+      },
+      "patentDuplicate": {
+        "title": "Patent dublikati berish to'g'risida ariza",
+        "titleShort": "Patent dublikati",
+        "description": "Patent yo'qolgan yoki buzilganda"
+      },
+      "patentTerritoryChange": {
+        "title": "Patent amal qilish hududini o'zgartirish to'g'risida ariza",
+        "titleShort": "Hududni o'zgartirish",
+        "description": "Boshqa hududga ko'chganda"
+      },
+      "employerNotification": {
+        "title": "Mehnat shartnomasi tuzilganligi to'g'risida xabarnoma",
+        "titleShort": "Ishga joylashish xabarnomasi",
+        "description": "Ish beruvchi 3 kun ichida IIVni xabardor qilishi shart"
+      },
+      "employerTermination": {
+        "title": "Mehnat shartnomasini bekor qilish to'g'risida xabarnoma",
+        "titleShort": "Ishdan bo'shatish xabarnomasi",
+        "description": "Ishdan bo'shatilganda ish beruvchi IIVni xabardor qiladi"
+      },
+      "rvpApplication": {
+        "title": "RVP berish to'g'risida ariza",
+        "titleShort": "RVPga ariza",
+        "description": "Vaqtincha yashashga ruxsat"
+      },
+      "vnzhApplication": {
+        "title": "VNJ berish to'g'risida ariza",
+        "titleShort": "VNJga ariza",
+        "description": "Yashash guvohnomasi"
+      },
+      "invitationLetter": {
+        "title": "Taklif xati to'g'risida iltimos",
+        "titleShort": "Taklif",
+        "description": "Xorijiy fuqaroni RFga taklif qilish"
+      }
+    },
+    "estimatedTime": "To'ldirish vaqti",
+    "minutes": "daq"
+  },
+  "services": {
+    "title": "Xizmatlar",
+    "subtitle": "Vositalar va xizmatlar",
+    "otherServices": "Boshqa xizmatlar",
+    "banCheck": {
+      "title": "Taqiqlarni tekshirish",
+      "subtitle": "IIV / FSSP",
+      "description": "RFga kirish taqiqi mavjudligini tekshiring",
+      "checkMvd": "IIV bazasida tekshirish",
+      "checkFssp": "Qarzlarni tekshirish (FSSP)",
+      "enterPassport": "Pasport ma'lumotlarini kiriting",
+      "noRestrictions": "Taqiqlar topilmadi",
+      "hasRestrictions": "Cheklovlar aniqlandi",
+      "checking": "Tekshirilmoqda..."
+    },
+    "calculator": {
+      "title": "90/180 kalkulyator",
+      "subtitle": "Turish kunlari",
+      "description": "Qolgan qonuniy turish kunlarini hisoblang",
+      "entryDate": "Kirish sanasi",
+      "daysSpent": "RFda kunlar",
+      "daysRemaining": "Qolgan kunlar",
+      "mustLeave": "Chiqish kerak",
+      "rule": "90/180 qoidasi: har qanday 180 kunlik davrda RFda 90 kundan ortiq bo'lish mumkin emas"
+    },
+    "map": {
+      "title": "Migrant xaritasi",
+      "subtitle": "IIV, MMM, Tibbiyot",
+      "description": "Eng yaqin bo'limlar va markazlarni toping",
+      "filters": {
+        "all": "Hammasi",
+        "mvd": "IIV",
+        "mmc": "MMM",
+        "medical": "Tibbiy komisiya",
+        "exam": "Imtihon",
+        "mosque": "Masjidlar"
+      },
+      "openInMaps": "Xaritada ochish",
+      "getDirections": "Yo'nalish",
+      "workingHours": "Ish vaqti",
+      "phone": "Telefon",
+      "address": "Manzil"
+    },
+    "exam": {
+      "title": "Rus tili imtihoni",
+      "subtitle": "Trener",
+      "description": "Rus tili imtihoniga tayyorlaning",
+      "startTest": "Testni boshlash",
+      "questions": "savol",
+      "correct": "To'g'ri",
+      "incorrect": "Noto'g'ri",
+      "timeLeft": "Qolgan vaqt",
+      "nextQuestion": "Keyingi savol",
+      "finish": "Tugatish",
+      "yourScore": "Sizning natijangiz",
+      "passed": "Test o'tildi!",
+      "failed": "Test o'tilmadi",
+      "tryAgain": "Qayta urinish"
+    },
+    "translator": {
+      "title": "Tarjimon",
+      "subtitle": "Yandex.Tarjimon",
+      "description": "Hujjatlar va matnlarni tarjima qiling"
+    },
+    "mosques": {
+      "title": "Masjidlar xaritasi",
+      "subtitle": "Masjid topish",
+      "description": "Eng yaqin masjidni toping"
+    },
+    "lawyer": {
+      "title": "Yurist maslahati",
+      "subtitle": "Onlayn yordam",
+      "description": "Yuridik maslahat oling"
+    },
+    "insurance": {
+      "title": "Sug'urta",
+      "subtitle": "DMS va OMS",
+      "description": "Tibbiy sug'urta rasmiylashting"
+    }
+  },
+  "payment": {
+    "title": "Patent to'lovi",
+    "subtitle": "Oylik to'lov",
+    "selectRegion": "Hududni tanlang",
+    "selectMonths": "Davrni tanlang",
+    "paymentMethod": "To'lov usuli",
+    "total": "Jami to'lov",
+    "perMonth": "oyiga",
+    "months": "oy",
+    "monthsCount": {
+      "1": "1 oy",
+      "2": "2 oy",
+      "3": "3 oy",
+      "4": "4 oy",
+      "5": "5 oy",
+      "6": "6 oy",
+      "7": "7 oy",
+      "8": "8 oy",
+      "9": "9 oy",
+      "10": "10 oy",
+      "11": "11 oy",
+      "12": "12 oy"
+    },
+    "methods": {
+      "sbp": "SBP (QR-kod)",
+      "sbpDescription": "Komissiyasiz",
+      "card": "Bank kartasi",
+      "cardDescription": "Visa, Mastercard, MIR"
+    },
+    "success": "To'lov muvaffaqiyatli!",
+    "pending": "To'lov qayta ishlanmoqda",
+    "failed": "To'lov xatosi",
+    "history": "To'lovlar tarixi",
+    "currentRates": "Joriy tariflar",
+    "payNow": "To'lash",
+    "reminder": {
+      "title": "Muhim ma'lumot",
+      "rule1": "Patent to'lovi har oy amalga oshirilishi kerak",
+      "rule2": "1 kundan ortiq kechikish patentni bekor qilishga olib keladi",
+      "rule3": "Barcha to'lov chekalarini saqlang"
+    }
+  },
+  "sos": {
+    "title": "SOS Yordam",
+    "subtitle": "Favqulodda yordam",
+    "detained": {
+      "title": "Meni ushladilar",
+      "description": "Ushlanganda ko'rsatmalar va kontaktlar"
+    },
+    "emergency": "Favqulodda xizmatlar",
+    "police": "Politsiya",
+    "ambulance": "Tez yordam",
+    "fire": "O't o'chirish xizmati",
+    "hotline": "IIV ishonch telefoni",
+    "embassy": "Elchixona",
+    "lawyer": "Yurist chaqirish",
+    "call": "Qo'ng'iroq qilish",
+    "instructions": {
+      "title": "Ushlanganda nima qilish kerak",
+      "step1": "Xotirjam bo'ling",
+      "step2": "Xodim hujjatlarini ko'rsatishni so'rang",
+      "step3": "Mazmunini tushunmasdan hujjatlarga imzo qo'ymang",
+      "step4": "Elchixona yoki konsulxonaga qo'ng'iroq qiling",
+      "step5": "Tarjimon talab qiling",
+      "step6": "Xodimning F.I.Sh. va unvonini yozib oling"
+    },
+    "rights": {
+      "title": "Sizning huquqlaringiz",
+      "right1": "Tarjimon huquqi",
+      "right2": "Elchixonaga qo'ng'iroq qilish huquqi",
+      "right3": "Yuridik yordam huquqi",
+      "right4": "O'zingizga qarshi guvohlik bermaslik huquqi"
+    }
+  },
+  "dashboard": {
+    "welcome": "Xush kelibsiz",
+    "status": "Holat",
+    "actions": "Talab qilinadigan harakatlar",
+    "quickActions": "Tezkor harakatlar",
+    "recentDocuments": "So'nggi hujjatlar",
+    "notifications": "Bildirishnomalar",
+    "noNotifications": "Yangi bildirishnomalar yo'q",
+    "statusCards": {
+      "registration": "Ro'yxat",
+      "patent": "Patent",
+      "stayDays": "RFda kunlar"
+    },
+    "statusValues": {
+      "active": "Faol",
+      "expired": "Muddati tugagan",
+      "expiringSoon": "Tez tugaydi",
+      "notRegistered": "Ro'yxatdan o'tmagan",
+      "paid": "To'langan",
+      "unpaid": "To'lanmagan"
+    }
+  },
+  "assistant": {
+    "title": "Yordamchi",
+    "subtitle": "Savol bering",
+    "placeholder": "Savolingizni yozing...",
+    "send": "Yuborish",
+    "quickQuestions": {
+      "title": "Tez-tez beriladigan savollar",
+      "registration": "Ro'yxatni qanday uzaytirish mumkin?",
+      "patent": "Patentni qanday olish mumkin?",
+      "documents": "Qanday hujjatlar kerak?",
+      "ban": "Kirish taqiqini qanday tekshirish mumkin?",
+      "work": "Ish qanday topish mumkin?"
+    }
+  },
+  "notifications": {
+    "patentExpiry": "Patent muddati tugayapti",
+    "patentExpiryDesc": "Patent tugashiga {{days}} kun qoldi",
+    "registrationExpiry": "Ro'yxat muddati tugayapti",
+    "registrationExpiryDesc": "Ro'yxat tugashiga {{days}} kun qoldi",
+    "paymentReminder": "To'lov eslatmasi",
+    "paymentReminderDesc": "Patentni to'lashni unutmang",
+    "documentReady": "Hujjat tayyor",
+    "documentReadyDesc": "Hujjatingiz yuklab olishga tayyor"
+  },
+  "errors": {
+    "network": "Internet aloqasi yo'q",
+    "server": "Server xatosi",
+    "unknown": "Noma'lum xato",
+    "timeout": "Kutish vaqti tugadi",
+    "unauthorized": "Avtorizatsiya talab qilinadi",
+    "forbidden": "Kirish taqiqlangan",
+    "notFound": "Topilmadi",
+    "validation": "Tekshirish xatosi",
+    "tryAgain": "Qayta urinib ko'ring"
+  },
+  "offline": {
+    "title": "Aloqa yo'q",
+    "description": "Internet aloqasini tekshiring",
+    "retry": "Qayta urinish"
+  },
+  "poi": {
+    "types": {
+      "mvd": "IIV bo'limi",
+      "mmc": "Migratsiya markazi",
+      "medical": "Tibbiy komisiya",
+      "exam": "Sinov markazi",
+      "mosque": "Masjid"
+    }
+  }
+}

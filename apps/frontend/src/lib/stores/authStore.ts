@@ -16,6 +16,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  _hasHydrated: boolean;
 
   // Actions
   setUser: (user: User | null) => void;
@@ -24,6 +25,7 @@ interface AuthState {
   setError: (error: string | null) => void;
   logout: () => void;
   reset: () => void;
+  setHasHydrated: (state: boolean) => void;
 }
 
 const initialState = {
@@ -32,6 +34,7 @@ const initialState = {
   isAuthenticated: false,
   isLoading: false,
   error: null,
+  _hasHydrated: false,
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -58,10 +61,14 @@ export const useAuthStore = create<AuthState>()(
       logout: () =>
         set({
           ...initialState,
+          _hasHydrated: true,
         }),
 
       reset: () =>
-        set(initialState),
+        set({ ...initialState, _hasHydrated: true }),
+
+      setHasHydrated: (state) =>
+        set({ _hasHydrated: state }),
     }),
     {
       name: 'migranthub-auth',
@@ -71,6 +78,9 @@ export const useAuthStore = create<AuthState>()(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

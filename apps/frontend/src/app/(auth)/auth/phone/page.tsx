@@ -4,9 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Phone, ArrowRight, MessageCircle } from 'lucide-react';
 import { useAuthStore } from '@/lib/stores';
+import { useTranslation } from '@/lib/i18n';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 export default function PhonePage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -39,7 +42,7 @@ export default function PhonePage() {
     e.preventDefault();
 
     if (!isValidPhone()) {
-      setError('Введите корректный номер телефона');
+      setError(t('auth.phone.invalidPhone'));
       return;
     }
 
@@ -55,7 +58,7 @@ export default function PhonePage() {
 
       router.push('/auth/otp');
     } catch {
-      setError('Ошибка отправки SMS. Попробуйте позже.');
+      setError(t('auth.phone.sendError'));
     } finally {
       setIsLoading(false);
       setLoading(false);
@@ -81,18 +84,23 @@ export default function PhonePage() {
 
   return (
     <div className="max-w-md mx-auto w-full">
+      {/* Language Switcher */}
+      <div className="flex justify-end mb-4">
+        <LanguageSwitcher variant="compact" />
+      </div>
+
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Войти по номеру
+          {t('auth.phone.title')}
         </h2>
         <p className="text-gray-500">
-          Введите номер телефона для получения кода
+          {t('auth.phone.subtitle')}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="phone" className="sr-only">Номер телефона</label>
+          <label htmlFor="phone" className="sr-only">{t('auth.phone.phoneLabel')}</label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Phone className="h-5 w-5 text-gray-400" />
@@ -121,10 +129,10 @@ export default function PhonePage() {
           className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-4 rounded-xl hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
         >
           {isLoading ? (
-            <span className="animate-pulse">Отправка...</span>
+            <span className="animate-pulse">{t('auth.phone.sending')}</span>
           ) : (
             <>
-              Получить код
+              {t('auth.phone.getCode')}
               <ArrowRight className="w-5 h-5" />
             </>
           )}
@@ -134,7 +142,7 @@ export default function PhonePage() {
       {/* Divider */}
       <div className="flex items-center gap-4 my-6">
         <div className="flex-1 h-px bg-gray-200" />
-        <span className="text-sm text-gray-400">или</span>
+        <span className="text-sm text-gray-400">{t('common.or')}</span>
         <div className="flex-1 h-px bg-gray-200" />
       </div>
 
@@ -144,14 +152,13 @@ export default function PhonePage() {
         className="w-full flex items-center justify-center gap-3 bg-[#0088cc] text-white font-semibold py-4 rounded-xl hover:bg-[#0077b5] transition-colors"
       >
         <MessageCircle className="w-5 h-5" />
-        Войти через Telegram
+        {t('auth.phone.telegramLogin')}
       </button>
 
       {/* Demo hint */}
       <div className="mt-6 p-4 bg-yellow-50 rounded-xl border-2 border-yellow-200">
         <p className="text-sm text-yellow-800">
-          <strong>Демо:</strong> Введите любой номер формата +7 (XXX) XXX-XX-XX.
-          Код подтверждения: <strong>1234</strong>
+          <strong>{t('auth.demo.title')}:</strong> {t('auth.demo.phoneHint')}
         </p>
       </div>
     </div>

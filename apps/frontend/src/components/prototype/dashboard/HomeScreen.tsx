@@ -3,20 +3,22 @@
 import { QrCode, ChevronRight, Volume2, History, Lock, Edit2, Globe, Trash2, X, Rocket, FileText, AlertTriangle, CreditCard, Grid3x3, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check } from 'lucide-react';
 import { useState } from 'react';
 import { LegalizationWizard } from '../wizard/LegalizationWizard';
+import { useTranslation, LANGUAGES } from '@/lib/i18n';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 export function HomeScreen() {
+  const { t, language, setLanguage: setAppLanguage } = useTranslation();
   const [showHistory, setShowHistory] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
   const [showOtherServices, setShowOtherServices] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('ru');
   const [showAILanguages, setShowAILanguages] = useState(false);
   const [editEntryDate, setEditEntryDate] = useState('2024-01-01');
   const [editPurpose, setEditPurpose] = useState('work');
   const [editFullName, setEditFullName] = useState('Алишер Усманов');
-  const [editCitizenship, setEditCitizenship] = useState('Узбекистан');
-  const [editRegion, setEditRegion] = useState('Москва');
+  const [editCitizenship, setEditCitizenship] = useState('UZ');
+  const [editRegion, setEditRegion] = useState('moscow');
   const [checkedDocs, setCheckedDocs] = useState<string[]>(['passport', 'mig_card']);
 
   return (
@@ -66,11 +68,11 @@ export function HomeScreen() {
           </button>
           
           <div className="text-right">
-            <p className="text-xs text-gray-500 mb-0.5">Осталось</p>
+            <p className="text-xs text-gray-500 mb-0.5">{t('dashboard.daysRemaining')}</p>
             <div className={`text-2xl font-bold ${88 > 30 ? 'text-green-600' : 88 > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
               88
             </div>
-            <p className="text-xs text-gray-500">дней</p>
+            <p className="text-xs text-gray-500">{t('common.days')}</p>
           </div>
         </div>
       </div>
@@ -97,15 +99,15 @@ export function HomeScreen() {
             </div>
             
             <h2 className="text-2xl font-bold text-center mb-2">
-              Анализ и Оформление
+              {t('dashboard.hero.title')}
             </h2>
             <p className="text-center text-blue-100 text-sm mb-4">
-              Полный цикл легализации
+              {t('dashboard.hero.subtitle')}
             </p>
-            
+
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
               <p className="text-xs text-white/90 text-center leading-relaxed">
-                Мы проверим ваш статус, сгенерируем все необходимые документы и покажем точный план действий
+                {t('dashboard.hero.description')}
               </p>
             </div>
           </div>
@@ -115,24 +117,24 @@ export function HomeScreen() {
       {/* Task Carousel */}
       <div className="px-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-3">
-          Требуется внимание
+          {t('dashboard.attentionRequired')}
         </h3>
-        
+
         <div className="space-y-3">
           {/* Urgent Card - Patent */}
           <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-5 shadow-xl">
             <div className="inline-block px-2 py-1 bg-white/20 rounded-md text-xs font-semibold text-white mb-2">
-              СРОЧНО
+              {t('common.urgent')}
             </div>
             <h4 className="text-white font-bold text-lg mb-1">
-              Патент
+              {t('documents.patent.title')}
             </h4>
             <p className="text-white/90 text-sm mb-4">
-              Истекает через 3 дня!
+              {t('dashboard.cards.patent.expiresIn', { days: '3' })}
             </p>
             <div className="flex gap-2">
               <button className="flex-1 bg-white text-red-600 font-semibold py-3 px-4 rounded-xl hover:bg-gray-50 transition-colors active:scale-98 flex items-center justify-center shadow-lg">
-                Оплатить
+                {t('payment.pay')}
                 <ChevronRight className="w-5 h-5 ml-1" />
               </button>
               <button className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center hover:bg-white/30 transition-colors">
@@ -144,14 +146,14 @@ export function HomeScreen() {
           {/* Secondary Card - Registration */}
           <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-5 shadow-lg">
             <h4 className="text-white font-bold text-lg mb-1">
-              Регистрация
+              {t('documents.registration.title')}
             </h4>
             <p className="text-white/90 text-sm mb-4">
-              Нужно продлить
+              {t('dashboard.cards.registration.needExtend')}
             </p>
             <div className="flex gap-2">
               <button className="flex-1 bg-white text-blue-600 font-semibold py-3 px-4 rounded-xl hover:bg-gray-50 transition-colors active:scale-98 flex items-center justify-center shadow-lg">
-                Продлить
+                {t('common.extend')}
                 <ChevronRight className="w-5 h-5 ml-1" />
               </button>
               <button className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center hover:bg-white/30 transition-colors">
@@ -673,8 +675,8 @@ export function HomeScreen() {
           <div className="w-full bg-white rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-300 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-xl font-bold text-gray-900">🌐 Язык интерфейса</h3>
-                <p className="text-sm text-gray-500">Выберите язык приложения</p>
+                <h3 className="text-xl font-bold text-gray-900">{t('languages.selectTitle')}</h3>
+                <p className="text-sm text-gray-500">{t('languages.selectSubtitle')}</p>
               </div>
               <button 
                 onClick={() => {
@@ -799,7 +801,7 @@ export function HomeScreen() {
               }}
               className="w-full mt-6 bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition-colors"
             >
-              Закрыть
+              {t('common.close')}
             </button>
           </div>
         </div>

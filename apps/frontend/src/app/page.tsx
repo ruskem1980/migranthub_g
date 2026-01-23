@@ -1,53 +1,49 @@
-import Link from 'next/link';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    // Simple check after component mounts
+    const checkAuth = () => {
+      try {
+        const stored = localStorage.getItem('migranthub-auth');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed?.state?.isAuthenticated) {
+            router.replace('/prototype');
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Auth check error:', e);
+      }
+      router.replace('/auth/phone');
+    };
+
+    // Small delay to ensure localStorage is available
+    const timer = setTimeout(() => {
+      checkAuth();
+      setChecked(true);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [router]);
+
+  // Show loading splash screen
   return (
-    <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center p-6">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-3xl shadow-2xl p-8">
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">🛡️</span>
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              MigrantHub
-            </h1>
-            <p className="text-gray-600">
-              Экосистема для мигрантов в России
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <Link
-              href="/prototype"
-              className="block w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-4 px-6 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all active:scale-98 text-center shadow-lg"
-            >
-              🎨 Интерактивный Прототип
-            </Link>
-
-            <Link
-              href="/dashboard"
-              className="block w-full bg-white border-2 border-gray-200 text-gray-700 font-bold py-4 px-6 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all active:scale-98 text-center"
-            >
-              📱 Основной Дашборд
-            </Link>
-          </div>
-
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <div className="text-center text-sm text-gray-500">
-              <p className="mb-2">Целевая аудитория:</p>
-              <div className="flex justify-center gap-2 text-2xl">
-                🇺🇿 🇹🇯 🇰🇬
-              </div>
-            </div>
-          </div>
+    <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+          <span className="text-5xl">🛡️</span>
         </div>
-
-        <div className="mt-6 text-center">
-          <p className="text-white text-sm">
-            Version 1.0.0 • Январь 2024
-          </p>
-        </div>
+        <h1 className="text-3xl font-bold text-white mb-2">MigrantHub</h1>
+        <p className="text-white/80 mb-6">Экосистема для мигрантов в России</p>
+        <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto" />
       </div>
     </div>
   );

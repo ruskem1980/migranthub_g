@@ -3,8 +3,10 @@
 import { Shield, Calculator, FileText, Briefcase, Home, MapPin, Languages, CreditCard, Wand2, Plus, Grid3x3, X, GraduationCap, Map } from 'lucide-react';
 import { useState } from 'react';
 import { DocumentGenerator } from '../services/DocumentGenerator';
+import { useTranslation } from '@/lib/i18n';
 
 export function ServicesScreen() {
+  const { t } = useTranslation();
   const [showMapModal, setShowMapModal] = useState(false);
   const [showDocGenerator, setShowDocGenerator] = useState(false);
   const [showOtherServices, setShowOtherServices] = useState(false);
@@ -46,14 +48,14 @@ export function ServicesScreen() {
     <div className="h-full overflow-y-auto pb-4">
       {/* Header */}
       <div className="px-4 py-4 bg-white border-b border-gray-200 sticky top-0 z-10">
-        <h1 className="text-xl font-bold text-gray-900">Сервисы</h1>
-        <p className="text-sm text-gray-500">Инструменты и услуги</p>
+        <h1 className="text-xl font-bold text-gray-900">{t('services.title')}</h1>
+        <p className="text-sm text-gray-500">{t('services.subtitle')}</p>
       </div>
 
       {/* Core Services Grid */}
       <div className="px-4 py-6">
         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-          Основные сервисы
+          {t('services.mainServices')}
         </h3>
         <div className="grid grid-cols-2 gap-4">
           {coreServices.map((service, index) => {
@@ -99,13 +101,13 @@ export function ServicesScreen() {
         <div className="fixed inset-0 bg-black/50 flex items-end z-50 animate-in fade-in duration-200">
           <div className="w-full bg-white rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-300">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Карта Мигранта</h3>
+              <h3 className="text-xl font-bold text-gray-900">{t('services.migrantMap.title')}</h3>
               <button onClick={() => setShowMapModal(false)} className="p-2 hover:bg-gray-100 rounded-full">
                 ✕
               </button>
             </div>
 
-            <p className="text-sm text-gray-600 mb-4">Выберите категорию точек:</p>
+            <p className="text-sm text-gray-600 mb-4">{t('services.migrantMap.selectCategory')}</p>
 
             <div className="space-y-3 mb-6">
               <button className="w-full flex items-center gap-3 p-4 bg-red-50 border-2 border-red-200 rounded-xl hover:bg-red-100 transition-colors">
@@ -113,8 +115,8 @@ export function ServicesScreen() {
                   <span className="text-2xl">👮‍♂️</span>
                 </div>
                 <div className="flex-1 text-left">
-                  <h4 className="font-bold text-gray-900">МВД / ММТ</h4>
-                  <p className="text-xs text-gray-600">Отделы миграции</p>
+                  <h4 className="font-bold text-gray-900">{t('poi.mvd')}</h4>
+                  <p className="text-xs text-gray-600">{t('poi.migrationDepts')}</p>
                 </div>
               </button>
 
@@ -123,8 +125,8 @@ export function ServicesScreen() {
                   <span className="text-2xl">🏥</span>
                 </div>
                 <div className="flex-1 text-left">
-                  <h4 className="font-bold text-gray-900">Медцентры</h4>
-                  <p className="text-xs text-gray-600">Только авторизованные</p>
+                  <h4 className="font-bold text-gray-900">{t('poi.medCenters')}</h4>
+                  <p className="text-xs text-gray-600">{t('poi.authorizedOnly')}</p>
                 </div>
               </button>
 
@@ -133,8 +135,8 @@ export function ServicesScreen() {
                   <span className="text-2xl">🎓</span>
                 </div>
                 <div className="flex-1 text-left">
-                  <h4 className="font-bold text-gray-900">Экзамены</h4>
-                  <p className="text-xs text-gray-600">Центры тестирования</p>
+                  <h4 className="font-bold text-gray-900">{t('poi.examCenters')}</h4>
+                  <p className="text-xs text-gray-600">{t('poi.testingCenters')}</p>
                 </div>
               </button>
             </div>
@@ -143,7 +145,7 @@ export function ServicesScreen() {
               onClick={() => setShowMapModal(false)}
               className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-colors"
             >
-              Открыть карту
+              {t('services.migrantMap.openMap')}
             </button>
           </div>
         </div>
@@ -155,11 +157,11 @@ export function ServicesScreen() {
           <div className="w-full bg-white rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-300 max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-xl font-bold text-gray-900">🧩 Другие услуги</h3>
-                <p className="text-sm text-gray-500">Дополнительные инструменты</p>
+                <h3 className="text-xl font-bold text-gray-900">{t('services.otherServices.title')}</h3>
+                <p className="text-sm text-gray-500">{t('services.otherServices.subtitle')}</p>
               </div>
-              <button 
-                onClick={() => setShowOtherServices(false)} 
+              <button
+                onClick={() => setShowOtherServices(false)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
                 <X className="w-6 h-6 text-gray-600" />
@@ -194,7 +196,7 @@ export function ServicesScreen() {
             {/* Info Card */}
             <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl mb-4">
               <p className="text-sm text-blue-800">
-                💡 <strong>Совет:</strong> Эти инструменты помогут вам в повседневной жизни в России.
+                {t('services.otherServices.tip')}
               </p>
             </div>
 
@@ -203,7 +205,7 @@ export function ServicesScreen() {
               onClick={() => setShowOtherServices(false)}
               className="w-full bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition-colors"
             >
-              Закрыть
+              {t('common.close')}
             </button>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { type ReactNode } from 'react';
 import { QueryProvider } from '@/lib/providers/QueryProvider';
 import { useServiceWorker } from '@/lib/hooks/useServiceWorker';
 import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
+import { useTranslation } from '@/lib/i18n';
 
 function AppInitializer({ children }: { children: ReactNode }) {
   // Register service worker
@@ -12,24 +13,27 @@ function AppInitializer({ children }: { children: ReactNode }) {
   // Track online status
   const isOnline = useOnlineStatus();
 
+  // Translations
+  const { t } = useTranslation();
+
   return (
     <>
       {/* Offline indicator */}
       {!isOnline && (
         <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-yellow-900 text-center text-sm py-1 z-50">
-          Нет подключения к интернету
+          {t('offline.noConnection')}
         </div>
       )}
 
       {/* Update notification */}
       {isUpdating && (
         <div className="fixed bottom-20 left-4 right-4 bg-blue-600 text-white p-4 rounded-xl shadow-lg z-50 flex items-center justify-between">
-          <span>Доступно обновление</span>
+          <span>{t('app.updateAvailable')}</span>
           <button
             onClick={skipWaiting}
             className="bg-white text-blue-600 font-semibold px-4 py-2 rounded-lg"
           >
-            Обновить
+            {t('app.update')}
           </button>
         </div>
       )}

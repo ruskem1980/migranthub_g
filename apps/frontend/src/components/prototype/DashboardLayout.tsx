@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ShieldCheck, Wallet, LayoutGrid, Bot, Siren } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/lib/i18n';
 import { HomeScreen } from './dashboard/HomeScreen';
 import { DocumentsScreen } from './dashboard/DocumentsScreen';
 import { ServicesScreen } from './dashboard/ServicesScreen';
@@ -11,36 +12,37 @@ import { SOSScreen } from './dashboard/SOSScreen';
 
 type TabId = 'home' | 'documents' | 'services' | 'assistant' | 'sos';
 
-const tabs = [
-  {
-    id: 'home' as TabId,
-    label: 'Главная',
-    icon: ShieldCheck,
-  },
-  {
-    id: 'documents' as TabId,
-    label: 'Документы',
-    icon: Wallet,
-  },
-  {
-    id: 'services' as TabId,
-    label: 'Сервисы',
-    icon: LayoutGrid,
-  },
-  {
-    id: 'assistant' as TabId,
-    label: 'Ассистент',
-    icon: Bot,
-  },
-  {
-    id: 'sos' as TabId,
-    label: 'SOS',
-    icon: Siren,
-  },
-];
-
 export function DashboardLayout() {
   const [activeTab, setActiveTab] = useState<TabId>('home');
+  const { t } = useTranslation();
+
+  const tabs = [
+    {
+      id: 'home' as TabId,
+      label: t('dashboard.tabs.home'),
+      icon: ShieldCheck,
+    },
+    {
+      id: 'documents' as TabId,
+      label: t('dashboard.tabs.documents'),
+      icon: Wallet,
+    },
+    {
+      id: 'services' as TabId,
+      label: t('dashboard.tabs.services'),
+      icon: LayoutGrid,
+    },
+    {
+      id: 'assistant' as TabId,
+      label: t('dashboard.tabs.assistant'),
+      icon: Bot,
+    },
+    {
+      id: 'sos' as TabId,
+      label: t('dashboard.tabs.sos'),
+      icon: Siren,
+    },
+  ];
 
   const renderContent = () => {
     switch (activeTab) {

@@ -4,39 +4,37 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, Globe, Flag, ArrowRight } from 'lucide-react';
 import { useAppStore, useProfileStore } from '@/lib/stores';
-
-const LANGUAGES = [
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-  { code: 'uz-Latn', name: 'O\'zbekcha', flag: '🇺🇿' },
-  { code: 'tg', name: 'Тоҷикӣ', flag: '🇹🇯' },
-  { code: 'ky', name: 'Кыргызча', flag: '🇰🇬' },
-];
-
-const CITIZENSHIPS = [
-  { code: 'UZ', name: 'Узбекистан', flag: '🇺🇿' },
-  { code: 'TJ', name: 'Таджикистан', flag: '🇹🇯' },
-  { code: 'KG', name: 'Кыргызстан', flag: '🇰🇬' },
-  { code: 'AZ', name: 'Азербайджан', flag: '🇦🇿' },
-  { code: 'AM', name: 'Армения', flag: '🇦🇲' },
-  { code: 'MD', name: 'Молдова', flag: '🇲🇩' },
-  { code: 'UA', name: 'Украина', flag: '🇺🇦' },
-  { code: 'OTHER', name: 'Другая страна', flag: '🌍' },
-];
+import { useTranslation, LANGUAGES, Language } from '@/lib/i18n';
 
 type Step = 'language' | 'citizenship';
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { t, language, setLanguage: setAppLanguage } = useTranslation();
   const [step, setStep] = useState<Step>('language');
-  const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>(language);
   const [selectedCitizenship, setSelectedCitizenship] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const { setLanguage, setOnboardingCompleted } = useAppStore();
   const { updateProfile } = useProfileStore();
 
-  const handleLanguageSelect = (code: string) => {
+  // Get citizenships from translations
+  const CITIZENSHIPS = [
+    { code: 'UZ', name: t('countries.UZ'), flag: '🇺🇿' },
+    { code: 'TJ', name: t('countries.TJ'), flag: '🇹🇯' },
+    { code: 'KG', name: t('countries.KG'), flag: '🇰🇬' },
+    { code: 'AZ', name: t('countries.AZ'), flag: '🇦🇿' },
+    { code: 'AM', name: t('countries.AM'), flag: '🇦🇲' },
+    { code: 'MD', name: t('countries.MD'), flag: '🇲🇩' },
+    { code: 'UA', name: t('countries.UA'), flag: '🇺🇦' },
+    { code: 'OTHER', name: t('countries.OTHER'), flag: '🌍' },
+  ];
+
+  const handleLanguageSelect = (code: Language) => {
     setSelectedLanguage(code);
+    // Immediately apply language change for preview
+    setAppLanguage(code);
   };
 
   const handleCitizenshipSelect = (code: string) => {
@@ -57,7 +55,7 @@ export default function OnboardingPage() {
         setLanguage(selectedLanguage as any);
         updateProfile({
           citizenship: selectedCitizenship,
-          language: selectedLanguage.split('-')[0] as any,
+          language: selectedLanguage as any,
           onboardingCompleted: true,
           updatedAt: new Date().toISOString(),
         });
@@ -90,10 +88,10 @@ export default function OnboardingPage() {
               <Globe className="w-8 h-8 text-blue-600" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Выберите язык
+              {t('onboarding.language.title')}
             </h2>
             <p className="text-gray-500">
-              На каком языке вам удобнее?
+              {t('onboarding.language.subtitle')}
             </p>
           </div>
 
@@ -110,7 +108,7 @@ export default function OnboardingPage() {
               >
                 <span className="text-3xl">{lang.flag}</span>
                 <span className="flex-1 text-left font-semibold text-gray-900">
-                  {lang.name}
+                  {lang.nativeName}
                 </span>
                 {selectedLanguage === lang.code && (
                   <Check className="w-6 h-6 text-blue-600" />
@@ -128,10 +126,10 @@ export default function OnboardingPage() {
               <Flag className="w-8 h-8 text-blue-600" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Ваше гражданство
+              {t('onboarding.citizenship.title')}
             </h2>
             <p className="text-gray-500">
-              Это поможет нам подобрать нужную информацию
+              {t('onboarding.citizenship.subtitle')}
             </p>
           </div>
 
@@ -166,10 +164,10 @@ export default function OnboardingPage() {
         className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-4 rounded-xl hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
       >
         {isLoading ? (
-          <span className="animate-pulse">Сохранение...</span>
+          <span className="animate-pulse">{t('common.saving')}</span>
         ) : (
           <>
-            {step === 'citizenship' ? 'Начать' : 'Продолжить'}
+            {step === 'citizenship' ? t('common.start') : t('common.continue')}
             <ArrowRight className="w-5 h-5" />
           </>
         )}
@@ -181,7 +179,7 @@ export default function OnboardingPage() {
           onClick={() => setStep('language')}
           className="w-full mt-3 py-3 text-gray-600 hover:text-gray-900 font-medium"
         >
-          Назад
+          {t('common.back')}
         </button>
       )}
     </div>
