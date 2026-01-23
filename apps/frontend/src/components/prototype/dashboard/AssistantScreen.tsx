@@ -3,6 +3,7 @@
 import { Mic, Send, Sparkles, UserCheck } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 export function AssistantScreen() {
   const { t } = useTranslation();
@@ -29,6 +30,7 @@ export function AssistantScreen() {
               <p className="text-sm text-white/80">{t('assistant.subtitle')}</p>
             </div>
           </div>
+          <LanguageSwitcher variant="compact" className="bg-white/20 hover:bg-white/30" />
         </div>
 
         <button className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 rounded-xl py-3 px-4 transition-all active:scale-98 flex items-center justify-center gap-2">

@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { ProfileForm } from '@/features/profile/components';
 import { useProfileStore } from '@/lib/stores';
+import { useTranslation } from '@/lib/i18n';
 
 export default function ProfilePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { profile, updateProfile, setProfile } = useProfileStore();
+  const { t } = useTranslation();
 
   const handleSubmit = async (data: any) => {
     setIsLoading(true);
@@ -50,7 +52,7 @@ export default function ProfilePage() {
         >
           <ArrowLeft className="w-6 h-6 text-gray-600" />
         </button>
-        <h1 className="text-lg font-bold text-gray-900">Мой профиль</h1>
+        <h1 className="text-lg font-bold text-gray-900">{t('profile.title')}</h1>
       </div>
 
       {/* Content */}

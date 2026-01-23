@@ -2,7 +2,9 @@
   "app": {
     "name": "MigrantHub",
     "tagline": "Rossiyada migrantlar uchun ekotizim",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "updateAvailable": "Yangilanish mavjud",
+    "update": "Yangilash"
   },
   "common": {
     "loading": "Yuklanmoqda...",
@@ -62,6 +64,7 @@
     "start": "Boshlash",
     "saving": "Saqlanmoqda...",
     "urgent": "SHOSHILINCH",
+    "new": "YANGI",
     "extend": "Uzaytirish",
     "encrypted": "Shifrlangan",
     "status": "Holat",
@@ -97,6 +100,19 @@
     "telegram": {
       "button": "Telegram orqali kirish",
       "connecting": "Telegram ga ulanmoqda..."
+    },
+    "method": {
+      "title": "Kirish usuli",
+      "subtitle": "Qulay avtorizatsiya usulini tanlang",
+      "phone": {
+        "title": "Telefon raqami orqali",
+        "description": "Kirish uchun SMS-kod oling"
+      },
+      "telegram": {
+        "title": "Telegram orqali",
+        "description": "SMS siz tez kirish"
+      },
+      "securityNote": "Maʼlumotlaringiz himoyalangan va shifrlangan holda saqlanadi"
     },
     "demo": {
       "title": "Demo",
@@ -970,7 +986,8 @@
   "offline": {
     "title": "Aloqa yo'q",
     "description": "Internet aloqasini tekshiring",
-    "retry": "Qayta urinish"
+    "retry": "Qayta urinish",
+    "noConnection": "Internet aloqasi yo'q"
   },
   "poi": {
     "mvd": "IIV bo'limlari",

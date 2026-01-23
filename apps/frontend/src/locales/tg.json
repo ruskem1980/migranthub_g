@@ -2,7 +2,9 @@
   "app": {
     "name": "MigrantHub",
     "tagline": "Экосистема барои муҳоҷирон дар Русия",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "updateAvailable": "Навсозӣ дастрас аст",
+    "update": "Навсозӣ кардан"
   },
   "common": {
     "loading": "Боргирӣ...",
@@ -62,6 +64,7 @@
     "start": "Оғоз кардан",
     "saving": "Нигоҳ дошта истодааст...",
     "urgent": "ФАВРӢ",
+    "new": "НАВ",
     "extend": "Дароз кардан",
     "encrypted": "Рамзгузорӣ шуда",
     "status": "Ҳолат",
@@ -97,6 +100,19 @@
     "telegram": {
       "button": "Тавассути Telegram ворид шавед",
       "connecting": "Пайваст шудан ба Telegram..."
+    },
+    "method": {
+      "title": "Усули воридшавӣ",
+      "subtitle": "Усули қулайи авторизатсияро интихоб кунед",
+      "phone": {
+        "title": "Бо рақами телефон",
+        "description": "Барои воридшавӣ SMS-код гиред"
+      },
+      "telegram": {
+        "title": "Тавассути Telegram",
+        "description": "Воридшавии зуд бе SMS"
+      },
+      "securityNote": "Маълумоти шумо ҳифз шудааст ва дар шакли рамзгузорӣ нигоҳ дошта мешавад"
     },
     "demo": {
       "title": "Демо",
@@ -252,7 +268,60 @@
     "krasnoyarsk": "Красноярск",
     "voronezh": "Воронеж",
     "perm": "Перм",
-    "volgograd": "Волгоград"
+    "volgograd": "Волгоград",
+    "krasnodar": "Краснодар",
+    "tyumen": "Тюмен",
+    "saratov": "Саратов",
+    "tolyatti": "Толятти",
+    "izhevsk": "Ижевск",
+    "barnaul": "Барнаул",
+    "irkutsk": "Иркутск",
+    "khabarovsk": "Хабаровск",
+    "vladivostok": "Владивосток",
+    "yaroslavl": "Ярославл",
+    "makhachkala": "Маҳачқалъа",
+    "tomsk": "Томск",
+    "orenburg": "Оренбург",
+    "kemerovo": "Кемерово",
+    "naberezhnyChelny": "Набережние Челни",
+    "ryazan": "Рязан",
+    "astrakhan": "Астрахан",
+    "penza": "Пенза",
+    "lipetsk": "Липетск",
+    "tula": "Тула",
+    "kirov": "Киров",
+    "cheboksary": "Чебоксари",
+    "kaliningrad": "Калининград",
+    "bryansk": "Брянск",
+    "ivanovo": "Иваново",
+    "magnitogorsk": "Магнитогорск",
+    "kursk": "Курск",
+    "tver": "Твер",
+    "nizhniTagil": "Нижний Тагил",
+    "stavropol": "Ставропол",
+    "ulanUde": "Улан-Удэ",
+    "belgorod": "Белгород",
+    "sochi": "Сочи",
+    "surgut": "Сургут",
+    "vladimir": "Владимир",
+    "chita": "Чита",
+    "arkhangelsk": "Архангелск",
+    "smolensk": "Смоленск",
+    "kurgan": "Курган",
+    "kaluga": "Калуга",
+    "oryol": "Орёл",
+    "vologda": "Вологда",
+    "saransk": "Саранск",
+    "yoshkarOla": "Йошкар-Ола",
+    "murmansk": "Мурманск",
+    "kostroma": "Кострома",
+    "tambov": "Тамбов",
+    "petrozavodsk": "Петрозаводск",
+    "nizhnevartovsk": "Нижневартовск",
+    "norilsk": "Норилск",
+    "komsomolskOnAmur": "Комсомолск-на-Амуре",
+    "yakutsk": "Якутск",
+    "grozny": "Грозний"
   },
   "profile": {
     "title": "Профили ман",
@@ -857,7 +926,8 @@
   "offline": {
     "title": "Пайваст нест",
     "description": "Пайвасти интернетро тафтиш кунед",
-    "retry": "Аз нав кӯшиш кардан"
+    "retry": "Аз нав кӯшиш кардан",
+    "noConnection": "Пайвасти интернет нест"
   },
   "poi": {
     "mvd": "Шӯъбаҳои ВКД",

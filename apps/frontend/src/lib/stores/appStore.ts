@@ -3,7 +3,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-type Language = 'ru' | 'uz-Latn' | 'uz-Cyrl' | 'tg' | 'ky';
+type Language = 'ru' | 'uz' | 'tg' | 'ky';
 type Theme = 'light' | 'dark' | 'system';
 
 interface Notification {

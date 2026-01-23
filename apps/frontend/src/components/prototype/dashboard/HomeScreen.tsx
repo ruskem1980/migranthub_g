@@ -34,8 +34,20 @@ export function HomeScreen() {
             АУ
           </button>
           <div className="flex-1">
-            <h2 className="text-base font-bold text-gray-900">Алишер Усманов</h2>
-            <p className="text-xs text-gray-500">🇺🇿 Узбекистан</p>
+            <h2 className="text-base font-bold text-gray-900">{editFullName}</h2>
+            <p className="text-xs text-gray-500">
+              {editCitizenship === 'UZ' && '🇺🇿'}
+              {editCitizenship === 'TJ' && '🇹🇯'}
+              {editCitizenship === 'KG' && '🇰🇬'}
+              {editCitizenship === 'AM' && '🇦🇲'}
+              {editCitizenship === 'AZ' && '🇦🇿'}
+              {editCitizenship === 'BY' && '🇧🇾'}
+              {editCitizenship === 'GE' && '🇬🇪'}
+              {editCitizenship === 'KZ' && '🇰🇿'}
+              {editCitizenship === 'MD' && '🇲🇩'}
+              {editCitizenship === 'UA' && '🇺🇦'}
+              {' '}{t(`countries.${editCitizenship}`)}
+            </p>
           </div>
         </div>
 
@@ -45,17 +57,17 @@ export function HomeScreen() {
           {checkedDocs.length >= 7 ? (
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-500 rounded-full">
               <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-              <span className="text-xs font-bold text-white">Legal</span>
+              <span className="text-xs font-bold text-white">{t('dashboard.statusValues.legal')}</span>
             </div>
           ) : checkedDocs.length >= 4 ? (
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-yellow-500 rounded-full">
               <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-              <span className="text-xs font-bold text-white">Risk</span>
+              <span className="text-xs font-bold text-white">{t('dashboard.statusValues.risk')}</span>
             </div>
           ) : (
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-500 rounded-full">
               <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-              <span className="text-xs font-bold text-white">Illegal</span>
+              <span className="text-xs font-bold text-white">{t('dashboard.statusValues.illegal')}</span>
             </div>
           )}
 
@@ -517,11 +529,9 @@ export function HomeScreen() {
                     <div className="flex items-center gap-2">
                       <Globe className="w-5 h-5 text-gray-600" />
                       <span className="font-medium text-gray-700">
-                        {language === 'ru' && '🇷🇺 Русский'}
-                        {language === 'uz' && '🇺🇿 O\'zbek'}
-                        {language === 'tg' && '🇹🇯 Тоҷикӣ'}
-                        {language === 'ky' && '🇰🇬 Кыргызча'}
-                        {!['ru', 'uz', 'tg', 'ky'].includes(language) && `🌐 ${language}`}
+                        {LANGUAGES.find(l => l.code === language)
+                          ? `${LANGUAGES.find(l => l.code === language)?.flag} ${LANGUAGES.find(l => l.code === language)?.nativeName}`
+                          : `🌐 ${language}`}
                       </span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-gray-400" />
@@ -692,13 +702,8 @@ export function HomeScreen() {
             {/* Base 4 Languages */}
             <div className="space-y-3 mb-6">
               <h4 className="text-sm font-semibold text-gray-600 mb-3">{t('languages.mainLanguages')}</h4>
-              
-              {[
-                { code: 'ru', flag: '🇷🇺', name: 'Русский', native: 'Русский' },
-                { code: 'uz', flag: '🇺🇿', name: 'Узбекский', native: 'O\'zbek' },
-                { code: 'tg', flag: '🇹🇯', name: 'Таджикский', native: 'Тоҷикӣ' },
-                { code: 'ky', flag: '🇰🇬', name: 'Киргизский', native: 'Кыргызча' },
-              ].map((lang) => (
+
+              {LANGUAGES.map((lang) => (
                 <button
                   key={lang.code}
                   onClick={() => {
@@ -714,8 +719,8 @@ export function HomeScreen() {
                   <div className="flex items-center gap-3">
                     <span className="text-3xl">{lang.flag}</span>
                     <div className="text-left">
-                      <p className="font-semibold text-gray-900">{lang.native}</p>
-                      <p className="text-xs text-gray-500">{lang.name}</p>
+                      <p className="font-semibold text-gray-900">{lang.nativeName}</p>
+                      <p className="text-xs text-gray-500">{t(`languages.${lang.code}`)}</p>
                     </div>
                   </div>
                   {language === lang.code && (

@@ -2,6 +2,7 @@
 
 import { Camera, CheckCircle2, AlertTriangle, XCircle, Share2, Info, Lock } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 export function DocumentsScreen() {
   const { t } = useTranslation();
@@ -129,9 +130,12 @@ export function DocumentsScreen() {
       <div className="px-4 py-4 bg-white border-b border-gray-200">
         <div className="flex items-center justify-between mb-1">
           <h1 className="text-xl font-bold text-gray-900">{t('documents.title')}</h1>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 rounded-lg">
-            <Lock className="w-3.5 h-3.5 text-green-600" />
-            <span className="text-xs font-semibold text-green-700">{t('documents.encrypted')}</span>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 border border-green-200 rounded-lg">
+              <Lock className="w-3.5 h-3.5 text-green-600" />
+              <span className="text-xs font-semibold text-green-700">{t('documents.encrypted')}</span>
+            </div>
+            <LanguageSwitcher variant="compact" />
           </div>
         </div>
         <p className="text-sm text-gray-500">{t('documents.activeRegistry')}</p>

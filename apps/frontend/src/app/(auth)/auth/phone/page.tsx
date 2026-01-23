@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Phone, ArrowRight, MessageCircle } from 'lucide-react';
+import { Phone, ArrowRight, MessageCircle, ArrowLeft } from 'lucide-react';
 import { useAuthStore } from '@/lib/stores';
 import { useTranslation } from '@/lib/i18n';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 export default function PhonePage() {
   const router = useRouter();
@@ -81,8 +82,24 @@ export default function PhonePage() {
     alert('Telegram Login Widget будет доступен в продакшене');
   };
 
+  const handleBack = () => {
+    router.push('/auth/method');
+  };
+
   return (
     <div className="max-w-md mx-auto w-full">
+      {/* Header with back button and language switcher */}
+      <div className="flex items-center justify-between mb-6">
+        <button
+          onClick={handleBack}
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          {t('common.back')}
+        </button>
+        <LanguageSwitcher variant="compact" />
+      </div>
+
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           {t('auth.phone.title')}

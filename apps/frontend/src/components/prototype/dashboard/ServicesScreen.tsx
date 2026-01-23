@@ -4,6 +4,7 @@ import { Shield, Calculator, FileText, Briefcase, Home, MapPin, Languages, Credi
 import { useState } from 'react';
 import { DocumentGenerator } from '../services/DocumentGenerator';
 import { useTranslation } from '@/lib/i18n';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 export function ServicesScreen() {
   const { t } = useTranslation();
@@ -48,7 +49,10 @@ export function ServicesScreen() {
     <div className="h-full overflow-y-auto pb-4">
       {/* Header */}
       <div className="px-4 py-4 bg-white border-b border-gray-200 sticky top-0 z-10">
-        <h1 className="text-xl font-bold text-gray-900">{t('services.title')}</h1>
+        <div className="flex items-center justify-between mb-1">
+          <h1 className="text-xl font-bold text-gray-900">{t('services.title')}</h1>
+          <LanguageSwitcher variant="compact" />
+        </div>
         <p className="text-sm text-gray-500">{t('services.subtitle')}</p>
       </div>
 
@@ -78,7 +82,7 @@ export function ServicesScreen() {
               >
                 {service.special && (
                   <div className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                    NEW
+                    {t('common.new')}
                   </div>
                 )}
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">

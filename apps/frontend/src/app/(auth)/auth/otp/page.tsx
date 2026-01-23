@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '@/lib/stores';
 import { useTranslation } from '@/lib/i18n';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 const OTP_LENGTH = 4;
 const RESEND_TIMEOUT = 60;
@@ -146,14 +147,17 @@ export default function OtpPage() {
 
   return (
     <div className="max-w-md mx-auto w-full">
-      {/* Back button */}
-      <button
-        onClick={handleBack}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
-      >
-        <ArrowLeft className="w-5 h-5" />
-        {t('auth.otp.changeNumber')}
-      </button>
+      {/* Header with back button and language switcher */}
+      <div className="flex items-center justify-between mb-6">
+        <button
+          onClick={handleBack}
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          {t('auth.otp.changeNumber')}
+        </button>
+        <LanguageSwitcher variant="compact" />
+      </div>
 
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">

@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from '@/lib/i18n';
 
 export default function Home() {
   const router = useRouter();
   const [checked, setChecked] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Simple check after component mounts
@@ -43,7 +45,7 @@ export default function Home() {
           <span className="text-5xl">🛡️</span>
         </div>
         <h1 className="text-3xl font-bold text-white mb-2">MigrantHub</h1>
-        <p className="text-white/80 mb-6">Экосистема для мигрантов в России</p>
+        <p className="text-white/80 mb-6">{t('app.tagline')}</p>
         <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto" />
       </div>
     </div>

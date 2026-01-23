@@ -3,6 +3,7 @@
 import { AlertTriangle, Phone, FileX, MapPin, X, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 // Strict bureaucratic priority order (0 = highest priority)
 const PRIORITY_ORDER = ['passport', 'mig_card', 'green_card', 'education', 'registration', 'patent', 'receipts', 'contract', 'insurance', 'inn', 'family'] as const;
@@ -63,12 +64,15 @@ export function SOSScreen() {
     <div className="h-full overflow-y-auto pb-4 bg-gradient-to-b from-red-50 to-white relative">
       {/* Header */}
       <div className="px-4 py-4 bg-red-600 text-white">
-        <div className="flex items-center gap-3">
-          <AlertTriangle className="w-8 h-8" />
-          <div>
-            <h1 className="text-xl font-bold">🚨 {t('sos.title')}</h1>
-            <p className="text-sm text-red-100">{t('sos.subtitle')}</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="w-8 h-8" />
+            <div>
+              <h1 className="text-xl font-bold">🚨 {t('sos.title')}</h1>
+              <p className="text-sm text-red-100">{t('sos.subtitle')}</p>
+            </div>
           </div>
+          <LanguageSwitcher variant="compact" className="bg-white/20 hover:bg-white/30" />
         </div>
       </div>
 

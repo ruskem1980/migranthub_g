@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Check, Flag, ArrowRight } from 'lucide-react';
 import { useAppStore, useProfileStore } from '@/lib/stores';
 import { useTranslation } from '@/lib/i18n';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -58,6 +59,11 @@ export default function OnboardingPage() {
 
   return (
     <div className="max-w-md mx-auto w-full">
+      {/* Language Switcher */}
+      <div className="flex justify-end mb-4">
+        <LanguageSwitcher variant="compact" />
+      </div>
+
       {/* Header */}
       <div className="text-center mb-8">
         <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
