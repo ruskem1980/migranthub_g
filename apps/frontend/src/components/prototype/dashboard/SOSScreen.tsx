@@ -11,53 +11,46 @@ type DocumentKey = typeof PRIORITY_ORDER[number];
 
 interface DocumentOption {
   key: DocumentKey;
-  label: string;
   icon: string;
 }
 
 const DOCUMENT_OPTIONS: DocumentOption[] = [
   // УРОВЕНЬ 1: ОСНОВА
-  { key: 'passport', label: 'Паспорт', icon: '🛂' },
-  
+  { key: 'passport', icon: '🛂' },
   // УРОВЕНЬ 2: ВЪЕЗД И ПРЕБЫВАНИЕ
-  { key: 'mig_card', label: 'Миграционная карта', icon: '🎫' },
-  { key: 'registration', label: 'Регистрация', icon: '📋' },
-  
+  { key: 'mig_card', icon: '🎫' },
+  { key: 'registration', icon: '📋' },
   // УРОВЕНЬ 3: РАБОТА
-  { key: 'green_card', label: 'Зеленая карта/Дакт.карта', icon: '💳' },
-  { key: 'education', label: 'Сертификат / Диплом', icon: '🎓' },
-  { key: 'patent', label: 'Патент', icon: '📄' },
-  { key: 'contract', label: 'Трудовой договор', icon: '📝' },
-  
+  { key: 'green_card', icon: '💳' },
+  { key: 'education', icon: '🎓' },
+  { key: 'patent', icon: '📄' },
+  { key: 'contract', icon: '📝' },
   // УРОВЕНЬ 4: ПОДДЕРЖКА
-  { key: 'receipts', label: 'Чеки', icon: '🧾' },
-  { key: 'insurance', label: 'Полис ДМС', icon: '🩺' },
-  { key: 'inn', label: 'ИНН / СНИЛС', icon: '🔢' },
-  { key: 'family', label: 'Св-во о браке / рождении', icon: '💍' },
+  { key: 'receipts', icon: '🧾' },
+  { key: 'insurance', icon: '🩺' },
+  { key: 'inn', icon: '🔢' },
+  { key: 'family', icon: '💍' },
 ];
 
-// Hardcoded recovery instructions by document type
-const RECOVERY_INSTRUCTIONS: Record<DocumentKey, string> = {
-  passport: 'Паспорт. Идите в полицию за справкой о потере, затем в Консульство для восстановления.',
-  mig_card: 'Миграционная карта. Восстанавливается в отделе МВД (строго после паспорта).',
-  green_card: 'Зеленая карта. Дубликат выдается в ММЦ/МВД.',
-  education: 'Сертификат/Диплом. Обратитесь в центр тестирования или учебное заведение за дубликатом.',
-  registration: 'Регистрация. Делает принимающая сторона (хост) в МВД.',
-  patent: 'Патент. В ММЦ, выдавшем патент (нужен полный пакет документов).',
-  receipts: 'Чеки. В ММЦ, выдавшем патент (нужен полный пакет документов).',
-  contract: 'Трудовой договор. Запросите копию у работодателя.',
-  insurance: 'Полис ДМС. Обратитесь в страховую компанию за дубликатом.',
-  inn: 'ИНН/СНИЛС. Обратитесь в налоговую инспекцию или МФЦ.',
-  family: 'Свидетельство о браке/рождении. Обратитесь в ЗАГС по месту регистрации акта.',
-};
+// Police reason keys for translation
+const POLICE_REASONS = ['documentCheck', 'noDocuments', 'trafficViolation', 'other'] as const;
+type PoliceReasonKey = typeof POLICE_REASONS[number];
 
 export function SOSScreen() {
   const { t } = useTranslation();
   const [showPoliceModal, setShowPoliceModal] = useState(false);
   const [showLostDocsModal, setShowLostDocsModal] = useState(false);
-  const [policeReason, setPoliceReason] = useState('');
+  const [policeReason, setPoliceReason] = useState<PoliceReasonKey | ''>('');
   const [selectedDocs, setSelectedDocs] = useState<Set<DocumentKey>>(new Set());
   const [showRecoveryPlan, setShowRecoveryPlan] = useState(false);
+
+  // Convert snake_case to camelCase for JSON keys
+  const snakeToCamel = (str: string) => str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+
+  // Helper to get document label
+  const getDocLabel = (key: DocumentKey) => t(`sosDetailed.documents.${snakeToCamel(key)}`);
+  // Helper to get recovery instruction
+  const getRecoveryInstruction = (key: DocumentKey) => t(`sosDetailed.recovery.${snakeToCamel(key)}`);
 
   return (
     <div className="h-full overflow-y-auto pb-4 bg-gradient-to-b from-red-50 to-white relative">
@@ -168,77 +161,77 @@ export function SOSScreen() {
             <p className="text-sm text-gray-600 mb-4">{t('sos.detained.description')}:</p>
 
             <div className="space-y-3 mb-6">
-              {['Проверка документов', 'Нет документов', 'Нарушение ПДД', 'Другое'].map((reason) => (
+              {POLICE_REASONS.map((reasonKey) => (
                 <button
-                  key={reason}
-                  onClick={() => setPoliceReason(reason)}
+                  key={reasonKey}
+                  onClick={() => setPoliceReason(reasonKey)}
                   className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
-                    policeReason === reason
+                    policeReason === reasonKey
                       ? 'bg-red-50 border-red-500 text-red-700'
                       : 'bg-white border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  {reason}
+                  {t(`sosDetailed.policeReasons.${reasonKey}`)}
                 </button>
               ))}
             </div>
 
             {policeReason && (
               <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl mb-4">
-                <h4 className="font-bold text-blue-900 mb-2">⚖️ Ваши права и алгоритм действий:</h4>
+                <h4 className="font-bold text-blue-900 mb-2">⚖️ {t('sosDetailed.policeInstructions.yourRightsAndActions')}</h4>
                 <div className="text-sm text-blue-800 space-y-2">
-                  {policeReason === 'Проверка документов' && (
+                  {policeReason === 'documentCheck' && (
                     <>
                       <div className="bg-white p-3 rounded-lg mb-2">
-                        <p className="font-bold text-blue-900 mb-1">✅ Что делать:</p>
+                        <p className="font-bold text-blue-900 mb-1">✅ {t('sosDetailed.policeInstructions.whatToDo')}:</p>
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Предъявите паспорт и регистрацию спокойно</li>
-                          <li>Вы имеете право снимать на видео (ст. 29 Конституции РФ)</li>
-                          <li>Требуйте составить протокол на понятном языке</li>
+                          <li>{t('sosDetailed.policeInstructions.documentCheck.do1')}</li>
+                          <li>{t('sosDetailed.policeInstructions.documentCheck.do2')}</li>
+                          <li>{t('sosDetailed.policeInstructions.documentCheck.do3')}</li>
                         </ul>
                       </div>
                       <div className="bg-red-100 p-3 rounded-lg">
-                        <p className="font-bold text-red-900 mb-1">❌ Чего НЕ делать:</p>
+                        <p className="font-bold text-red-900 mb-1">❌ {t('sosDetailed.policeInstructions.whatNotToDo')}:</p>
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Не грубите и не сопротивляйтесь</li>
-                          <li>Не давайте взятки (уголовная статья)</li>
+                          <li>{t('sosDetailed.policeInstructions.documentCheck.dont1')}</li>
+                          <li>{t('sosDetailed.policeInstructions.documentCheck.dont2')}</li>
                         </ul>
                       </div>
                     </>
                   )}
-                  {policeReason === 'Нет документов' && (
+                  {policeReason === 'noDocuments' && (
                     <>
                       <div className="bg-white p-3 rounded-lg mb-2">
-                        <p className="font-bold text-blue-900 mb-1">✅ Ваши права:</p>
+                        <p className="font-bold text-blue-900 mb-1">✅ {t('sosDetailed.policeInstructions.yourRights')}:</p>
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Право на переводчика (ст. 25.10 КоАП РФ)</li>
-                          <li>Право на звонок юристу/родным</li>
-                          <li>Право не подписывать протокол без понимания</li>
+                          <li>{t('sosDetailed.policeInstructions.noDocuments.right1')}</li>
+                          <li>{t('sosDetailed.policeInstructions.noDocuments.right2')}</li>
+                          <li>{t('sosDetailed.policeInstructions.noDocuments.right3')}</li>
                         </ul>
                       </div>
                       <div className="bg-yellow-100 p-3 rounded-lg">
-                        <p className="font-bold text-yellow-900 mb-1">⚠️ Важно:</p>
-                        <p>Скажите: "Я требую переводчика и юриста. Протокол не подписываю."</p>
+                        <p className="font-bold text-yellow-900 mb-1">⚠️ {t('sosDetailed.policeInstructions.important')}:</p>
+                        <p>{t('sosDetailed.policeInstructions.noDocuments.say')}</p>
                       </div>
                     </>
                   )}
-                  {(policeReason === 'Нарушение ПДД' || policeReason === 'Другое') && (
+                  {(policeReason === 'trafficViolation' || policeReason === 'other') && (
                     <>
                       <div className="bg-white p-3 rounded-lg mb-2">
-                        <p className="font-bold text-blue-900 mb-1">✅ Немедленно:</p>
+                        <p className="font-bold text-blue-900 mb-1">✅ {t('sosDetailed.policeInstructions.immediately')}:</p>
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Требуйте связи с консульством (Венская конвенция)</li>
-                          <li>Ничего не подписывайте без переводчика</li>
-                          <li>Запишите ФИО сотрудников и номер отдела</li>
+                          <li>{t('sosDetailed.policeInstructions.other.do1')}</li>
+                          <li>{t('sosDetailed.policeInstructions.other.do2')}</li>
+                          <li>{t('sosDetailed.policeInstructions.other.do3')}</li>
                         </ul>
                       </div>
                     </>
                   )}
                   <div className="bg-purple-100 p-3 rounded-lg mt-2">
-                    <p className="font-bold text-purple-900 mb-1">📞 Контакты:</p>
+                    <p className="font-bold text-purple-900 mb-1">📞 {t('sosDetailed.policeInstructions.contacts')}:</p>
                     <ul className="space-y-1">
-                      <li>Юрист 24/7: <span className="font-mono">+7 (495) 123-45-67</span></li>
-                      <li>Консульство: <span className="font-mono">+7 (495) 234-56-78</span></li>
+                      <li>{t('sosDetailed.policeInstructions.lawyerPhone')}: <span className="font-mono">+7 (495) 123-45-67</span></li>
+                      <li>{t('sosDetailed.policeInstructions.consulatePhone')}: <span className="font-mono">+7 (495) 234-56-78</span></li>
                     </ul>
                   </div>
                 </div>
@@ -281,7 +274,7 @@ export function SOSScreen() {
                 <div className="space-y-3 mb-6">
                   {DOCUMENT_OPTIONS.map((doc) => {
                     const isSelected = selectedDocs.has(doc.key);
-                    
+
                     return (
                       <button
                         key={doc.key}
@@ -308,11 +301,11 @@ export function SOSScreen() {
                         }`}>
                           {isSelected && <Check className="w-4 h-4 text-white" strokeWidth={3} />}
                         </div>
-                        
+
                         {/* Icon and Label */}
                         <span className="text-2xl">{doc.icon}</span>
                         <span className={`font-semibold ${isSelected ? 'text-orange-700' : 'text-gray-700'}`}>
-                          {doc.label}
+                          {getDocLabel(doc.key)}
                         </span>
                       </button>
                     );
@@ -365,8 +358,7 @@ export function SOSScreen() {
                     .filter(key => selectedDocs.has(key))
                     .map((key, index) => {
                       const doc = DOCUMENT_OPTIONS.find(d => d.key === key)!;
-                      const instruction = RECOVERY_INSTRUCTIONS[key];
-                      
+
                       return (
                         <div key={key} className="relative flex gap-4">
                           {/* Step Number */}
@@ -384,10 +376,10 @@ export function SOSScreen() {
                           <div className="flex-1 bg-white border-2 border-orange-200 rounded-xl p-4 shadow-sm">
                             <div className="flex items-center gap-2 mb-2">
                               <span className="text-xl">{doc.icon}</span>
-                              <h5 className="font-bold text-gray-900">{doc.label}</h5>
+                              <h5 className="font-bold text-gray-900">{getDocLabel(key)}</h5>
                             </div>
                             <p className="text-sm text-gray-700 leading-relaxed">
-                              {instruction}
+                              {getRecoveryInstruction(key)}
                             </p>
                           </div>
                         </div>
