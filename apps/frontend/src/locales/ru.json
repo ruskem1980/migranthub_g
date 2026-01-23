@@ -1,0 +1,176 @@
+{
+  "common": {
+    "loading": "Загрузка...",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "back": "Назад",
+    "next": "Далее",
+    "done": "Готово",
+    "error": "Ошибка",
+    "retry": "Повторить",
+    "close": "Закрыть",
+    "search": "Поиск",
+    "noResults": "Ничего не найдено",
+    "yes": "Да",
+    "no": "Нет"
+  },
+  "auth": {
+    "title": "Войти в MigrantHub",
+    "phone": {
+      "title": "Войти по номеру",
+      "subtitle": "Введите номер телефона для получения кода",
+      "placeholder": "+7 (___) ___-__-__",
+      "sendCode": "Получить код",
+      "invalidPhone": "Введите корректный номер телефона"
+    },
+    "otp": {
+      "title": "Введите код",
+      "subtitle": "Код отправлен на номер",
+      "resend": "Отправить код повторно",
+      "resendIn": "Отправить код повторно через",
+      "invalidCode": "Неверный код",
+      "changeNumber": "Изменить номер"
+    },
+    "telegram": {
+      "button": "Войти через Telegram"
+    },
+    "terms": "Продолжая, вы соглашаетесь с условиями использования и политикой конфиденциальности"
+  },
+  "onboarding": {
+    "language": {
+      "title": "Выберите язык",
+      "subtitle": "На каком языке вам удобнее?"
+    },
+    "citizenship": {
+      "title": "Ваше гражданство",
+      "subtitle": "Это поможет нам подобрать нужную информацию"
+    }
+  },
+  "profile": {
+    "title": "Мой профиль",
+    "scanPassport": "Сканировать паспорт",
+    "sections": {
+      "personal": "Личные данные",
+      "documents": "Документы",
+      "work": "Работа",
+      "registration": "Регистрация"
+    },
+    "fields": {
+      "fullName": "ФИО (как в паспорте)",
+      "fullNameLatin": "ФИО (латиницей)",
+      "birthDate": "Дата рождения",
+      "gender": "Пол",
+      "citizenship": "Гражданство",
+      "phone": "Телефон",
+      "email": "Email",
+      "passportNumber": "Номер паспорта",
+      "passportIssueDate": "Дата выдачи",
+      "passportExpiryDate": "Действителен до",
+      "entryDate": "Дата въезда в РФ",
+      "migrationCardNumber": "Номер миграционной карты",
+      "purpose": "Цель визита",
+      "registrationAddress": "Адрес регистрации",
+      "registrationExpiry": "Регистрация до",
+      "hostFullName": "ФИО принимающей стороны",
+      "hostAddress": "Адрес принимающей стороны",
+      "hasPatent": "У меня есть патент",
+      "patentRegion": "Регион патента",
+      "patentExpiry": "Патент до",
+      "employerName": "Работодатель",
+      "employerINN": "ИНН работодателя"
+    },
+    "genders": {
+      "male": "Мужской",
+      "female": "Женский"
+    },
+    "purposes": {
+      "work": "Работа",
+      "study": "Учёба",
+      "tourist": "Туризм",
+      "private": "Частный визит"
+    }
+  },
+  "documents": {
+    "title": "Мои документы",
+    "create": "Создать документ",
+    "categories": {
+      "registration": "Регистрация",
+      "patent": "Патент",
+      "work": "Трудоустройство",
+      "other": "Другие документы"
+    },
+    "status": {
+      "draft": "Черновик",
+      "completed": "Готов",
+      "submitted": "Отправлен"
+    },
+    "wizard": {
+      "selectDocument": "Выберите документ",
+      "fillMissing": "Заполните данные",
+      "review": "Проверьте данные",
+      "complete": "Готово!"
+    }
+  },
+  "services": {
+    "title": "Сервисы",
+    "subtitle": "Инструменты и услуги",
+    "banCheck": {
+      "title": "Проверка запретов",
+      "subtitle": "МВД / ФССП"
+    },
+    "calculator": {
+      "title": "Калькулятор 90/180",
+      "subtitle": "Дни пребывания"
+    },
+    "map": {
+      "title": "Карта мигранта",
+      "subtitle": "МВД, ММЦ, Маршруты"
+    },
+    "exam": {
+      "title": "Экзамен по русскому",
+      "subtitle": "Тренажёр"
+    },
+    "translator": {
+      "title": "Переводчик",
+      "subtitle": "Яндекс.Переводчик"
+    },
+    "mosques": {
+      "title": "Карта мечетей",
+      "subtitle": "Найти мечеть"
+    }
+  },
+  "payment": {
+    "title": "Оплата патента",
+    "selectRegion": "Выберите регион",
+    "selectMonths": "Выберите период",
+    "paymentMethod": "Способ оплаты",
+    "total": "Итого к оплате",
+    "perMonth": "в месяц",
+    "months": "мес.",
+    "methods": {
+      "sbp": "СБП (QR-код)",
+      "sbpDescription": "Без комиссии",
+      "card": "Банковская карта",
+      "cardDescription": "Visa, Mastercard, МИР"
+    },
+    "success": "Платёж успешен!"
+  },
+  "sos": {
+    "title": "SOS Помощь",
+    "subtitle": "Экстренная помощь",
+    "emergency": "Экстренные службы",
+    "police": "Полиция",
+    "ambulance": "Скорая помощь",
+    "hotline": "Горячая линия"
+  },
+  "notifications": {
+    "patentExpiry": "Срок патента истекает",
+    "registrationExpiry": "Срок регистрации истекает",
+    "paymentReminder": "Напоминание об оплате"
+  },
+  "errors": {
+    "network": "Нет подключения к интернету",
+    "server": "Ошибка сервера",
+    "unknown": "Неизвестная ошибка"
+  }
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MigrantHub</string>
+    <string name="title_activity_main">MigrantHub</string>
+    <string name="package_name">ru.migranthub.app</string>
+    <string name="custom_url_scheme">ru.migranthub.app</string>
+</resources>

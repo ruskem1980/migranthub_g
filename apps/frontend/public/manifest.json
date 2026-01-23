@@ -1,22 +1,39 @@
 {
-  "name": "MigrantHub",
+  "name": "MigrantHub - Помощник мигранта",
   "short_name": "MigrantHub",
-  "description": "Экосистема для мигрантов в России",
+  "description": "Мобильный помощник для трудовых мигрантов в России",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#3B82F6",
+  "theme_color": "#2563eb",
   "orientation": "portrait",
+  "scope": "/",
+  "lang": "ru",
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Мои документы",
+      "short_name": "Документы",
+      "url": "/?tab=documents"
+    },
+    {
+      "name": "SOS Помощь",
+      "short_name": "SOS",
+      "url": "/?tab=sos"
     }
   ]
 }

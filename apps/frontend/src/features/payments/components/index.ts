@@ -1,0 +1,1 @@
+export { PatentPayment } from './PatentPayment';

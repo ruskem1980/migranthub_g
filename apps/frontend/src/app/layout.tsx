@@ -1,30 +1,35 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { Providers } from './providers'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+  themeColor: '#2563eb',
+}
+
 export const metadata: Metadata = {
-  title: 'MigrantHub - Экосистема для мигрантов',
-  description: 'Управление документами, юридическая помощь и сервисы для мигрантов в России',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
-  themeColor: '#3B82F6',
+  title: 'MigrantHub - Помощник мигранта',
+  description: 'Мобильный помощник для трудовых мигрантов в России',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'MigrantHub',
   },
+  formatDetection: {
+    telephone: false,
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
 }
-
-// --- DEMO MODE CONFIG ---
-// Set to 'false' to enable real Telegram Auth
-const IS_DEMO = true;
 
 export default function RootLayout({
   children,
@@ -32,12 +37,17 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ru">
+    <html lang="ru" suppressHydrationWarning>
       <head>
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <script src="https://telegram.org/js/telegram-web-app.js" async></script>
       </head>
       <body className={inter.className}>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   )
