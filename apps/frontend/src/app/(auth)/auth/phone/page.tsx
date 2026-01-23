@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Phone, ArrowRight, MessageCircle } from 'lucide-react';
 import { useAuthStore } from '@/lib/stores';
 import { useTranslation } from '@/lib/i18n';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 export default function PhonePage() {
   const router = useRouter();
@@ -83,6 +84,11 @@ export default function PhonePage() {
 
   return (
     <div className="max-w-md mx-auto w-full">
+      {/* Language Switcher */}
+      <div className="flex justify-end mb-4">
+        <LanguageSwitcher variant="compact" />
+      </div>
+
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           {t('auth.phone.title')}

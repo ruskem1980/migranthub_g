@@ -22,8 +22,7 @@ export default function Home() {
       } catch (e) {
         console.error('Auth check error:', e);
       }
-      // Start from welcome screen (language selection + app description)
-      router.replace('/auth/welcome');
+      router.replace('/auth/phone');
     };
 
     // Small delay to ensure localStorage is available

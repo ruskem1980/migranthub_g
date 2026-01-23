@@ -107,52 +107,6 @@
     "logout": "Chiqish",
     "logoutConfirm": "Rostdan ham chiqmoqchimisiz?"
   },
-  "welcome": {
-    "tagline": "Shaxsiy himoyachingiz. Hujjatlarni tez rasmiylashtirish, jarimalardan qochish va legalizatsiya jarayonini nazorat qilishda yordam beramiz.",
-    "selectLanguage": "Tilni tanlang",
-    "whatCanDo": "Ilova nima qila oladi",
-    "features": {
-      "legal": {
-        "title": "Qonuniy rasmiylashtirish",
-        "description": "Patent, ro'yxatga olish, migratsion hisob — hammasi RF qonuniga muvofiq"
-      },
-      "documents": {
-        "title": "Hujjatlarni saqlash",
-        "description": "Hujjatlar nusxalarini shifrlash bilan xavfsiz saqlash"
-      },
-      "notifications": {
-        "title": "Eslatmalar",
-        "description": "Patent va ro'yxatga olish muddatini uzaytirish haqida bildirishnomalar"
-      },
-      "map": {
-        "title": "Xizmatlar xaritasi",
-        "description": "IIV, tibbiy markazlar, imtihonlar — barcha kerakli manzillar yaqin"
-      }
-    }
-  },
-  "legal": {
-    "title": "Yuridik tozalik",
-    "subtitle": "Iltimos, tanishing va tasdiqlang",
-    "warning": {
-      "title": "Muhim",
-      "description": "Biz soxta ro'yxatga olish qilmaymiz. Faqat RF qonuni bo'yicha ishlaymiz. Ilova hujjatlarni to'g'ri rasmiylashtirishga yordam beradi."
-    },
-    "agreements": {
-      "terms": {
-        "title": "Foydalanuvchi shartnomasi",
-        "description": "Men ilovadan foydalanish shartlarini o'qidim va qabul qilaman"
-      },
-      "privacy": {
-        "title": "Maxfiylik siyosati",
-        "description": "Men shaxsiy ma'lumotlarimni qayta ishlashga roziman"
-      },
-      "legalOnly": {
-        "title": "Qonuniy harakatlar",
-        "description": "Men tushunaman, ilova faqat hujjatlarni qonuniy rasmiylashtirishga yordam beradi"
-      }
-    },
-    "readMore": "To'liq o'qish"
-  },
   "onboarding": {
     "language": {
       "title": "Tilni tanlang",
