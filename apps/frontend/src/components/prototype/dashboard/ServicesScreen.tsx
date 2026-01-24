@@ -48,7 +48,7 @@ export function ServicesScreen() {
   return (
     <div className="h-full overflow-y-auto pb-4">
       {/* Header */}
-      <div className="px-4 py-4 bg-white border-b border-gray-200 sticky top-0 z-10">
+      <div className="px-4 py-4 bg-white border-b border-gray-200 sticky top-0 z-20">
         <div className="flex items-center justify-between mb-1">
           <h1 className="text-xl font-bold text-gray-900">{t('services.title')}</h1>
           <LanguageSwitcher variant="compact" />

@@ -3,6 +3,7 @@
 import { Mic, Send, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 const quickChips = [
   'Как получить патент?',
@@ -61,14 +62,17 @@ export function AssistantTab() {
     <div className="flex flex-col h-full pb-20">
       {/* Header */}
       <div className="flex-shrink-0 px-4 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-            <Sparkles className="w-6 h-6" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">AI Ассистент</h1>
+              <p className="text-sm text-white/80">Юридическая поддержка 24/7</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold">AI Ассистент</h1>
-            <p className="text-sm text-white/80">Юридическая поддержка 24/7</p>
-          </div>
+          <LanguageSwitcher variant="compact" className="bg-white/20 hover:bg-white/30 text-white" />
         </div>
       </div>
 

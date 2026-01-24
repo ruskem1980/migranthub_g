@@ -68,7 +68,8 @@
     "extend": "Uzaytirish",
     "encrypted": "Shifrlangan",
     "status": "Holat",
-    "outOf": "dan"
+    "outOf": "dan",
+    "comingSoon": "Tez kunda"
   },
   "auth": {
     "title": "MigrantHub ga kirish",
@@ -803,7 +804,33 @@
     "subtitle": "Favqulodda yordam",
     "detained": {
       "title": "Meni ushladilar",
-      "description": "Ushlanganda ko'rsatmalar va kontaktlar"
+      "description": "Ushlanganda ko'rsatmalar va kontaktlar",
+      "rightsAndAlgorithm": "Huquqlaringiz va harakatlar tartibi",
+      "whatToDo": "Nima qilish kerak",
+      "whatNotToDo": "Nima qilmaslik kerak",
+      "immediately": "Darhol",
+      "important": "Muhim",
+      "contacts": "Kontaktlar",
+      "showDocumentsCalmly": "Pasport va ro'yxatni xotirjam ko'rsating",
+      "rightToRecord": "Siz video yozib olish huquqiga egasiz (RF Konstitutsiyasi 29-moddasi)",
+      "demandProtocol": "Tushunarli tilda bayonnoma tuzishni talab qiling",
+      "dontBeRude": "Qo'pollik qilmang va qarshilik ko'rsatmang",
+      "noBribery": "Pora bermang (jinoyat moddasi)",
+      "rightToTranslator": "Tarjimon huquqi (RF Ma'muriy huquqbuzarliklar kodeksi 25.10-moddasi)",
+      "rightToCall": "Yurist/qarindoshlarga qo'ng'iroq qilish huquqi",
+      "rightNotToSign": "Tushunmasdan bayonnomaga imzo qo'ymaslik huquqi",
+      "demandStatement": "Ayting: \"Men tarjimon va yurist talab qilaman. Bayonnomaga imzo qo'ymayman.\"",
+      "demandConsulate": "Konsulxona bilan bog'lanishni talab qiling (Vena konvensiyasi)",
+      "dontSignWithoutTranslator": "Tarjimonsiz hech narsaga imzo qo'ymang",
+      "recordOfficerInfo": "Xodimlarning F.I.Sh. va bo'lim raqamini yozib oling",
+      "lawyerHotline": "Yurist 24/7",
+      "consulateHotline": "Konsulxona"
+    },
+    "policeReasons": {
+      "documentCheck": "Hujjatlarni tekshirish",
+      "noDocuments": "Hujjatlar yo'q",
+      "trafficViolation": "Yo'l harakati qoidalarini buzish",
+      "other": "Boshqa"
     },
     "lostDocuments": {
       "title": "Hujjatlarni yo'qotdim",
@@ -847,6 +874,7 @@
     },
     "documentRecovery": {
       "passport": {
+        "instruction": "Pasport. Yo'qotish haqida ma'lumotnoma olish uchun politsiyaga, keyin tiklash uchun Konsulxonaga boring.",
         "steps": [
           "O'z mamlakatiningiz elchixonasi/konsulxonasiga murojaat qiling",
           "Yo'qotish to'g'risida ariza bering",
@@ -854,13 +882,21 @@
         ]
       },
       "migCard": {
+        "instruction": "Migratsiya kartasi. IIV bo'limida tiklanadi (faqat pasportdan keyin).",
         "steps": [
           "Turish joyi bo'yicha IIV bo'limiga murojaat qiling",
           "Yo'qotish to'g'risida ariza yozing",
           "Migratsiya kartasi dublikatini oling"
         ]
       },
+      "greenCard": {
+        "instruction": "Yashil karta. Dublikat MMM/IIVda beriladi."
+      },
+      "education": {
+        "instruction": "Sertifikat/Diplom. Dublikat olish uchun test markaziga yoki o'quv muassasasiga murojaat qiling."
+      },
       "registration": {
+        "instruction": "Ro'yxatdan o'tish. Qabul qiluvchi tomon (xost) IIVda qiladi.",
         "steps": [
           "Qabul qiluvchi tomonga murojaat qiling",
           "Kelish to'g'risida qayta xabarnoma bering",
@@ -868,11 +904,27 @@
         ]
       },
       "patent": {
+        "instruction": "Patent. Patentni bergan MMMda (to'liq hujjatlar paketi kerak).",
         "steps": [
           "Migratsiya markaziga (MMM) murojaat qiling",
           "Dublikat berish to'g'risida ariza bering",
           "Dublikat uchun davlat boji to'lang"
         ]
+      },
+      "receipts": {
+        "instruction": "Cheklar. Patentni bergan MMMda (to'liq hujjatlar paketi kerak)."
+      },
+      "contract": {
+        "instruction": "Mehnat shartnomasi. Ish beruvchidan nusxa so'rang."
+      },
+      "insurance": {
+        "instruction": "DMS polisi. Dublikat olish uchun sug'urta kompaniyasiga murojaat qiling."
+      },
+      "inn": {
+        "instruction": "INN/SNILS. Soliq inspeksiyasi yoki MFSga murojaat qiling."
+      },
+      "family": {
+        "instruction": "Nikoh/tug'ilish guvohnomasi. Qaydnoma ro'yxatdan o'tgan joyidagi ZAGSga murojaat qiling."
       }
     }
   },
@@ -918,9 +970,9 @@
       "notRegistered": "Ro'yxatdan o'tmagan",
       "paid": "To'langan",
       "unpaid": "To'lanmagan",
-      "legal": "Legal",
-      "risk": "Risk",
-      "illegal": "Illegal"
+      "legal": "Qonuniy",
+      "risk": "Xavf",
+      "illegal": "Noqonuniy"
     }
   },
   "history": {
@@ -1002,6 +1054,286 @@
       "medical": "Tibbiy komisiya",
       "exam": "Sinov markazi",
       "mosque": "Masjid"
+    }
+  },
+  "wizard": {
+    "title": "Legalizatsiya ustasi",
+    "steps": {
+      "intro": "Vaziyat tahlili",
+      "requiredDocs": "Majburiy hujjatlar",
+      "additionalDocs": "Qo'shimcha hujjatlar",
+      "documentScan": "Hujjat {{current}} / {{total}}",
+      "scanning": "Skanerlash...",
+      "verification": "Ma'lumotlarni tekshirish",
+      "processing": "Yaratish...",
+      "actionPlan": "Tayyor!"
+    },
+    "intro": {
+      "currentSituation": "Joriy vaziyatingiz",
+      "citizenship": "Fuqarolik",
+      "entryDate": "Kirish sanasi",
+      "purpose": "Tashrif maqsadi",
+      "verdict": "Tizim xulosasi",
+      "needDocuments": "{{date}} gacha {{count}} hujjatni rasmiylashtirish kerak ({{days}} kun).",
+      "missingDocs": "Yetishmayotgan hujjatlar",
+      "startProcessing": "Rasmiylashtirishni boshlash",
+      "scanRequired": "Avval yetishmayotgan hujjatlarni skanerimiz ({{count}}), keyin qo'shimchalarni taklif qilamiz",
+      "generateNote": "Biz barcha kerakli arizalarni yaratamiz va aniq harakatlar rejasini ko'rsatamiz"
+    },
+    "requiredDocs": {
+      "title": "Yetishmayotgan hujjatlar",
+      "description": "Legalizatsiya uchun ushbu hujjatlarni skanerlash kerak",
+      "important": "Muhim",
+      "importantNote": "Bu hujjatlar RFda qonuniy yashash va ishlash uchun zarur.",
+      "startScanning": "Skanerlashni boshlash ({{count}} hujjat)",
+      "back": "Orqaga"
+    },
+    "additionalDocs": {
+      "title": "Qo'shimcha hujjatlar",
+      "description": "Boshqa shakllar uchun qo'shmoqchi bo'lgan hujjatlarni belgilang",
+      "alreadyScanned": "Allaqachon skanerlangan",
+      "tip": "Maslahat",
+      "tipText": "Qo'shimcha hujjatlar boshqa shakllarni yaratishda yordam beradi (RVP, VNJ, shartnomalar).",
+      "scanSelected": "Tanlanganlarni skanerlash ({{count}})",
+      "skipAdditional": "Qo'shimchalarni o'tkazib yuborish",
+      "continueWithout": "Qo'shimchalarsiz davom etish"
+    },
+    "quickSelect": {
+      "title": "Qaysi hujjatlarni skanerimiz?",
+      "description": "Sizda bor va skanerlashga tayyor hujjatlarni belgilang",
+      "levels": {
+        "base": "Asos",
+        "entry": "Kirish",
+        "work": "Ish",
+        "support": "Qo'llab-quvvatlash"
+      },
+      "docs": {
+        "passport": "Pasport",
+        "passportDesc": "Amaldagi xorijiy pasport",
+        "migCard": "Migratsiya kartasi",
+        "migCardDesc": "Chegarada kirishda berilgan karta",
+        "registration": "Ro'yxatdan o'tish (Xabarnoma)",
+        "registrationDesc": "Turish joyida ro'yxatdan o'tishni tasdiqlash",
+        "greenCard": "Yashil karta (Daktiloskopiya)",
+        "greenCardDesc": "MMCdan tibbiy ko'rik + daktiloskopiya",
+        "education": "Sertifikat / Diplom",
+        "educationDesc": "Rus tilini bilish sertifikati",
+        "patent": "Patent",
+        "patentDesc": "Ishlash ruxsati",
+        "contract": "Mehnat shartnomasi",
+        "contractDesc": "Ish beruvchi bilan shartnoma",
+        "receipts": "Cheklar (NDFL)",
+        "receiptsDesc": "Patent to'lovi kvitansiyalari",
+        "insurance": "DMS polisi",
+        "insuranceDesc": "Tibbiy sug'urta",
+        "inn": "INN / SNILS",
+        "innDesc": "Soliq raqami",
+        "family": "Nikoh / tug'ilish guvohnomasi",
+        "familyDesc": "RVP/VNJ uchun guvohnoma"
+      },
+      "important": "Muhim",
+      "importantNote": "Agar biror hujjat bo'lmasa - uni belgilamang. Mavjud ma'lumotlar asosida arizalar yaratamiz.",
+      "scanSelected": "Tanlanganlarni skanerlash ({{count}})",
+      "skipScanning": "Skanerlashni o'tkazib yuborish",
+      "back": "Orqaga"
+    },
+    "documentScan": {
+      "of": "dan",
+      "recommended": "Tavsiya etiladi",
+      "scan": "Skanerlash",
+      "scanDescription": "Avtomatik ma'lumotlarni aniqlash. Tez va xatosiz.",
+      "manual": "Qo'lda kiritish",
+      "manualDescription": "Ma'lumotlarni o'zingiz kiriting.",
+      "noDocSkip": "Hujjat yo'q, o'tkazib yuborish ({{current}}/{{total}})",
+      "takePhoto": "Hujjatni suratga oling",
+      "noGlare": "Yaltiroq yo'qligiga va barcha ma'lumotlar o'qilishiga ishonch hosil qiling",
+      "openCamera": "Kamerani ochish",
+      "havePhoto": "Menda oq fonda 3x4 foto bor",
+      "continue": "Davom etish",
+      "backToChoice": "Usul tanlashga qaytish"
+    },
+    "scanning": {
+      "recognizing": "{{title}} aniqlanmoqda",
+      "processingImage": "Rasm qayta ishlanmoqda",
+      "recognizingText": "Matn aniqlanmoqda (OCR)",
+      "checkingFormat": "Ma'lumotlar formati tekshirilmoqda",
+      "ocrTime": "OCR odatda 5-10 soniya davom etadi"
+    },
+    "verification": {
+      "checkData": "Ma'lumotlarni tekshiring",
+      "autoRecognized": "Biz ma'lumotlarni avtomatik aniqladik. Xatolar bo'lsa tuzating.",
+      "manualCheck": "Barcha ma'lumotlar to'g'ri kiritilganiga ishonch hosil qiling.",
+      "accuracy": "Aniqlash aniqligi",
+      "critical": "Juda muhim",
+      "criticalNote": "Bitta harfdagi xato hujjatni yaroqsiz qiladi. Har bir maydonni diqqat bilan tekshiring.",
+      "personallyChecked": "Men ma'lumotlarni shaxsan tekshirdim.",
+      "confirmResponsibility": "To'g'riligini tasdiqlayman. Javobgarlikni o'z zimmamga olaman.",
+      "nextDocument": "Keyingi hujjat →",
+      "doneNext": "Tayyor, keyingisi →",
+      "allCorrectContinue": "Hammasi to'g'ri, davom etish",
+      "retakePhoto": "Qayta suratga olish",
+      "backToChoice": "Usul tanlashga qaytish"
+    },
+    "processing": {
+      "generating": "Hujjatlar yaratilmoqda",
+      "analyzingLaws": "RF qonunlari tahlil qilinmoqda",
+      "selectingForms": "IIV blankalari tanlanmoqda",
+      "generatingApplications": "Arizalar yaratilmoqda",
+      "usuallyTakes": "Odatda 10-15 soniya davom etadi"
+    },
+    "actionPlan": {
+      "documentsReady": "Hujjatlar tayyor!",
+      "preparedPackage": "Legalizatsiya uchun to'liq paket tayyorlandi",
+      "generatedDocuments": "Yaratilgan hujjatlar",
+      "patentApplication": "Patent uchun ariza",
+      "arrivalNotification": "Kelish xabarnomasi",
+      "stepByStepPlan": "Bosqichma-bosqich harakatlar rejasi",
+      "whereToGo": "Qayerga borish",
+      "mmcSakharovo": "MMC Saxarovo (Tibbiyot markazi)",
+      "openOnMap": "Xaritada ochish",
+      "when": "Qachon",
+      "tomorrowTime": "Ertaga, 08:00 dan 12:00 gacha",
+      "comeEarly": "Ertalab keling, navbat kam bo'ladi",
+      "whatToTake": "Nima olib kelish kerak",
+      "passportOriginal": "Pasport (asl nusxa)",
+      "migrationCard": "Migratsiya kartasi",
+      "printedApplications": "Chop etilgan arizalar (yuqorida)",
+      "cashAmount": "3,500₽ naqd pul",
+      "whatIfNot": "Agar qilmasangiz nima bo'ladi?",
+      "fine": "7,000₽ gacha jarima",
+      "stayRevoked": "Turish muddatlarini bekor qilish",
+      "entryBan": "RFga 3-5 yil kirish taqiqi",
+      "deportation": "Buzg'unchining hisobidan deportatsiya",
+      "gotIt": "Ajoyib, tushundim!"
+    },
+    "documents": {
+      "passport": {
+        "title": "Pasport",
+        "description": "Foto va shaxsiy ma'lumotlar sahifasi"
+      },
+      "migCard": {
+        "title": "Migratsiya kartasi",
+        "description": "Chegarada kirishda berilgan karta"
+      },
+      "greenCard": {
+        "title": "Yashil karta (Tibbiy ko'rik + Daktiloskopiya)",
+        "description": "Akkreditatsiyalangan tibbiyot markazidan karta"
+      },
+      "education": {
+        "title": "Sertifikat (Rus tili imtihoni)",
+        "description": "Test markazidan sertifikat"
+      },
+      "insurance": {
+        "title": "DMS polisi",
+        "description": "Tibbiy sug'urta shartnomasi"
+      },
+      "contract": {
+        "title": "Mehnat shartnomasi",
+        "description": "Ish beruvchi bilan shartnoma"
+      },
+      "registration": {
+        "title": "Kelish xabarnomasi (Ro'yxatdan o'tish)",
+        "description": "Turish joyida ro'yxatdan o'tishni tasdiqlash"
+      },
+      "photo": {
+        "title": "3x4 fotosurat",
+        "description": "Oq fonda rangli foto"
+      },
+      "invitation": {
+        "title": "VUZdan taklif",
+        "description": "O'qishga rasmiy taklif"
+      },
+      "medical": {
+        "title": "Tibbiy ma'lumotnoma (086/u shakl)",
+        "description": "Sog'liq holati haqida ma'lumotnoma"
+      },
+      "ticket": {
+        "title": "Qaytish bileti",
+        "description": "RFdan chiqish bileti"
+      },
+      "hotel": {
+        "title": "Mehmonxona broni",
+        "description": "Bron tasdiqi"
+      },
+      "privateInvitation": {
+        "title": "RF fuqarosidan taklif",
+        "description": "Notarial tasdiqlangan taklif"
+      },
+      "patent": {
+        "title": "Patent",
+        "description": "Ishlash ruxsati"
+      },
+      "receipts": {
+        "title": "Cheklar (NDFL)",
+        "description": "Patent to'lovi kvitansiyalari"
+      },
+      "inn": {
+        "title": "INN / SNILS",
+        "description": "Soliq raqami"
+      },
+      "family": {
+        "title": "Nikoh / tug'ilish guvohnomasi",
+        "description": "RVP/VNJ uchun guvohnoma"
+      }
+    },
+    "fields": {
+      "lastName": "Familiya",
+      "firstName": "Ism",
+      "middleName": "Otasining ismi",
+      "passportNumber": "Pasport raqami",
+      "issueDate": "Berilgan sana",
+      "birthDate": "Tug'ilgan sana",
+      "birthPlace": "Tug'ilgan joy",
+      "citizenship": "Fuqarolik",
+      "cardNumber": "Karta raqami",
+      "entryDate": "Kirish sanasi",
+      "borderPoint": "O'tish punkti",
+      "purpose": "Tashrif maqsadi",
+      "medicalCenter": "Tibbiyot markazi",
+      "expiryDate": "Amal qilish muddati",
+      "doctorName": "Shifokor F.I.Sh.",
+      "certificateNumber": "Sertifikat raqami",
+      "testCenter": "Test markazi",
+      "score": "Ball",
+      "policyNumber": "Polis raqami",
+      "insuranceCompany": "Sug'urta kompaniyasi",
+      "employerName": "Ish beruvchi nomi",
+      "employerINN": "Ish beruvchi INN",
+      "jobTitle": "Lavozim",
+      "salary": "Maosh (rubl/oy)",
+      "startDate": "Ishga kirish sanasi",
+      "hostFullName": "Qabul qiluvchi F.I.Sh.",
+      "hostAddress": "Ro'yxatdan o'tish manzili",
+      "registrationDate": "Ro'yxatdan o'tish sanasi",
+      "universityName": "VUZ nomi",
+      "invitationNumber": "Taklif raqami",
+      "studyPeriod": "O'qish muddati",
+      "clinicName": "Klinika nomi",
+      "ticketNumber": "Bilet raqami",
+      "departureDate": "Jo'nash sanasi",
+      "destination": "Borish joyi",
+      "hotelName": "Mehmonxona nomi",
+      "hotelAddress": "Mehmonxona manzili",
+      "checkIn": "Kirish sanasi",
+      "checkOut": "Chiqish sanasi",
+      "inviterFullName": "Taklif qiluvchi F.I.Sh.",
+      "inviterPassport": "Taklif qiluvchi pasporti",
+      "inviterAddress": "Taklif qiluvchi manzili",
+      "notaryName": "Notarius F.I.Sh.",
+      "photoConfirm": "Foto tasdiqi",
+      "photoConfirmLabel": "Menda oq fonda 3x4 foto bor"
+    },
+    "dataIntake": {
+      "title": "1-qadam. Pasport ma'lumotlari",
+      "description": "Arizalar yaratish uchun ma'lumotlarni kiritish usulini tanlang",
+      "scanCamera": "Kamera bilan skanerlash",
+      "scanCameraDesc": "Pasportdan avtomatik ma'lumotlarni aniqlash. Tez va xatosiz.",
+      "ocrTechnology": "OCR texnologiyasi",
+      "fillManually": "Qo'lda to'ldirish",
+      "fillManuallyDesc": "Ma'lumotlarni o'zingiz kiriting. Bepul, lekin diqqatlilikni talab qiladi.",
+      "photoSpread": "Fotoli sahifani suratga oling",
+      "checkData": "Ma'lumotlarni tekshiring",
+      "checkDataNote": "Bitta harfdagi xato hujjatni yaroqsiz qiladi"
     }
   }
 }

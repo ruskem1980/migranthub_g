@@ -35,9 +35,9 @@ export default function LegalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
         <button
           onClick={handleBack}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
@@ -49,7 +49,7 @@ export default function LegalPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 px-6 py-8 overflow-y-auto">
+      <div className="flex-1 min-h-0 px-6 py-6 pb-24 overflow-y-auto">
         {/* Icon and Title */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mb-4 shadow-lg">
@@ -183,7 +183,7 @@ export default function LegalPage() {
       </div>
 
       {/* Bottom Button */}
-      <div className="px-6 py-4 bg-white border-t border-gray-200">
+      <div className="fixed bottom-0 left-0 right-0 px-6 py-4 bg-white border-t border-gray-200">
         <button
           onClick={handleContinue}
           disabled={!allAgreed}

@@ -24,67 +24,76 @@ export function HomeScreen() {
   return (
     <div className="h-full overflow-y-auto pb-4">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 bg-white border-b border-gray-200 sticky top-0 z-10">
-        {/* Left: User Info */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowProfileEdit(true)}
-            className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md hover:from-blue-600 hover:to-blue-700 transition-all active:scale-95"
-          >
-            АУ
-          </button>
-          <div className="flex-1">
-            <h2 className="text-base font-bold text-gray-900">{editFullName}</h2>
-            <p className="text-xs text-gray-500">
-              {editCitizenship === 'UZ' && '🇺🇿'}
-              {editCitizenship === 'TJ' && '🇹🇯'}
-              {editCitizenship === 'KG' && '🇰🇬'}
-              {editCitizenship === 'AM' && '🇦🇲'}
-              {editCitizenship === 'AZ' && '🇦🇿'}
-              {editCitizenship === 'BY' && '🇧🇾'}
-              {editCitizenship === 'GE' && '🇬🇪'}
-              {editCitizenship === 'KZ' && '🇰🇿'}
-              {editCitizenship === 'MD' && '🇲🇩'}
-              {editCitizenship === 'UA' && '🇺🇦'}
-              {' '}{t(`countries.${editCitizenship}`)}
-            </p>
-          </div>
+      <div className="px-4 py-3 bg-white border-b border-gray-200 sticky top-0 z-20">
+        {/* Top row: Language switcher */}
+        <div className="flex justify-end mb-2">
+          <LanguageSwitcher variant="compact" />
         </div>
 
-        {/* Right: Status Badge + Edit Button + Days Counter */}
-        <div className="flex items-center gap-3">
-          {/* Status Badge */}
-          {checkedDocs.length >= 7 ? (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-500 rounded-full">
-              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-              <span className="text-xs font-bold text-white">{t('dashboard.statusValues.legal')}</span>
+        {/* Main row: User info + Status + Days */}
+        <div className="flex items-center justify-between">
+          {/* Left: User Info + Edit */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowProfileEdit(true)}
+              className="w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-base shadow-md hover:from-blue-600 hover:to-blue-700 transition-all active:scale-95"
+            >
+              АУ
+            </button>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h2 className="text-sm font-bold text-gray-900">{editFullName}</h2>
+                <button
+                  onClick={() => setShowProfileEdit(true)}
+                  className="p-1 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors active:scale-95"
+                  title={t('profile.editTitle')}
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <p className="text-xs text-gray-500">
+                {editCitizenship === 'UZ' && '🇺🇿'}
+                {editCitizenship === 'TJ' && '🇹🇯'}
+                {editCitizenship === 'KG' && '🇰🇬'}
+                {editCitizenship === 'AM' && '🇦🇲'}
+                {editCitizenship === 'AZ' && '🇦🇿'}
+                {editCitizenship === 'BY' && '🇧🇾'}
+                {editCitizenship === 'GE' && '🇬🇪'}
+                {editCitizenship === 'KZ' && '🇰🇿'}
+                {editCitizenship === 'MD' && '🇲🇩'}
+                {editCitizenship === 'UA' && '🇺🇦'}
+                {' '}{t(`countries.${editCitizenship}`)}
+              </p>
             </div>
-          ) : checkedDocs.length >= 4 ? (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-yellow-500 rounded-full">
-              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-              <span className="text-xs font-bold text-white">{t('dashboard.statusValues.risk')}</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-500 rounded-full">
-              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-              <span className="text-xs font-bold text-white">{t('dashboard.statusValues.illegal')}</span>
-            </div>
-          )}
+          </div>
 
-          <button
-            onClick={() => setShowProfileEdit(true)}
-            className="p-2 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors active:scale-95"
-            title={t('profile.editTitle')}
-          >
-            <Edit2 className="w-5 h-5" />
-          </button>
-          
-          <div className="text-right">
-            <p className="text-xs text-gray-500 mb-0.5">{t('dashboard.daysRemaining')}</p>
-            <div className={`text-2xl font-bold ${88 > 30 ? 'text-green-600' : 88 > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
-              88
+          {/* Right: Status Badge + Days Counter */}
+          <div className="flex items-center gap-3">
+            {/* Status Badge */}
+            {checkedDocs.length >= 7 ? (
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-green-500 rounded-full">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                <span className="text-xs font-bold text-white">{t('dashboard.statusValues.legal')}</span>
+              </div>
+            ) : checkedDocs.length >= 4 ? (
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-yellow-500 rounded-full">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                <span className="text-xs font-bold text-white">{t('dashboard.statusValues.risk')}</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-red-500 rounded-full">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                <span className="text-xs font-bold text-white">{t('dashboard.statusValues.illegal')}</span>
+              </div>
+            )}
+
+            <div className="text-right">
+              <p className="text-xs text-gray-500 mb-0.5">{t('dashboard.daysRemaining')}</p>
+              <div className={`text-xl font-bold ${88 > 30 ? 'text-green-600' : 88 > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
+                88
+              </div>
+              <p className="text-xs text-gray-500">{t('common.days')}</p>
             </div>
-            <p className="text-xs text-gray-500">{t('common.days')}</p>
           </div>
         </div>
       </div>
@@ -763,29 +772,18 @@ export function HomeScreen() {
                     { code: 'az', flag: '🇦🇿', name: 'Azərbaycan' },
                     { code: 'ka', flag: '🇬🇪', name: 'ქართული' },
                   ].map((lang) => (
-                    <button
+                    <div
                       key={lang.code}
-                      onClick={() => {
-                        setAppLanguage(lang.code);
-                        setShowLanguageModal(false);
-                        setShowAILanguages(false);
-                      }}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
-                        language === lang.code
-                          ? 'bg-purple-50 border-purple-300'
-                          : 'bg-white border-gray-200 hover:border-gray-300'
-                      }`}
+                      className="w-full flex items-center justify-between p-3 rounded-lg border bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed"
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-xl">{lang.flag}</span>
-                        <span className="text-sm font-medium text-gray-700">{lang.name}</span>
+                        <span className="text-sm font-medium text-gray-500">{lang.name}</span>
                       </div>
-                      {language === lang.code && (
-                        <Check className="w-4 h-4 text-purple-600" />
-                      )}
-                    </button>
+                      <span className="text-xs text-gray-400 font-medium">{t('common.comingSoon')}</span>
+                    </div>
                   ))}
-                  
+
                   <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
                     <div className="flex items-start gap-2">
                       <Globe className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" />

@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import { QueryProvider } from '@/lib/providers/QueryProvider';
 import { useServiceWorker } from '@/lib/hooks/useServiceWorker';
 import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
@@ -14,7 +14,12 @@ function AppInitializer({ children }: { children: ReactNode }) {
   const isOnline = useOnlineStatus();
 
   // Translations
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+
+  // Sync html lang attribute with current language
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   return (
     <>

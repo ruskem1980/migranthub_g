@@ -2,6 +2,7 @@
 
 import { QrCode, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 type LegalStatus = 'legal' | 'risk' | 'illegal';
 
@@ -48,17 +49,22 @@ export function HomeTab() {
   return (
     <div className="flex flex-col h-full overflow-y-auto pb-20">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 bg-white border-b border-gray-200">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">Пульт управления</h1>
-          <p className="text-sm text-gray-500">Статус миграционного учета</p>
+      <div className="px-4 py-4 bg-white border-b border-gray-200">
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">Пульт управления</h1>
+            <p className="text-sm text-gray-500">Статус миграционного учета</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher variant="compact" />
+            <button
+              className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors active:scale-95"
+              aria-label="Карта мигранта"
+            >
+              <QrCode className="w-6 h-6" />
+            </button>
+          </div>
         </div>
-        <button
-          className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors active:scale-95"
-          aria-label="Карта мигранта"
-        >
-          <QrCode className="w-6 h-6" />
-        </button>
       </div>
 
       {/* Status Indicator */}

@@ -2,6 +2,7 @@
 
 import { Shield, Calculator, Briefcase, Home, FileText, MapPin, GraduationCap, Map } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 interface Service {
   id: string;
@@ -84,7 +85,10 @@ export function ServicesTab() {
     <div className="flex flex-col h-full overflow-y-auto pb-20">
       {/* Header */}
       <div className="flex-shrink-0 px-4 py-4 bg-white border-b border-gray-200">
-        <h1 className="text-xl font-bold text-gray-900">Сервисы</h1>
+        <div className="flex items-center justify-between mb-1">
+          <h1 className="text-xl font-bold text-gray-900">Сервисы</h1>
+          <LanguageSwitcher variant="compact" />
+        </div>
         <p className="text-sm text-gray-500">Инструменты и услуги</p>
       </div>
 

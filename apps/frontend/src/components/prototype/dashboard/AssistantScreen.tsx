@@ -19,7 +19,7 @@ export function AssistantScreen() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="px-4 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+      <div className="px-4 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white relative z-20">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">

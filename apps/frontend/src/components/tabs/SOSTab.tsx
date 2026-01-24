@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Phone, FileX, MapPin, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 interface EmergencyAction {
   id: string;
@@ -54,12 +55,15 @@ export function SOSTab() {
     <div className="flex flex-col h-full overflow-y-auto pb-20 bg-gradient-to-b from-red-50 to-white">
       {/* Header */}
       <div className="flex-shrink-0 px-4 py-4 bg-red-600 text-white">
-        <div className="flex items-center gap-3">
-          <AlertTriangle className="w-8 h-8" />
-          <div>
-            <h1 className="text-xl font-bold">Экстренная помощь</h1>
-            <p className="text-sm text-red-100">Действуйте быстро и спокойно</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="w-8 h-8" />
+            <div>
+              <h1 className="text-xl font-bold">Экстренная помощь</h1>
+              <p className="text-sm text-red-100">Действуйте быстро и спокойно</p>
+            </div>
           </div>
+          <LanguageSwitcher variant="compact" className="bg-white/20 hover:bg-white/30 text-white" />
         </div>
       </div>
 

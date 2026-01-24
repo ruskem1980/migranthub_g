@@ -3,7 +3,9 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-type Language = 'ru' | 'uz' | 'tg' | 'ky';
+// NOTE: Language is managed exclusively by languageStore to avoid duplication
+// Use useTranslation() hook from '@/lib/i18n' for language operations
+
 type Theme = 'light' | 'dark' | 'system';
 
 interface Notification {
@@ -17,7 +19,6 @@ interface Notification {
 
 interface AppState {
   // UI State
-  language: Language;
   theme: Theme;
   isOnline: boolean;
   isAppReady: boolean;
@@ -34,7 +35,6 @@ interface AppState {
   onboardingStep: number;
 
   // Actions
-  setLanguage: (language: Language) => void;
   setTheme: (theme: Theme) => void;
   setOnline: (isOnline: boolean) => void;
   setAppReady: (ready: boolean) => void;
@@ -54,7 +54,6 @@ interface AppState {
 }
 
 const initialState = {
-  language: 'ru' as Language,
   theme: 'system' as Theme,
   isOnline: true,
   isAppReady: false,
@@ -67,11 +66,8 @@ const initialState = {
 
 export const useAppStore = create<AppState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       ...initialState,
-
-      setLanguage: (language) =>
-        set({ language }),
 
       setTheme: (theme) =>
         set({ theme }),
@@ -129,7 +125,6 @@ export const useAppStore = create<AppState>()(
       name: 'migranthub-app',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
-        language: state.language,
         theme: state.theme,
         hasCompletedOnboarding: state.hasCompletedOnboarding,
         onboardingStep: state.onboardingStep,

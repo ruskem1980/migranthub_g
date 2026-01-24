@@ -1,23 +1,19 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, ArrowRight, Shield, FileText, Bell, Map } from 'lucide-react';
 import { useTranslation, LANGUAGES, Language } from '@/lib/i18n';
 
 export default function WelcomePage() {
   const router = useRouter();
-  const { t, language, setLanguage: setAppLanguage } = useTranslation();
-  const [selectedLanguage, setSelectedLanguage] = useState<Language>(language);
+  const { t, language, setLanguage } = useTranslation();
 
   const handleLanguageSelect = (code: Language) => {
-    setSelectedLanguage(code);
-    // Immediately apply language change for preview
-    setAppLanguage(code);
+    setLanguage(code);
   };
 
   const handleContinue = () => {
-    if (selectedLanguage) {
+    if (language) {
       router.push('/auth/legal');
     }
   };
@@ -47,23 +43,23 @@ export default function WelcomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-800 flex flex-col">
+    <div className="h-screen bg-gradient-to-b from-blue-600 to-blue-800 flex flex-col">
       {/* Header */}
-      <div className="flex flex-col items-center pt-8 pb-6 px-6 text-white">
-        <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
-          <span className="text-4xl">🛡️</span>
+      <div className="flex-shrink-0 flex flex-col items-center pt-6 pb-4 px-6 text-white">
+        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-3 backdrop-blur-sm">
+          <span className="text-3xl">🛡️</span>
         </div>
 
-        <h1 className="text-3xl font-bold mb-2 text-center">MigrantHub</h1>
+        <h1 className="text-2xl font-bold mb-1 text-center">MigrantHub</h1>
 
-        <p className="text-sm text-center text-blue-100 max-w-sm leading-relaxed">
+        <p className="text-xs text-center text-blue-100 max-w-sm leading-relaxed">
           {t('welcome.tagline')}
         </p>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 bg-white rounded-t-3xl flex flex-col overflow-hidden">
-        <div className="flex-1 px-6 pt-6 pb-4 overflow-y-auto">
+      <div className="flex-1 min-h-0 bg-white rounded-t-3xl flex flex-col">
+        <div className="flex-1 min-h-0 px-6 pt-4 pb-24 overflow-y-auto">
           {/* Language Selection */}
           <div className="mb-6">
             <h2 className="text-lg font-bold text-gray-900 mb-3">
@@ -76,7 +72,7 @@ export default function WelcomePage() {
                   key={lang.code}
                   onClick={() => handleLanguageSelect(lang.code)}
                   className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
-                    selectedLanguage === lang.code
+                    language === lang.code
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
@@ -85,7 +81,7 @@ export default function WelcomePage() {
                   <span className="flex-1 text-left font-semibold text-gray-900">
                     {lang.nativeName}
                   </span>
-                  {selectedLanguage === lang.code && (
+                  {language === lang.code && (
                     <Check className="w-5 h-5 text-blue-600" />
                   )}
                 </button>
@@ -125,17 +121,18 @@ export default function WelcomePage() {
           </div>
         </div>
 
-        {/* Fixed Footer with Button */}
-        <div className="px-6 py-4 border-t border-gray-100 bg-white">
-          <button
-            onClick={handleContinue}
-            disabled={!selectedLanguage}
-            className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-4 rounded-xl hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-          >
-            {t('common.continue')}
-            <ArrowRight className="w-5 h-5" />
-          </button>
-        </div>
+      </div>
+
+      {/* Fixed Footer with Button */}
+      <div className="fixed bottom-0 left-0 right-0 px-6 py-4 bg-white border-t border-gray-100 safe-area-bottom">
+        <button
+          onClick={handleContinue}
+          disabled={!language}
+          className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-4 rounded-xl hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+        >
+          {t('common.continue')}
+          <ArrowRight className="w-5 h-5" />
+        </button>
       </div>
     </div>
   );

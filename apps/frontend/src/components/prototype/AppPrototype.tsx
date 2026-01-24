@@ -11,7 +11,8 @@ import { DashboardLayout } from './DashboardLayout';
 type Screen = 'welcome' | 'legal' | 'profiling' | 'audit' | 'roadmap' | 'dashboard';
 
 export function AppPrototype() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
+  // Start from 'profiling' - welcome and legal already done in auth flow
+  const [currentScreen, setCurrentScreen] = useState<Screen>('profiling');
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
 
   const renderScreen = () => {

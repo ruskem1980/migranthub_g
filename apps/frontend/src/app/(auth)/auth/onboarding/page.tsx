@@ -13,7 +13,7 @@ export default function OnboardingPage() {
   const [selectedCitizenship, setSelectedCitizenship] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { setLanguage, setOnboardingCompleted } = useAppStore();
+  const { setOnboardingCompleted } = useAppStore();
   const { updateProfile } = useProfileStore();
 
   // Get citizenships from translations
@@ -37,11 +37,10 @@ export default function OnboardingPage() {
       setIsLoading(true);
 
       try {
-        // Save preferences (language was already set in welcome screen)
-        setLanguage(language as any);
+        // Save preferences (language was already set in welcome screen via languageStore)
         updateProfile({
           citizenship: selectedCitizenship,
-          language: language as any,
+          language: language,
           onboardingCompleted: true,
           updatedAt: new Date().toISOString(),
         });
@@ -58,63 +57,72 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto w-full">
-      {/* Language Switcher */}
-      <div className="flex justify-end mb-4">
+    <div className="h-screen bg-gray-50 flex flex-col">
+      {/* Header */}
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-end">
         <LanguageSwitcher variant="compact" />
       </div>
 
-      {/* Header */}
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Flag className="w-8 h-8 text-blue-600" />
+      {/* Main Content */}
+      <div className="flex-1 min-h-0 px-6 py-6 overflow-y-auto pb-24">
+        <div className="max-w-md mx-auto">
+          {/* Icon and Title */}
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Flag className="w-8 h-8 text-blue-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              {t('onboarding.citizenship.title')}
+            </h2>
+            <p className="text-gray-500">
+              {t('onboarding.citizenship.subtitle')}
+            </p>
+          </div>
+
+          {/* Citizenship Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            {CITIZENSHIPS.map((country) => (
+              <button
+                key={country.code}
+                onClick={() => handleCitizenshipSelect(country.code)}
+                className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                  selectedCitizenship === country.code
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <span className="text-3xl">{country.flag}</span>
+                <span className="text-sm font-semibold text-gray-900 text-center">
+                  {country.name}
+                </span>
+                {selectedCitizenship === country.code && (
+                  <Check className="w-5 h-5 text-blue-600" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          {t('onboarding.citizenship.title')}
-        </h2>
-        <p className="text-gray-500">
-          {t('onboarding.citizenship.subtitle')}
-        </p>
       </div>
 
-      {/* Citizenship Grid */}
-      <div className="grid grid-cols-2 gap-3 mb-8">
-        {CITIZENSHIPS.map((country) => (
+      {/* Fixed Footer */}
+      <div className="fixed bottom-0 left-0 right-0 px-6 py-4 bg-white border-t border-gray-100 safe-area-bottom">
+        <div className="max-w-md mx-auto">
           <button
-            key={country.code}
-            onClick={() => handleCitizenshipSelect(country.code)}
-            className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
-              selectedCitizenship === country.code
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
+            onClick={handleContinue}
+            disabled={!selectedCitizenship || isLoading}
+            className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-4 rounded-xl hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
           >
-            <span className="text-3xl">{country.flag}</span>
-            <span className="text-sm font-semibold text-gray-900 text-center">
-              {country.name}
-            </span>
-            {selectedCitizenship === country.code && (
-              <Check className="w-5 h-5 text-blue-600" />
+            {isLoading ? (
+              <span className="animate-pulse">{t('common.saving')}</span>
+            ) : (
+              <>
+                {t('common.start')}
+                <ArrowRight className="w-5 h-5" />
+              </>
             )}
           </button>
-        ))}
+        </div>
       </div>
-
-      {/* Continue button */}
-      <button
-        onClick={handleContinue}
-        disabled={!selectedCitizenship || isLoading}
-        className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-4 rounded-xl hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-      >
-        {isLoading ? (
-          <span className="animate-pulse">{t('common.saving')}</span>
-        ) : (
-          <>
-            {t('common.start')}
-            <ArrowRight className="w-5 h-5" />
-          </>
-        )}
-      </button>
     </div>
   );
 }

@@ -114,8 +114,8 @@ export default function OtpPage() {
         // Clear session storage
         sessionStorage.removeItem('auth_phone');
 
-        // Navigate to onboarding
-        router.push('/auth/onboarding');
+        // Navigate to prototype (skip auth/onboarding - citizenship is in profiling)
+        router.push('/prototype');
       } else {
         setError(t('auth.otp.wrongCode'));
         setOtp(Array(OTP_LENGTH).fill(''));
@@ -146,9 +146,9 @@ export default function OtpPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto w-full">
-      {/* Header with back button and language switcher */}
-      <div className="flex items-center justify-between mb-6">
+    <div className="h-screen bg-gray-50 flex flex-col">
+      {/* Header */}
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
         <button
           onClick={handleBack}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
@@ -159,74 +159,79 @@ export default function OtpPage() {
         <LanguageSwitcher variant="compact" />
       </div>
 
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          {t('auth.otp.title')}
-        </h2>
-        <p className="text-gray-500">
-          {t('auth.otp.codeSent')}
-          <br />
-          <span className="font-semibold text-gray-900">
-            {formatPhone(phone)}
-          </span>
-        </p>
-      </div>
+      {/* Main Content */}
+      <div className="flex-1 min-h-0 px-6 py-6 overflow-y-auto">
+        <div className="max-w-md mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              {t('auth.otp.title')}
+            </h2>
+            <p className="text-gray-500">
+              {t('auth.otp.codeSent')}
+              <br />
+              <span className="font-semibold text-gray-900">
+                {formatPhone(phone)}
+              </span>
+            </p>
+          </div>
 
-      {/* OTP Inputs */}
-      <div className="flex justify-center gap-3 mb-6">
-        {otp.map((digit, index) => (
-          <input
-            key={index}
-            ref={(el) => { inputRefs.current[index] = el; }}
-            type="text"
-            inputMode="numeric"
-            maxLength={1}
-            value={digit}
-            onChange={(e) => handleChange(index, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(index, e)}
-            onPaste={handlePaste}
-            disabled={isLoading}
-            className={`w-16 h-16 text-center text-2xl font-bold border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-              error ? 'border-red-300 bg-red-50' : digit ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-            }`}
-          />
-        ))}
-      </div>
+          {/* OTP Inputs */}
+          <div className="flex justify-center gap-3 mb-6">
+            {otp.map((digit, index) => (
+              <input
+                key={index}
+                ref={(el) => { inputRefs.current[index] = el; }}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                onPaste={handlePaste}
+                disabled={isLoading}
+                className={`w-16 h-16 text-center text-2xl font-bold border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+                  error ? 'border-red-300 bg-red-50' : digit ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                }`}
+              />
+            ))}
+          </div>
 
-      {/* Error message */}
-      {error && (
-        <p className="text-center text-red-600 mb-4">{error}</p>
-      )}
+          {/* Error message */}
+          {error && (
+            <p className="text-center text-red-600 mb-4">{error}</p>
+          )}
 
-      {/* Loading indicator */}
-      {isLoading && (
-        <div className="flex justify-center mb-4">
-          <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+          {/* Loading indicator */}
+          {isLoading && (
+            <div className="flex justify-center mb-4">
+              <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+            </div>
+          )}
+
+          {/* Resend button */}
+          <div className="text-center">
+            {resendTimer > 0 ? (
+              <p className="text-gray-500">
+                {t('auth.otp.resendIn', { seconds: resendTimer.toString() })}
+              </p>
+            ) : (
+              <button
+                onClick={handleResend}
+                className="flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 font-semibold mx-auto"
+              >
+                <RefreshCw className="w-4 h-4" />
+                {t('auth.otp.resend')}
+              </button>
+            )}
+          </div>
+
+          {/* Demo hint */}
+          <div className="mt-8 p-4 bg-yellow-50 rounded-xl border-2 border-yellow-200">
+            <p className="text-sm text-yellow-800 text-center">
+              <strong>{t('auth.demo.title')}:</strong> {t('auth.demo.otpHint')}
+            </p>
+          </div>
         </div>
-      )}
-
-      {/* Resend button */}
-      <div className="text-center">
-        {resendTimer > 0 ? (
-          <p className="text-gray-500">
-            {t('auth.otp.resendIn', { seconds: resendTimer.toString() })}
-          </p>
-        ) : (
-          <button
-            onClick={handleResend}
-            className="flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 font-semibold mx-auto"
-          >
-            <RefreshCw className="w-4 h-4" />
-            {t('auth.otp.resend')}
-          </button>
-        )}
-      </div>
-
-      {/* Demo hint */}
-      <div className="mt-8 p-4 bg-yellow-50 rounded-xl border-2 border-yellow-200">
-        <p className="text-sm text-yellow-800 text-center">
-          <strong>{t('auth.demo.title')}:</strong> {t('auth.demo.otpHint')}
-        </p>
       </div>
     </div>
   );

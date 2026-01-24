@@ -23,22 +23,27 @@ export function LanguageSwitcher({ variant = 'dropdown', className = '' }: Langu
   // Compact variant - just shows current language with flag
   if (variant === 'compact') {
     return (
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`relative flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors ${className}`}
-      >
-        <span className="text-lg">{currentLang.flag}</span>
-        <span className="text-sm font-medium">{currentLang.code.toUpperCase()}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      <div className="relative">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors ${className}`}
+        >
+          <span className="text-lg">{currentLang.flag}</span>
+          <span className="text-sm font-medium">{currentLang.code.toUpperCase()}</span>
+          <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
 
         {isOpen && (
           <>
-            <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-            <div className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50 min-w-[160px]">
+            <div className="fixed inset-0 z-[60]" onClick={() => setIsOpen(false)} />
+            <div className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-[70] min-w-[160px]">
               {LANGUAGES.map((lang) => (
                 <button
                   key={lang.code}
-                  onClick={() => handleSelect(lang.code)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelect(lang.code);
+                  }}
                   className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors ${
                     lang.code === language ? 'bg-blue-50' : ''
                   }`}
@@ -51,7 +56,7 @@ export function LanguageSwitcher({ variant = 'dropdown', className = '' }: Langu
             </div>
           </>
         )}
-      </button>
+      </div>
     );
   }
 
@@ -100,12 +105,15 @@ export function LanguageSwitcher({ variant = 'dropdown', className = '' }: Langu
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50 min-w-[200px]">
+          <div className="fixed inset-0 z-[60]" onClick={() => setIsOpen(false)} />
+          <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-[70] min-w-[200px]">
             {LANGUAGES.map((lang) => (
               <button
                 key={lang.code}
-                onClick={() => handleSelect(lang.code)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSelect(lang.code);
+                }}
                 className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors ${
                   lang.code === language ? 'bg-blue-50' : ''
                 }`}

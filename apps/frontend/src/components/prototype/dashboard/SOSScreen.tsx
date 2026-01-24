@@ -12,45 +12,54 @@ type DocumentKey = typeof PRIORITY_ORDER[number];
 
 interface DocumentOption {
   key: DocumentKey;
-  label: string;
+  translationKey: string;
   icon: string;
 }
 
+// Document options with translation keys instead of hardcoded labels
 const DOCUMENT_OPTIONS: DocumentOption[] = [
-  // УРОВЕНЬ 1: ОСНОВА
-  { key: 'passport', label: 'Паспорт', icon: '🛂' },
-  
-  // УРОВЕНЬ 2: ВЪЕЗД И ПРЕБЫВАНИЕ
-  { key: 'mig_card', label: 'Миграционная карта', icon: '🎫' },
-  { key: 'registration', label: 'Регистрация', icon: '📋' },
-  
-  // УРОВЕНЬ 3: РАБОТА
-  { key: 'green_card', label: 'Зеленая карта/Дакт.карта', icon: '💳' },
-  { key: 'education', label: 'Сертификат / Диплом', icon: '🎓' },
-  { key: 'patent', label: 'Патент', icon: '📄' },
-  { key: 'contract', label: 'Трудовой договор', icon: '📝' },
-  
-  // УРОВЕНЬ 4: ПОДДЕРЖКА
-  { key: 'receipts', label: 'Чеки', icon: '🧾' },
-  { key: 'insurance', label: 'Полис ДМС', icon: '🩺' },
-  { key: 'inn', label: 'ИНН / СНИЛС', icon: '🔢' },
-  { key: 'family', label: 'Св-во о браке / рождении', icon: '💍' },
+  // LEVEL 1: FOUNDATION
+  { key: 'passport', translationKey: 'documents.types.passport', icon: '🛂' },
+
+  // LEVEL 2: ENTRY AND STAY
+  { key: 'mig_card', translationKey: 'documents.types.migCard', icon: '🎫' },
+  { key: 'registration', translationKey: 'documents.types.registration', icon: '📋' },
+
+  // LEVEL 3: WORK
+  { key: 'green_card', translationKey: 'documents.types.greenCard', icon: '💳' },
+  { key: 'education', translationKey: 'documents.types.education', icon: '🎓' },
+  { key: 'patent', translationKey: 'documents.types.patent', icon: '📄' },
+  { key: 'contract', translationKey: 'documents.types.contract', icon: '📝' },
+
+  // LEVEL 4: SUPPORT
+  { key: 'receipts', translationKey: 'documents.types.receipts', icon: '🧾' },
+  { key: 'insurance', translationKey: 'documents.types.insurance', icon: '🩺' },
+  { key: 'inn', translationKey: 'documents.types.inn', icon: '🔢' },
+  { key: 'family', translationKey: 'documents.types.family', icon: '💍' },
 ];
 
-// Hardcoded recovery instructions by document type
-const RECOVERY_INSTRUCTIONS: Record<DocumentKey, string> = {
-  passport: 'Паспорт. Идите в полицию за справкой о потере, затем в Консульство для восстановления.',
-  mig_card: 'Миграционная карта. Восстанавливается в отделе МВД (строго после паспорта).',
-  green_card: 'Зеленая карта. Дубликат выдается в ММЦ/МВД.',
-  education: 'Сертификат/Диплом. Обратитесь в центр тестирования или учебное заведение за дубликатом.',
-  registration: 'Регистрация. Делает принимающая сторона (хост) в МВД.',
-  patent: 'Патент. В ММЦ, выдавшем патент (нужен полный пакет документов).',
-  receipts: 'Чеки. В ММЦ, выдавшем патент (нужен полный пакет документов).',
-  contract: 'Трудовой договор. Запросите копию у работодателя.',
-  insurance: 'Полис ДМС. Обратитесь в страховую компанию за дубликатом.',
-  inn: 'ИНН/СНИЛС. Обратитесь в налоговую инспекцию или МФЦ.',
-  family: 'Свидетельство о браке/рождении. Обратитесь в ЗАГС по месту регистрации акта.',
+// Map document keys to recovery instruction translation keys
+const RECOVERY_INSTRUCTION_KEYS: Record<DocumentKey, string> = {
+  passport: 'sos.documentRecovery.passport.instruction',
+  mig_card: 'sos.documentRecovery.migCard.instruction',
+  green_card: 'sos.documentRecovery.greenCard.instruction',
+  education: 'sos.documentRecovery.education.instruction',
+  registration: 'sos.documentRecovery.registration.instruction',
+  patent: 'sos.documentRecovery.patent.instruction',
+  receipts: 'sos.documentRecovery.receipts.instruction',
+  contract: 'sos.documentRecovery.contract.instruction',
+  insurance: 'sos.documentRecovery.insurance.instruction',
+  inn: 'sos.documentRecovery.inn.instruction',
+  family: 'sos.documentRecovery.family.instruction',
 };
+
+// Police reason keys for translation
+const POLICE_REASON_KEYS = [
+  'sos.policeReasons.documentCheck',
+  'sos.policeReasons.noDocuments',
+  'sos.policeReasons.trafficViolation',
+  'sos.policeReasons.other',
+] as const;
 
 export function SOSScreen() {
   const { t } = useTranslation();
@@ -63,7 +72,7 @@ export function SOSScreen() {
   return (
     <div className="h-full overflow-y-auto pb-4 bg-gradient-to-b from-red-50 to-white relative">
       {/* Header */}
-      <div className="px-4 py-4 bg-red-600 text-white">
+      <div className="px-4 py-4 bg-red-600 text-white relative z-20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <AlertTriangle className="w-8 h-8" />
@@ -172,77 +181,77 @@ export function SOSScreen() {
             <p className="text-sm text-gray-600 mb-4">{t('sos.detained.description')}:</p>
 
             <div className="space-y-3 mb-6">
-              {['Проверка документов', 'Нет документов', 'Нарушение ПДД', 'Другое'].map((reason) => (
+              {POLICE_REASON_KEYS.map((reasonKey) => (
                 <button
-                  key={reason}
-                  onClick={() => setPoliceReason(reason)}
+                  key={reasonKey}
+                  onClick={() => setPoliceReason(reasonKey)}
                   className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
-                    policeReason === reason
+                    policeReason === reasonKey
                       ? 'bg-red-50 border-red-500 text-red-700'
                       : 'bg-white border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  {reason}
+                  {t(reasonKey)}
                 </button>
               ))}
             </div>
 
             {policeReason && (
               <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl mb-4">
-                <h4 className="font-bold text-blue-900 mb-2">⚖️ Ваши права и алгоритм действий:</h4>
+                <h4 className="font-bold text-blue-900 mb-2">⚖️ {t('sos.detained.rightsAndAlgorithm')}:</h4>
                 <div className="text-sm text-blue-800 space-y-2">
-                  {policeReason === 'Проверка документов' && (
+                  {policeReason === 'sos.policeReasons.documentCheck' && (
                     <>
                       <div className="bg-white p-3 rounded-lg mb-2">
-                        <p className="font-bold text-blue-900 mb-1">✅ Что делать:</p>
+                        <p className="font-bold text-blue-900 mb-1">✅ {t('sos.detained.whatToDo')}:</p>
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Предъявите паспорт и регистрацию спокойно</li>
-                          <li>Вы имеете право снимать на видео (ст. 29 Конституции РФ)</li>
-                          <li>Требуйте составить протокол на понятном языке</li>
+                          <li>{t('sos.detained.showDocumentsCalmly')}</li>
+                          <li>{t('sos.detained.rightToRecord')}</li>
+                          <li>{t('sos.detained.demandProtocol')}</li>
                         </ul>
                       </div>
                       <div className="bg-red-100 p-3 rounded-lg">
-                        <p className="font-bold text-red-900 mb-1">❌ Чего НЕ делать:</p>
+                        <p className="font-bold text-red-900 mb-1">❌ {t('sos.detained.whatNotToDo')}:</p>
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Не грубите и не сопротивляйтесь</li>
-                          <li>Не давайте взятки (уголовная статья)</li>
+                          <li>{t('sos.detained.dontBeRude')}</li>
+                          <li>{t('sos.detained.noBribery')}</li>
                         </ul>
                       </div>
                     </>
                   )}
-                  {policeReason === 'Нет документов' && (
+                  {policeReason === 'sos.policeReasons.noDocuments' && (
                     <>
                       <div className="bg-white p-3 rounded-lg mb-2">
-                        <p className="font-bold text-blue-900 mb-1">✅ Ваши права:</p>
+                        <p className="font-bold text-blue-900 mb-1">✅ {t('sos.rights.title')}:</p>
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Право на переводчика (ст. 25.10 КоАП РФ)</li>
-                          <li>Право на звонок юристу/родным</li>
-                          <li>Право не подписывать протокол без понимания</li>
+                          <li>{t('sos.detained.rightToTranslator')}</li>
+                          <li>{t('sos.detained.rightToCall')}</li>
+                          <li>{t('sos.detained.rightNotToSign')}</li>
                         </ul>
                       </div>
                       <div className="bg-yellow-100 p-3 rounded-lg">
-                        <p className="font-bold text-yellow-900 mb-1">⚠️ Важно:</p>
-                        <p>Скажите: "Я требую переводчика и юриста. Протокол не подписываю."</p>
+                        <p className="font-bold text-yellow-900 mb-1">⚠️ {t('sos.detained.important')}:</p>
+                        <p>{t('sos.detained.demandStatement')}</p>
                       </div>
                     </>
                   )}
-                  {(policeReason === 'Нарушение ПДД' || policeReason === 'Другое') && (
+                  {(policeReason === 'sos.policeReasons.trafficViolation' || policeReason === 'sos.policeReasons.other') && (
                     <>
                       <div className="bg-white p-3 rounded-lg mb-2">
-                        <p className="font-bold text-blue-900 mb-1">✅ Немедленно:</p>
+                        <p className="font-bold text-blue-900 mb-1">✅ {t('sos.detained.immediately')}:</p>
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Требуйте связи с консульством (Венская конвенция)</li>
-                          <li>Ничего не подписывайте без переводчика</li>
-                          <li>Запишите ФИО сотрудников и номер отдела</li>
+                          <li>{t('sos.detained.demandConsulate')}</li>
+                          <li>{t('sos.detained.dontSignWithoutTranslator')}</li>
+                          <li>{t('sos.detained.recordOfficerInfo')}</li>
                         </ul>
                       </div>
                     </>
                   )}
                   <div className="bg-purple-100 p-3 rounded-lg mt-2">
-                    <p className="font-bold text-purple-900 mb-1">📞 Контакты:</p>
+                    <p className="font-bold text-purple-900 mb-1">📞 {t('sos.detained.contacts')}:</p>
                     <ul className="space-y-1">
-                      <li>Юрист 24/7: <span className="font-mono">+7 (495) 123-45-67</span></li>
-                      <li>Консульство: <span className="font-mono">+7 (495) 234-56-78</span></li>
+                      <li>{t('sos.detained.lawyerHotline')}: <span className="font-mono">+7 (495) 123-45-67</span></li>
+                      <li>{t('sos.detained.consulateHotline')}: <span className="font-mono">+7 (495) 234-56-78</span></li>
                     </ul>
                   </div>
                 </div>
@@ -316,7 +325,7 @@ export function SOSScreen() {
                         {/* Icon and Label */}
                         <span className="text-2xl">{doc.icon}</span>
                         <span className={`font-semibold ${isSelected ? 'text-orange-700' : 'text-gray-700'}`}>
-                          {doc.label}
+                          {t(doc.translationKey)}
                         </span>
                       </button>
                     );
@@ -369,8 +378,8 @@ export function SOSScreen() {
                     .filter(key => selectedDocs.has(key))
                     .map((key, index) => {
                       const doc = DOCUMENT_OPTIONS.find(d => d.key === key)!;
-                      const instruction = RECOVERY_INSTRUCTIONS[key];
-                      
+                      const instructionKey = RECOVERY_INSTRUCTION_KEYS[key];
+
                       return (
                         <div key={key} className="relative flex gap-4">
                           {/* Step Number */}
@@ -388,10 +397,10 @@ export function SOSScreen() {
                           <div className="flex-1 bg-white border-2 border-orange-200 rounded-xl p-4 shadow-sm">
                             <div className="flex items-center gap-2 mb-2">
                               <span className="text-xl">{doc.icon}</span>
-                              <h5 className="font-bold text-gray-900">{doc.label}</h5>
+                              <h5 className="font-bold text-gray-900">{t(doc.translationKey)}</h5>
                             </div>
                             <p className="text-sm text-gray-700 leading-relaxed">
-                              {instruction}
+                              {t(instructionKey)}
                             </p>
                           </div>
                         </div>

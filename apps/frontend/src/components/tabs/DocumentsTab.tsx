@@ -2,6 +2,7 @@
 
 import { Camera, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 type DocumentStatus = 'active' | 'expiring' | 'missing';
 
@@ -79,7 +80,10 @@ export function DocumentsTab() {
     <div className="flex flex-col h-full overflow-hidden pb-20">
       {/* Header */}
       <div className="flex-shrink-0 px-4 py-4 bg-white border-b border-gray-200">
-        <h1 className="text-xl font-bold text-gray-900">Документы</h1>
+        <div className="flex items-center justify-between mb-1">
+          <h1 className="text-xl font-bold text-gray-900">Документы</h1>
+          <LanguageSwitcher variant="compact" />
+        </div>
         <p className="text-sm text-gray-500">Активный реестр</p>
       </div>
 
