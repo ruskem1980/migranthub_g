@@ -43,7 +43,7 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
+    <div className="h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col overflow-hidden">
       {/* Header with Language Switcher */}
       <div className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
         <h1 className="text-lg font-semibold text-gray-900">MigrantHub</h1>

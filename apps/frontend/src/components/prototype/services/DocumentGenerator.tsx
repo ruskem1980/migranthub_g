@@ -374,11 +374,12 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
 
   const renderMissingDataModal = () => {
     const template = TEMPLATES.find(tpl => tpl.id === selectedTemplate)!;
-    
+
     return (
-      <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60] p-4 animate-in fade-in duration-200">
-        <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-6">
-          <div className="text-center mb-6">
+      <div className="fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center z-[60] p-4 animate-in fade-in duration-200">
+        <div className="w-full max-w-lg bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden flex flex-col">
+          {/* Header */}
+          <div className="flex-shrink-0 text-center p-6 pb-4">
             <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-8 h-8 text-orange-600" />
             </div>
@@ -405,8 +406,10 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
             )}
           </div>
 
-          {/* Missing Fields Form */}
-          <div className="space-y-4 mb-6">
+          {/* Scrollable Content */}
+          <div className="flex-1 min-h-0 overflow-y-auto px-6">
+            {/* Missing Fields Form */}
+            <div className="space-y-4">
             {missingFields.map((field) => (
               <div key={field}>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -450,26 +453,27 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
                 )}
               </div>
             ))}
-          </div>
+            </div>
 
-          {/* Quick Scan Option */}
-          <div className="mb-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
-            <div className="flex items-start gap-3">
-              <Camera className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-blue-900 mb-1">{t('docgen.quickFill')}</p>
-                <p className="text-xs text-blue-800">
-                  {t('docgen.scanPassportHint')}
-                </p>
-                <button className="mt-2 text-xs text-blue-600 font-semibold hover:underline">
-                  📸 {t('docgen.scanPassport')} →
-                </button>
+            {/* Quick Scan Option */}
+            <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+              <div className="flex items-start gap-3">
+                <Camera className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-semibold text-blue-900 mb-1">{t('docgen.quickFill')}</p>
+                  <p className="text-xs text-blue-800">
+                    {t('docgen.scanPassportHint')}
+                  </p>
+                  <button className="mt-2 text-xs text-blue-600 font-semibold hover:underline">
+                    📸 {t('docgen.scanPassport')} →
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="space-y-3">
+          {/* Footer with Actions */}
+          <div className="flex-shrink-0 p-6 pt-4 border-t border-gray-200 space-y-3">
             <button
               onClick={handleDataSubmit}
               disabled={!missingFields.every(field => tempData[field])}
