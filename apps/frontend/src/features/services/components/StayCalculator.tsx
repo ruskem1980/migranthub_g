@@ -105,7 +105,7 @@ export function StayCalculator({ onClose }: StayCalculatorProps) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4">
           {/* Result card */}
           <div className={`p-4 rounded-xl mb-6 ${
             statusColor === 'red' ? 'bg-red-50 border-2 border-red-200' :

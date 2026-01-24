@@ -125,7 +125,7 @@ export function ProfileForm({ initialData, onSubmit, isLoading }: ProfileFormPro
         />
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="pb-24">
+      <form onSubmit={handleSubmit(onSubmit)}>
         {/* Scan passport button */}
         <button
           type="button"
