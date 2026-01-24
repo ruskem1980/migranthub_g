@@ -62,76 +62,80 @@ export default function WelcomePage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 bg-white rounded-t-3xl px-6 pt-6 pb-8 overflow-y-auto">
-        {/* Language Selection */}
-        <div className="mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-3">
-            {t('welcome.selectLanguage')}
-          </h2>
+      <div className="flex-1 bg-white rounded-t-3xl flex flex-col overflow-hidden">
+        <div className="flex-1 px-6 pt-6 pb-4 overflow-y-auto">
+          {/* Language Selection */}
+          <div className="mb-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-3">
+              {t('welcome.selectLanguage')}
+            </h2>
 
-          <div className="grid grid-cols-2 gap-3">
-            {LANGUAGES.map((lang) => (
-              <button
-                key={lang.code}
-                onClick={() => handleLanguageSelect(lang.code)}
-                className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
-                  selectedLanguage === lang.code
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <span className="text-2xl">{lang.flag}</span>
-                <span className="flex-1 text-left font-semibold text-gray-900">
-                  {lang.nativeName}
-                </span>
-                {selectedLanguage === lang.code && (
-                  <Check className="w-5 h-5 text-blue-600" />
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* App Description - Features */}
-        <div className="mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-3">
-            {t('welcome.whatCanDo')}
-          </h2>
-
-          <div className="space-y-3">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <div
-                  key={index}
-                  className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200"
+            <div className="grid grid-cols-2 gap-3">
+              {LANGUAGES.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => handleLanguageSelect(lang.code)}
+                  className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                    selectedLanguage === lang.code
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
                 >
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-5 h-5 text-blue-600" />
+                  <span className="text-2xl">{lang.flag}</span>
+                  <span className="flex-1 text-left font-semibold text-gray-900">
+                    {lang.nativeName}
+                  </span>
+                  {selectedLanguage === lang.code && (
+                    <Check className="w-5 h-5 text-blue-600" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* App Description - Features */}
+          <div>
+            <h2 className="text-lg font-bold text-gray-900 mb-3">
+              {t('welcome.whatCanDo')}
+            </h2>
+
+            <div className="space-y-3">
+              {features.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <div
+                    key={index}
+                    className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200"
+                  >
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-1">
+                        {feature.title}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {feature.description}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">
-                      {feature.title}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {feature.description}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        {/* Continue Button */}
-        <button
-          onClick={handleContinue}
-          disabled={!selectedLanguage}
-          className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-4 rounded-xl hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-        >
-          {t('common.continue')}
-          <ArrowRight className="w-5 h-5" />
-        </button>
+        {/* Fixed Footer with Button */}
+        <div className="px-6 py-4 border-t border-gray-100 bg-white">
+          <button
+            onClick={handleContinue}
+            disabled={!selectedLanguage}
+            className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-4 rounded-xl hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          >
+            {t('common.continue')}
+            <ArrowRight className="w-5 h-5" />
+          </button>
+        </div>
       </div>
     </div>
   );

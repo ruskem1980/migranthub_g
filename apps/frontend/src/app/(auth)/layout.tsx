@@ -19,7 +19,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 px-6">
+      <div className="flex-1 px-6 overflow-y-auto">
         {children}
       </div>
 
