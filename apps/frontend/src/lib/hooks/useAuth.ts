@@ -1,21 +1,25 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore, useProfileStore, useAppStore } from '../stores';
-import { authApi } from '../api/client';
+import { useAuthStore } from '../stores/authStore';
+import { useProfileStore } from '../stores/profileStore';
+import { useAppStore } from '../stores/appStore';
+import { authApi, usersApi } from '../api/client';
+import { tokenStorage } from '../api/storage';
+import { getOrCreateDeviceId } from '../api/device';
 
 export function useAuth() {
   const router = useRouter();
   const {
     user,
-    token,
     isAuthenticated,
     isLoading,
+    isInitialized,
     error,
     setUser,
-    setToken,
     setLoading,
+    setInitialized,
     setError,
     logout: logoutStore,
   } = useAuthStore();
@@ -23,93 +27,89 @@ export function useAuth() {
   const { reset: resetProfile } = useProfileStore();
   const { reset: resetApp, hasCompletedOnboarding } = useAppStore();
 
-  const sendOtp = useCallback(async (phone: string) => {
+  // Initialize auth on app start
+  const initializeAuth = useCallback(async () => {
+    if (isInitialized) return;
+
+    setLoading(true);
+
+    try {
+      // Check if we have tokens
+      const accessToken = await tokenStorage.getAccessToken();
+
+      if (accessToken) {
+        // Try to get user profile with existing token
+        try {
+          const profile = await usersApi.getMe();
+          setUser(profile);
+          setInitialized(true);
+          return;
+        } catch {
+          // Token might be invalid, try device auth
+          await tokenStorage.clearTokens();
+        }
+      }
+
+      // Perform device auth
+      const deviceId = await getOrCreateDeviceId();
+      const response = await authApi.deviceAuth(deviceId);
+
+      // Store tokens
+      await tokenStorage.setTokens(
+        response.tokens.accessToken,
+        response.tokens.refreshToken,
+        response.tokens.expiresIn
+      );
+
+      // Set user
+      setUser(response.user);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Ошибка авторизации';
+      setError(message);
+    } finally {
+      setLoading(false);
+      setInitialized(true);
+    }
+  }, [isInitialized, setLoading, setUser, setInitialized, setError]);
+
+  // Fetch current user profile
+  const fetchProfile = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await authApi.sendOtp(phone);
-      return response;
+      const profile = await usersApi.getMe();
+      setUser(profile);
+      return profile;
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Ошибка отправки SMS';
+      const message = err instanceof Error ? err.message : 'Ошибка загрузки профиля';
       setError(message);
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [setLoading, setError]);
+  }, [setLoading, setError, setUser]);
 
-  const verifyOtp = useCallback(async (phone: string, code: string) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await authApi.verifyOtp(phone, code);
-      setUser({
-        id: response.user.id,
-        phone: response.user.phone,
-        createdAt: new Date().toISOString(),
-      });
-      setToken(response.token);
-      return response;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Неверный код';
-      setError(message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [setUser, setToken, setLoading, setError]);
-
-  const loginWithTelegram = useCallback(async (telegramData: {
-    id: number;
-    first_name: string;
-    auth_date: number;
-    hash: string;
-  }) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await authApi.telegramAuth(telegramData);
-      setUser({
-        id: response.user.id,
-        phone: '',
-        telegramId: response.user.telegramId,
-        createdAt: new Date().toISOString(),
-      });
-      setToken(response.token);
-      return response;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Ошибка авторизации через Telegram';
-      setError(message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [setUser, setToken, setLoading, setError]);
-
+  // Logout
   const logout = useCallback(async () => {
     try {
-      await authApi.logout();
-    } catch {
-      // Ignore logout errors
+      await tokenStorage.clearTokens();
     } finally {
       logoutStore();
       resetProfile();
       resetApp();
-      router.push('/auth/phone');
+      router.push('/');
     }
   }, [logoutStore, resetProfile, resetApp, router]);
 
+  // Check if user is authenticated and onboarded
   const checkAuth = useCallback(() => {
     if (!isAuthenticated) {
-      router.push('/auth/phone');
       return false;
     }
 
     if (!hasCompletedOnboarding) {
-      router.push('/auth/onboarding');
+      router.push('/onboarding');
       return false;
     }
 
@@ -118,15 +118,27 @@ export function useAuth() {
 
   return {
     user,
-    token,
     isAuthenticated,
     isLoading,
+    isInitialized,
     error,
     hasCompletedOnboarding,
-    sendOtp,
-    verifyOtp,
-    loginWithTelegram,
+    initializeAuth,
+    fetchProfile,
     logout,
     checkAuth,
   };
+}
+
+// Hook for automatic device auth on app start
+export function useDeviceAuth() {
+  const { initializeAuth, isInitialized, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isInitialized && !isLoading) {
+      initializeAuth();
+    }
+  }, [initializeAuth, isInitialized, isLoading]);
+
+  return { isInitialized, isLoading };
 }

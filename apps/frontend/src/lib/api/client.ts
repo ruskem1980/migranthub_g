@@ -1,36 +1,61 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.migranthub.ru/api/v1';
+'use client';
+
+import { tokenStorage } from './storage';
+import type {
+  ApiError,
+  AuthResponse,
+  DeviceAuthRequest,
+  RefreshTokenRequest,
+  ApiUser,
+  UpdateUserRequest,
+  BanCheckRequest,
+  BanCheckResponse,
+  PatentRegionsResponse,
+  HealthResponse,
+  AuthTokens,
+} from './types';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
 
 interface RequestConfig extends RequestInit {
   timeout?: number;
-}
-
-interface ApiError {
-  message: string;
-  code: string;
-  status: number;
+  skipAuth?: boolean;
 }
 
 class ApiClient {
   private baseUrl: string;
-  private token: string | null = null;
+  private isRefreshing = false;
+  private refreshPromise: Promise<AuthTokens> | null = null;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
   }
 
-  setToken(token: string | null) {
-    this.token = token;
+  private async getAccessToken(): Promise<string | null> {
+    return tokenStorage.getAccessToken();
   }
 
-  private async request<T>(
-    endpoint: string,
-    config: RequestConfig = {}
-  ): Promise<T> {
-    const { timeout = 30000, ...fetchConfig } = config;
+  private async request<T>(endpoint: string, config: RequestConfig = {}): Promise<T> {
+    const { timeout = 30000, skipAuth = false, ...fetchConfig } = config;
+
+    // Get token if needed
+    let token: string | null = null;
+    if (!skipAuth) {
+      // Check if token is expired and refresh if needed
+      const isExpired = await tokenStorage.isTokenExpired();
+      if (isExpired) {
+        try {
+          await this.refreshTokens();
+        } catch {
+          // Token refresh failed, continue without token
+        }
+      }
+      token = await this.getAccessToken();
+    }
 
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
-      ...(this.token && { Authorization: `Bearer ${this.token}` }),
+      ...(token && { Authorization: `Bearer ${token}` }),
       ...fetchConfig.headers,
     };
 
@@ -46,11 +71,26 @@ class ApiClient {
 
       clearTimeout(timeoutId);
 
+      // Handle 401 - try to refresh token once
+      if (response.status === 401 && !skipAuth) {
+        try {
+          await this.refreshTokens();
+          // Retry request with new token
+          return this.request<T>(endpoint, { ...config, skipAuth: true });
+        } catch {
+          // Refresh failed, throw original error
+          await tokenStorage.clearTokens();
+          throw {
+            message: 'Сессия истекла',
+            statusCode: 401,
+          } as ApiError;
+        }
+      }
+
       if (!response.ok) {
         const error: ApiError = await response.json().catch(() => ({
           message: 'Ошибка сервера',
-          code: 'UNKNOWN_ERROR',
-          status: response.status,
+          statusCode: response.status,
         }));
         throw error;
       }
@@ -64,8 +104,7 @@ class ApiClient {
       if (error instanceof Error && error.name === 'AbortError') {
         throw {
           message: 'Превышено время ожидания',
-          code: 'TIMEOUT',
-          status: 408,
+          statusCode: 408,
         } as ApiError;
       }
 
@@ -73,6 +112,52 @@ class ApiClient {
     }
   }
 
+  private async refreshTokens(): Promise<AuthTokens> {
+    // Prevent multiple simultaneous refresh requests
+    if (this.isRefreshing && this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.isRefreshing = true;
+    this.refreshPromise = this.doRefreshTokens();
+
+    try {
+      const tokens = await this.refreshPromise;
+      return tokens;
+    } finally {
+      this.isRefreshing = false;
+      this.refreshPromise = null;
+    }
+  }
+
+  private async doRefreshTokens(): Promise<AuthTokens> {
+    const refreshToken = await tokenStorage.getRefreshToken();
+
+    if (!refreshToken) {
+      throw new Error('No refresh token');
+    }
+
+    const response = await fetch(`${this.baseUrl}/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken } as RefreshTokenRequest),
+    });
+
+    if (!response.ok) {
+      throw new Error('Token refresh failed');
+    }
+
+    const data: AuthResponse = await response.json();
+    await tokenStorage.setTokens(
+      data.tokens.accessToken,
+      data.tokens.refreshToken,
+      data.tokens.expiresIn
+    );
+
+    return data.tokens;
+  }
+
+  // HTTP methods
   async get<T>(endpoint: string, config?: RequestConfig): Promise<T> {
     return this.request<T>(endpoint, { ...config, method: 'GET' });
   }
@@ -81,14 +166,6 @@ class ApiClient {
     return this.request<T>(endpoint, {
       ...config,
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
-    });
-  }
-
-  async put<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...config,
-      method: 'PUT',
       body: data ? JSON.stringify(data) : undefined,
     });
   }
@@ -104,73 +181,50 @@ class ApiClient {
   async delete<T>(endpoint: string, config?: RequestConfig): Promise<T> {
     return this.request<T>(endpoint, { ...config, method: 'DELETE' });
   }
-
-  async upload<T>(endpoint: string, file: File, onProgress?: (progress: number) => void): Promise<T> {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    // Note: For progress tracking, we'd need XMLHttpRequest or a library
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      method: 'POST',
-      headers: {
-        ...(this.token && { Authorization: `Bearer ${this.token}` }),
-      },
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const error: ApiError = await response.json().catch(() => ({
-        message: 'Ошибка загрузки',
-        code: 'UPLOAD_ERROR',
-        status: response.status,
-      }));
-      throw error;
-    }
-
-    return response.json();
-  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);
 
 // Auth API
 export const authApi = {
-  sendOtp: (phone: string) =>
-    apiClient.post<{ success: boolean; expiresIn: number }>('/auth/otp/send', { phone }),
+  deviceAuth: (deviceId: string) =>
+    apiClient.post<AuthResponse>('/auth/device', { deviceId } as DeviceAuthRequest, {
+      skipAuth: true,
+    }),
 
-  verifyOtp: (phone: string, code: string) =>
-    apiClient.post<{ token: string; user: { id: string; phone: string } }>('/auth/otp/verify', { phone, code }),
-
-  refreshToken: () =>
-    apiClient.post<{ token: string }>('/auth/refresh'),
-
-  telegramAuth: (data: { id: number; first_name: string; auth_date: number; hash: string }) =>
-    apiClient.post<{ token: string; user: { id: string; telegramId: string } }>('/auth/telegram', data),
-
-  logout: () =>
-    apiClient.post('/auth/logout'),
+  refresh: (refreshToken: string) =>
+    apiClient.post<AuthResponse>(
+      '/auth/refresh',
+      { refreshToken } as RefreshTokenRequest,
+      { skipAuth: true }
+    ),
 };
 
-// Profile API
-export const profileApi = {
-  get: () =>
-    apiClient.get<{ profile: unknown }>('/profile'),
+// Users API
+export const usersApi = {
+  getMe: () => apiClient.get<ApiUser>('/users/me'),
 
-  update: (data: Record<string, unknown>) =>
-    apiClient.patch<{ profile: unknown }>('/profile', data),
-
-  uploadDocument: (file: File) =>
-    apiClient.upload<{ document: unknown }>('/profile/documents', file),
+  updateMe: (data: UpdateUserRequest) => apiClient.patch<ApiUser>('/users/me', data),
 };
 
-// Documents API
-export const documentsApi = {
-  list: () =>
-    apiClient.get<{ documents: unknown[] }>('/documents'),
+// Utilities API
+export const utilitiesApi = {
+  checkBan: (params: BanCheckRequest) => {
+    const query = new URLSearchParams({
+      lastName: params.lastName,
+      firstName: params.firstName,
+      birthDate: params.birthDate,
+    });
+    return apiClient.get<BanCheckResponse>(`/utilities/ban-check?${query}`);
+  },
 
-  get: (id: string) =>
-    apiClient.get<{ document: unknown }>(`/documents/${id}`),
-
-  generatePdf: (formType: string, data: Record<string, unknown>) =>
-    apiClient.post<{ pdfUrl: string }>('/documents/generate', { formType, data }),
+  getPatentRegions: () =>
+    apiClient.get<PatentRegionsResponse>('/utilities/patent/regions', { skipAuth: true }),
 };
+
+// Health API
+export const healthApi = {
+  check: () => apiClient.get<HealthResponse>('/health', { skipAuth: true }),
+};
+
+export { API_BASE_URL };

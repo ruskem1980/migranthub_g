@@ -2,26 +2,20 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-
-export interface User {
-  id: string;
-  phone: string;
-  telegramId?: string;
-  createdAt: string;
-}
+import type { ApiUser } from '../api/types';
 
 interface AuthState {
-  user: User | null;
-  token: string | null;
+  user: ApiUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isInitialized: boolean;
   error: string | null;
   _hasHydrated: boolean;
 
   // Actions
-  setUser: (user: User | null) => void;
-  setToken: (token: string | null) => void;
+  setUser: (user: ApiUser | null) => void;
   setLoading: (loading: boolean) => void;
+  setInitialized: (initialized: boolean) => void;
   setError: (error: string | null) => void;
   logout: () => void;
   reset: () => void;
@@ -30,9 +24,9 @@ interface AuthState {
 
 const initialState = {
   user: null,
-  token: null,
   isAuthenticated: false,
   isLoading: false,
+  isInitialized: false,
   error: null,
   _hasHydrated: false,
 };
@@ -49,33 +43,28 @@ export const useAuthStore = create<AuthState>()(
           error: null,
         }),
 
-      setToken: (token) =>
-        set({ token }),
+      setLoading: (isLoading) => set({ isLoading }),
 
-      setLoading: (isLoading) =>
-        set({ isLoading }),
+      setInitialized: (isInitialized) => set({ isInitialized }),
 
-      setError: (error) =>
-        set({ error, isLoading: false }),
+      setError: (error) => set({ error, isLoading: false }),
 
       logout: () =>
         set({
           ...initialState,
+          isInitialized: true,
           _hasHydrated: true,
         }),
 
-      reset: () =>
-        set({ ...initialState, _hasHydrated: true }),
+      reset: () => set({ ...initialState, _hasHydrated: true }),
 
-      setHasHydrated: (state) =>
-        set({ _hasHydrated: state }),
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),
     {
       name: 'migranthub-auth',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
-        token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
       onRehydrateStorage: () => (state) => {
