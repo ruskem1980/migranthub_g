@@ -223,7 +223,7 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
 
               {/* Explanation */}
               {isAnswered && currentQuestion.explanation && (
-                <div className={`p-4 rounded-xl mb-6 ${
+                <div className={`p-4 rounded-xl ${
                   selectedOption === currentQuestion.correctIndex
                     ? 'bg-green-50 border border-green-200'
                     : 'bg-blue-50 border border-blue-200'
@@ -239,23 +239,6 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                     {currentQuestion.explanation}
                   </p>
                 </div>
-              )}
-
-              {/* Next button */}
-              {isAnswered && (
-                <button
-                  onClick={handleNext}
-                  className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold py-4 rounded-xl hover:bg-emerald-700 transition-colors"
-                >
-                  {currentIndex < SAMPLE_QUESTIONS.length - 1 ? (
-                    <>
-                      Следующий вопрос
-                      <ChevronRight className="w-5 h-5" />
-                    </>
-                  ) : (
-                    'Завершить тест'
-                  )}
-                </button>
               )}
             </>
           ) : (
@@ -321,6 +304,25 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
             </>
           )}
         </div>
+
+        {/* Footer with next button */}
+        {!isComplete && isAnswered && (
+          <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-white">
+            <button
+              onClick={handleNext}
+              className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold py-4 rounded-xl hover:bg-emerald-700 transition-colors"
+            >
+              {currentIndex < SAMPLE_QUESTIONS.length - 1 ? (
+                <>
+                  Следующий вопрос
+                  <ChevronRight className="w-5 h-5" />
+                </>
+              ) : (
+                'Завершить тест'
+              )}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

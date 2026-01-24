@@ -196,7 +196,7 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
 
           {/* Step: Fill Missing Fields */}
           {step === 'fill-missing' && selectedForm && (
-            <form onSubmit={handleSubmit(handleMissingFieldsSubmit)} className="space-y-4">
+            <form id="fill-missing-form" onSubmit={handleSubmit(handleMissingFieldsSubmit)} className="space-y-4">
               <div className="p-4 bg-orange-50 rounded-xl border border-orange-200 mb-4">
                 <p className="text-sm text-orange-800">
                   Для генерации документа нужно заполнить ещё {missingFields.length} поля
@@ -231,14 +231,6 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
                   )}
                 </div>
               ))}
-
-              <button
-                type="submit"
-                className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-4 rounded-xl hover:bg-blue-700 transition-colors"
-              >
-                Продолжить
-                <ChevronRight className="w-5 h-5" />
-              </button>
             </form>
           )}
 
@@ -256,7 +248,7 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
 
               <h3 className="font-semibold text-gray-900 mb-3">Данные для документа:</h3>
 
-              <div className="space-y-2 mb-6">
+              <div className="space-y-2">
                 {selectedForm.requiredFields.map((field) => (
                   <div
                     key={field}
@@ -269,21 +261,6 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
                   </div>
                 ))}
               </div>
-
-              <button
-                onClick={handleGeneratePDF}
-                disabled={isGenerating}
-                className="w-full flex items-center justify-center gap-2 bg-green-600 text-white font-semibold py-4 rounded-xl hover:bg-green-700 disabled:bg-gray-300 transition-colors"
-              >
-                {isGenerating ? (
-                  <span className="animate-pulse">Генерация...</span>
-                ) : (
-                  <>
-                    <FileText className="w-5 h-5" />
-                    Сгенерировать PDF
-                  </>
-                )}
-              </button>
             </div>
           )}
 
@@ -332,6 +309,39 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
             </div>
           )}
         </div>
+
+        {/* Footer with action buttons */}
+        {step === 'fill-missing' && (
+          <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-white">
+            <button
+              type="submit"
+              form="fill-missing-form"
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-4 rounded-xl hover:bg-blue-700 transition-colors"
+            >
+              Продолжить
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+
+        {step === 'review' && (
+          <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-white">
+            <button
+              onClick={handleGeneratePDF}
+              disabled={isGenerating}
+              className="w-full flex items-center justify-center gap-2 bg-green-600 text-white font-semibold py-4 rounded-xl hover:bg-green-700 disabled:bg-gray-300 transition-colors"
+            >
+              {isGenerating ? (
+                <span className="animate-pulse">Генерация...</span>
+              ) : (
+                <>
+                  <FileText className="w-5 h-5" />
+                  Сгенерировать PDF
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

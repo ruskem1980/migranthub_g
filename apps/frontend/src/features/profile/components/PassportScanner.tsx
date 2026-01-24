@@ -112,7 +112,7 @@ export function PassportScanner({ onScanComplete, onCancel }: PassportScannerPro
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col items-center justify-center p-6">
+      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col items-center justify-center p-6">
         {step === 'capture' && (
           <>
             {/* Viewfinder */}
