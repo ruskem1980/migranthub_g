@@ -182,6 +182,58 @@
     "welcome": {
       "title": "MigrantHub ga xush kelibsiz!",
       "subtitle": "Migratsiya masalalarida yordamchingiz"
+    },
+    "profiling": {
+      "title": "Profillash",
+      "subtitle": "Shaxsiylashtirish uchun o'zingiz haqingizda ayting",
+      "citizenship": "Fuqarolik",
+      "voiceOver": "Ovozli",
+      "other": "Boshqa",
+      "selectCountry": "Mamlakatni tanlang",
+      "departureCountry": "Chiqish mamlakati",
+      "autoFill": "Avtomatik",
+      "notSelected": "Tanlanmagan",
+      "entryDate": "Kirish sanasi",
+      "today": "Bugun",
+      "yesterday": "Kecha",
+      "region": "Yashash hududi",
+      "selectRegion": "Hududni tanlang",
+      "regions": {
+        "moscow": "Moskva",
+        "spb": "Sankt-Peterburg",
+        "novosibirsk": "Novosibirsk",
+        "ekaterinburg": "Yekaterinburg",
+        "kazan": "Qozon",
+        "nizhny": "Nijniy Novgorod",
+        "samara": "Samara",
+        "omsk": "Omsk",
+        "chelyabinsk": "Chelyabinsk",
+        "rostov": "Rostov-na-Donu",
+        "ufa": "Ufa",
+        "krasnoyarsk": "Krasnoyarsk",
+        "voronezh": "Voronej",
+        "perm": "Perm",
+        "volgograd": "Volgograd"
+      },
+      "purpose": "Tashrif maqsadi",
+      "purposes": {
+        "work": "Ish",
+        "workDesc": "Mehnat faoliyati",
+        "study": "O'qish",
+        "studyDesc": "Oliy o'quv yurtlari",
+        "tourism": "Turizm",
+        "tourismDesc": "Dam olish, sayohat",
+        "private": "Shaxsiy",
+        "privateDesc": "Mehmonlar, davolanish",
+        "business": "Tijorat",
+        "businessDesc": "Muzokaralar, biznes",
+        "official": "Xizmat",
+        "officialDesc": "Delegatsiyalar",
+        "transit": "Tranzit",
+        "transitDesc": "RF orqali o'tish"
+      },
+      "important": "Muhim",
+      "purposeWarning": "Patent olish uchun «Ish» ni tanlang. RF dan chiqmasdan tashrif maqsadini o'zgartirib bo'lmaydi (YEAES fuqarolaridan tashqari)."
     }
   },
   "languages": {
@@ -1334,6 +1386,199 @@
       "photoSpread": "Fotoli sahifani suratga oling",
       "checkData": "Ma'lumotlarni tekshiring",
       "checkDataNote": "Bitta harfdagi xato hujjatni yaroqsiz qiladi"
+    }
+  },
+  "audit": {
+    "title": "Sizda nima bor?",
+    "subtitle": "Sizda bor hujjatlarni belgilang",
+    "hint": "Maslahat",
+    "tip": "Tavsiya",
+    "tipText": "Hujjatlar ko'p bo'lsa, legalizatsiya osonroq bo'ladi.",
+    "receiptsHint": "Cheklar (NDFL) odatda faqat Patent mavjud bo'lganda bo'ladi. Patentingiz borligini tekshiring.",
+    "documents": {
+      "passport": "🛂 Pasport",
+      "migCard": "🎫 Migratsiya kartasi",
+      "registration": "📋 Ro'yxatga olish (Bildirish)",
+      "greenCard": "💳 Yashil karta (Daktiloskopiya)",
+      "greenCardSubtitle": "Daktiloskopiya va tibbiyot kartasi",
+      "education": "🎓 Sertifikat / Diplom",
+      "educationSubtitle": "Rus tili yoki ta'lim",
+      "patent": "📄 Patent",
+      "contract": "📝 Mehnat shartnomasi",
+      "contractSubtitle": "YOII fuqarolari uchun muhim",
+      "receipts": "🧾 Cheklar (NDFL)",
+      "insurance": "🩺 DMS polisi",
+      "inn": "🔢 INN / SNILS",
+      "family": "💍 Nikoh / tug'ilish guvohnomasi",
+      "familySubtitle": "RVP/VNZh uchun"
+    }
+  },
+  "roadmap": {
+    "title": "Sizning yo'l xaritangiz",
+    "subtitle": "Qonuniy yashash uchun harakatlar rejasi",
+    "proceedButton": "Rasmiylashtirish",
+    "status": {
+      "done": "Tayyor"
+    },
+    "risk": {
+      "deportation": "Xavf: Deportatsiya"
+    },
+    "nextStep": {
+      "title": "Keyingi qadam",
+      "description": "Migratsiya hisobini 3 kun ichida rasmiylashiring. Eng yaqin IIB bo'limini topishga yordam beramiz."
+    },
+    "steps": {
+      "passport": "Pasport",
+      "passportDeadline": "Muddat: 7 kun, Jarima: 5000₽",
+      "migCard": "Migratsiya kartasi",
+      "migCardDeadline": "Muddat: 3 kun, Jarima: 5000₽",
+      "registration": "Ro'yxatga olish",
+      "registrationDeadline": "Muddat: 7 kun, Jarima: 3000₽",
+      "patent": "Patent",
+      "patentDeadline": "Muddat: 30 kun, Jarima: 5000₽"
+    }
+  },
+  "docgen": {
+    "title": "Hujjat generatori",
+    "subtitle": "Formalarni avtomatik to'ldirish",
+    "selectDocument": "Hujjatni tanlang",
+    "autoFillDescription": "Biz formani ma'lumotlaringiz bilan avtomatik to'ldiramiz",
+    "important": "Muhim",
+    "tip": "Maslahat",
+    "tipText": "Barcha formalar ma'lumotlaringiz asosida avtomatik yaratiladi. Sizga faqat chop etish qoladi.",
+    "missingData": "Ma'lumotlar yetarli emas",
+    "missingDataDesc": "\"{document}\" hujjati uchun etishmayotgan ma'lumotlarni qo'shish kerak",
+    "thirdPartyData": "Uchinchi shaxslar ma'lumotlari",
+    "enterEmployerData": "Ish beruvchi ma'lumotlarini kiriting.",
+    "enterHostData": "Qabul qiluvchi tomon ma'lumotlarini kiriting.",
+    "dataNotSaved": "Bu ma'lumotlar profilingizda saqlanmaydi.",
+    "selectCountry": "Mamlakatni tanlang",
+    "addressPlaceholder": "Moskva sh., Lenin ko'ch., 1-uy, 1-xonadon",
+    "enterValue": "Qiymatni kiriting",
+    "quickFill": "Tez to'ldirish",
+    "scanPassportHint": "Ma'lumotlarni avtomatik to'ldirish uchun pasportni skanerlashingiz mumkin",
+    "scanPassport": "Pasportni skanerlash",
+    "saveAndContinue": "Saqlash va davom etish",
+    "documentReady": "Hujjat tayyor!",
+    "size": "Hajmi",
+    "pages": "sahifa",
+    "filledData": "To'ldirilgan ma'lumotlar",
+    "downloadPdf": "PDF yuklash",
+    "edit": "Tahrirlash",
+    "readyToUse": "Hujjat foydalanishga tayyor",
+    "printAndSubmit": "Hujjatni chop eting va tegishli organga topshiring. Barcha ma'lumotlar RF IIV talablariga muvofiq to'ldirilgan.",
+    "great": "Ajoyib!",
+    "categories": {
+      "work": "Ish",
+      "housing": "Yashash joyi",
+      "longterm": "VYR / YTR",
+      "requests": "Boshqa"
+    },
+    "templates": {
+      "patent": {
+        "title": "Patentga ariza",
+        "subtitle": "Dastlabki olish yoki qayta rasmiylashtirish",
+        "formNumber": "26.5-1 shakli"
+      },
+      "contract": {
+        "title": "Mehnat shartnomasi",
+        "subtitle": "Jismoniy yoki yuridik shaxs bilan standart shartnoma",
+        "formNumber": "Namunaviy shablon"
+      },
+      "employment_notification": {
+        "title": "Shartnoma tuzilganligi haqida xabarnoma",
+        "subtitle": "⚠️ 2 oy ichida IIVga yuborish shart!",
+        "formNumber": "IIV buyrug'i №846"
+      },
+      "termination_notification": {
+        "title": "Shartnoma bekor qilinganligi haqida xabarnoma",
+        "subtitle": "Ishdan bo'shatilganda 3 kun ichida topshirish",
+        "formNumber": "IIV buyrug'i №846"
+      },
+      "arrival": {
+        "title": "Kelganligi haqida xabarnoma",
+        "subtitle": "Dastlabki ro'yxatga olish yoki uzaytirish",
+        "formNumber": "21-shakl"
+      },
+      "employer_petition": {
+        "title": "Ish beruvchidan iltimosNOMA",
+        "subtitle": "Ro'yxatga olishni uzaytirish uchun asos",
+        "formNumber": "Erkin shakl"
+      },
+      "owner_consent": {
+        "title": "Mulk egasining ro'yxatga olishga roziligi",
+        "subtitle": "Kvartira egasidan ariza",
+        "formNumber": "Namunaviy blank"
+      },
+      "rvp": {
+        "title": "VYRga ariza",
+        "subtitle": "Vaqtinchalik yashash ruxsatnomasi",
+        "formNumber": "VYR shakli"
+      },
+      "vnzh": {
+        "title": "YTRga ariza",
+        "subtitle": "Yashash turi ruxsatnomasi",
+        "formNumber": "YTR shakli"
+      },
+      "annual_notification": {
+        "title": "Yillik xabarnoma (VYR/YTR)",
+        "subtitle": "Yashashni tasdiqlash",
+        "formNumber": "Xabarnoma shakli"
+      },
+      "lost_docs": {
+        "title": "Hujjatlar yo'qolganligi haqida ariza",
+        "subtitle": "Politsiya va tiklash uchun",
+        "formNumber": "Erkin shakl"
+      },
+      "inn_application": {
+        "title": "STRNga ariza",
+        "subtitle": "Soliq hisobiga qo'yish",
+        "formNumber": "№2-2-Hisobga olish shakli"
+      }
+    },
+    "fields": {
+      "passportNumber": "Pasport raqami",
+      "fullName": "F.I.SH.",
+      "entryDate": "Kirish sanasi",
+      "citizenship": "Fuqarolik",
+      "birthDate": "Tug'ilgan sana",
+      "birthPlace": "Tug'ilgan joy",
+      "employerName": "Ish beruvchi nomi",
+      "employerINN": "Ish beruvchi STIR",
+      "employerAddress": "Ish beruvchi manzili",
+      "jobTitle": "Lavozim",
+      "salary": "Maosh (rub/oy)",
+      "startDate": "Ishni boshlash sanasi",
+      "contractDate": "Shartnoma tuzilgan sana",
+      "terminationDate": "Bekor qilish sanasi",
+      "reason": "Sabab",
+      "hostAddress": "Ro'yxatga olish manzili",
+      "hostFullName": "Qabul qiluvchining F.I.SH.",
+      "hostPassport": "Qabul qiluvchining pasporti",
+      "employeeFullName": "Xodimning F.I.SH.",
+      "employeePassport": "Xodimning pasporti",
+      "ownerFullName": "Mulk egasining F.I.SH.",
+      "ownerPassport": "Mulk egasining pasporti",
+      "propertyAddress": "Ko'chmas mulk manzili",
+      "guestFullName": "Mehmonning F.I.SH.",
+      "guestPassport": "Mehmonning pasporti",
+      "rvpNumber": "VYR raqami",
+      "rvpDate": "VYR berilgan sana",
+      "vnzhNumber": "YTR raqami",
+      "address": "Yashash manzili",
+      "income": "Yillik daromad (rub)",
+      "employer": "Ish beruvchi",
+      "certificateNumber": "Sertifikat raqami",
+      "testCenter": "Test markazi",
+      "score": "Ball",
+      "educationLevel": "Ta'lim darajasi",
+      "spouseName": "Turmush o'rtog'ining F.I.SH.",
+      "marriageDate": "Nikoh sanasi",
+      "marriageCertNumber": "Nikoh guvohnomasi raqami",
+      "childrenCount": "Farzandlar soni",
+      "lostDocType": "Yo'qolgan hujjat turi",
+      "lostDate": "Yo'qolgan sana",
+      "circumstances": "Yo'qolish holatlari"
     }
   }
 }

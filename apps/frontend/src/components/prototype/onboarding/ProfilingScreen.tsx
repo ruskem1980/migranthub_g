@@ -2,12 +2,14 @@
 
 import { Volume2, AlertTriangle, Check } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 
 interface ProfilingScreenProps {
   onNext: () => void;
 }
 
 export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
+  const { t } = useTranslation();
   const [citizenship, setCitizenship] = useState('');
   const [departureCountry, setDepartureCountry] = useState('');
   const [entryDate, setEntryDate] = useState('');
@@ -31,10 +33,10 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
     <div className="h-screen bg-gray-50 flex flex-col p-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Профилирование
+          {t('onboarding.profiling.title')}
         </h2>
         <p className="text-gray-600">
-          Расскажите о себе для персонализации
+          {t('onboarding.profiling.subtitle')}
         </p>
       </div>
 
@@ -43,10 +45,10 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
           {/* Citizenship */}
           <div>
             <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-3">
-              <span>Гражданство</span>
+              <span>{t('onboarding.profiling.citizenship')}</span>
               <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
-                <span className="text-xs font-medium">Озвучить</span>
+                <span className="text-xs font-medium">{t('onboarding.profiling.voiceOver')}</span>
               </button>
             </label>
             
@@ -61,7 +63,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                 }`}
               >
                 <span className="text-2xl">🇺🇿</span>
-                <span className="font-semibold text-sm">Узбекистан</span>
+                <span className="font-semibold text-sm">{t('countries.UZ')}</span>
               </button>
 
               <button
@@ -73,7 +75,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                 }`}
               >
                 <span className="text-2xl">🇹🇯</span>
-                <span className="font-semibold text-sm">Таджикистан</span>
+                <span className="font-semibold text-sm">{t('countries.TJ')}</span>
               </button>
 
               <button
@@ -85,7 +87,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                 }`}
               >
                 <span className="text-2xl">🇰🇬</span>
-                <span className="font-semibold text-sm">Кыргызстан</span>
+                <span className="font-semibold text-sm">{t('countries.KG')}</span>
               </button>
 
               <button
@@ -98,7 +100,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
               >
                 <span className="text-2xl">🌍</span>
                 <span className="font-semibold text-sm">
-                  {otherCitizenshipValue || 'Другое'}
+                  {otherCitizenshipValue || t('onboarding.profiling.other')}
                 </span>
               </button>
             </div>
@@ -107,7 +109,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
             {showOtherCitizenship && (
               <div className="mt-3 p-4 bg-white border-2 border-blue-200 rounded-xl">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Выберите страну
+                  {t('onboarding.profiling.selectCountry')}
                 </label>
                 <select
                   value={otherCitizenshipValue}
@@ -118,23 +120,23 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                   }}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Выберите страну</option>
-                  <option value="🇦🇲 Армения">🇦🇲 Армения (ЕАЭС)</option>
-                  <option value="🇦🇿 Азербайджан">🇦🇿 Азербайджан</option>
-                  <option value="🇧🇾 Беларусь">🇧🇾 Беларусь (ЕАЭС)</option>
-                  <option value="🇬🇪 Грузия">🇬🇪 Грузия</option>
-                  <option value="🇰🇿 Казахстан">🇰🇿 Казахстан (ЕАЭС)</option>
-                  <option value="🇲🇩 Молдова">🇲🇩 Молдова</option>
-                  <option value="🇺🇦 Украина">🇺🇦 Украина</option>
-                  <option value="🇨🇳 Китай">🇨🇳 Китай</option>
-                  <option value="🇮🇳 Индия">🇮🇳 Индия</option>
-                  <option value="🇻🇳 Вьетнам">🇻🇳 Вьетнам</option>
+                  <option value="">{t('onboarding.profiling.selectCountry')}</option>
+                  <option value="🇦🇲 Армения">🇦🇲 {t('countries.AM')} (ЕАЭС)</option>
+                  <option value="🇦🇿 Азербайджан">🇦🇿 {t('countries.AZ')}</option>
+                  <option value="🇧🇾 Беларусь">🇧🇾 {t('countries.BY')} (ЕАЭС)</option>
+                  <option value="🇬🇪 Грузия">🇬🇪 {t('countries.GE')}</option>
+                  <option value="🇰🇿 Казахстан">🇰🇿 {t('countries.KZ')} (ЕАЭС)</option>
+                  <option value="🇲🇩 Молдова">🇲🇩 {t('countries.MD')}</option>
+                  <option value="🇺🇦 Украина">🇺🇦 {t('countries.UA')}</option>
+                  <option value="🇨🇳 Китай">🇨🇳 {t('countries.CN')}</option>
+                  <option value="🇮🇳 Индия">🇮🇳 {t('countries.IN')}</option>
+                  <option value="🇻🇳 Вьетнам">🇻🇳 {t('countries.VN')}</option>
                 </select>
                 <button
                   onClick={() => setShowOtherCitizenship(false)}
                   className="mt-2 text-xs text-gray-500 hover:text-gray-700"
                 >
-                  Отмена
+                  {t('common.cancel')}
                 </button>
               </div>
             )}
@@ -145,14 +147,14 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
             <div className="flex items-start gap-2">
               <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-blue-900 mb-1">Страна выезда</p>
+                <p className="text-sm font-semibold text-blue-900 mb-1">{t('onboarding.profiling.departureCountry')}</p>
                 <p className="text-xs text-blue-800">
-                  Автоматически: {
-                    citizenship === 'uz' ? '🇺🇿 Узбекистан' : 
-                    citizenship === 'tj' ? '🇹🇯 Таджикистан' : 
-                    citizenship === 'kg' ? '🇰🇬 Кыргызстан' : 
+                  {t('onboarding.profiling.autoFill')}: {
+                    citizenship === 'uz' ? `🇺🇿 ${t('countries.UZ')}` :
+                    citizenship === 'tj' ? `🇹🇯 ${t('countries.TJ')}` :
+                    citizenship === 'kg' ? `🇰🇬 ${t('countries.KG')}` :
                     citizenship === 'other' && otherCitizenshipValue ? otherCitizenshipValue :
-                    'Не выбрано'
+                    t('onboarding.profiling.notSelected')
                   }
                 </p>
               </div>
@@ -162,10 +164,10 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
           {/* Entry Date */}
           <div>
             <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-2">
-              <span>Дата въезда</span>
+              <span>{t('onboarding.profiling.entryDate')}</span>
               <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
-                <span className="text-xs font-medium">Озвучить</span>
+                <span className="text-xs font-medium">{t('onboarding.profiling.voiceOver')}</span>
               </button>
             </label>
             <input
@@ -183,7 +185,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                 }}
                 className="px-3 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-100 transition-colors active:scale-95 border border-blue-200"
               >
-                Сегодня
+                {t('onboarding.profiling.today')}
               </button>
               <button
                 onClick={() => {
@@ -193,7 +195,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                 }}
                 className="px-3 py-1.5 bg-gray-50 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors active:scale-95 border border-gray-200"
               >
-                Вчера
+                {t('onboarding.profiling.yesterday')}
               </button>
             </div>
           </div>
@@ -201,13 +203,13 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
           {/* Region */}
           <div>
             <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-3">
-              <span>Регион пребывания</span>
+              <span>{t('onboarding.profiling.region')}</span>
               <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
-                <span className="text-xs font-medium">Озвучить</span>
+                <span className="text-xs font-medium">{t('onboarding.profiling.voiceOver')}</span>
               </button>
             </label>
-            
+
             {/* Button Group (3+1) */}
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -219,7 +221,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                 }`}
               >
                 <span className="text-2xl">🏙️</span>
-                <span className="font-semibold text-sm">Москва</span>
+                <span className="font-semibold text-sm">{t('onboarding.profiling.regions.moscow')}</span>
               </button>
 
               <button
@@ -231,7 +233,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                 }`}
               >
                 <span className="text-2xl">🏛️</span>
-                <span className="font-semibold text-sm">С-Петербург</span>
+                <span className="font-semibold text-sm">{t('onboarding.profiling.regions.spb')}</span>
               </button>
 
               <button
@@ -243,7 +245,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                 }`}
               >
                 <span className="text-2xl">❄️</span>
-                <span className="font-semibold text-sm">Новосибирск</span>
+                <span className="font-semibold text-sm">{t('onboarding.profiling.regions.novosibirsk')}</span>
               </button>
 
               <button
@@ -256,7 +258,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
               >
                 <span className="text-2xl">📍</span>
                 <span className="font-semibold text-sm">
-                  {otherRegionValue || 'Другое'}
+                  {otherRegionValue || t('onboarding.profiling.other')}
                 </span>
               </button>
             </div>
@@ -265,7 +267,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
             {showOtherRegion && (
               <div className="mt-3 p-4 bg-white border-2 border-blue-200 rounded-xl">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Выберите регион
+                  {t('onboarding.profiling.selectRegion')}
                 </label>
                 <select
                   value={otherRegionValue}
@@ -276,25 +278,25 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                   }}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Выберите регион</option>
-                  <option value="Екатеринбург">Екатеринбург</option>
-                  <option value="Казань">Казань</option>
-                  <option value="Нижний Новгород">Нижний Новгород</option>
-                  <option value="Самара">Самара</option>
-                  <option value="Омск">Омск</option>
-                  <option value="Челябинск">Челябинск</option>
-                  <option value="Ростов-на-Дону">Ростов-на-Дону</option>
-                  <option value="Уфа">Уфа</option>
-                  <option value="Красноярск">Красноярск</option>
-                  <option value="Воронеж">Воронеж</option>
-                  <option value="Пермь">Пермь</option>
-                  <option value="Волгоград">Волгоград</option>
+                  <option value="">{t('onboarding.profiling.selectRegion')}</option>
+                  <option value="Екатеринбург">{t('onboarding.profiling.regions.ekaterinburg')}</option>
+                  <option value="Казань">{t('onboarding.profiling.regions.kazan')}</option>
+                  <option value="Нижний Новгород">{t('onboarding.profiling.regions.nizhny')}</option>
+                  <option value="Самара">{t('onboarding.profiling.regions.samara')}</option>
+                  <option value="Омск">{t('onboarding.profiling.regions.omsk')}</option>
+                  <option value="Челябинск">{t('onboarding.profiling.regions.chelyabinsk')}</option>
+                  <option value="Ростов-на-Дону">{t('onboarding.profiling.regions.rostov')}</option>
+                  <option value="Уфа">{t('onboarding.profiling.regions.ufa')}</option>
+                  <option value="Красноярск">{t('onboarding.profiling.regions.krasnoyarsk')}</option>
+                  <option value="Воронеж">{t('onboarding.profiling.regions.voronezh')}</option>
+                  <option value="Пермь">{t('onboarding.profiling.regions.perm')}</option>
+                  <option value="Волгоград">{t('onboarding.profiling.regions.volgograd')}</option>
                 </select>
                 <button
                   onClick={() => setShowOtherRegion(false)}
                   className="mt-2 text-xs text-gray-500 hover:text-gray-700"
                 >
-                  Отмена
+                  {t('common.cancel')}
                 </button>
               </div>
             )}
@@ -303,23 +305,23 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
           {/* Purpose */}
           <div>
             <label className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-3">
-              <span>Цель визита</span>
+              <span>{t('onboarding.profiling.purpose')}</span>
               <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors active:scale-95">
                 <Volume2 className="w-4 h-4" />
-                <span className="text-xs font-medium">Озвучить</span>
+                <span className="text-xs font-medium">{t('onboarding.profiling.voiceOver')}</span>
               </button>
             </label>
-            
+
             {/* 2-Column Grid for 7 Options */}
             <div className="grid grid-cols-2 gap-3">
               {[
-                { value: 'work', label: '💼 Работа', subtitle: 'Трудовая деятельность' },
-                { value: 'study', label: '📚 Учеба', subtitle: 'Вузы/колледжи' },
-                { value: 'tourism', label: '✈️ Туризм', subtitle: 'Отдых, путешествия' },
-                { value: 'private', label: '🏠 Частный', subtitle: 'Гости, лечение' },
-                { value: 'business', label: '💼 Коммерческий', subtitle: 'Переговоры, бизнес' },
-                { value: 'official', label: '🏛️ Служебный', subtitle: 'Делегации' },
-                { value: 'transit', label: '🚗 Транзит', subtitle: 'Проезд через РФ' },
+                { value: 'work', label: `💼 ${t('onboarding.profiling.purposes.work')}`, subtitle: t('onboarding.profiling.purposes.workDesc') },
+                { value: 'study', label: `📚 ${t('onboarding.profiling.purposes.study')}`, subtitle: t('onboarding.profiling.purposes.studyDesc') },
+                { value: 'tourism', label: `✈️ ${t('onboarding.profiling.purposes.tourism')}`, subtitle: t('onboarding.profiling.purposes.tourismDesc') },
+                { value: 'private', label: `🏠 ${t('onboarding.profiling.purposes.private')}`, subtitle: t('onboarding.profiling.purposes.privateDesc') },
+                { value: 'business', label: `💼 ${t('onboarding.profiling.purposes.business')}`, subtitle: t('onboarding.profiling.purposes.businessDesc') },
+                { value: 'official', label: `🏛️ ${t('onboarding.profiling.purposes.official')}`, subtitle: t('onboarding.profiling.purposes.officialDesc') },
+                { value: 'transit', label: `🚗 ${t('onboarding.profiling.purposes.transit')}`, subtitle: t('onboarding.profiling.purposes.transitDesc') },
               ].map((option) => (
                 <button
                   key={option.value}
@@ -352,9 +354,9 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-semibold text-yellow-900 mb-1">⚠️ Важно</p>
+                  <p className="text-xs font-semibold text-yellow-900 mb-1">⚠️ {t('onboarding.profiling.important')}</p>
                   <p className="text-xs text-yellow-800 leading-relaxed">
-                    Для получения патента выбирайте «Работа». Изменить цель визита без выезда из РФ нельзя (кроме граждан ЕАЭС).
+                    {t('onboarding.profiling.purposeWarning')}
                   </p>
                 </div>
               </div>
@@ -372,7 +374,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
             : 'bg-gray-200 text-gray-400 cursor-not-allowed'
         }`}
       >
-        Далее
+        {t('common.next')}
       </button>
     </div>
   );

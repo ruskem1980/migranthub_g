@@ -39,7 +39,7 @@ export default function Home() {
 
   // Show loading splash screen
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center">
+    <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center">
       <div className="text-center">
         <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
           <span className="text-5xl">🛡️</span>

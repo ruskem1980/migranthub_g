@@ -2,6 +2,7 @@
 
 import { Check, Info, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 
 interface AuditScreenProps {
   onNext: (checkedItems: string[]) => void;
@@ -9,74 +10,27 @@ interface AuditScreenProps {
 
 interface DocumentItem {
   id: string;
-  label: string;
-  subtitle?: string;
+  labelKey: string;
+  subtitleKey?: string;
   isNew?: boolean;
 }
 
 export function AuditScreen({ onNext }: AuditScreenProps) {
+  const { t } = useTranslation();
   const [checked, setChecked] = useState<string[]>([]);
 
   const items: DocumentItem[] = [
-    // УРОВЕНЬ 1: ОСНОВА
-    { 
-      id: 'passport', 
-      label: '🛂 Паспорт',
-    },
-    
-    // УРОВЕНЬ 2: ВЪЕЗД И ПРЕБЫВАНИЕ
-    { 
-      id: 'mig_card', 
-      label: '🎫 Миграционная карта',
-    },
-    { 
-      id: 'registration', 
-      label: '📋 Регистрация (Уведомление)',
-    },
-    
-    // УРОВЕНЬ 3: РАБОТА
-    { 
-      id: 'green_card', 
-      label: '💳 Зеленая карта (Дактилоскопия)',
-      subtitle: 'Карта дактилоскопии и медицины',
-      isNew: true,
-    },
-    { 
-      id: 'education', 
-      label: '🎓 Сертификат / Диплом',
-      subtitle: 'Русский язык или образование',
-      isNew: true,
-    },
-    { 
-      id: 'patent', 
-      label: '📄 Патент',
-    },
-    { 
-      id: 'contract', 
-      label: '📝 Трудовой договор',
-      subtitle: 'Критично для граждан ЕАЭС',
-      isNew: true,
-    },
-    
-    // УРОВЕНЬ 4: ПОДДЕРЖКА
-    { 
-      id: 'receipts', 
-      label: '🧾 Чеки (НДФЛ)',
-    },
-    { 
-      id: 'insurance', 
-      label: '🩺 Полис ДМС',
-    },
-    { 
-      id: 'inn', 
-      label: '🔢 ИНН / СНИЛС',
-    },
-    { 
-      id: 'family', 
-      label: '💍 Св-во о браке / рождении',
-      subtitle: 'Для РВП/ВНЖ',
-      isNew: true,
-    },
+    { id: 'passport', labelKey: 'audit.documents.passport' },
+    { id: 'mig_card', labelKey: 'audit.documents.migCard' },
+    { id: 'registration', labelKey: 'audit.documents.registration' },
+    { id: 'green_card', labelKey: 'audit.documents.greenCard', subtitleKey: 'audit.documents.greenCardSubtitle', isNew: true },
+    { id: 'education', labelKey: 'audit.documents.education', subtitleKey: 'audit.documents.educationSubtitle', isNew: true },
+    { id: 'patent', labelKey: 'audit.documents.patent' },
+    { id: 'contract', labelKey: 'audit.documents.contract', subtitleKey: 'audit.documents.contractSubtitle', isNew: true },
+    { id: 'receipts', labelKey: 'audit.documents.receipts' },
+    { id: 'insurance', labelKey: 'audit.documents.insurance' },
+    { id: 'inn', labelKey: 'audit.documents.inn' },
+    { id: 'family', labelKey: 'audit.documents.family', subtitleKey: 'audit.documents.familySubtitle', isNew: true },
   ];
 
   const toggleItem = (id: string) => {
@@ -91,10 +45,10 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
     <div className="h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col p-6">
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Что у вас УЖЕ есть?
+          {t('audit.title')}
         </h2>
         <p className="text-gray-600">
-          Отметьте документы, которые у вас есть
+          {t('audit.subtitle')}
         </p>
       </div>
 
@@ -116,7 +70,7 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
                 {/* New Badge */}
                 {item.isNew && (
                   <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
-                    NEW
+                    {t('common.new')}
                   </div>
                 )}
 
@@ -135,15 +89,15 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
                     <span className={`text-lg font-semibold ${
                       isChecked ? 'text-green-700' : 'text-gray-700'
                     }`}>
-                      {item.label}
+                      {t(item.labelKey)}
                     </span>
-                    {item.subtitle && (
+                    {item.subtitleKey && (
                       <Info className="w-4 h-4 text-blue-500 flex-shrink-0" />
                     )}
                   </div>
-                  {item.subtitle && (
+                  {item.subtitleKey && (
                     <p className="text-xs text-gray-500 mt-1">
-                      {item.subtitle}
+                      {t(item.subtitleKey)}
                     </p>
                   )}
                 </div>
@@ -158,7 +112,7 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
             <div className="flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-yellow-800 leading-relaxed">
-                <strong>Подсказка:</strong> Чеки (НДФЛ) обычно бывают только при наличии Патента. Проверьте, есть ли у вас патент.
+                <strong>{t('audit.hint')}:</strong> {t('audit.receiptsHint')}
               </p>
             </div>
           </div>
@@ -166,7 +120,7 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
 
         <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
           <p className="text-sm text-blue-800">
-            💡 <strong>Совет:</strong> Чем больше документов у вас есть, тем проще будет процесс легализации.
+            💡 <strong>{t('audit.tip')}:</strong> {t('audit.tipText')}
           </p>
         </div>
       </div>
@@ -175,7 +129,7 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
         onClick={() => onNext(checked)}
         className="w-full bg-blue-600 text-white font-bold py-4 px-6 rounded-2xl hover:bg-blue-700 transition-all active:scale-98 shadow-lg"
       >
-        Продолжить
+        {t('common.continue')}
       </button>
     </div>
   );

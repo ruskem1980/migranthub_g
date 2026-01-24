@@ -1,19 +1,45 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, ArrowRight, Shield, FileText, Bell, Map } from 'lucide-react';
-import { useTranslation, LANGUAGES, Language } from '@/lib/i18n';
+import { LANGUAGES, Language, useLanguageStore } from '@/lib/i18n';
+import { getTranslation } from '@/lib/i18n/translations';
 
 export default function WelcomePage() {
   const router = useRouter();
-  const { t, language, setLanguage } = useTranslation();
+  const setGlobalLanguage = useLanguageStore((state) => state.setLanguage);
+
+  // Локальный state для UI - независимый от глобального для мгновенной реакции
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>('ru');
+
+  // При монтировании - читаем из localStorage напрямую
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('migranthub-language');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.state?.language) {
+          setSelectedLanguage(parsed.state.language as Language);
+        }
+      }
+    } catch {
+      // Игнорируем ошибки парсинга
+    }
+  }, []);
+
+  // Функция перевода с локальным языком
+  const t = (key: string) => getTranslation(selectedLanguage, key);
 
   const handleLanguageSelect = (code: Language) => {
-    setLanguage(code);
+    // Немедленно обновляем UI
+    setSelectedLanguage(code);
+    // Сохраняем в глобальный store (и localStorage)
+    setGlobalLanguage(code);
   };
 
   const handleContinue = () => {
-    if (language) {
+    if (selectedLanguage) {
       router.push('/auth/legal');
     }
   };
@@ -72,7 +98,7 @@ export default function WelcomePage() {
                   key={lang.code}
                   onClick={() => handleLanguageSelect(lang.code)}
                   className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
-                    language === lang.code
+                    selectedLanguage === lang.code
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
@@ -81,7 +107,7 @@ export default function WelcomePage() {
                   <span className="flex-1 text-left font-semibold text-gray-900">
                     {lang.nativeName}
                   </span>
-                  {language === lang.code && (
+                  {selectedLanguage === lang.code && (
                     <Check className="w-5 h-5 text-blue-600" />
                   )}
                 </button>
@@ -127,7 +153,7 @@ export default function WelcomePage() {
       <div className="fixed bottom-0 left-0 right-0 px-6 py-4 bg-white border-t border-gray-100 safe-area-bottom">
         <button
           onClick={handleContinue}
-          disabled={!language}
+          disabled={!selectedLanguage}
           className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-4 rounded-xl hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
         >
           {t('common.continue')}

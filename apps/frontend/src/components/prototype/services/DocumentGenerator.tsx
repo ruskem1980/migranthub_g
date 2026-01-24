@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X, FileText, Home, Briefcase, FileCheck, Plus, Download, AlertCircle, Camera, Edit3, Check, ChevronRight, AlertTriangle } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n';
 
 interface DocumentGeneratorProps {
   onClose: () => void;
@@ -237,11 +238,22 @@ const FIELD_LABELS: Record<string, string> = {
 };
 
 export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorProps) {
+  const { t } = useTranslation();
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId | null>(null);
   const [showMissingDataModal, setShowMissingDataModal] = useState(false);
   const [missingFields, setMissingFields] = useState<string[]>([]);
   const [tempData, setTempData] = useState<Record<string, string>>({});
   const [showPreview, setShowPreview] = useState(false);
+
+  // Translated field labels
+  const getFieldLabel = (field: string): string => {
+    return t(`docgen.fields.${field}`);
+  };
+
+  // Get translated template data
+  const getTemplateTitle = (id: TemplateId): string => t(`docgen.templates.${id}.title`);
+  const getTemplateSubtitle = (id: TemplateId): string => t(`docgen.templates.${id}.subtitle`);
+  const getTemplateFormNumber = (id: TemplateId): string => t(`docgen.templates.${id}.formNumber`);
 
   // Check if all required data is available
   const checkDataCompleteness = (template: DocumentTemplate): string[] => {
@@ -285,10 +297,10 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
 
   const renderTemplateSelector = () => {
     const categories = [
-      { id: 'work', title: '👔 Работа', templates: TEMPLATES.filter(t => t.category === 'work') },
-      { id: 'housing', title: '🏠 Проживание', templates: TEMPLATES.filter(t => t.category === 'housing') },
-      { id: 'longterm', title: '📘 РВП / ВНЖ', templates: TEMPLATES.filter(t => t.category === 'longterm') },
-      { id: 'requests', title: '📋 Разное', templates: TEMPLATES.filter(t => t.category === 'requests') },
+      { id: 'work', title: `👔 ${t('docgen.categories.work')}`, templates: TEMPLATES.filter(tpl => tpl.category === 'work') },
+      { id: 'housing', title: `🏠 ${t('docgen.categories.housing')}`, templates: TEMPLATES.filter(tpl => tpl.category === 'housing') },
+      { id: 'longterm', title: `📘 ${t('docgen.categories.longterm')}`, templates: TEMPLATES.filter(tpl => tpl.category === 'longterm') },
+      { id: 'requests', title: `📋 ${t('docgen.categories.requests')}`, templates: TEMPLATES.filter(tpl => tpl.category === 'requests') },
     ];
 
     return (
@@ -297,9 +309,9 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
           <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <FileText className="w-8 h-8 text-purple-600" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">Выберите документ</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('docgen.selectDocument')}</h3>
           <p className="text-sm text-gray-600">
-            Мы автоматически заполним форму вашими данными
+            {t('docgen.autoFillDescription')}
           </p>
         </div>
 
@@ -324,7 +336,7 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
                   {template.isCritical && (
                     <div className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" />
-                      Важно
+                      {t('docgen.important')}
                     </div>
                   )}
 
@@ -333,14 +345,14 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
                   }`}>
                     <span className="text-3xl">{template.icon}</span>
                   </div>
-                  
+
                   <div className="flex-1 text-left">
-                    <h4 className="font-bold text-gray-900 mb-1">{template.title}</h4>
+                    <h4 className="font-bold text-gray-900 mb-1">{getTemplateTitle(template.id)}</h4>
                     <p className={`text-sm mb-2 ${template.isCritical ? 'text-red-700 font-medium' : 'text-gray-600'}`}>
-                      {template.subtitle}
+                      {getTemplateSubtitle(template.id)}
                     </p>
                     <span className={`text-xs font-medium ${template.isCritical ? 'text-red-600' : 'text-purple-600'}`}>
-                      {template.formNumber}
+                      {getTemplateFormNumber(template.id)}
                     </span>
                   </div>
                   
@@ -353,7 +365,7 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
 
         <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
           <p className="text-sm text-blue-800">
-            💡 <strong>Совет:</strong> Все формы генерируются автоматически на основе ваших данных. Вам останется только распечатать.
+            💡 <strong>{t('docgen.tip')}:</strong> {t('docgen.tipText')}
           </p>
         </div>
       </div>
@@ -361,7 +373,7 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
   };
 
   const renderMissingDataModal = () => {
-    const template = TEMPLATES.find(t => t.id === selectedTemplate)!;
+    const template = TEMPLATES.find(tpl => tpl.id === selectedTemplate)!;
     
     return (
       <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60] p-4 animate-in fade-in duration-200">
@@ -370,9 +382,9 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
             <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-8 h-8 text-orange-600" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Не хватает данных</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">{t('docgen.missingData')}</h3>
             <p className="text-sm text-gray-600">
-              Для документа <strong>"{template.title}"</strong> нужно добавить недостающую информацию
+              {t('docgen.missingDataDesc', { document: getTemplateTitle(template.id) })}
             </p>
 
             {/* Counterparty Data Warning */}
@@ -381,11 +393,11 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
                 <div className="flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-semibold text-yellow-900 mb-1">Данные третьих лиц</p>
+                    <p className="text-xs font-semibold text-yellow-900 mb-1">{t('docgen.thirdPartyData')}</p>
                     <p className="text-xs text-yellow-800">
-                      {missingFields.includes('employerName') && 'Введите данные работодателя. '}
-                      {missingFields.includes('hostFullName') && 'Введите данные принимающей стороны. '}
-                      Эти данные не сохраняются в вашем профиле.
+                      {missingFields.includes('employerName') && `${t('docgen.enterEmployerData')} `}
+                      {missingFields.includes('hostFullName') && `${t('docgen.enterHostData')} `}
+                      {t('docgen.dataNotSaved')}
                     </p>
                   </div>
                 </div>
@@ -398,9 +410,9 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
             {missingFields.map((field) => (
               <div key={field}>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  {FIELD_LABELS[field] || field}
+                  {getFieldLabel(field)}
                 </label>
-                
+
                 {field === 'entryDate' ? (
                   <input
                     type="date"
@@ -414,16 +426,16 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
                     onChange={(e) => setTempData({...tempData, [field]: e.target.value})}
                     className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
-                    <option value="">Выберите страну</option>
-                    <option value="Узбекистан">🇺🇿 Узбекистан</option>
-                    <option value="Таджикистан">🇹🇯 Таджикистан</option>
-                    <option value="Киргизия">🇰🇬 Киргизия</option>
+                    <option value="">{t('docgen.selectCountry')}</option>
+                    <option value="Узбекистан">🇺🇿 {t('countries.UZ')}</option>
+                    <option value="Таджикистан">🇹🇯 {t('countries.TJ')}</option>
+                    <option value="Киргизия">🇰🇬 {t('countries.KG')}</option>
                   </select>
                 ) : field === 'hostAddress' ? (
                   <textarea
                     value={tempData[field] || ''}
                     onChange={(e) => setTempData({...tempData, [field]: e.target.value})}
-                    placeholder="г. Москва, ул. Ленина, д. 1, кв. 1"
+                    placeholder={t('docgen.addressPlaceholder')}
                     rows={3}
                     className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
                   />
@@ -432,7 +444,7 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
                     type="text"
                     value={tempData[field] || ''}
                     onChange={(e) => setTempData({...tempData, [field]: e.target.value})}
-                    placeholder={FIELD_LABELS[field] ? `Введите ${FIELD_LABELS[field].toLowerCase()}` : 'Введите значение'}
+                    placeholder={t('docgen.enterValue')}
                     className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 )}
@@ -445,12 +457,12 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
             <div className="flex items-start gap-3">
               <Camera className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-blue-900 mb-1">Быстрое заполнение</p>
+                <p className="text-sm font-semibold text-blue-900 mb-1">{t('docgen.quickFill')}</p>
                 <p className="text-xs text-blue-800">
-                  Вы можете отсканировать паспорт, чтобы автоматически заполнить данные
+                  {t('docgen.scanPassportHint')}
                 </p>
                 <button className="mt-2 text-xs text-blue-600 font-semibold hover:underline">
-                  📸 Сканировать паспорт →
+                  📸 {t('docgen.scanPassport')} →
                 </button>
               </div>
             </div>
@@ -467,7 +479,7 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
                   : 'bg-gray-200 text-gray-400 cursor-not-allowed'
               }`}
             >
-              Сохранить и продолжить
+              {t('docgen.saveAndContinue')}
             </button>
 
             <button
@@ -478,7 +490,7 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
               }}
               className="w-full bg-gray-100 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-200 transition-colors"
             >
-              Отмена
+              {t('common.cancel')}
             </button>
           </div>
         </div>
@@ -487,17 +499,17 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
   };
 
   const renderPreview = () => {
-    const template = TEMPLATES.find(t => t.id === selectedTemplate)!;
-    
+    const template = TEMPLATES.find(tpl => tpl.id === selectedTemplate)!;
+
     return (
       <div className="space-y-6">
         <div className="text-center mb-6">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-green-600" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">Документ готов!</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('docgen.documentReady')}</h3>
           <p className="text-sm text-gray-600">
-            Мы автоматически заполнили форму вашими данными
+            {t('docgen.autoFillDescription')}
           </p>
         </div>
 
@@ -507,55 +519,55 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
             <div className="w-20 h-24 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0 border-2 border-red-200">
               <FileText className="w-10 h-10 text-red-600" />
             </div>
-            
+
             <div className="flex-1">
-              <h4 className="font-bold text-gray-900 text-lg mb-1">{template.title}</h4>
-              <p className="text-sm text-gray-600 mb-2">{template.formNumber}</p>
+              <h4 className="font-bold text-gray-900 text-lg mb-1">{getTemplateTitle(template.id)}</h4>
+              <p className="text-sm text-gray-600 mb-2">{getTemplateFormNumber(template.id)}</p>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500">Размер: 156 KB</span>
+                <span className="text-xs text-gray-500">{t('docgen.size')}: 156 KB</span>
                 <span className="text-xs text-gray-400">•</span>
-                <span className="text-xs text-gray-500">2 страницы</span>
+                <span className="text-xs text-gray-500">2 {t('docgen.pages')}</span>
               </div>
             </div>
           </div>
 
           {/* Auto-filled Data Preview */}
           <div className="bg-gray-50 rounded-xl p-4 mb-4">
-            <p className="text-xs font-semibold text-gray-600 mb-3">Заполненные данные:</p>
+            <p className="text-xs font-semibold text-gray-600 mb-3">{t('docgen.filledData')}:</p>
             <div className="space-y-2 text-sm">
               {profileData.fullName && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600">ФИО:</span>
+                  <span className="text-gray-600">{t('docgen.fields.fullName')}:</span>
                   <span className="font-semibold text-gray-900">{profileData.fullName}</span>
                 </div>
               )}
               {profileData.passportNumber && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Паспорт:</span>
+                  <span className="text-gray-600">{t('docgen.fields.passportNumber')}:</span>
                   <span className="font-semibold text-gray-900 font-mono">{profileData.passportNumber}</span>
                 </div>
               )}
               {profileData.citizenship && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Гражданство:</span>
+                  <span className="text-gray-600">{t('docgen.fields.citizenship')}:</span>
                   <span className="font-semibold text-gray-900">{profileData.citizenship}</span>
                 </div>
               )}
               {profileData.entryDate && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Дата въезда:</span>
+                  <span className="text-gray-600">{t('docgen.fields.entryDate')}:</span>
                   <span className="font-semibold text-gray-900">{profileData.entryDate}</span>
                 </div>
               )}
               {profileData.hostAddress && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Адрес:</span>
+                  <span className="text-gray-600">{t('docgen.fields.hostAddress')}:</span>
                   <span className="font-semibold text-gray-900 text-right text-xs">{profileData.hostAddress}</span>
                 </div>
               )}
               {profileData.employerName && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Работодатель:</span>
+                  <span className="text-gray-600">{t('docgen.fields.employerName')}:</span>
                   <span className="font-semibold text-gray-900">{profileData.employerName}</span>
                 </div>
               )}
@@ -566,11 +578,11 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
           <div className="flex gap-3">
             <button className="flex-1 bg-blue-600 text-white font-semibold py-3 px-4 rounded-xl hover:bg-blue-700 transition-colors active:scale-98 flex items-center justify-center gap-2">
               <Download className="w-5 h-5" />
-              Скачать PDF
+              {t('docgen.downloadPdf')}
             </button>
             <button className="flex-1 bg-gray-100 text-gray-700 font-semibold py-3 px-4 rounded-xl hover:bg-gray-200 transition-colors active:scale-98 flex items-center justify-center gap-2">
               <Edit3 className="w-5 h-5" />
-              Редактировать
+              {t('docgen.edit')}
             </button>
           </div>
         </div>
@@ -580,9 +592,9 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
           <div className="flex items-start gap-3">
             <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-semibold text-green-900 mb-1">Документ готов к использованию</p>
+              <p className="text-sm font-semibold text-green-900 mb-1">{t('docgen.readyToUse')}</p>
               <p className="text-xs text-green-800 leading-relaxed">
-                Распечатайте документ и подайте в соответствующий орган. Все данные заполнены согласно требованиям МВД РФ.
+                {t('docgen.printAndSubmit')}
               </p>
             </div>
           </div>
@@ -597,7 +609,7 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
           }}
           className="w-full bg-purple-600 text-white font-bold py-4 rounded-xl hover:bg-purple-700 transition-colors"
         >
-          Отлично!
+          {t('docgen.great')}
         </button>
       </div>
     );
@@ -613,8 +625,8 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
               <FileText className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">Генератор документов</h2>
-              <p className="text-xs text-purple-100">Автозаполнение форм</p>
+              <h2 className="text-xl font-bold text-white">{t('docgen.title')}</h2>
+              <p className="text-xs text-purple-100">{t('docgen.subtitle')}</p>
             </div>
           </div>
           <button

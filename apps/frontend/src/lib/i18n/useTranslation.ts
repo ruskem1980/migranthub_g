@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguageStore, Language, LANGUAGES, getLanguageInfo } from '../stores/languageStore';
 import { getTranslation, TranslationKey, hasTranslation } from './translations';
 
@@ -21,6 +21,23 @@ export interface UseTranslationReturn {
   isReady: boolean;
 }
 
+// Helper to get language from localStorage directly (for immediate hydration)
+function getStoredLanguage(): Language {
+  if (typeof window === 'undefined') return 'ru';
+  try {
+    const stored = localStorage.getItem('migranthub-language');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed?.state?.language) {
+        return parsed.state.language as Language;
+      }
+    }
+  } catch {
+    // Ignore parsing errors
+  }
+  return 'ru';
+}
+
 /**
  * Hook for translations and language management
  *
@@ -37,34 +54,50 @@ export interface UseTranslationReturn {
  * <button onClick={() => setLanguage('uz')}>Switch to Uzbek</button>
  */
 export function useTranslation(): UseTranslationReturn {
-  const { language, setLanguage, _hasHydrated } = useLanguageStore();
+  // Subscribe to zustand store
+  const storeLanguage = useLanguageStore((state) => state.language);
+  const setStoreLanguage = useLanguageStore((state) => state.setLanguage);
+  const _hasHydrated = useLanguageStore((state) => state._hasHydrated);
 
-  const t = useCallback(
-    (key: TranslationKey, params?: Record<string, string | number>): string => {
-      return getTranslation(language, key, params);
-    },
-    [language]
-  );
+  // Local state - start with 'ru' for SSR, then update after hydration
+  const [language, setLocalLanguage] = useState<Language>('ru');
 
-  const exists = useCallback(
-    (key: TranslationKey): boolean => {
-      return hasTranslation(language, key);
-    },
-    [language]
-  );
+  // After hydration, read from localStorage
+  useEffect(() => {
+    setLocalLanguage(getStoredLanguage());
+  }, []);
 
-  return useMemo(
-    () => ({
-      language,
-      t,
-      setLanguage,
-      exists,
-      languages: LANGUAGES,
-      getLanguageInfo,
-      isReady: _hasHydrated,
-    }),
-    [language, t, setLanguage, exists, _hasHydrated]
-  );
+  // Sync with zustand store changes
+  useEffect(() => {
+    if (_hasHydrated) {
+      setLocalLanguage(storeLanguage);
+    }
+  }, [storeLanguage, _hasHydrated]);
+
+  // Combined setter that updates both local and store
+  const setLanguage = (lang: Language) => {
+    setLocalLanguage(lang);
+    setStoreLanguage(lang);
+  };
+
+  // Use local language for translations (reactive)
+  const t = (key: TranslationKey, params?: Record<string, string | number>): string => {
+    return getTranslation(language, key, params);
+  };
+
+  const exists = (key: TranslationKey): boolean => {
+    return hasTranslation(language, key);
+  };
+
+  return {
+    language,
+    t,
+    setLanguage,
+    exists,
+    languages: LANGUAGES,
+    getLanguageInfo,
+    isReady: _hasHydrated,
+  };
 }
 
 /**
@@ -79,12 +112,9 @@ export function useTranslation(): UseTranslationReturn {
 export function useNamespacedTranslation(namespace: string) {
   const { t, ...rest } = useTranslation();
 
-  const namespacedT = useCallback(
-    (key: string, params?: Record<string, string | number>): string => {
-      return t(`${namespace}.${key}`, params);
-    },
-    [t, namespace]
-  );
+  const namespacedT = (key: string, params?: Record<string, string | number>): string => {
+    return t(`${namespace}.${key}`, params);
+  };
 
   return { t: namespacedT, ...rest };
 }
