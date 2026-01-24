@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Shield, ArrowRight, ArrowLeft, Check, ExternalLink } from 'lucide-react';
+import { Shield, ArrowRight, Check, ExternalLink } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
@@ -13,14 +13,13 @@ export default function LegalPage() {
   const [agreements, setAgreements] = useState({
     terms: false,
     privacy: false,
-    legalOnly: false,
   });
 
   const toggleAgreement = (key: keyof typeof agreements) => {
     setAgreements((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const allAgreed = agreements.terms && agreements.privacy && agreements.legalOnly;
+  const allAgreed = agreements.terms && agreements.privacy;
 
   const handleContinue = () => {
     if (allAgreed) {
@@ -30,54 +29,27 @@ export default function LegalPage() {
     }
   };
 
-  const handleBack = () => {
-    router.push('/auth/welcome');
-  };
-
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <button
-          onClick={handleBack}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span className="font-medium">{t('common.back')}</span>
-        </button>
-        <LanguageSwitcher variant="compact" />
+      {/* Header with Mission */}
+      <div className="flex-shrink-0 bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-5">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+            <span className="text-2xl">🛡️</span>
+          </div>
+          <h1 className="text-xl font-bold text-white">MigrantHub</h1>
+        </div>
+        <p className="text-white/90 text-sm leading-relaxed">
+          {t('app.mission')}
+        </p>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 min-h-0 px-6 py-6 pb-24 overflow-y-auto">
-        {/* Icon and Title */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mb-4 shadow-lg">
-            <Shield className="w-10 h-10 text-yellow-600" strokeWidth={2} />
-          </div>
-
-          <h1 className="text-2xl font-bold text-gray-900 mb-2 text-center">
-            {t('legal.title')}
-          </h1>
-
-          <p className="text-gray-500 text-center max-w-sm">
-            {t('legal.subtitle')}
-          </p>
-        </div>
-
-        {/* Legal Warning Card */}
-        <div className="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-5 mb-6">
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">⚠️</span>
-            <div>
-              <h3 className="font-bold text-yellow-900 mb-1">
-                {t('legal.warning.title')}
-              </h3>
-              <p className="text-sm text-yellow-800 leading-relaxed">
-                {t('legal.warning.description')}
-              </p>
-            </div>
-          </div>
+        {/* Language Selection */}
+        <div className="mb-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-3">{t('welcome.selectLanguage')}</h2>
+          <LanguageSwitcher variant="list" />
         </div>
 
         {/* Agreement Checkboxes */}
@@ -105,16 +77,16 @@ export default function LegalPage() {
               <p className="text-sm text-gray-600">
                 {t('legal.agreements.terms.description')}
               </p>
-              <button
+              <span
                 onClick={(e) => {
                   e.stopPropagation();
                   // Open terms in new tab or modal
                 }}
-                className="flex items-center gap-1 text-blue-600 text-sm font-medium mt-2 hover:text-blue-700"
+                className="flex items-center gap-1 text-blue-600 text-sm font-medium mt-2 hover:text-blue-700 cursor-pointer"
               >
                 <ExternalLink className="w-4 h-4" />
                 {t('legal.readMore')}
-              </button>
+              </span>
             </div>
           </button>
 
@@ -141,44 +113,19 @@ export default function LegalPage() {
               <p className="text-sm text-gray-600">
                 {t('legal.agreements.privacy.description')}
               </p>
-              <button
+              <span
                 onClick={(e) => {
                   e.stopPropagation();
                   // Open privacy policy in new tab or modal
                 }}
-                className="flex items-center gap-1 text-blue-600 text-sm font-medium mt-2 hover:text-blue-700"
+                className="flex items-center gap-1 text-blue-600 text-sm font-medium mt-2 hover:text-blue-700 cursor-pointer"
               >
                 <ExternalLink className="w-4 h-4" />
                 {t('legal.readMore')}
-              </button>
+              </span>
             </div>
           </button>
 
-          {/* Legal Actions Only */}
-          <button
-            onClick={() => toggleAgreement('legalOnly')}
-            className={`w-full flex items-start gap-4 p-4 rounded-xl border-2 transition-all text-left ${
-              agreements.legalOnly
-                ? 'border-green-500 bg-green-50'
-                : 'border-gray-200 bg-white hover:border-gray-300'
-            }`}
-          >
-            <div
-              className={`w-6 h-6 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-                agreements.legalOnly ? 'bg-green-600 border-green-600' : 'border-gray-300'
-              }`}
-            >
-              {agreements.legalOnly && <Check className="w-4 h-4 text-white" />}
-            </div>
-            <div className="flex-1">
-              <h4 className="font-semibold text-gray-900 mb-1">
-                {t('legal.agreements.legalOnly.title')}
-              </h4>
-              <p className="text-sm text-gray-600">
-                {t('legal.agreements.legalOnly.description')}
-              </p>
-            </div>
-          </button>
         </div>
       </div>
 

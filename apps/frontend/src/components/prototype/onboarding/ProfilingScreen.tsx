@@ -3,6 +3,7 @@
 import { Volume2, AlertTriangle, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 interface ProfilingScreenProps {
   onNext: () => void;
@@ -11,7 +12,6 @@ interface ProfilingScreenProps {
 export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
   const { t } = useTranslation();
   const [citizenship, setCitizenship] = useState('');
-  const [departureCountry, setDepartureCountry] = useState('');
   const [entryDate, setEntryDate] = useState('');
   const [region, setRegion] = useState('');
   const [purpose, setPurpose] = useState('');
@@ -20,9 +20,6 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
   const [otherCitizenshipValue, setOtherCitizenshipValue] = useState('');
   const [otherRegionValue, setOtherRegionValue] = useState('');
 
-  // Auto-fill departure country from citizenship
-  const effectiveDepartureCountry = citizenship;
-
   // Validation: all fields must be filled
   // For "other" options, check if the specific value is selected
   const isCitizenshipValid = citizenship && (citizenship !== 'other' || otherCitizenshipValue);
@@ -30,15 +27,22 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
   const isValid = isCitizenshipValid && entryDate && isRegionValid && purpose;
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          {t('onboarding.profiling.title')}
-        </h2>
-        <p className="text-gray-600">
-          {t('onboarding.profiling.subtitle')}
-        </p>
+    <div className="h-screen bg-gray-50 flex flex-col">
+      {/* Header with Language Switcher */}
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <h1 className="text-lg font-semibold text-gray-900">MigrantHub</h1>
+        <LanguageSwitcher variant="compact" />
       </div>
+
+      <div className="flex-1 flex flex-col p-6 overflow-hidden">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            {t('onboarding.profiling.title')}
+          </h2>
+          <p className="text-gray-600">
+            {t('onboarding.profiling.subtitle')}
+          </p>
+        </div>
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-5">
@@ -363,19 +367,20 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
             </div>
           </div>
         </div>
-      </div>
+        </div>
 
-      <button
-        onClick={onNext}
-        disabled={!isValid}
-        className={`w-full font-bold py-4 px-6 rounded-2xl transition-all mt-6 ${
-          isValid
-            ? 'bg-blue-600 text-white hover:bg-blue-700 active:scale-98 shadow-lg'
-            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-        }`}
-      >
-        {t('common.next')}
-      </button>
+        <button
+          onClick={onNext}
+          disabled={!isValid}
+          className={`w-full font-bold py-4 px-6 rounded-2xl transition-all mt-6 ${
+            isValid
+              ? 'bg-blue-600 text-white hover:bg-blue-700 active:scale-98 shadow-lg'
+              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+          }`}
+        >
+          {t('common.next')}
+        </button>
+      </div>
     </div>
   );
 }

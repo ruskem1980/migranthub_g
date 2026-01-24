@@ -1,0 +1,124 @@
+{
+  "app": {
+    "name": "MigrantHub",
+    "tagline": "Ecosystem for migrants in Russia",
+    "mission": "Our mission is to help you work simply and legally in Russia",
+    "version": "1.0.0",
+    "updateAvailable": "Update available",
+    "update": "Update"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "continue": "Continue",
+    "done": "Done",
+    "error": "Error",
+    "retry": "Retry",
+    "close": "Close",
+    "search": "Search",
+    "noResults": "Nothing found",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "select": "Select",
+    "selected": "Selected",
+    "all": "All",
+    "none": "None",
+    "more": "More",
+    "less": "Less",
+    "show": "Show",
+    "hide": "Hide",
+    "download": "Download",
+    "upload": "Upload",
+    "share": "Share",
+    "copy": "Copy",
+    "copied": "Copied",
+    "send": "Send",
+    "sent": "Sent",
+    "required": "Required field",
+    "optional": "Optional",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
+    "day": "day",
+    "days": "days",
+    "month": "month",
+    "months": "months",
+    "year": "year",
+    "years": "years",
+    "hour": "hour",
+    "hours": "hours",
+    "minute": "minute",
+    "minutes": "minutes",
+    "second": "second",
+    "seconds": "seconds",
+    "rubles": "₽",
+    "rublesShort": "rub.",
+    "or": "or",
+    "start": "Start",
+    "saving": "Saving...",
+    "urgent": "URGENT",
+    "new": "NEW",
+    "extend": "Extend",
+    "encrypted": "Encrypted",
+    "status": "Status",
+    "outOf": "of",
+    "comingSoon": "Coming soon"
+  },
+  "welcome": {
+    "tagline": "Your personal protector. We help you process documents quickly, avoid fines and control the legalization process.",
+    "selectLanguage": "Select language"
+  },
+  "legal": {
+    "title": "Legal Compliance",
+    "subtitle": "Please review and confirm",
+    "warning": {
+      "title": "Important",
+      "description": "We do not make fake registrations. We only work according to Russian law. The app helps you process documents correctly."
+    },
+    "agreements": {
+      "terms": {
+        "title": "Terms of Service",
+        "description": "I have read and accept the terms of use of the application"
+      },
+      "privacy": {
+        "title": "Privacy Policy",
+        "description": "I agree to the processing of my personal data"
+      }
+    },
+    "readMore": "Read full"
+  },
+  "auth": {
+    "title": "Sign in to MigrantHub",
+    "welcome": "Welcome",
+    "method": {
+      "title": "Sign in method",
+      "subtitle": "Choose a convenient authorization method",
+      "phone": {
+        "title": "By phone number",
+        "description": "Get an SMS code to sign in"
+      },
+      "telegram": {
+        "title": "Via Telegram",
+        "description": "Quick sign in without SMS"
+      },
+      "securityNote": "Your data is protected and stored in encrypted form"
+    }
+  },
+  "dashboard": {
+    "tabs": {
+      "home": "Home",
+      "documents": "Documents",
+      "services": "Services",
+      "assistant": "Assistant",
+      "sos": "SOS"
+    }
+  }
+}

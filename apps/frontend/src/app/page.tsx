@@ -24,8 +24,8 @@ export default function Home() {
       } catch (e) {
         console.error('Auth check error:', e);
       }
-      // Start from welcome screen (language selection + app description)
-      router.replace('/auth/welcome');
+      // Start from legal screen (language can be changed via LanguageSwitcher)
+      router.replace('/auth/legal');
     };
 
     // Small delay to ensure localStorage is available

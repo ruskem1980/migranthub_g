@@ -2,6 +2,7 @@
 
 import { CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 interface RoadmapScreenProps {
   onComplete: () => void;
@@ -48,15 +49,22 @@ export function RoadmapScreen({ onComplete, checkedItems = [] }: RoadmapScreenPr
   ];
 
   return (
-    <div className="h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col p-6">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          {t('roadmap.title')}
-        </h2>
-        <p className="text-gray-600">
-          {t('roadmap.subtitle')}
-        </p>
+    <div className="h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
+      {/* Header with Language Switcher */}
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <h1 className="text-lg font-semibold text-gray-900">MigrantHub</h1>
+        <LanguageSwitcher variant="compact" />
       </div>
+
+      <div className="flex-1 flex flex-col p-6 overflow-hidden">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            {t('roadmap.title')}
+          </h2>
+          <p className="text-gray-600">
+            {t('roadmap.subtitle')}
+          </p>
+        </div>
 
       <div className="flex-1 overflow-y-auto mb-6">
         <div className="relative">
@@ -129,14 +137,15 @@ export function RoadmapScreen({ onComplete, checkedItems = [] }: RoadmapScreenPr
             </div>
           </div>
         </div>
-      </div>
+        </div>
 
-      <button
-        onClick={onComplete}
-        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-4 px-6 rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all active:scale-98 shadow-xl"
-      >
-        {t('roadmap.proceedButton')}
-      </button>
+        <button
+          onClick={onComplete}
+          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-4 px-6 rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all active:scale-98 shadow-xl"
+        >
+          {t('roadmap.proceedButton')}
+        </button>
+      </div>
     </div>
   );
 }

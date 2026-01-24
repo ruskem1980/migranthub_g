@@ -28,7 +28,7 @@ interface DocumentToScan {
 export function LegalizationWizard({ onClose, profileData }: LegalizationWizardProps) {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState<WizardStep>('intro');
-  const [scanMode, setScanMode] = useState<'required' | 'additional' | null>(null);
+  const [scanMode, setScanMode] = useState<'required' | 'additional' | 'quick-select' | 'step-by-step' | null>(null);
   const [selectedDocsToScan, setSelectedDocsToScan] = useState<string[]>([]);
   const [selectedAdditionalDocs, setSelectedAdditionalDocs] = useState<string[]>([]);
   const [currentDocIndex, setCurrentDocIndex] = useState(0);
@@ -36,6 +36,13 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
   const [scannedDocuments, setScannedDocuments] = useState<Record<string, any>>({});
   const [currentDocData, setCurrentDocData] = useState<Record<string, string>>({});
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [passportData, setPassportData] = useState({
+    lastName: '',
+    firstName: '',
+    passportNumber: '',
+    issueDate: '',
+    citizenship: 'Узбекистан'
+  });
 
   // Calculate missing documents
   const allRequiredDocs = ['passport', 'mig_card', 'registration', 'green_card', 'patent', 'receipts'];

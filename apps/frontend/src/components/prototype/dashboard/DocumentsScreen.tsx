@@ -178,7 +178,14 @@ export function DocumentsScreen() {
                 textColor: 'text-gray-600',
                 button: 'bg-blue-600 hover:bg-blue-700',
               },
-            }[doc.color];
+            }[doc.color as 'green' | 'yellow' | 'red' | 'gray'] || {
+              bg: 'bg-gray-50',
+              border: 'border-gray-300',
+              icon: XCircle,
+              iconColor: 'text-gray-500',
+              textColor: 'text-gray-600',
+              button: 'bg-blue-600 hover:bg-blue-700',
+            };
 
             const StatusIcon = statusConfig.icon;
 

@@ -7,36 +7,46 @@ import ru from '@/locales/ru.json';
 import uz from '@/locales/uz.json';
 import tg from '@/locales/tg.json';
 import ky from '@/locales/ky.json';
+import en from '@/locales/en.json';
 
 export type TranslationKey = string;
 
 type NestedObject = {
-  [key: string]: string | NestedObject;
+  [key: string]: string | string[] | NestedObject;
 };
 
-const translations: Record<Language, NestedObject> = {
+// Main languages with full translations
+const mainTranslations: Record<string, NestedObject> = {
   ru,
   uz,
   tg,
   ky,
+  en,
 };
+
+// For extended languages, fallback to Russian
+const translations: Record<Language, NestedObject> = new Proxy(mainTranslations as Record<Language, NestedObject>, {
+  get(target, prop: string) {
+    return (target as Record<string, NestedObject>)[prop] || target.ru;
+  }
+});
 
 /**
  * Get a nested value from an object using dot notation
  * Example: getNestedValue(obj, 'auth.phone.title') returns obj.auth.phone.title
  */
-function getNestedValue(obj: NestedObject, path: string): string | undefined {
+function getNestedValue(obj: NestedObject, path: string): string | string[] | undefined {
   const keys = path.split('.');
-  let current: NestedObject | string | undefined = obj;
+  let current: NestedObject | string | string[] | undefined = obj;
 
   for (const key of keys) {
-    if (current === undefined || current === null || typeof current === 'string') {
+    if (current === undefined || current === null || typeof current === 'string' || Array.isArray(current)) {
       return undefined;
     }
     current = current[key];
   }
 
-  return typeof current === 'string' ? current : undefined;
+  return typeof current === 'string' || Array.isArray(current) ? current : undefined;
 }
 
 /**
@@ -65,11 +75,20 @@ export function getTranslation(
     // Fallback to Russian if translation not found
     const fallback = getNestedValue(translations.ru, key);
     if (fallback) {
+      // If it's an array, join with newlines (for steps lists)
+      if (Array.isArray(fallback)) {
+        return fallback.join('\n');
+      }
       return interpolate(fallback, params);
     }
     // Return key as last resort (helps identify missing translations)
     console.warn(`Missing translation for key: ${key}`);
     return key;
+  }
+
+  // If it's an array, join with newlines (for steps lists)
+  if (Array.isArray(translation)) {
+    return translation.join('\n');
   }
 
   return interpolate(translation, params);

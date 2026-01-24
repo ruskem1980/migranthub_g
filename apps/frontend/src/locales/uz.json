@@ -2,6 +2,7 @@
   "app": {
     "name": "MigrantHub",
     "tagline": "Rossiyada migrantlar uchun ekotizim",
+    "mission": "Bizning maqsadimiz — Rossiyada oson va qonuniy ishlashingizga yordam berish",
     "version": "1.0.0",
     "updateAvailable": "Yangilanish mavjud",
     "update": "Yangilash"

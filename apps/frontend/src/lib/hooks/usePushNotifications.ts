@@ -96,9 +96,8 @@ export function usePushNotifications() {
       await registration.showNotification(title, {
         icon: '/icon-192.png',
         badge: '/icon-72.png',
-        vibrate: [100, 50, 100],
         ...options,
-      });
+      } as NotificationOptions);
     } catch (error) {
       console.error('Error showing notification:', error);
     }

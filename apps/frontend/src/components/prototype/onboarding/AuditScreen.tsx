@@ -3,6 +3,7 @@
 import { Check, Info, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 interface AuditScreenProps {
   onNext: (checkedItems: string[]) => void;
@@ -42,15 +43,22 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col p-6">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          {t('audit.title')}
-        </h2>
-        <p className="text-gray-600">
-          {t('audit.subtitle')}
-        </p>
+    <div className="h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
+      {/* Header with Language Switcher */}
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <h1 className="text-lg font-semibold text-gray-900">MigrantHub</h1>
+        <LanguageSwitcher variant="compact" />
       </div>
+
+      <div className="flex-1 flex flex-col p-6 overflow-hidden">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            {t('audit.title')}
+          </h2>
+          <p className="text-gray-600">
+            {t('audit.subtitle')}
+          </p>
+        </div>
 
       <div className="flex-1 overflow-y-auto mb-6">
         <div className="space-y-3">
@@ -123,14 +131,15 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
             💡 <strong>{t('audit.tip')}:</strong> {t('audit.tipText')}
           </p>
         </div>
-      </div>
+        </div>
 
-      <button
-        onClick={() => onNext(checked)}
-        className="w-full bg-blue-600 text-white font-bold py-4 px-6 rounded-2xl hover:bg-blue-700 transition-all active:scale-98 shadow-lg"
-      >
-        {t('common.continue')}
-      </button>
+        <button
+          onClick={() => onNext(checked)}
+          className="w-full bg-blue-600 text-white font-bold py-4 px-6 rounded-2xl hover:bg-blue-700 transition-all active:scale-98 shadow-lg"
+        >
+          {t('common.continue')}
+        </button>
+      </div>
     </div>
   );
 }
