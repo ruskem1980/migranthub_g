@@ -51,7 +51,7 @@ export default function WelcomePage() {
       </div>
 
       {/* Main Content - Scrollable */}
-      <div className="flex-1 overflow-y-auto px-6 pb-32">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-32">
         {/* Language Selection */}
         <div className="mb-6">
           <h2 className="text-white font-semibold text-lg mb-3">{t('welcome.selectLanguage')}</h2>
