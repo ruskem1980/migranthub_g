@@ -7,6 +7,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { HealthModule } from './modules/health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { UtilitiesModule } from './modules/utilities/utilities.module';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import jwtConfig from './config/jwt.config';
@@ -68,6 +69,7 @@ import jwtConfig from './config/jwt.config';
     HealthModule,
     UsersModule,
     AuthModule,
+    UtilitiesModule,
   ],
   providers: [
     {
