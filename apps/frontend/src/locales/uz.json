@@ -128,6 +128,37 @@
   "welcome": {
     "tagline": "Shaxsiy himoyachingiz. Hujjatlarni tez rasmiylashtirish, jarimalardan qochish va legalizatsiya jarayonini nazorat qilishda yordam beramiz.",
     "selectLanguage": "Tilni tanlang",
+    "moreLanguages": "Yana...",
+    "chooseLanguage": "Tilni tanlang",
+    "whyUs": "Nega biz?",
+    "getStarted": "Boshlash",
+    "benefits": {
+      "safety": {
+        "title": "Qo'rquvsiz hayot",
+        "description": "Biz har bir qadamingizning yuridik tozaligini ta'minlaymiz. Siz endi politsiya, tekshiruvlar va kutilmagan deportatsiyadan qo'rqmaysiz."
+      },
+      "language": {
+        "title": "Hammasi ona tilida",
+        "description": "Rossiya qonunlari murakkab, lekin biz ularni oddiy tilga tarjima qildik. Hech qanday to'siq yo'q — siz nima imzolayotganingizni aniq tushunasiz."
+      },
+      "savings": {
+        "title": "Pul oilaga, vositachilarga emas",
+        "description": "Hujjatlarni to'g'ridan-to'g'ri ilova orqali rasmiylashtirib, siz «yordamchilarga» sarflanadigan pulni tejaysiz va soxta cheklardan hamda ro'yxatga olishlardan himoyalanasiz."
+      },
+      "technology": {
+        "title": "Texnologiya sizning tarafingizda",
+        "description": "Sun'iy intellekt muddatlaringizni 24/7 kuzatadi. Odam unutishi yoki xato qilishi mumkin, bizning algoritmimiz — hech qachon."
+      },
+      "honesty": {
+        "title": "Halollik va shaffoflik",
+        "description": "Biz mumkin bo'lmagan narsalarni (soxta ro'yxatga olishlarni) va'da qilmaymiz. Biz qonuniy yo'l beramiz, shunda siz Rossiyada osoyishta ishlashingiz va kelajak qurishingiz mumkin."
+      }
+    },
+    "agreement": {
+      "text": "Men Foydalanuvchi shartnomasi va Maxfiylik siyosatini qabul qilaman, shuningdek shaxsiy ma'lumotlarimni qayta ishlashga roziman",
+      "terms": "Foydalanuvchi shartnomasi",
+      "privacy": "Maxfiylik siyosati"
+    },
     "whatCanDo": "Ilova nima qila oladi",
     "features": {
       "legal": {

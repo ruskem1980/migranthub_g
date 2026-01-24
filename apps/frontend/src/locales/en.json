@@ -74,7 +74,38 @@
   },
   "welcome": {
     "tagline": "Your personal protector. We help you process documents quickly, avoid fines and control the legalization process.",
-    "selectLanguage": "Select language"
+    "selectLanguage": "Select language",
+    "moreLanguages": "More...",
+    "chooseLanguage": "Choose language",
+    "whyUs": "Why us?",
+    "getStarted": "Get Started",
+    "benefits": {
+      "safety": {
+        "title": "Life Without Fear",
+        "description": "We ensure legal compliance at every step. You no longer fear police, inspections, or sudden deportation."
+      },
+      "language": {
+        "title": "Everything in Your Language",
+        "description": "Russian laws are complex, but we've translated them into simple language. No barriers — you understand exactly what you're signing."
+      },
+      "savings": {
+        "title": "Money to Family, Not Middlemen",
+        "description": "By processing documents directly through the app, you save on 'helpers' and protect yourself from fake receipts and registrations."
+      },
+      "technology": {
+        "title": "Technology on Your Side",
+        "description": "AI monitors your deadlines 24/7. People can forget or make mistakes, our algorithm — never."
+      },
+      "honesty": {
+        "title": "Honesty and Transparency",
+        "description": "We don't promise the impossible (fake registrations). We provide a legal path so you can work peacefully and build a future in Russia."
+      }
+    },
+    "agreement": {
+      "text": "I accept the User Agreement and Privacy Policy, and consent to the processing of my personal data",
+      "terms": "User Agreement",
+      "privacy": "Privacy Policy"
+    }
   },
   "legal": {
     "title": "Legal Compliance",

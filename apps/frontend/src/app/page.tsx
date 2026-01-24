@@ -1,22 +1,44 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/lib/i18n';
 
+/**
+ * Единый поток приложения:
+ * 1. Welcome (язык + акцепт) → только первый запуск
+ * 2. Auth (авторизация) → только первый раз
+ * 3. Profiling (профилирование) → после авторизации
+ * 4. Dashboard → основное приложение
+ */
 export default function Home() {
   const router = useRouter();
-  const [checked, setChecked] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
-    // Simple check after component mounts
-    const checkAuth = () => {
+    // DEV: Сброс для тестирования - каждый раз с чистого листа
+    if (process.env.NODE_ENV === 'development') {
+      localStorage.removeItem('migranthub-welcome-completed');
+      localStorage.removeItem('migranthub-auth');
+      localStorage.removeItem('migranthub-legal-agreed');
+      sessionStorage.clear();
+    }
+
+    const determineRoute = () => {
+      // Шаг 1: Проверяем, прошел ли пользователь Welcome
+      const welcomeCompleted = localStorage.getItem('migranthub-welcome-completed');
+      if (!welcomeCompleted) {
+        router.replace('/welcome');
+        return;
+      }
+
+      // Шаг 2: Проверяем авторизацию
       try {
-        const stored = localStorage.getItem('migranthub-auth');
-        if (stored) {
-          const parsed = JSON.parse(stored);
+        const authData = localStorage.getItem('migranthub-auth');
+        if (authData) {
+          const parsed = JSON.parse(authData);
           if (parsed?.state?.isAuthenticated) {
+            // Авторизован → идём в приложение
             router.replace('/prototype');
             return;
           }
@@ -24,29 +46,26 @@ export default function Home() {
       } catch (e) {
         console.error('Auth check error:', e);
       }
-      // Start from legal screen (language can be changed via LanguageSwitcher)
-      router.replace('/auth/legal');
+
+      // Не авторизован → на авторизацию
+      router.replace('/auth/method');
     };
 
-    // Small delay to ensure localStorage is available
-    const timer = setTimeout(() => {
-      checkAuth();
-      setChecked(true);
-    }, 300);
-
+    // Небольшая задержка для гарантии доступности localStorage
+    const timer = setTimeout(determineRoute, 200);
     return () => clearTimeout(timer);
   }, [router]);
 
-  // Show loading splash screen
+  // Splash screen пока определяем маршрут
   return (
-    <div className="h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center">
+    <div className="h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex items-center justify-center">
       <div className="text-center">
-        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+        <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
           <span className="text-5xl">🛡️</span>
         </div>
         <h1 className="text-3xl font-bold text-white mb-2">MigrantHub</h1>
-        <p className="text-white/80 mb-6">{t('app.tagline')}</p>
-        <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto" />
+        <p className="text-white/70 mb-8">{t('app.tagline')}</p>
+        <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin mx-auto" />
       </div>
     </div>
   );

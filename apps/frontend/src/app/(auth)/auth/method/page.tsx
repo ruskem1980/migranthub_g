@@ -1,17 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Phone, MessageCircle, ArrowLeft, Shield } from 'lucide-react';
+import { Phone, MessageCircle, Shield } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 export default function AuthMethodPage() {
   const router = useRouter();
   const { t } = useTranslation();
-
-  const handleBack = () => {
-    router.push('/auth/legal');
-  };
 
   const handlePhoneAuth = () => {
     router.push('/auth/phone');
@@ -37,14 +33,7 @@ export default function AuthMethodPage() {
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <button
-          onClick={handleBack}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span className="font-medium">{t('common.back')}</span>
-        </button>
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-end">
         <LanguageSwitcher variant="compact" />
       </div>
 
