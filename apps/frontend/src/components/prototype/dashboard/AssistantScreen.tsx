@@ -40,7 +40,7 @@ export function AssistantScreen() {
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 bg-gray-50">
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 bg-gray-50">
         {/* Legal Disclaimer */}
         <div className="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
           <div className="flex items-start gap-2">

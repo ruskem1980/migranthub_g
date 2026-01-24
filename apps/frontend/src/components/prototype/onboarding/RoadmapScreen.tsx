@@ -66,7 +66,7 @@ export function RoadmapScreen({ onComplete, checkedItems = [] }: RoadmapScreenPr
           </p>
         </div>
 
-      <div className="flex-1 overflow-y-auto mb-6">
+      <div className="flex-1 min-h-0 overflow-y-auto mb-6">
         <div className="relative">
           {/* Timeline Line */}
           <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gray-200" />

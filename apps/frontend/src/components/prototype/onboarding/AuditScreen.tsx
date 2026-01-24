@@ -60,7 +60,7 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
           </p>
         </div>
 
-      <div className="flex-1 overflow-y-auto mb-6">
+      <div className="flex-1 min-h-0 overflow-y-auto mb-6">
         <div className="space-y-3">
           {items.map((item) => {
             const isChecked = checked.includes(item.id);

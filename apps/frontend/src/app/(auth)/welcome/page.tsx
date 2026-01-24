@@ -226,7 +226,7 @@ export default function WelcomePage() {
             </div>
 
             {/* Language list */}
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 min-h-0 overflow-y-auto p-4">
               <div className="grid grid-cols-2 gap-2">
                 {extendedLanguages.map((lang) => (
                   <button
