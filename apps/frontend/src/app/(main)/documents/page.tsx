@@ -39,9 +39,9 @@ export default function DocumentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.back()}
@@ -61,7 +61,7 @@ export default function DocumentsPage() {
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 pb-24">
         {/* Quick stats */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-white p-4 rounded-xl border border-gray-200">

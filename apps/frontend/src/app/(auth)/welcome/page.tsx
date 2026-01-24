@@ -36,7 +36,7 @@ export default function WelcomePage() {
   // Убрали проверку isReady - страница должна рендериться сразу
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex flex-col">
+    <div className="h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex-shrink-0 px-6 pt-8 pb-4">
         <div className="flex items-center gap-3 mb-2">

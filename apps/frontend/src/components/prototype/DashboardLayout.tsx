@@ -64,7 +64,7 @@ export function DashboardLayout() {
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-gray-50">
       {/* Content Area */}
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 min-h-0 overflow-y-auto">
         {renderContent()}
       </main>
 
