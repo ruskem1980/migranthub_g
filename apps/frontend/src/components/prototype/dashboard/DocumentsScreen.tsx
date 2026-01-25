@@ -1,11 +1,73 @@
 'use client';
 
-import { Camera, CheckCircle2, AlertTriangle, XCircle, Share2, Info, Lock } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { Camera, CheckCircle2, AlertTriangle, XCircle, Share2, Info, Lock, X } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
+type InstructionModal = {
+  isOpen: boolean;
+  title: string;
+  content: string;
+};
+
 export function DocumentsScreen() {
   const { t } = useTranslation();
+  const [instructionModal, setInstructionModal] = useState<InstructionModal>({
+    isOpen: false,
+    title: '',
+    content: '',
+  });
+
+  const handleShare = useCallback(async (docTitle: string) => {
+    const shareData = {
+      title: docTitle,
+      text: `${docTitle} - MigrantHub`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(`${docTitle}\n${window.location.href}`);
+        alert(t('common.copied'));
+      }
+    } catch {
+      // User cancelled or error - silently ignore
+    }
+  }, [t]);
+
+  const handleInstruction = useCallback((docKey: string, docTitle: string) => {
+    // Map document keys to instruction keys in localization
+    const instructionKeyMap: Record<string, string> = {
+      passport: 'passport',
+      mig_card: 'migCard',
+      registration: 'registration',
+      green_card: 'greenCard',
+      education: 'education',
+      patent: 'patent',
+      contract: 'contract',
+      receipts: 'receipts',
+      insurance: 'insurance',
+      inn: 'inn',
+      family: 'family',
+    };
+
+    const instructionKey = instructionKeyMap[docKey] || docKey;
+    const instruction = t(`sos.documentRecovery.${instructionKey}.instruction`);
+
+    setInstructionModal({
+      isOpen: true,
+      title: docTitle,
+      content: instruction,
+    });
+  }, [t]);
+
+  const closeModal = useCallback(() => {
+    setInstructionModal(prev => ({ ...prev, isOpen: false }));
+  }, []);
 
   const documents = [
     // УРОВЕНЬ 1: ОСНОВА
@@ -228,13 +290,17 @@ export function DocumentsScreen() {
                   )}
 
                   <div className="flex gap-2">
-                    {doc.hasFile && (
-                      <button className="flex-1 bg-gray-100 text-gray-700 font-medium py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors active:scale-98 flex items-center justify-center gap-1 text-sm">
-                        <Share2 className="w-4 h-4" />
-                        {t('common.share')}
-                      </button>
-                    )}
-                    <button className="flex-1 bg-gray-100 text-gray-700 font-medium py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors active:scale-98 flex items-center justify-center gap-1 text-sm">
+                    <button
+                      onClick={() => handleShare(doc.title)}
+                      className="flex-1 bg-gray-100 text-gray-700 font-medium py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors active:scale-98 flex items-center justify-center gap-1 text-sm"
+                    >
+                      <Share2 className="w-4 h-4" />
+                      {t('common.share')}
+                    </button>
+                    <button
+                      onClick={() => handleInstruction(doc.key, doc.title)}
+                      className="flex-1 bg-gray-100 text-gray-700 font-medium py-2 px-3 rounded-lg hover:bg-gray-200 transition-colors active:scale-98 flex items-center justify-center gap-1 text-sm"
+                    >
                       <Info className="w-4 h-4" />
                       {t('documents.instruction')}
                     </button>
@@ -256,6 +322,40 @@ export function DocumentsScreen() {
           <span className="text-xs mt-0.5">OCR</span>
         </div>
       </button>
+
+      {/* Instruction Modal */}
+      {instructionModal.isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={closeModal}
+        >
+          <div
+            className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-gray-900">
+                {instructionModal.title}
+              </h3>
+              <button
+                onClick={closeModal}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+            <p className="text-gray-700 leading-relaxed">
+              {instructionModal.content}
+            </p>
+            <button
+              onClick={closeModal}
+              className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors"
+            >
+              {t('common.ok')}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
