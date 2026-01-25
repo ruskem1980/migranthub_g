@@ -30,7 +30,7 @@ export function HomeScreen() {
 
   // Initialize from profile store, fallback to empty
   const [editEntryDate, setEditEntryDate] = useState(profile?.entryDate || '');
-  const [editPurpose, setEditPurpose] = useState(profile?.purpose || 'work');
+  const [editPurpose, setEditPurpose] = useState<string>(profile?.purpose || 'work');
   const [editFullName, setEditFullName] = useState(profile?.fullName || '');
   const [editCitizenship, setEditCitizenship] = useState(profile?.citizenship || '');
   const [editRegion, setEditRegion] = useState(profile?.patentRegion || '');
@@ -39,11 +39,11 @@ export function HomeScreen() {
   // Sync local state when profile changes
   useEffect(() => {
     if (profile) {
-      if (profile.entryDate) setEditEntryDate(profile.entryDate);
-      if (profile.purpose) setEditPurpose(profile.purpose);
-      if (profile.fullName) setEditFullName(profile.fullName);
-      if (profile.citizenship) setEditCitizenship(profile.citizenship);
-      if (profile.patentRegion) setEditRegion(profile.patentRegion);
+      setEditEntryDate(profile.entryDate || '');
+      setEditPurpose(profile.purpose || 'work');
+      setEditFullName(profile.fullName || '');
+      setEditCitizenship(profile.citizenship || '');
+      setEditRegion(profile.patentRegion || '');
     }
   }, [profile]);
 
@@ -600,7 +600,17 @@ export function HomeScreen() {
             {/* Action Buttons */}
             <div className="space-y-3 mt-6">
               <button
-                onClick={() => setShowProfileEdit(false)}
+                onClick={() => {
+                  // Save to profile store
+                  updateProfile({
+                    fullName: editFullName,
+                    citizenship: editCitizenship,
+                    entryDate: editEntryDate,
+                    purpose: editPurpose as 'work' | 'study' | 'tourist' | 'private',
+                    patentRegion: editRegion,
+                  });
+                  setShowProfileEdit(false);
+                }}
                 className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-colors"
               >
                 {t('profile.saveChanges')}
