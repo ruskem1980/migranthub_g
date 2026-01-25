@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, X, FileText, CreditCard, Briefcase, Home, Hash, UserCheck, HeartPulse } from 'lucide-react';
+import { previewDocumentPDF, downloadDocumentPDF } from '@/features/documents/utils/generateDocumentPDF';
 import {
   DocumentWizard,
   DocumentsList,
@@ -153,13 +154,28 @@ export default function DocumentsPage() {
     [deleteDocument]
   );
 
-  const profileData = profile || {
-    fullName: 'Усманов Алишер Бахтиярович',
-    passportNumber: 'AA 1234567',
-    citizenship: 'UZB',
-    birthDate: '1990-05-15',
-    entryDate: '2024-01-01',
-  };
+  // Просмотр PDF документа
+  const handlePreviewDocument = useCallback(async (document: TypedDocument) => {
+    try {
+      await previewDocumentPDF(document);
+    } catch (error) {
+      console.error('Error previewing PDF:', error);
+      alert('Ошибка при создании PDF');
+    }
+  }, []);
+
+  // Скачать PDF документа
+  const handleDownloadDocument = useCallback(async (document: TypedDocument) => {
+    try {
+      await downloadDocumentPDF(document);
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      alert('Ошибка при скачивании PDF');
+    }
+  }, []);
+
+  // Use profile data directly, fallback to empty object if not available
+  const profileData = profile || {};
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
@@ -191,6 +207,8 @@ export default function DocumentsPage() {
         onAddDocument={handleAddDocument}
         onSelectDocument={handleSelectDocument}
         onDeleteDocument={handleDeleteDocument}
+        onPreviewDocument={handlePreviewDocument}
+        onDownloadDocument={handleDownloadDocument}
         showWarnings={true}
         showFilters={documents.length > 3}
         emptyStateAction={handleAddDocument}

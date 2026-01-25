@@ -4,6 +4,7 @@ import { Volume2, AlertTriangle, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { useProfileStore } from '@/lib/stores';
 
 interface ProfilingScreenProps {
   onNext: () => void;
@@ -11,6 +12,7 @@ interface ProfilingScreenProps {
 
 export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
   const { t } = useTranslation();
+  const { updateProfile } = useProfileStore();
   const [citizenship, setCitizenship] = useState('');
   const [entryDate, setEntryDate] = useState('');
   const [region, setRegion] = useState('');
@@ -25,6 +27,54 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
   const isCitizenshipValid = citizenship && (citizenship !== 'other' || otherCitizenshipValue);
   const isRegionValid = region && (region !== 'other' || otherRegionValue);
   const isValid = isCitizenshipValid && entryDate && isRegionValid && purpose;
+
+  // Map citizenship code to ISO 3-letter code
+  const getCitizenshipCode = (): string => {
+    const codeMap: Record<string, string> = {
+      uz: 'UZB',
+      tj: 'TJK',
+      kg: 'KGZ',
+    };
+    if (citizenship === 'other') {
+      return otherCitizenshipValue;
+    }
+    return codeMap[citizenship] || citizenship.toUpperCase();
+  };
+
+  // Map purpose to profileStore format
+  const getPurposeValue = (): 'work' | 'study' | 'tourist' | 'private' | undefined => {
+    const purposeMap: Record<string, 'work' | 'study' | 'tourist' | 'private'> = {
+      work: 'work',
+      study: 'study',
+      tourism: 'tourist',
+      private: 'private',
+    };
+    return purposeMap[purpose];
+  };
+
+  // Get region display value
+  const getRegionValue = (): string => {
+    const regionMap: Record<string, string> = {
+      moscow: 'Москва',
+      spb: 'Санкт-Петербург',
+      nsk: 'Новосибирск',
+    };
+    if (region === 'other') {
+      return otherRegionValue;
+    }
+    return regionMap[region] || region;
+  };
+
+  // Save profile data and proceed
+  const handleSubmit = () => {
+    updateProfile({
+      citizenship: getCitizenshipCode(),
+      entryDate,
+      purpose: getPurposeValue(),
+      patentRegion: getRegionValue(),
+    });
+    onNext();
+  };
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
@@ -370,7 +420,7 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
         </div>
 
         <button
-          onClick={onNext}
+          onClick={handleSubmit}
           disabled={!isValid}
           className={`w-full font-bold py-4 px-6 rounded-2xl transition-all mt-6 ${
             isValid
