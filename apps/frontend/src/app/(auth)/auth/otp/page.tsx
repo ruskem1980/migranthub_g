@@ -19,7 +19,7 @@ export default function OtpPage() {
   const [resendTimer, setResendTimer] = useState(RESEND_TIMEOUT);
   const [phone, setPhone] = useState('');
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const { setUser, setToken } = useAuthStore();
+  const { setUser } = useAuthStore();
 
   useEffect(() => {
     // Get phone from session storage
@@ -102,14 +102,29 @@ export default function OtpPage() {
       // Demo: accept code "1234"
       if (code === '1234') {
         // Simulate successful auth
+        const now = new Date().toISOString();
         const mockUser = {
           id: crypto.randomUUID(),
-          phone: phone,
-          createdAt: new Date().toISOString(),
+          citizenshipCode: null,
+          regionCode: null,
+          entryDate: null,
+          subscriptionType: 'free',
+          subscriptionExpiresAt: null,
+          settings: {
+            locale: 'ru',
+            timezone: 'Europe/Moscow',
+            notifications: {
+              push: true,
+              telegram: false,
+              deadlines: true,
+              news: true,
+            },
+          },
+          createdAt: now,
+          updatedAt: now,
         };
 
         setUser(mockUser);
-        setToken('demo_token_' + Date.now());
 
         // Clear session storage
         sessionStorage.removeItem('auth_phone');
