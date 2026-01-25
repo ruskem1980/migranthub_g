@@ -16,8 +16,8 @@ import {
   Eye,
   Download,
 } from 'lucide-react';
-import type { TypedDocument, DocumentTypeValue, DocumentStatus } from '@/lib/db/types';
-import { documentTypeLabels } from '@/lib/db/types';
+import type { TypedDocument, DocumentTypeValue } from '@/lib/db/types';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 import {
   useDocumentExpiryStatus,
   formatExpiryDate,
@@ -67,6 +67,7 @@ export function DocumentCard({
   onDownload,
   compact = false,
 }: DocumentCardProps) {
+  const { t } = useTranslation();
   const Icon = documentIcons[document.type];
   const typeColor = documentTypeColors[document.type];
 
@@ -125,7 +126,7 @@ export function DocumentCard({
         </div>
 
         <p className="text-xs font-medium text-gray-900 text-center line-clamp-2 leading-tight mb-1">
-          {documentTypeLabels[document.type]}
+          {t(`documents.types.${document.type}`)}
         </p>
 
         {document.expiryDate && (
@@ -164,7 +165,7 @@ export function DocumentCard({
           >
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-semibold text-gray-900 truncate">
-                {documentTypeLabels[document.type]}
+                {t(`documents.types.${document.type}`)}
               </h3>
               {documentNumber && (
                 <span className="text-xs text-gray-500 truncate">{documentNumber}</span>

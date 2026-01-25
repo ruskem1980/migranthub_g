@@ -26,71 +26,274 @@ import {
 } from '@/features/services/calculator/penalty-calculator';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
+// Все регионы России с категориями штрафов
+const REGIONS = {
+  moscow: [
+    { value: 'moscow_city', label: 'Москва' },
+    { value: 'moscow_oblast', label: 'Московская область' },
+  ],
+  spb: [
+    { value: 'spb_city', label: 'Санкт-Петербург' },
+    { value: 'leningrad_oblast', label: 'Ленинградская область' },
+  ],
+  other: [
+    { value: 'adygea', label: 'Республика Адыгея' },
+    { value: 'altai_rep', label: 'Республика Алтай' },
+    { value: 'altai_krai', label: 'Алтайский край' },
+    { value: 'amur', label: 'Амурская область' },
+    { value: 'arkhangelsk', label: 'Архангельская область' },
+    { value: 'astrakhan', label: 'Астраханская область' },
+    { value: 'bashkortostan', label: 'Республика Башкортостан' },
+    { value: 'belgorod', label: 'Белгородская область' },
+    { value: 'bryansk', label: 'Брянская область' },
+    { value: 'buryatia', label: 'Республика Бурятия' },
+    { value: 'chechen', label: 'Чеченская Республика' },
+    { value: 'chelyabinsk', label: 'Челябинская область' },
+    { value: 'chukotka', label: 'Чукотский АО' },
+    { value: 'chuvash', label: 'Чувашская Республика' },
+    { value: 'dagestan', label: 'Республика Дагестан' },
+    { value: 'ingushetia', label: 'Республика Ингушетия' },
+    { value: 'irkutsk', label: 'Иркутская область' },
+    { value: 'ivanovo', label: 'Ивановская область' },
+    { value: 'kabardino', label: 'Кабардино-Балкарская Республика' },
+    { value: 'kaliningrad', label: 'Калининградская область' },
+    { value: 'kalmykia', label: 'Республика Калмыкия' },
+    { value: 'kaluga', label: 'Калужская область' },
+    { value: 'kamchatka', label: 'Камчатский край' },
+    { value: 'karachaevo', label: 'Карачаево-Черкесская Республика' },
+    { value: 'karelia', label: 'Республика Карелия' },
+    { value: 'kemerovo', label: 'Кемеровская область' },
+    { value: 'khabarovsk', label: 'Хабаровский край' },
+    { value: 'khakassia', label: 'Республика Хакасия' },
+    { value: 'khanty', label: 'Ханты-Мансийский АО' },
+    { value: 'kirov', label: 'Кировская область' },
+    { value: 'komi', label: 'Республика Коми' },
+    { value: 'kostroma', label: 'Костромская область' },
+    { value: 'krasnodar', label: 'Краснодарский край' },
+    { value: 'krasnoyarsk', label: 'Красноярский край' },
+    { value: 'kurgan', label: 'Курганская область' },
+    { value: 'kursk', label: 'Курская область' },
+    { value: 'lipetsk', label: 'Липецкая область' },
+    { value: 'magadan', label: 'Магаданская область' },
+    { value: 'mari_el', label: 'Республика Марий Эл' },
+    { value: 'mordovia', label: 'Республика Мордовия' },
+    { value: 'murmansk', label: 'Мурманская область' },
+    { value: 'nenets', label: 'Ненецкий АО' },
+    { value: 'nizhny', label: 'Нижегородская область' },
+    { value: 'north_ossetia', label: 'Республика Северная Осетия' },
+    { value: 'novgorod', label: 'Новгородская область' },
+    { value: 'novosibirsk', label: 'Новосибирская область' },
+    { value: 'omsk', label: 'Омская область' },
+    { value: 'orenburg', label: 'Оренбургская область' },
+    { value: 'oryol', label: 'Орловская область' },
+    { value: 'penza', label: 'Пензенская область' },
+    { value: 'perm', label: 'Пермский край' },
+    { value: 'primorsky', label: 'Приморский край' },
+    { value: 'pskov', label: 'Псковская область' },
+    { value: 'rostov', label: 'Ростовская область' },
+    { value: 'ryazan', label: 'Рязанская область' },
+    { value: 'sakha', label: 'Республика Саха (Якутия)' },
+    { value: 'sakhalin', label: 'Сахалинская область' },
+    { value: 'samara', label: 'Самарская область' },
+    { value: 'saratov', label: 'Саратовская область' },
+    { value: 'smolensk', label: 'Смоленская область' },
+    { value: 'stavropol', label: 'Ставропольский край' },
+    { value: 'sverdlovsk', label: 'Свердловская область' },
+    { value: 'tambov', label: 'Тамбовская область' },
+    { value: 'tatarstan', label: 'Республика Татарстан' },
+    { value: 'tomsk', label: 'Томская область' },
+    { value: 'tula', label: 'Тульская область' },
+    { value: 'tuva', label: 'Республика Тыва' },
+    { value: 'tver', label: 'Тверская область' },
+    { value: 'tyumen', label: 'Тюменская область' },
+    { value: 'udmurt', label: 'Удмуртская Республика' },
+    { value: 'ulyanovsk', label: 'Ульяновская область' },
+    { value: 'vladimir', label: 'Владимирская область' },
+    { value: 'volgograd', label: 'Волгоградская область' },
+    { value: 'vologda', label: 'Вологодская область' },
+    { value: 'voronezh', label: 'Воронежская область' },
+    { value: 'yamalo', label: 'Ямало-Ненецкий АО' },
+    { value: 'yaroslavl', label: 'Ярославская область' },
+    { value: 'jewish', label: 'Еврейская АО' },
+    { value: 'zabaykalsky', label: 'Забайкальский край' },
+  ],
+};
+
+// Топ-5 регионов по количеству мигрантов
+const TOP_REGIONS = [
+  { value: 'moscow', label: 'Москва', category: 'moscow' as RegionType },
+  { value: 'moscow_oblast', label: 'Московская обл.', category: 'moscow' as RegionType },
+  { value: 'spb', label: 'Санкт-Петербург', category: 'spb' as RegionType },
+  { value: 'krasnodar', label: 'Краснодарский край', category: 'other' as RegionType },
+  { value: 'tatarstan', label: 'Татарстан', category: 'other' as RegionType },
+];
+
 /**
  * Region selector component
  */
 function RegionSelector({
   value,
   onChange,
-  t,
 }: {
   value: RegionType | null;
-  onChange: (region: RegionType) => void;
-  t: (key: string) => string;
+  onChange: (region: RegionType, regionName: string) => void;
 }) {
+  const [selectedValue, setSelectedValue] = useState<string>('');
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  // Синхронизируем локальное состояние с внешним
+  useEffect(() => {
+    if (!value) {
+      setSelectedValue('');
+    }
+  }, [value]);
+
+  const handleButtonClick = (region: typeof TOP_REGIONS[0]) => {
+    setSelectedValue(region.value);
+    setShowDropdown(false);
+    onChange(region.category, region.label);
+  };
+
+  const handleRegionSelect = (regionValue: string, category: RegionType, label: string) => {
+    setSelectedValue(regionValue);
+    setShowDropdown(false);
+    onChange(category, label);
+  };
+
+  // Получаем название выбранного региона из полного списка
+  const getSelectedRegionLabel = () => {
+    if (!selectedValue || TOP_REGIONS.some(r => r.value === selectedValue)) {
+      return null;
+    }
+    const allRegions = [...REGIONS.moscow, ...REGIONS.spb, ...REGIONS.other];
+    const region = allRegions.find(r => r.value === selectedValue);
+    return region?.label || null;
+  };
+
+  const selectedOtherLabel = getSelectedRegionLabel();
+
+  const getPenaltyInfo = () => {
+    if (!value) return null;
+    if (value === 'moscow' || value === 'spb') {
+      return {
+        text: 'Штраф 5000-7000₽, возможна депортация',
+        color: 'text-red-600',
+        bg: 'bg-red-50',
+        border: 'border-red-200',
+      };
+    }
+    return {
+      text: 'Штраф 2000-5000₽',
+      color: 'text-orange-600',
+      bg: 'bg-orange-50',
+      border: 'border-orange-200',
+    };
+  };
+
+  const penaltyInfo = getPenaltyInfo();
+
   return (
     <div className="mb-6">
-      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
         <MapPin className="w-4 h-4" />
-        {t('services.calculator.region')} <span className="text-red-500">*</span>
+        Регион пребывания <span className="text-red-500">*</span>
       </label>
-      {!value && (
-        <p className="text-sm text-orange-600 mb-2">Выберите ваш регион пребывания</p>
-      )}
-      <div className="grid grid-cols-1 gap-2">
-        <label className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${value === 'moscow' ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-50 hover:bg-gray-100'}`}>
-          <input
-            type="radio"
-            name="region"
-            value="moscow"
-            checked={value === 'moscow'}
-            onChange={() => onChange('moscow')}
-            className="w-4 h-4 text-blue-600 focus:ring-blue-500 mt-0.5"
-          />
-          <div>
-            <span className="text-sm text-gray-900 font-medium">{t('services.calculator.regionMoscow')}</span>
-            <p className="text-xs text-gray-500">Штраф 5000-7000₽, возможна депортация</p>
-          </div>
-        </label>
-        <label className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${value === 'spb' ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-50 hover:bg-gray-100'}`}>
-          <input
-            type="radio"
-            name="region"
-            value="spb"
-            checked={value === 'spb'}
-            onChange={() => onChange('spb')}
-            className="w-4 h-4 text-blue-600 focus:ring-blue-500 mt-0.5"
-          />
-          <div>
-            <span className="text-sm text-gray-900 font-medium">{t('services.calculator.regionSpb')}</span>
-            <p className="text-xs text-gray-500">Штраф 5000-7000₽, возможна депортация</p>
-          </div>
-        </label>
-        <label className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${value === 'other' ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-50 hover:bg-gray-100'}`}>
-          <input
-            type="radio"
-            name="region"
-            value="other"
-            checked={value === 'other'}
-            onChange={() => onChange('other')}
-            className="w-4 h-4 text-blue-600 focus:ring-blue-500 mt-0.5"
-          />
-          <div>
-            <span className="text-sm text-gray-900 font-medium">{t('services.calculator.regionOther')}</span>
-            <p className="text-xs text-gray-500">Все остальные регионы РФ. Штраф 2000-5000₽</p>
-          </div>
-        </label>
+
+      {/* Топ-5 кнопок */}
+      <div className="grid grid-cols-2 gap-2 mb-2">
+        {TOP_REGIONS.map((region) => (
+          <button
+            key={region.value}
+            type="button"
+            onClick={() => handleButtonClick(region)}
+            className={`p-3 rounded-xl text-sm font-medium transition-all ${
+              selectedValue === region.value
+                ? 'bg-blue-600 text-white border-2 border-blue-600'
+                : 'bg-gray-50 text-gray-700 border-2 border-gray-200 hover:border-blue-300'
+            }`}
+          >
+            {region.label}
+          </button>
+        ))}
+
+        {/* Кнопка "Другой регион" */}
+        <button
+          type="button"
+          onClick={() => setShowDropdown(!showDropdown)}
+          className={`p-3 rounded-xl text-sm font-medium transition-all ${
+            showDropdown || selectedOtherLabel
+              ? 'bg-blue-600 text-white border-2 border-blue-600'
+              : 'bg-gray-50 text-gray-700 border-2 border-gray-200 hover:border-blue-300'
+          }`}
+        >
+          {selectedOtherLabel || 'Другой регион'} {showDropdown ? '▲' : '▼'}
+        </button>
       </div>
+
+      {/* Полный список регионов */}
+      {showDropdown && (
+        <div className="mt-2 border-2 border-blue-300 rounded-xl bg-white overflow-hidden">
+          <div className="max-h-64 overflow-y-auto">
+            {/* Повышенные штрафы */}
+            <div className="sticky top-0 bg-red-50 px-3 py-2 border-b border-red-200">
+              <span className="text-xs font-semibold text-red-700">⚠️ Повышенные штрафы (5000-7000₽)</span>
+            </div>
+            <div className="p-2 space-y-1">
+              {[...REGIONS.moscow, ...REGIONS.spb].map(r => {
+                const category: RegionType = REGIONS.moscow.some(m => m.value === r.value) ? 'moscow' : 'spb';
+                return (
+                  <button
+                    key={r.value}
+                    type="button"
+                    onClick={() => handleRegionSelect(r.value, category, r.label)}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                      selectedValue === r.value
+                        ? 'bg-blue-600 text-white'
+                        : 'hover:bg-red-50 text-gray-700'
+                    }`}
+                  >
+                    {r.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Остальные регионы */}
+            <div className="sticky top-0 bg-gray-100 px-3 py-2 border-y border-gray-200">
+              <span className="text-xs font-semibold text-gray-600">Остальные регионы (2000-5000₽)</span>
+            </div>
+            <div className="p-2 space-y-1">
+              {REGIONS.other.map(r => (
+                <button
+                  key={r.value}
+                  type="button"
+                  onClick={() => handleRegionSelect(r.value, 'other', r.label)}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                    selectedValue === r.value
+                      ? 'bg-blue-600 text-white'
+                      : 'hover:bg-gray-50 text-gray-700'
+                  }`}
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Подсказка по штрафу */}
+      {penaltyInfo && (
+        <div className={`mt-3 p-3 rounded-lg ${penaltyInfo.bg} border ${penaltyInfo.border}`}>
+          <p className={`text-sm font-medium ${penaltyInfo.color}`}>
+            {penaltyInfo.text}
+          </p>
+        </div>
+      )}
+
+      {!selectedValue && (
+        <p className="text-sm text-orange-600 mt-2">Выберите ваш регион пребывания</p>
+      )}
     </div>
   );
 }
@@ -301,7 +504,7 @@ export default function CalculatorPage() {
     }
   }, []);
 
-  const handleRegionChange = useCallback((region: RegionType) => {
+  const handleRegionChange = useCallback((region: RegionType, _regionName: string) => {
     setSelectedRegion(region);
     saveRegion(region);
   }, []);
@@ -394,9 +597,9 @@ export default function CalculatorPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-4 pb-24">
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 pb-6">
         {/* Region selector */}
-        <RegionSelector value={selectedRegion} onChange={handleRegionChange} t={t} />
+        <RegionSelector value={selectedRegion} onChange={handleRegionChange} />
 
         {/* Penalty warning */}
         {showPenaltyWarning && selectedRegion && <PenaltyWarning region={selectedRegion} t={t} />}
@@ -605,6 +808,16 @@ export default function CalculatorPage() {
 
         {/* Deportation mode warning */}
         <DeportationModeWarning status={calculation.status} />
+      </div>
+
+      {/* Fixed bottom close button */}
+      <div className="flex-shrink-0 p-4 bg-white border-t border-gray-200">
+        <button
+          onClick={() => router.back()}
+          className="w-full py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors"
+        >
+          Закрыть
+        </button>
       </div>
     </div>
   );
