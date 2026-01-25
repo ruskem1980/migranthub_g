@@ -36,7 +36,7 @@ export function HomeScreen() {
   const [editRegion, setEditRegion] = useState(profile?.patentRegion || '');
   const [checkedDocs, setCheckedDocs] = useState<string[]>(profile?.selectedDocuments || []);
 
-  // Sync local state when profile changes
+  // Sync local state when profile changes (including after Zustand hydration)
   useEffect(() => {
     if (profile) {
       setEditEntryDate(profile.entryDate || '');
@@ -44,7 +44,10 @@ export function HomeScreen() {
       setEditFullName(profile.fullName || '');
       setEditCitizenship(profile.citizenship || '');
       setEditRegion(profile.patentRegion || '');
-      setCheckedDocs(profile.selectedDocuments || []);
+      // Only update checkedDocs if profile has selectedDocuments defined
+      if (profile.selectedDocuments !== undefined) {
+        setCheckedDocs(profile.selectedDocuments);
+      }
     }
   }, [profile]);
 

@@ -28,12 +28,12 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
   const isRegionValid = region && (region !== 'other' || otherRegionValue);
   const isValid = isCitizenshipValid && entryDate && isRegionValid && purpose;
 
-  // Map citizenship code to ISO 3-letter code
+  // Map citizenship code to ISO 2-letter code (matching HomeScreen format)
   const getCitizenshipCode = (): string => {
     const codeMap: Record<string, string> = {
-      uz: 'UZB',
-      tj: 'TJK',
-      kg: 'KGZ',
+      uz: 'UZ',
+      tj: 'TJ',
+      kg: 'KG',
     };
     if (citizenship === 'other') {
       return otherCitizenshipValue;
@@ -52,14 +52,15 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
     return purposeMap[purpose];
   };
 
-  // Get region display value
+  // Get region ID value (matching HomeScreen select options)
   const getRegionValue = (): string => {
     const regionMap: Record<string, string> = {
-      moscow: 'Москва',
-      spb: 'Санкт-Петербург',
-      nsk: 'Новосибирск',
+      moscow: 'moscow',
+      spb: 'saintPetersburg',
+      nsk: 'novosibirsk',
     };
     if (region === 'other') {
+      // otherRegionValue contains region ID from dropdown
       return otherRegionValue;
     }
     return regionMap[region] || region;
@@ -337,18 +338,18 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">{t('onboarding.profiling.selectRegion')}</option>
-                  <option value="Екатеринбург">{t('onboarding.profiling.regions.ekaterinburg')}</option>
-                  <option value="Казань">{t('onboarding.profiling.regions.kazan')}</option>
-                  <option value="Нижний Новгород">{t('onboarding.profiling.regions.nizhny')}</option>
-                  <option value="Самара">{t('onboarding.profiling.regions.samara')}</option>
-                  <option value="Омск">{t('onboarding.profiling.regions.omsk')}</option>
-                  <option value="Челябинск">{t('onboarding.profiling.regions.chelyabinsk')}</option>
-                  <option value="Ростов-на-Дону">{t('onboarding.profiling.regions.rostov')}</option>
-                  <option value="Уфа">{t('onboarding.profiling.regions.ufa')}</option>
-                  <option value="Красноярск">{t('onboarding.profiling.regions.krasnoyarsk')}</option>
-                  <option value="Воронеж">{t('onboarding.profiling.regions.voronezh')}</option>
-                  <option value="Пермь">{t('onboarding.profiling.regions.perm')}</option>
-                  <option value="Волгоград">{t('onboarding.profiling.regions.volgograd')}</option>
+                  <option value="yekaterinburg">{t('onboarding.profiling.regions.ekaterinburg')}</option>
+                  <option value="kazan">{t('onboarding.profiling.regions.kazan')}</option>
+                  <option value="nizhnyNovgorod">{t('onboarding.profiling.regions.nizhny')}</option>
+                  <option value="samara">{t('onboarding.profiling.regions.samara')}</option>
+                  <option value="omsk">{t('onboarding.profiling.regions.omsk')}</option>
+                  <option value="chelyabinsk">{t('onboarding.profiling.regions.chelyabinsk')}</option>
+                  <option value="rostov">{t('onboarding.profiling.regions.rostov')}</option>
+                  <option value="ufa">{t('onboarding.profiling.regions.ufa')}</option>
+                  <option value="krasnoyarsk">{t('onboarding.profiling.regions.krasnoyarsk')}</option>
+                  <option value="voronezh">{t('onboarding.profiling.regions.voronezh')}</option>
+                  <option value="perm">{t('onboarding.profiling.regions.perm')}</option>
+                  <option value="volgograd">{t('onboarding.profiling.regions.volgograd')}</option>
                 </select>
                 <button
                   onClick={() => setShowOtherRegion(false)}
