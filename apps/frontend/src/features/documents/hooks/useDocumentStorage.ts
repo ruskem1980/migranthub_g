@@ -5,6 +5,10 @@ import { db, type DBDocument } from '@/lib/db';
 import { encryptData, decryptData, type EncryptedData } from '@/lib/crypto';
 import { getOrCreateDeviceId } from '@/lib/api/device';
 import { validateDocument, type DocumentTypeValue } from '../schemas';
+import {
+  scheduleDocumentReminders,
+  cancelDocumentReminders,
+} from '@/lib/notifications';
 import type {
   BaseDocument,
   TypedDocument,
@@ -146,6 +150,11 @@ export function useDocumentStorage() {
         createdAt: now,
         updatedAt: now,
       } as TypedDocument;
+
+      // Планируем уведомления о сроке действия
+      scheduleDocumentReminders(typedDoc).catch((e) => {
+        console.warn('Не удалось запланировать уведомления:', e);
+      });
 
       setIsLoading(false);
       return { success: true, data: typedDoc };
@@ -381,6 +390,13 @@ export function useDocumentStorage() {
         updatedAt: now,
       } as TypedDocument;
 
+      // Перепланируем уведомления (сначала отменяем старые, затем создаём новые)
+      cancelDocumentReminders(typedDoc.id)
+        .then(() => scheduleDocumentReminders(typedDoc))
+        .catch((e) => {
+          console.warn('Не удалось перепланировать уведомления:', e);
+        });
+
       setIsLoading(false);
       return { success: true, data: typedDoc };
     } catch {
@@ -416,6 +432,11 @@ export function useDocumentStorage() {
       }
 
       await db.documents.delete(id);
+
+      // Отменяем уведомления для удалённого документа
+      cancelDocumentReminders(id).catch((e) => {
+        console.warn('Не удалось отменить уведомления:', e);
+      });
 
       setIsLoading(false);
       return { success: true, data: undefined };

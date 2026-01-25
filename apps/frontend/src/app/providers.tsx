@@ -4,6 +4,7 @@ import { type ReactNode, useEffect } from 'react';
 import { QueryProvider } from '@/lib/providers/QueryProvider';
 import { useServiceWorker } from '@/lib/hooks/useServiceWorker';
 import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
+import { NotificationProvider } from '@/lib/hooks/useNotifications';
 import { useTranslation } from '@/lib/i18n';
 
 function AppInitializer({ children }: { children: ReactNode }) {
@@ -55,7 +56,9 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
   return (
     <QueryProvider>
-      <AppInitializer>{children}</AppInitializer>
+      <NotificationProvider>
+        <AppInitializer>{children}</AppInitializer>
+      </NotificationProvider>
     </QueryProvider>
   );
 }
