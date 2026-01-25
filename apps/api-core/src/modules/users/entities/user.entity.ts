@@ -34,14 +34,14 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: 'device_id', length: 64, unique: true })
+  @Column({ name: 'device_id', type: 'varchar', length: 64, unique: true })
   @Index('idx_users_device_id')
   deviceId!: string;
 
-  @Column({ name: 'citizenship_code', length: 3, nullable: true })
+  @Column({ name: 'citizenship_code', type: 'varchar', length: 3, nullable: true })
   citizenshipCode!: string | null;
 
-  @Column({ name: 'region_code', length: 10, nullable: true })
+  @Column({ name: 'region_code', type: 'varchar', length: 10, nullable: true })
   regionCode!: string | null;
 
   @Column({ name: 'entry_date', type: 'date', nullable: true })
@@ -49,6 +49,7 @@ export class User {
 
   @Column({
     name: 'subscription_type',
+    type: 'varchar',
     length: 20,
     default: 'free',
   })
@@ -64,7 +65,7 @@ export class User {
   @Column('jsonb', { default: defaultSettings })
   settings!: UserSettings;
 
-  @Column({ name: 'refresh_token_hash', length: 64, nullable: true })
+  @Column({ name: 'refresh_token_hash', type: 'varchar', length: 64, nullable: true })
   refreshTokenHash!: string | null;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })

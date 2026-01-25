@@ -83,6 +83,10 @@ services:
       # Mount source code for hot reload
       - ./apps/api-core/src:/app/src:delegated
       - ./apps/api-core/test:/app/test:delegated
+      # Mount config files needed for compilation
+      - ./apps/api-core/tsconfig.json:/app/tsconfig.json:ro
+      - ./apps/api-core/tsconfig.build.json:/app/tsconfig.build.json:ro
+      - ./apps/api-core/nest-cli.json:/app/nest-cli.json:ro
       # Prevent overwriting node_modules
       - /app/node_modules
     ports:
