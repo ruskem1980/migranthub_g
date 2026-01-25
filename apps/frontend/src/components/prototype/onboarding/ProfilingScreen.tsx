@@ -12,7 +12,7 @@ interface ProfilingScreenProps {
 
 export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
   const { t } = useTranslation();
-  const { updateProfile } = useProfileStore();
+  const { profile, setProfile, updateProfile } = useProfileStore();
   const [citizenship, setCitizenship] = useState('');
   const [entryDate, setEntryDate] = useState('');
   const [region, setRegion] = useState('');
@@ -67,12 +67,33 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
 
   // Save profile data and proceed
   const handleSubmit = () => {
-    updateProfile({
+    const profileData = {
       citizenship: getCitizenshipCode(),
       entryDate,
       purpose: getPurposeValue(),
       patentRegion: getRegionValue(),
-    });
+    };
+
+    if (profile) {
+      // Update existing profile
+      updateProfile(profileData);
+    } else {
+      // Create new profile with required fields
+      setProfile({
+        id: crypto.randomUUID(),
+        userId: crypto.randomUUID(),
+        fullName: '',
+        passportNumber: '',
+        citizenship: profileData.citizenship,
+        entryDate: profileData.entryDate,
+        purpose: profileData.purpose,
+        patentRegion: profileData.patentRegion,
+        language: 'ru',
+        onboardingCompleted: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }
     onNext();
   };
 
