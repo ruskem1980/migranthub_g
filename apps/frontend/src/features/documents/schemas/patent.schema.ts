@@ -36,8 +36,8 @@ export const russianRegions = [
 
 export type RussianRegion = (typeof russianRegions)[number] | string;
 
-// Схема патента на работу
-export const patentSchema = z.object({
+// Базовая схема патента (без refinements для возможности partial)
+const patentBaseSchema = z.object({
   // Номер патента
   patentNumber: z
     .string()
@@ -92,7 +92,10 @@ export const patentSchema = z.object({
     .number()
     .positive('Сумма должна быть положительной')
     .optional(),
-}).refine(
+});
+
+// Схема патента на работу (с валидацией)
+export const patentSchema = patentBaseSchema.refine(
   (data) => new Date(data.expiryDate) > new Date(data.issueDate),
   {
     message: 'Срок действия должен быть позже даты выдачи',
@@ -112,8 +115,8 @@ export const patentSchema = z.object({
 // Типы
 export type PatentData = z.infer<typeof patentSchema>;
 
-// Схема для частичного обновления
-export const patentUpdateSchema = patentSchema.partial();
+// Схема для частичного обновления (использует базовую схему без refinements)
+export const patentUpdateSchema = patentBaseSchema.partial();
 export type PatentUpdateData = z.infer<typeof patentUpdateSchema>;
 
 // Хелпер: расчёт дней до следующей оплаты
