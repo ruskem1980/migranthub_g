@@ -11,7 +11,10 @@
     "cap:sync": "npx cap sync",
     "cap:open:ios": "npx cap open ios",
     "cap:open:android": "npx cap open android",
-    "build:mobile": "npm run build && npm run cap:sync"
+    "build:mobile": "npm run build && npm run cap:sync",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.1",
