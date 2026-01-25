@@ -70,12 +70,23 @@ export interface DBSyncQueue {
   lastError?: string;
 }
 
+export interface DBStayPeriod {
+  id: string;
+  oderId: string; // userId
+  entryDate: string;
+  exitDate?: string;
+  migrationCardId?: string; // связь с документом миграционной карты
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Database class
 export class MigrantHubDB extends Dexie {
   profiles!: Table<DBProfile>;
   documents!: Table<DBDocument>;
   forms!: Table<DBForm>;
   syncQueue!: Table<DBSyncQueue>;
+  stayPeriods!: Table<DBStayPeriod>;
 
   constructor() {
     super('migranthub');
@@ -85,6 +96,14 @@ export class MigrantHubDB extends Dexie {
       documents: 'id, oderId, type, expiryDate, createdAt, syncedAt',
       forms: 'id, oderId, formType, status, createdAt, updatedAt, syncedAt',
       syncQueue: 'id, action, table, recordId, createdAt, attempts',
+    });
+
+    this.version(2).stores({
+      profiles: 'id, oderId, fullName, passportNumber, citizenship, updatedAt, syncedAt',
+      documents: 'id, oderId, type, expiryDate, createdAt, syncedAt',
+      forms: 'id, oderId, formType, status, createdAt, updatedAt, syncedAt',
+      syncQueue: 'id, action, table, recordId, createdAt, attempts',
+      stayPeriods: 'id, oderId, entryDate, exitDate, migrationCardId, createdAt',
     });
   }
 }
@@ -148,4 +167,18 @@ export async function clearAllData(): Promise<void> {
   await db.documents.clear();
   await db.forms.clear();
   await db.syncQueue.clear();
+  await db.stayPeriods.clear();
+}
+
+// Stay periods helpers
+export async function saveStayPeriod(period: DBStayPeriod): Promise<void> {
+  await db.stayPeriods.put(period);
+}
+
+export async function getStayPeriods(userId: string): Promise<DBStayPeriod[]> {
+  return db.stayPeriods.where('oderId').equals(userId).toArray();
+}
+
+export async function deleteStayPeriod(id: string): Promise<void> {
+  await db.stayPeriods.delete(id);
 }
