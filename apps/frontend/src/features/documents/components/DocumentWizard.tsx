@@ -22,11 +22,12 @@ import { getMissingDocuments, type MissingDocumentsResult } from '../utils/getMi
 interface DocumentWizardProps {
   profileData: Record<string, any>;
   onClose: () => void;
+  onSaveProfileData?: (data: Record<string, any>) => void;
 }
 
 type WizardStep = 'select' | 'fill-missing' | 'review' | 'complete';
 
-export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
+export function DocumentWizard({ profileData, onClose, onSaveProfileData }: DocumentWizardProps) {
   const [step, setStep] = useState<WizardStep>('select');
   const [selectedForm, setSelectedForm] = useState<FormDefinition | null>(null);
   const [missingFields, setMissingFields] = useState<string[]>([]);
@@ -112,6 +113,12 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
 
   const handleMissingFieldsSubmit = (data: any) => {
     setAdditionalData(data);
+
+    // Save data to profile store
+    if (onSaveProfileData && Object.keys(data).length > 0) {
+      onSaveProfileData(data);
+    }
+
     // Recalculate missing documents with the new data
     if (selectedForm) {
       const combinedData = { ...profileData, ...data };
@@ -131,6 +138,7 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
         formId: selectedForm.id,
         data: additionalData,
         profileData,
+        userLanguage: language,
       });
       setPdfGenerated(true);
       setStep('complete');
@@ -149,6 +157,7 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
         formId: selectedForm.id,
         data: additionalData,
         profileData,
+        userLanguage: language,
       });
     } catch (error) {
       console.error('Error sharing PDF:', error);

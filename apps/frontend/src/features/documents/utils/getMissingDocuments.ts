@@ -108,7 +108,7 @@ export function getMissingDocuments(
 export function getFieldPlaceholder(field: string): string {
   const sourceInfo = FIELD_SOURCE_DOCUMENT[field];
   if (sourceInfo && sourceInfo.document !== 'manual') {
-    return `[Nuzhen dokument: ${sourceInfo.label}]`;
+    return `[Нужен документ: ${sourceInfo.label}]`;
   }
   return '_______________';
 }

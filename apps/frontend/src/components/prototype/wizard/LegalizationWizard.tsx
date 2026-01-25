@@ -28,7 +28,7 @@ interface DocumentToScan {
 }
 
 export function LegalizationWizard({ onClose, onComplete, profileData }: LegalizationWizardProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [currentStep, setCurrentStep] = useState<WizardStep>('intro');
   const [scanMode, setScanMode] = useState<'required' | 'additional' | 'quick-select' | 'step-by-step' | null>(null);
   const [selectedDocsToScan, setSelectedDocsToScan] = useState<string[]>([]);
@@ -1384,7 +1384,7 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
                 <Download className="w-4 h-4 text-blue-600" />
               </button>
               <button
-                onClick={() => previewPDF({ formId: 'patent-initial', data: scannedDocuments, profileData: { ...profileData, ...scannedDocuments } })}
+                onClick={() => previewPDF({ formId: 'patent-initial', data: scannedDocuments, profileData: { ...profileData, ...scannedDocuments }, userLanguage: language })}
                 className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 title={t('wizard.actionPlan.preview')}
               >
@@ -1408,7 +1408,7 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
                 <Download className="w-4 h-4 text-blue-600" />
               </button>
               <button
-                onClick={() => previewPDF({ formId: 'notification-arrival', data: scannedDocuments, profileData: { ...profileData, ...scannedDocuments } })}
+                onClick={() => previewPDF({ formId: 'notification-arrival', data: scannedDocuments, profileData: { ...profileData, ...scannedDocuments }, userLanguage: language })}
                 className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 title={t('wizard.actionPlan.preview')}
               >

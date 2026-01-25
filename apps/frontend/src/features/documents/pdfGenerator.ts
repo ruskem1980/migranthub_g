@@ -2,17 +2,24 @@ import jsPDF from 'jspdf';
 import { getFormById, FIELD_LABELS } from './formsRegistry';
 import { getFieldPlaceholder } from './utils/getMissingDocuments';
 import { initCyrillicPDF, ROBOTO_FONT_NAME } from './fonts';
+import { getTranslation, Language } from '@/lib/i18n';
+
+// Convert form ID (kebab-case) to translation key (camelCase)
+function formIdToKey(formId: string): string {
+  return formId.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+}
 
 interface GeneratePDFOptions {
   formId: string;
   data: Record<string, any>;
   profileData: Record<string, any>;
+  userLanguage?: Language; // Language for hints/explanations
 }
 
 // Cyrillic font support would require embedding fonts
 // For now, we'll generate a simple PDF with form data
 
-export async function generatePDF({ formId, data, profileData }: GeneratePDFOptions): Promise<Blob> {
+export async function generatePDF({ formId, data, profileData, userLanguage = 'ru' }: GeneratePDFOptions): Promise<Blob> {
   const form = getFormById(formId);
   if (!form) {
     throw new Error(`Form not found: ${formId}`);
@@ -36,10 +43,22 @@ export async function generatePDF({ formId, data, profileData }: GeneratePDFOpti
   doc.text('MIGRANTHUB', pageWidth / 2, y, { align: 'center' });
   y += 10;
 
-  // Title (now supports Cyrillic)
+  // Title in Russian (official document language per RF law)
   doc.setFontSize(14);
   doc.text(form.titleShort, pageWidth / 2, y, { align: 'center' });
-  y += 15;
+  y += 8;
+
+  // Title hint in user's language (if not Russian)
+  if (userLanguage !== 'ru') {
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    const titleHint = getTranslation(userLanguage, `documents.forms.${formIdToKey(formId)}.titleShort`);
+    if (titleHint && titleHint !== form.titleShort) {
+      doc.text(`(${titleHint})`, pageWidth / 2, y, { align: 'center' });
+    }
+    doc.setTextColor(0, 0, 0);
+  }
+  y += 10;
 
   // Date
   doc.setFontSize(10);
@@ -59,6 +78,7 @@ export async function generatePDF({ formId, data, profileData }: GeneratePDFOpti
   const allData = { ...profileData, ...data };
 
   form.requiredFields.forEach((field) => {
+    // Russian label (official)
     const label = FIELD_LABELS[field] || field;
     const rawValue = allData[field];
     const hasValue = rawValue !== undefined && rawValue !== null && rawValue !== '';
@@ -69,7 +89,7 @@ export async function generatePDF({ formId, data, profileData }: GeneratePDFOpti
     if (hasValue) {
       value = String(rawValue);
     } else {
-      // Use placeholder indicating which document is needed
+      // Use placeholder indicating which document is needed (in Russian)
       value = getFieldPlaceholder(field);
       isPlaceholder = true;
     }
@@ -81,8 +101,21 @@ export async function generatePDF({ formId, data, profileData }: GeneratePDFOpti
       doc.setTextColor(0, 0, 0);
     }
 
+    doc.setFontSize(10);
     doc.text(`${label}: ${value}`, margin, y);
-    y += 8;
+    y += 5;
+
+    // Add hint in user's language (small font) if not Russian
+    if (userLanguage !== 'ru') {
+      const fieldHint = getTranslation(userLanguage, `profile.fields.${field}`);
+      if (fieldHint && fieldHint !== label) {
+        doc.setFontSize(7);
+        doc.setTextColor(120, 120, 120);
+        doc.text(`(${fieldHint})`, margin + 2, y);
+        doc.setTextColor(0, 0, 0);
+      }
+    }
+    y += 5;
 
     // Check if we need a new page
     if (y > 270) {
@@ -98,8 +131,22 @@ export async function generatePDF({ formId, data, profileData }: GeneratePDFOpti
   Object.entries(data).forEach(([key, value]) => {
     if (!form.requiredFields.includes(key) && value) {
       const label = FIELD_LABELS[key] || key;
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
       doc.text(`${label}: ${value}`, margin, y);
-      y += 8;
+      y += 5;
+
+      // Add hint in user's language (small font) if not Russian
+      if (userLanguage !== 'ru') {
+        const fieldHint = getTranslation(userLanguage, `profile.fields.${key}`);
+        if (fieldHint && fieldHint !== label) {
+          doc.setFontSize(7);
+          doc.setTextColor(120, 120, 120);
+          doc.text(`(${fieldHint})`, margin + 2, y);
+          doc.setTextColor(0, 0, 0);
+        }
+      }
+      y += 5;
 
       if (y > 270) {
         doc.addPage();
