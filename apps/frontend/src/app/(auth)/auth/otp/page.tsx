@@ -113,11 +113,15 @@ export default function OtpPage() {
 
   const handleSubmit = async (code: string) => {
     setIsLoading(true);
+    setError('');
 
     try {
-      // Demo: accept code "1234"
+      // Demo bypass: accept code "1234"
       if (code === '1234') {
-        // Simulate successful auth
+        // Clear session storage first
+        sessionStorage.removeItem('auth_phone');
+
+        // Set mock user
         const now = new Date().toISOString();
         const mockUser = {
           id: generateUUID(),
@@ -139,19 +143,17 @@ export default function OtpPage() {
           createdAt: now,
           updatedAt: now,
         };
-
         setUser(mockUser);
 
-        // Clear session storage
-        sessionStorage.removeItem('auth_phone');
-
-        // Navigate to prototype (skip auth/onboarding - citizenship is in profiling)
+        // Navigate to prototype
         router.push('/prototype');
-      } else {
-        setError(t('auth.otp.wrongCode'));
-        setOtp(Array(OTP_LENGTH).fill(''));
-        inputRefs.current[0]?.focus();
+        return;
       }
+
+      // Wrong code
+      setError(t('auth.otp.wrongCode'));
+      setOtp(Array(OTP_LENGTH).fill(''));
+      inputRefs.current[0]?.focus();
     } catch (err) {
       console.error('OTP verification error:', err);
       setError(t('auth.otp.verifyError'));

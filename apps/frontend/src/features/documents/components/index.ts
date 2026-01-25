@@ -24,3 +24,4 @@ export {
   FilterBar,
 } from './DocumentsList';
 export { SampleDataButton, type SampleDataButtonProps } from './SampleDataButton';
+export { MissingFieldsForm } from './MissingFieldsForm';

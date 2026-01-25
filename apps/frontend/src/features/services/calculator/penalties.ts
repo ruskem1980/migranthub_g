@@ -21,7 +21,7 @@ export const PENALTY_REGIONS = {
   ],
 };
 
-export interface PenaltyInfo {
+export interface RegistrationPenaltyInfo {
   min: number;
   max: number;
   formatted: string;
@@ -34,7 +34,7 @@ export interface PenaltyInfo {
  * @param region - Название региона (опционально)
  * @returns Информация о штрафе с суммами и ссылкой на закон
  */
-export function getRegistrationPenalty(region?: string): PenaltyInfo {
+export function getRegistrationPenalty(region?: string): RegistrationPenaltyInfo {
   const isMoscowSpb =
     region &&
     PENALTY_REGIONS.MOSCOW_SPB.some((r) =>
@@ -104,7 +104,7 @@ export function getOverstayConsequences(overstayDays: number): OverstayConsequen
  * @param region - Название региона (опционально)
  * @returns Информация о штрафе
  */
-export function getOverstayPenalty(overstayDays: number, region?: string): PenaltyInfo {
+export function getOverstayPenalty(overstayDays: number, region?: string): RegistrationPenaltyInfo {
   // Для любого overstay применяется региональная логика штрафов
   const basePenalty = getRegistrationPenalty(region);
 

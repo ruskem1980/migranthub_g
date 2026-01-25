@@ -4,16 +4,20 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { X, ChevronRight, ChevronLeft, FileText, Download, Share2, Check, AlertCircle } from 'lucide-react';
 import {
-  FORMS_REGISTRY,
   FORMS_BY_CATEGORY,
   CATEGORY_LABELS,
-  getFormById,
   getMissingFields,
   FIELD_LABELS,
+  FIELD_SOURCE_DOCUMENT,
   type FormDefinition,
   type FormCategory,
 } from '../formsRegistry';
 import { downloadPDF, sharePDF } from '../pdfGenerator';
+import { MissingFieldsForm } from './MissingFieldsForm';
+import { PassportScanner } from '@/features/profile/components/PassportScanner';
+import { getSampleData, type DocumentType } from '../sampleData';
+import { useTranslation } from '@/lib/i18n';
+import { getMissingDocuments, type MissingDocumentsResult } from '../utils/getMissingDocuments';
 
 interface DocumentWizardProps {
   profileData: Record<string, any>;
@@ -29,13 +33,75 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
   const [additionalData, setAdditionalData] = useState<Record<string, any>>({});
   const [isGenerating, setIsGenerating] = useState(false);
   const [pdfGenerated, setPdfGenerated] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const [missingDocsInfo, setMissingDocsInfo] = useState<MissingDocumentsResult | null>(null);
 
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { language } = useTranslation();
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<Record<string, string>>();
+
+  // Handle passport scan completion
+  const handleScanComplete = (
+    data: {
+      fullName?: string;
+      fullNameLatin?: string;
+      passportNumber?: string;
+      birthDate?: string;
+      gender?: 'male' | 'female';
+      citizenship?: string;
+      passportIssueDate?: string;
+      passportExpiryDate?: string;
+    },
+    _imageUri: string
+  ) => {
+    missingFields.forEach((field) => {
+      const value = (data as Record<string, string | undefined>)[field];
+      if (value) {
+        setValue(field, value);
+      }
+    });
+    setShowScanner(false);
+  };
+
+  // Handle fill with sample data
+  const handleFillSample = () => {
+    if (!selectedForm) return;
+
+    // Map form IDs to document types for sample data
+    const formToDocumentType: Record<string, DocumentType> = {
+      'notification-arrival': 'passport',
+      'registration-extension': 'registration',
+      'patent-initial': 'patent',
+      'patent-reissue': 'patent',
+      'employer-notification': 'passport',
+      'employer-termination': 'passport',
+      'departure-notification': 'registration',
+      'patent-duplicate': 'patent',
+      'patent-territory-change': 'patent',
+      'rvp-application': 'passport',
+      'vnzh-application': 'passport',
+      'invitation-letter': 'passport',
+    };
+
+    const docType = formToDocumentType[selectedForm.id] || 'passport';
+    const sampleData = getSampleData(docType, { language });
+
+    // Fill only missing fields
+    missingFields.forEach((field) => {
+      const value = (sampleData as Record<string, unknown>)[field];
+      if (value !== undefined && value !== null) {
+        setValue(field, String(value));
+      }
+    });
+  };
 
   const handleFormSelect = (form: FormDefinition) => {
     setSelectedForm(form);
     const missing = getMissingFields(form.id, profileData);
     setMissingFields(missing);
+
+    // Check which documents are missing
+    const missingDocs = getMissingDocuments(form.id, profileData);
+    setMissingDocsInfo(missingDocs);
 
     if (missing.length > 0) {
       setStep('fill-missing');
@@ -46,6 +112,12 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
 
   const handleMissingFieldsSubmit = (data: any) => {
     setAdditionalData(data);
+    // Recalculate missing documents with the new data
+    if (selectedForm) {
+      const combinedData = { ...profileData, ...data };
+      const missingDocs = getMissingDocuments(selectedForm.id, combinedData);
+      setMissingDocsInfo(missingDocs);
+    }
     setStep('review');
   };
 
@@ -196,42 +268,24 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
 
           {/* Step: Fill Missing Fields */}
           {step === 'fill-missing' && selectedForm && (
-            <form id="fill-missing-form" onSubmit={handleSubmit(handleMissingFieldsSubmit)} className="space-y-4">
-              <div className="p-4 bg-orange-50 rounded-xl border border-orange-200 mb-4">
-                <p className="text-sm text-orange-800">
-                  Для генерации документа нужно заполнить ещё {missingFields.length} поля
-                </p>
-              </div>
-
-              {missingFields.map((field) => (
-                <div key={field}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {FIELD_LABELS[field] || field} *
-                  </label>
-                  {field.includes('Address') ? (
-                    <textarea
-                      {...register(field, { required: true })}
-                      rows={3}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                      placeholder={`Введите ${(FIELD_LABELS[field] || field).toLowerCase()}`}
-                    />
-                  ) : field.includes('Date') || field.includes('Expiry') ? (
-                    <input
-                      type="date"
-                      {...register(field, { required: true })}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      {...register(field, { required: true })}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder={`Введите ${(FIELD_LABELS[field] || field).toLowerCase()}`}
-                    />
-                  )}
-                </div>
-              ))}
-            </form>
+            <>
+              {showScanner && (
+                <PassportScanner
+                  onScanComplete={handleScanComplete}
+                  onCancel={() => setShowScanner(false)}
+                />
+              )}
+              <form id="fill-missing-form" onSubmit={handleSubmit(handleMissingFieldsSubmit)}>
+                <MissingFieldsForm
+                  missingFields={missingFields}
+                  register={register}
+                  errors={errors}
+                  onScanPassport={() => setShowScanner(true)}
+                  onFillSample={handleFillSample}
+                  language={language}
+                />
+              </form>
+            </>
           )}
 
           {/* Step: Review */}
@@ -246,20 +300,62 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
                 </p>
               </div>
 
+              {/* Warning about missing documents */}
+              {missingDocsInfo && missingDocsInfo.missingDocuments.length > 0 && (
+                <div className="p-4 bg-orange-50 rounded-xl border border-orange-200 mb-4">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold text-orange-900 mb-1">
+                        Некоторые поля будут неполными
+                      </h4>
+                      <p className="text-sm text-orange-800 mb-2">
+                        Для полного заполнения формы загрузите:
+                      </p>
+                      <ul className="text-sm text-orange-800 list-disc list-inside space-y-1">
+                        {missingDocsInfo.missingDocuments.map((doc) => (
+                          <li key={doc.document}>
+                            <span className="font-medium">{doc.label}</span>
+                            <span className="text-orange-600"> ({doc.fieldLabels.join(', ')})</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="text-sm text-orange-700 mt-2 italic">
+                        Вы можете продолжить генерацию - пустые поля будут отмечены в PDF
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <h3 className="font-semibold text-gray-900 mb-3">Данные для документа:</h3>
 
               <div className="space-y-2">
-                {selectedForm.requiredFields.map((field) => (
-                  <div
-                    key={field}
-                    className="flex justify-between py-2 border-b border-gray-100"
-                  >
-                    <span className="text-gray-500">{FIELD_LABELS[field]}</span>
-                    <span className="font-medium text-gray-900 text-right max-w-[60%]">
-                      {allData[field] || '—'}
-                    </span>
-                  </div>
-                ))}
+                {selectedForm.requiredFields.map((field) => {
+                  const value = allData[field];
+                  const hasValue = value !== undefined && value !== null && value !== '';
+                  const sourceDoc = FIELD_SOURCE_DOCUMENT[field];
+
+                  return (
+                    <div
+                      key={field}
+                      className="flex justify-between py-2 border-b border-gray-100"
+                    >
+                      <span className="text-gray-500">{FIELD_LABELS[field]}</span>
+                      {hasValue ? (
+                        <span className="font-medium text-gray-900 text-right max-w-[60%]">
+                          {value}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-orange-600 text-right max-w-[60%]">
+                          {sourceDoc && sourceDoc.document !== 'manual'
+                            ? `Нужен: ${sourceDoc.label}`
+                            : '—'}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

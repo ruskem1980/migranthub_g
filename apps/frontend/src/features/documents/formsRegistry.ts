@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 export type FormCategory = 'registration' | 'patent' | 'work' | 'other';
 
 export interface FormDefinition {
@@ -174,22 +172,223 @@ export function getMissingFields(formId: string, profileData: Record<string, any
   return form.requiredFields.filter((field) => !profileData[field]);
 }
 
-// Field labels for display
-export const FIELD_LABELS: Record<string, string> = {
-  fullName: 'ФИО',
-  fullNameLatin: 'ФИО (латиницей)',
-  passportNumber: 'Номер паспорта',
-  citizenship: 'Гражданство',
-  birthDate: 'Дата рождения',
-  gender: 'Пол',
-  entryDate: 'Дата въезда',
-  migrationCardNumber: 'Номер миграционной карты',
-  registrationAddress: 'Адрес регистрации',
-  registrationExpiry: 'Срок регистрации',
-  hostFullName: 'ФИО принимающей стороны',
-  hostAddress: 'Адрес принимающей стороны',
-  patentRegion: 'Регион патента',
-  patentExpiry: 'Срок действия патента',
-  employerName: 'Наименование работодателя',
-  employerINN: 'ИНН работодателя',
+// Field metadata types
+export type FieldCategory = 'personal' | 'document' | 'thirdParty' | 'work';
+export type FieldSource = 'passport' | 'migrationCard' | 'registration' | 'patent' | 'profile' | 'manual';
+
+export interface FieldMetadata {
+  label: string;
+  category: FieldCategory;
+  source: FieldSource;
+  placeholder?: string;
+  inputType?: 'text' | 'date' | 'textarea' | 'select';
+}
+
+// Field metadata with categories and sources
+export const FIELD_METADATA: Record<string, FieldMetadata> = {
+  fullName: {
+    label: 'ФИО',
+    category: 'personal',
+    source: 'passport',
+    placeholder: 'Иванов Иван Иванович',
+    inputType: 'text',
+  },
+  fullNameLatin: {
+    label: 'ФИО (латиницей)',
+    category: 'personal',
+    source: 'passport',
+    placeholder: 'IVANOV IVAN',
+    inputType: 'text',
+  },
+  passportNumber: {
+    label: 'Номер паспорта',
+    category: 'document',
+    source: 'passport',
+    placeholder: 'AA1234567',
+    inputType: 'text',
+  },
+  citizenship: {
+    label: 'Гражданство',
+    category: 'personal',
+    source: 'passport',
+    placeholder: 'Узбекистан',
+    inputType: 'text',
+  },
+  birthDate: {
+    label: 'Дата рождения',
+    category: 'personal',
+    source: 'passport',
+    inputType: 'date',
+  },
+  gender: {
+    label: 'Пол',
+    category: 'personal',
+    source: 'passport',
+    inputType: 'select',
+  },
+  entryDate: {
+    label: 'Дата въезда',
+    category: 'document',
+    source: 'migrationCard',
+    inputType: 'date',
+  },
+  migrationCardNumber: {
+    label: 'Номер миграционной карты',
+    category: 'document',
+    source: 'migrationCard',
+    placeholder: '1234 5678901',
+    inputType: 'text',
+  },
+  registrationAddress: {
+    label: 'Адрес регистрации',
+    category: 'document',
+    source: 'registration',
+    placeholder: 'г. Москва, ул. Примерная, д. 1, кв. 1',
+    inputType: 'textarea',
+  },
+  registrationExpiry: {
+    label: 'Срок регистрации',
+    category: 'document',
+    source: 'registration',
+    inputType: 'date',
+  },
+  hostFullName: {
+    label: 'ФИО принимающей стороны',
+    category: 'thirdParty',
+    source: 'manual',
+    placeholder: 'Петров Петр Петрович',
+    inputType: 'text',
+  },
+  hostAddress: {
+    label: 'Адрес принимающей стороны',
+    category: 'thirdParty',
+    source: 'manual',
+    placeholder: 'г. Москва, ул. Примерная, д. 1, кв. 1',
+    inputType: 'textarea',
+  },
+  patentRegion: {
+    label: 'Регион патента',
+    category: 'work',
+    source: 'patent',
+    placeholder: 'Москва',
+    inputType: 'text',
+  },
+  patentExpiry: {
+    label: 'Срок действия патента',
+    category: 'work',
+    source: 'patent',
+    inputType: 'date',
+  },
+  employerName: {
+    label: 'Наименование работодателя',
+    category: 'work',
+    source: 'manual',
+    placeholder: 'ООО "Компания"',
+    inputType: 'text',
+  },
+  employerINN: {
+    label: 'ИНН работодателя',
+    category: 'work',
+    source: 'manual',
+    placeholder: '7712345678',
+    inputType: 'text',
+  },
+};
+
+// Category labels for field groups
+export const CATEGORY_FIELD_LABELS: Record<FieldCategory, { title: string; description: string }> = {
+  personal: {
+    title: 'Личные данные',
+    description: 'Данные из вашего паспорта',
+  },
+  document: {
+    title: 'Данные документов',
+    description: 'Информация из миграционных документов',
+  },
+  thirdParty: {
+    title: 'Данные третьих лиц',
+    description: 'Введите данные принимающей стороны. Эти данные не сохраняются в вашем профиле.',
+  },
+  work: {
+    title: 'Данные о работе',
+    description: 'Информация о патенте и работодателе',
+  },
+};
+
+// Group fields by category
+export function groupFieldsByCategory(fields: string[]): Record<FieldCategory, string[]> {
+  const grouped: Record<FieldCategory, string[]> = {
+    personal: [],
+    document: [],
+    thirdParty: [],
+    work: [],
+  };
+
+  for (const field of fields) {
+    const meta = FIELD_METADATA[field];
+    if (meta) {
+      grouped[meta.category].push(field);
+    }
+  }
+
+  return grouped;
+}
+
+// Field labels for display (backward compatibility)
+export const FIELD_LABELS: Record<string, string> = Object.fromEntries(
+  Object.entries(FIELD_METADATA).map(([key, meta]) => [key, meta.label])
+);
+
+// Document type labels for user display
+export const DOCUMENT_LABELS: Record<string, string> = {
+  passport: 'Паспорт',
+  migration_card: 'Миграционная карта',
+  registration: 'Регистрация',
+  patent: 'Патент',
+  manual: 'Ручной ввод',
+  profile: 'Профиль',
+};
+
+// Mapping: which document each field comes from
+export const FIELD_SOURCE_DOCUMENT: Record<string, { document: string; label: string }> = {
+  // From passport
+  fullName: { document: 'passport', label: 'Паспорт' },
+  fullNameLatin: { document: 'passport', label: 'Паспорт' },
+  lastName: { document: 'passport', label: 'Паспорт' },
+  firstName: { document: 'passport', label: 'Паспорт' },
+  middleName: { document: 'passport', label: 'Паспорт' },
+  birthDate: { document: 'passport', label: 'Паспорт' },
+  gender: { document: 'passport', label: 'Паспорт' },
+  citizenship: { document: 'passport', label: 'Паспорт' },
+  passportNumber: { document: 'passport', label: 'Паспорт' },
+  passportSeries: { document: 'passport', label: 'Паспорт' },
+  passportIssueDate: { document: 'passport', label: 'Паспорт' },
+  passportExpiryDate: { document: 'passport', label: 'Паспорт' },
+  passportIssuedBy: { document: 'passport', label: 'Паспорт' },
+  birthPlace: { document: 'passport', label: 'Паспорт' },
+
+  // From migration card
+  entryDate: { document: 'migration_card', label: 'Миграционная карта' },
+  migrationCardNumber: { document: 'migration_card', label: 'Миграционная карта' },
+  migrationCardSeries: { document: 'migration_card', label: 'Миграционная карта' },
+  entryPoint: { document: 'migration_card', label: 'Миграционная карта' },
+  stayPurpose: { document: 'migration_card', label: 'Миграционная карта' },
+  stayUntil: { document: 'migration_card', label: 'Миграционная карта' },
+
+  // From registration
+  registrationAddress: { document: 'registration', label: 'Регистрация' },
+  registrationDate: { document: 'registration', label: 'Регистрация' },
+  registrationExpiry: { document: 'registration', label: 'Регистрация' },
+  hostFullName: { document: 'registration', label: 'Регистрация' },
+
+  // From patent
+  patentNumber: { document: 'patent', label: 'Патент' },
+  patentRegion: { document: 'patent', label: 'Патент' },
+  patentExpiry: { document: 'patent', label: 'Патент' },
+  inn: { document: 'patent', label: 'Патент' },
+
+  // Manual input (third party data, employer data)
+  hostAddress: { document: 'manual', label: 'Ручной ввод' },
+  employerName: { document: 'manual', label: 'Ручной ввод' },
+  employerINN: { document: 'manual', label: 'Ручной ввод' },
 };

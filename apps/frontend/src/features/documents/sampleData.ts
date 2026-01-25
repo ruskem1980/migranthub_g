@@ -193,3 +193,125 @@ export function getSampleData(
       throw new Error(`Unknown document type: ${documentType}`);
   }
 }
+
+/**
+ * Маппинг полей формы на ключи образцов данных
+ */
+const FIELD_TO_SAMPLE_KEY: Record<string, { docType: DocumentType; key: string }> = {
+  // Personal data from passport
+  fullName: { docType: 'passport', key: '_computed_fullName' },
+  fullNameLatin: { docType: 'passport', key: '_computed_fullNameLatin' },
+  passportNumber: { docType: 'passport', key: 'passportNumber' },
+  citizenship: { docType: 'passport', key: 'citizenship' },
+  birthDate: { docType: 'passport', key: 'birthDate' },
+
+  // Migration card data
+  entryDate: { docType: 'migrationCard', key: 'entryDate' },
+  migrationCardNumber: { docType: 'migrationCard', key: 'cardNumber' },
+
+  // Registration data
+  registrationAddress: { docType: 'registration', key: 'address' },
+  hostFullName: { docType: 'registration', key: 'hostFullName' },
+  hostAddress: { docType: 'migrationCard', key: 'hostAddress' },
+
+  // Patent data
+  patentRegion: { docType: 'patent', key: 'region' },
+  employerName: { docType: 'patent', key: '_static_employer' },
+};
+
+/**
+ * Получить локализованный placeholder для поля формы
+ *
+ * @param fieldName Имя поля формы
+ * @param language Код языка (ru, uz, tg, ky, en)
+ * @returns Локализованный placeholder или undefined
+ *
+ * @example
+ * const placeholder = getLocalizedPlaceholder('fullName', 'uz');
+ * // Returns: "RAHIMOV ALISHER BAKHTIYOROVICH"
+ */
+export function getLocalizedPlaceholder(fieldName: string, language: string = 'ru'): string | undefined {
+  const mapping = FIELD_TO_SAMPLE_KEY[fieldName];
+  if (!mapping) return undefined;
+
+  try {
+    // Handle computed fields that need special processing
+    if (mapping.key.startsWith('_computed_')) {
+      return getComputedPlaceholder(mapping.key, language);
+    }
+
+    // Handle static placeholders that don't depend on sample data
+    if (mapping.key.startsWith('_static_')) {
+      return getStaticPlaceholder(mapping.key);
+    }
+
+    const sampleData = getSampleData(mapping.docType, { language });
+    const value = (sampleData as Record<string, unknown>)[mapping.key];
+
+    if (value === undefined || value === null) return undefined;
+
+    // Format dates for display
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      return value; // Keep dates as-is for input[type=date]
+    }
+
+    return String(value);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Compute placeholder for fields that need to be assembled from multiple sample values
+ */
+function getComputedPlaceholder(computedKey: string, language: string): string | undefined {
+  const passportSample = getSampleData('passport', { language }) as PassportData;
+
+  switch (computedKey) {
+    case '_computed_fullName': {
+      const parts = [passportSample.lastName, passportSample.firstName, passportSample.middleName].filter(Boolean);
+      return parts.join(' ');
+    }
+    case '_computed_fullNameLatin': {
+      const parts = [passportSample.lastNameLatin, passportSample.firstNameLatin].filter(Boolean);
+      return parts.join(' ');
+    }
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Get static placeholder that doesn't depend on language
+ */
+function getStaticPlaceholder(staticKey: string): string | undefined {
+  switch (staticKey) {
+    case '_static_employer':
+      return 'ООО "Компания"';
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Получить все локализованные placeholder'ы для набора полей
+ *
+ * @param fields Массив имён полей
+ * @param language Код языка
+ * @returns Объект с placeholder'ами
+ */
+export function getLocalizedPlaceholders(
+  fields: string[],
+  language: string = 'ru'
+): Record<string, string> {
+  const placeholders: Record<string, string> = {};
+
+  for (const field of fields) {
+    const placeholder = getLocalizedPlaceholder(field, language);
+    if (placeholder) {
+      placeholders[field] = placeholder;
+    }
+  }
+
+  return placeholders;
+}

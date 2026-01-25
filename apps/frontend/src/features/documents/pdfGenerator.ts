@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
-import { getFormById, FIELD_LABELS, type FormDefinition } from './formsRegistry';
+import { getFormById, FIELD_LABELS } from './formsRegistry';
+import { getFieldPlaceholder } from './utils/getMissingDocuments';
 
 interface GeneratePDFOptions {
   formId: string;
@@ -59,7 +60,26 @@ export async function generatePDF({ formId, data, profileData }: GeneratePDFOpti
 
   form.requiredFields.forEach((field) => {
     const label = FIELD_LABELS[field] || field;
-    const value = allData[field] || '_______________';
+    const rawValue = allData[field];
+    const hasValue = rawValue !== undefined && rawValue !== null && rawValue !== '';
+
+    let value: string;
+    let isPlaceholder = false;
+
+    if (hasValue) {
+      value = String(rawValue);
+    } else {
+      // Use placeholder indicating which document is needed
+      value = getFieldPlaceholder(field);
+      isPlaceholder = true;
+    }
+
+    // Set gray color for placeholders
+    if (isPlaceholder) {
+      doc.setTextColor(128, 128, 128);
+    } else {
+      doc.setTextColor(0, 0, 0);
+    }
 
     // For simplicity, we're using basic text
     // In production, use proper Cyrillic font
@@ -72,6 +92,9 @@ export async function generatePDF({ formId, data, profileData }: GeneratePDFOpti
       y = margin;
     }
   });
+
+  // Reset text color
+  doc.setTextColor(0, 0, 0);
 
   // Additional fields from form data
   Object.entries(data).forEach(([key, value]) => {
