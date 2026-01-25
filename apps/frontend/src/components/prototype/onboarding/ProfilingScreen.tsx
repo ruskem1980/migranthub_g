@@ -12,7 +12,7 @@ interface ProfilingScreenProps {
 
 export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
   const { t } = useTranslation();
-  const { profile, setProfile, updateProfile } = useProfileStore();
+  const { updateProfile } = useProfileStore();
   const [citizenship, setCitizenship] = useState('');
   const [entryDate, setEntryDate] = useState('');
   const [region, setRegion] = useState('');
@@ -74,26 +74,9 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
       patentRegion: getRegionValue(),
     };
 
-    if (profile) {
-      // Update existing profile
-      updateProfile(profileData);
-    } else {
-      // Create new profile with required fields
-      setProfile({
-        id: crypto.randomUUID(),
-        userId: crypto.randomUUID(),
-        fullName: '',
-        passportNumber: '',
-        citizenship: profileData.citizenship,
-        entryDate: profileData.entryDate,
-        purpose: profileData.purpose,
-        patentRegion: profileData.patentRegion,
-        language: 'ru',
-        onboardingCompleted: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-    }
+    // Always use updateProfile - it creates new profile if needed
+    // This ensures profiling data always overwrites existing values
+    updateProfile(profileData);
     onNext();
   };
 
