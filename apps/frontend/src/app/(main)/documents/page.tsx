@@ -1,34 +1,119 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, FileText, Clock, CheckCircle } from 'lucide-react';
-import { DocumentWizard, FORMS_REGISTRY, CATEGORY_LABELS, type FormCategory } from '@/features/documents';
+import { ArrowLeft, Plus, X, FileText, CreditCard, Briefcase, Home } from 'lucide-react';
+import {
+  DocumentWizard,
+  DocumentsList,
+  documentTypeLabels,
+  type DocumentTypeValue,
+} from '@/features/documents';
+import { useDocumentStorage } from '@/features/documents/hooks/useDocumentStorage';
 import { useProfileStore } from '@/lib/stores';
+import type { TypedDocument } from '@/lib/db/types';
 
-interface GeneratedDocument {
-  id: string;
-  formId: string;
-  title: string;
-  createdAt: string;
-  status: 'draft' | 'completed';
-}
+const documentTypeConfig: Record<
+  DocumentTypeValue,
+  {
+    icon: React.ComponentType<{ className?: string }>;
+    color: string;
+    bgColor: string;
+    description: string;
+  }
+> = {
+  passport: {
+    icon: CreditCard,
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-100',
+    description: 'Основной документ удостоверяющий личность',
+  },
+  migration_card: {
+    icon: FileText,
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-100',
+    description: 'Подтверждение легального въезда в РФ',
+  },
+  patent: {
+    icon: Briefcase,
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-100',
+    description: 'Разрешение на работу для иностранцев',
+  },
+  registration: {
+    icon: Home,
+    color: 'text-green-600',
+    bgColor: 'bg-green-100',
+    description: 'Миграционный учёт по месту пребывания',
+  },
+};
 
 export default function DocumentsPage() {
   const router = useRouter();
   const [showWizard, setShowWizard] = useState(false);
+  const [showTypeSelector, setShowTypeSelector] = useState(false);
+  const [selectedType, setSelectedType] = useState<DocumentTypeValue | null>(null);
+  const [documents, setDocuments] = useState<TypedDocument[]>([]);
   const { profile } = useProfileStore();
+  const { getDocuments, isLoading, deleteDocument } = useDocumentStorage();
 
-  // Demo: show some generated documents
-  const [documents] = useState<GeneratedDocument[]>([
-    {
-      id: '1',
-      formId: 'notification-arrival',
-      title: 'Уведомление о прибытии',
-      createdAt: new Date().toISOString(),
-      status: 'completed',
+  // Загрузка документов
+  const loadDocuments = useCallback(async () => {
+    if (!profile?.id) return;
+
+    const result = await getDocuments(profile.id);
+    if (result.success) {
+      setDocuments(result.data);
+    }
+  }, [profile?.id, getDocuments]);
+
+  useEffect(() => {
+    loadDocuments();
+  }, [loadDocuments]);
+
+  // Обработчик обновления
+  const handleRefresh = useCallback(async () => {
+    await loadDocuments();
+  }, [loadDocuments]);
+
+  // Открыть селектор типа документа
+  const handleAddDocument = useCallback(() => {
+    setShowTypeSelector(true);
+  }, []);
+
+  // Выбрать тип документа и перейти к форме
+  const handleSelectType = useCallback((type: DocumentTypeValue) => {
+    setSelectedType(type);
+    setShowTypeSelector(false);
+
+    // Переход на страницу формы соответствующего типа
+    router.push(`/documents/new/${type}`);
+  }, [router]);
+
+  // Перейти к детальной странице документа
+  const handleSelectDocument = useCallback(
+    (document: TypedDocument) => {
+      router.push(`/documents/${document.id}`);
     },
-  ]);
+    [router]
+  );
+
+  // Удаление документа
+  const handleDeleteDocument = useCallback(
+    async (document: TypedDocument) => {
+      const confirmed = window.confirm(
+        `Удалить "${documentTypeLabels[document.type]}"? Это действие нельзя отменить.`
+      );
+
+      if (confirmed) {
+        const result = await deleteDocument(document.id);
+        if (result.success) {
+          setDocuments((prev) => prev.filter((d) => d.id !== document.id));
+        }
+      }
+    },
+    [deleteDocument]
+  );
 
   const profileData = profile || {
     fullName: 'Усманов Алишер Бахтиярович',
@@ -56,101 +141,85 @@ export default function DocumentsPage() {
           className="flex items-center gap-2 bg-blue-600 text-white font-semibold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-5 h-5" />
-          Создать
+          Формы
         </button>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-4 pb-24">
-        {/* Quick stats */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-white p-4 rounded-xl border border-gray-200">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <FileText className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {FORMS_REGISTRY.length}
-                </div>
-                <div className="text-sm text-gray-500">Доступных форм</div>
-              </div>
+      {/* Documents List */}
+      <DocumentsList
+        documents={documents}
+        isLoading={isLoading}
+        onRefresh={handleRefresh}
+        onAddDocument={handleAddDocument}
+        onSelectDocument={handleSelectDocument}
+        onDeleteDocument={handleDeleteDocument}
+        showWarnings={true}
+        showFilters={documents.length > 3}
+        emptyStateAction={handleAddDocument}
+      />
+
+      {/* Document Type Selector Modal */}
+      {showTypeSelector && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center">
+          <div className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-2xl max-h-[80vh] flex flex-col animate-in slide-in-from-bottom">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h2 className="text-lg font-bold text-gray-900">
+                Добавить документ
+              </h2>
+              <button
+                onClick={() => setShowTypeSelector(false)}
+                className="p-2 -mr-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-600" />
+              </button>
             </div>
-          </div>
-          <div className="bg-white p-4 rounded-xl border border-gray-200">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {documents.length}
-                </div>
-                <div className="text-sm text-gray-500">Создано</div>
-              </div>
+
+            {/* Document Types */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {(
+                Object.entries(documentTypeConfig) as [
+                  DocumentTypeValue,
+                  (typeof documentTypeConfig)[DocumentTypeValue],
+                ][]
+              ).map(([type, config]) => {
+                const Icon = config.icon;
+                return (
+                  <button
+                    key={type}
+                    onClick={() => handleSelectType(type)}
+                    className="w-full flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all active:scale-[0.98] text-left"
+                  >
+                    <div
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center ${config.bgColor}`}
+                    >
+                      <Icon className={`w-6 h-6 ${config.color}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900">
+                        {documentTypeLabels[type]}
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-0.5">
+                        {config.description}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Info */}
+            <div className="p-4 border-t border-gray-200 bg-gray-50">
+              <p className="text-xs text-gray-500 text-center">
+                Все данные хранятся только на вашем устройстве в зашифрованном
+                виде
+              </p>
             </div>
           </div>
         </div>
+      )}
 
-        {/* Generated documents */}
-        {documents.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-              Созданные документы
-            </h2>
-            <div className="space-y-3">
-              {documents.map((doc) => (
-                <div
-                  key={doc.id}
-                  className="bg-white p-4 rounded-xl border border-gray-200"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                      <FileText className="w-6 h-6 text-green-600" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-gray-900">
-                        {doc.title}
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Clock className="w-4 h-4" />
-                        {new Date(doc.createdAt).toLocaleDateString('ru-RU')}
-                      </div>
-                    </div>
-                    <div className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
-                      Готов
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Create new button */}
-        <button
-          onClick={() => setShowWizard(true)}
-          className="w-full flex items-center justify-center gap-3 p-6 bg-blue-50 border-2 border-dashed border-blue-300 rounded-xl hover:bg-blue-100 transition-colors"
-        >
-          <Plus className="w-6 h-6 text-blue-600" />
-          <span className="font-semibold text-blue-600">Создать новый документ</span>
-        </button>
-
-        {/* Info */}
-        <div className="mt-6 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
-          <h3 className="font-semibold text-yellow-900 mb-2">
-            Как это работает?
-          </h3>
-          <ol className="text-sm text-yellow-800 space-y-1">
-            <li>1. Выберите нужный документ из списка</li>
-            <li>2. Заполните недостающие данные (если нужно)</li>
-            <li>3. Проверьте информацию</li>
-            <li>4. Скачайте готовый PDF</li>
-          </ol>
-        </div>
-      </div>
-
-      {/* Document Wizard */}
+      {/* Document Wizard (for forms generation) */}
       {showWizard && (
         <DocumentWizard
           profileData={profileData}
