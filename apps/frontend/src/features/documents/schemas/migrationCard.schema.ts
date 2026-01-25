@@ -36,8 +36,8 @@ export const visitPurposeLabels: Record<VisitPurpose, string> = {
   other: 'Иная',
 };
 
-// Схема миграционной карты
-export const migrationCardSchema = z.object({
+// Базовая схема миграционной карты (без refinements для возможности partial)
+const migrationCardBaseSchema = z.object({
   // Номер миграционной карты (серия + номер)
   cardNumber: z
     .string()
@@ -78,7 +78,10 @@ export const migrationCardSchema = z.object({
     .string()
     .max(500, 'Адрес слишком длинный')
     .optional(),
-}).refine(
+});
+
+// Схема миграционной карты (с валидацией)
+export const migrationCardSchema = migrationCardBaseSchema.refine(
   (data) => new Date(data.stayUntil) > new Date(data.entryDate),
   {
     message: 'Срок пребывания должен быть позже даты въезда',
@@ -100,6 +103,6 @@ export const migrationCardSchema = z.object({
 // Типы
 export type MigrationCardData = z.infer<typeof migrationCardSchema>;
 
-// Схема для частичного обновления
-export const migrationCardUpdateSchema = migrationCardSchema.partial();
+// Схема для частичного обновления (использует базовую схему без refinements)
+export const migrationCardUpdateSchema = migrationCardBaseSchema.partial();
 export type MigrationCardUpdateData = z.infer<typeof migrationCardUpdateSchema>;

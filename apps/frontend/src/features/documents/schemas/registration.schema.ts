@@ -22,8 +22,8 @@ export const registrationTypeLabels: Record<RegistrationType, string> = {
   permanent: 'Постоянная (ВНЖ)',
 };
 
-// Схема регистрации (миграционного учёта)
-export const registrationSchema = z.object({
+// Базовая схема регистрации (без refinements для возможности partial)
+const registrationBaseSchema = z.object({
   // Тип регистрации
   type: z.enum(registrationTypes, {
     message: 'Выберите тип регистрации',
@@ -94,7 +94,10 @@ export const registrationSchema = z.object({
     .string()
     .max(300, 'Текст слишком длинный')
     .optional(),
-}).refine(
+});
+
+// Схема регистрации (миграционного учёта) с валидацией
+export const registrationSchema = registrationBaseSchema.refine(
   (data) => new Date(data.expiryDate) > new Date(data.registrationDate),
   {
     message: 'Срок действия должен быть позже даты регистрации',
@@ -121,8 +124,8 @@ export const registrationSchema = z.object({
 // Типы
 export type RegistrationData = z.infer<typeof registrationSchema>;
 
-// Схема для частичного обновления
-export const registrationUpdateSchema = registrationSchema.partial();
+// Схема для частичного обновления (использует базовую схему без refinements)
+export const registrationUpdateSchema = registrationBaseSchema.partial();
 export type RegistrationUpdateData = z.infer<typeof registrationUpdateSchema>;
 
 // Хелпер: расчёт дней до окончания регистрации

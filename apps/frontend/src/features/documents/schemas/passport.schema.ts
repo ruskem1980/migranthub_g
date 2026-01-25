@@ -10,8 +10,8 @@ const dateString = z
   .regex(DATE_REGEX, 'Дата должна быть в формате ГГГГ-ММ-ДД')
   .refine((date) => !isNaN(Date.parse(date)), 'Некорректная дата');
 
-// Схема паспорта
-export const passportSchema = z.object({
+// Базовая схема паспорта (без refinements для возможности partial)
+const passportBaseSchema = z.object({
   // Фамилия
   lastName: z
     .string()
@@ -87,7 +87,10 @@ export const passportSchema = z.object({
     .string()
     .min(1, 'Место рождения обязательно')
     .max(200, 'Текст слишком длинный'),
-}).refine(
+});
+
+// Схема паспорта (с валидацией)
+export const passportSchema = passportBaseSchema.refine(
   (data) => new Date(data.expiryDate) > new Date(data.issueDate),
   {
     message: 'Срок действия должен быть позже даты выдачи',
@@ -104,6 +107,6 @@ export const passportSchema = z.object({
 // Тип паспорта, выведенный из схемы
 export type PassportData = z.infer<typeof passportSchema>;
 
-// Схема для частичного обновления
-export const passportUpdateSchema = passportSchema.partial();
+// Схема для частичного обновления (использует базовую схему без refinements)
+export const passportUpdateSchema = passportBaseSchema.partial();
 export type PassportUpdateData = z.infer<typeof passportUpdateSchema>;
