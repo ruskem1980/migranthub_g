@@ -16,44 +16,8 @@ export default function Home() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    // DEV: Сброс для тестирования - каждый раз с чистого листа
-    if (process.env.NODE_ENV === 'development') {
-      localStorage.removeItem('migranthub-welcome-completed');
-      localStorage.removeItem('migranthub-auth');
-      localStorage.removeItem('migranthub-legal-agreed');
-      sessionStorage.clear();
-    }
-
-    const determineRoute = () => {
-      // Шаг 1: Проверяем, прошел ли пользователь Welcome
-      const welcomeCompleted = localStorage.getItem('migranthub-welcome-completed');
-      if (!welcomeCompleted) {
-        router.replace('/welcome');
-        return;
-      }
-
-      // Шаг 2: Проверяем авторизацию
-      try {
-        const authData = localStorage.getItem('migranthub-auth');
-        if (authData) {
-          const parsed = JSON.parse(authData);
-          if (parsed?.state?.isAuthenticated) {
-            // Авторизован → идём в приложение
-            router.replace('/prototype');
-            return;
-          }
-        }
-      } catch (e) {
-        console.error('Auth check error:', e);
-      }
-
-      // Не авторизован → на авторизацию
-      router.replace('/auth/method');
-    };
-
-    // Небольшая задержка для гарантии доступности localStorage
-    const timer = setTimeout(determineRoute, 200);
-    return () => clearTimeout(timer);
+    // Сразу переходим на welcome (ценности + выбор языка)
+    router.replace('/welcome');
   }, [router]);
 
   // Splash screen пока определяем маршрут
