@@ -10,6 +10,9 @@ import {
   AlertCircle,
   Clock,
   CheckCircle,
+  Hash,
+  UserCheck,
+  HeartPulse,
 } from 'lucide-react';
 import type { TypedDocument, DocumentTypeValue, DocumentStatus } from '@/lib/db/types';
 import { documentTypeLabels } from '@/lib/db/types';
@@ -28,6 +31,9 @@ const documentIcons: Record<DocumentTypeValue, React.ComponentType<{ className?:
   migration_card: FileText,
   patent: Briefcase,
   registration: Home,
+  inn: Hash,
+  snils: UserCheck,
+  dms: HeartPulse,
 };
 
 /**
@@ -38,6 +44,9 @@ const documentTypeColors: Record<DocumentTypeValue, string> = {
   migration_card: 'bg-purple-100 text-purple-600',
   patent: 'bg-orange-100 text-orange-600',
   registration: 'bg-green-100 text-green-600',
+  inn: 'bg-indigo-100 text-indigo-600',
+  snils: 'bg-teal-100 text-teal-600',
+  dms: 'bg-red-100 text-red-600',
 };
 
 interface DocumentCardProps {
@@ -77,6 +86,12 @@ export function DocumentCard({
           : null;
       case 'registration':
         return null;
+      case 'inn':
+        return document.data.innNumber || null;
+      case 'snils':
+        return document.data.snilsNumber || null;
+      case 'dms':
+        return document.data.policyNumber || null;
       default:
         return null;
     }

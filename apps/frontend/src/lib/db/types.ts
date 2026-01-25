@@ -4,6 +4,9 @@ import type {
   MigrationCardData,
   PatentData,
   RegistrationData,
+  InnData,
+  SnilsData,
+  DmsData,
 } from '@/features/documents/schemas';
 
 /**
@@ -14,6 +17,9 @@ export const DocumentType = {
   MIGRATION_CARD: 'migration_card',
   PATENT: 'patent',
   REGISTRATION: 'registration',
+  INN: 'inn',
+  SNILS: 'snils',
+  DMS: 'dms',
 } as const;
 
 export type DocumentTypeValue = (typeof DocumentType)[keyof typeof DocumentType];
@@ -94,6 +100,45 @@ export interface RegistrationDocument {
   updatedAt: string;
 }
 
+export interface InnDocument {
+  type: 'inn';
+  id: string;
+  userId: string;
+  title: string;
+  data: InnData;
+  expiryDate?: string;
+  fileUri?: string;
+  thumbnailUri?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SnilsDocument {
+  type: 'snils';
+  id: string;
+  userId: string;
+  title: string;
+  data: SnilsData;
+  expiryDate?: string;
+  fileUri?: string;
+  thumbnailUri?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DmsDocument {
+  type: 'dms';
+  id: string;
+  userId: string;
+  title: string;
+  data: DmsData;
+  expiryDate?: string;
+  fileUri?: string;
+  thumbnailUri?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 /**
  * Discriminated union для типизированных документов
  */
@@ -101,7 +146,10 @@ export type TypedDocument =
   | PassportDocument
   | MigrationCardDocument
   | PatentDocument
-  | RegistrationDocument;
+  | RegistrationDocument
+  | InnDocument
+  | SnilsDocument
+  | DmsDocument;
 
 /**
  * Данные документа по типу
@@ -111,6 +159,9 @@ export type DocumentDataByType = {
   migration_card: MigrationCardData;
   patent: PatentData;
   registration: RegistrationData;
+  inn: InnData;
+  snils: SnilsData;
+  dms: DmsData;
 };
 
 /**
@@ -183,6 +234,9 @@ export const documentTypeLabels: Record<DocumentTypeValue, string> = {
   migration_card: 'Миграционная карта',
   patent: 'Патент на работу',
   registration: 'Регистрация',
+  inn: 'ИНН',
+  snils: 'СНИЛС',
+  dms: 'ДМС',
 };
 
 /**
@@ -193,6 +247,9 @@ export const documentTypeIcons: Record<DocumentTypeValue, string> = {
   migration_card: 'file-text',
   patent: 'briefcase',
   registration: 'home',
+  inn: 'hash',
+  snils: 'user-check',
+  dms: 'heart-pulse',
 };
 
 /**
@@ -203,6 +260,9 @@ export const documentTypePriority: Record<DocumentTypeValue, number> = {
   migration_card: 2,
   registration: 3,
   patent: 4,
+  inn: 5,
+  snils: 6,
+  dms: 7,
 };
 
 /**

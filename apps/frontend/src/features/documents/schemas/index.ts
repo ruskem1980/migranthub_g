@@ -3,6 +3,9 @@ import { passportSchema, type PassportData } from './passport.schema';
 import { migrationCardSchema, type MigrationCardData } from './migrationCard.schema';
 import { patentSchema, type PatentData } from './patent.schema';
 import { registrationSchema, type RegistrationData } from './registration.schema';
+import { innSchema, type InnData } from './inn.schema';
+import { snilsSchema, type SnilsData } from './snils.schema';
+import { dmsSchema, type DmsData } from './dms.schema';
 
 // Passport
 export {
@@ -50,12 +53,42 @@ export {
   type RegistrationType,
 } from './registration.schema';
 
+// INN (ИНН)
+export {
+  innSchema,
+  innUpdateSchema,
+  type InnData,
+  type InnUpdateData,
+} from './inn.schema';
+
+// SNILS (СНИЛС)
+export {
+  snilsSchema,
+  snilsUpdateSchema,
+  type SnilsData,
+  type SnilsUpdateData,
+} from './snils.schema';
+
+// DMS (ДМС)
+export {
+  dmsSchema,
+  dmsUpdateSchema,
+  isDmsExpired,
+  isDmsExpiringSoon,
+  getDaysUntilDmsExpiry,
+  type DmsData,
+  type DmsUpdateData,
+} from './dms.schema';
+
 // Document types enum
 export const DocumentType = {
   PASSPORT: 'passport',
   MIGRATION_CARD: 'migration_card',
   PATENT: 'patent',
   REGISTRATION: 'registration',
+  INN: 'inn',
+  SNILS: 'snils',
+  DMS: 'dms',
 } as const;
 
 export type DocumentTypeValue = (typeof DocumentType)[keyof typeof DocumentType];
@@ -66,6 +99,9 @@ export const documentTypeLabels: Record<DocumentTypeValue, string> = {
   migration_card: 'Миграционная карта',
   patent: 'Патент на работу',
   registration: 'Регистрация',
+  inn: 'ИНН',
+  snils: 'СНИЛС',
+  dms: 'ДМС',
 };
 
 // Union type для всех данных документов
@@ -73,13 +109,19 @@ export type DocumentData =
   | { type: 'passport'; data: PassportData }
   | { type: 'migration_card'; data: MigrationCardData }
   | { type: 'patent'; data: PatentData }
-  | { type: 'registration'; data: RegistrationData };
+  | { type: 'registration'; data: RegistrationData }
+  | { type: 'inn'; data: InnData }
+  | { type: 'snils'; data: SnilsData }
+  | { type: 'dms'; data: DmsData };
 
 export const documentSchemas = {
   passport: passportSchema,
   migration_card: migrationCardSchema,
   patent: patentSchema,
   registration: registrationSchema,
+  inn: innSchema,
+  snils: snilsSchema,
+  dms: dmsSchema,
 } as const;
 
 export function getDocumentSchema(type: DocumentTypeValue): z.ZodSchema {
