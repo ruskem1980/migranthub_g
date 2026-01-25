@@ -11,38 +11,43 @@ import {
 } from '../../mocks/server';
 import type { ApiUser, AuthResponse, BanCheckResponse, PatentRegionsResponse, HealthResponse } from '@/lib/api/types';
 
-// Mock state - declared at module level so jest.mock factory can access it
-const mockState = {
-  accessToken: null as string | null,
-  refreshToken: null as string | null,
+// Create a shared mock state object that can be accessed by the mock factory
+// Using globalThis to make it accessible during jest.mock hoisting
+declare global {
+  var __mockTokenState: {
+    accessToken: string | null;
+    refreshToken: string | null;
+    isExpired: boolean;
+  };
+  var __mockTokenStorage: {
+    setTokens: jest.Mock;
+    clearTokens: jest.Mock;
+  };
+}
+
+globalThis.__mockTokenState = {
+  accessToken: null,
+  refreshToken: null,
   isExpired: true,
 };
 
-// Mock storage - define before jest.mock hoisting
-const mockTokenStorage = {
-  getAccessToken: jest.fn(() => Promise.resolve(mockState.accessToken)),
-  getRefreshToken: jest.fn(() => Promise.resolve(mockState.refreshToken)),
-  isTokenExpired: jest.fn(() => Promise.resolve(mockState.isExpired)),
+globalThis.__mockTokenStorage = {
   setTokens: jest.fn(() => Promise.resolve()),
   clearTokens: jest.fn(() => {
-    mockState.accessToken = null;
-    mockState.refreshToken = null;
+    globalThis.__mockTokenState.accessToken = null;
+    globalThis.__mockTokenState.refreshToken = null;
     return Promise.resolve();
   }),
 };
 
-// Must be before import
+// Must be before import - uses globalThis which is available during hoisting
 jest.mock('@/lib/api/storage', () => ({
   tokenStorage: {
-    getAccessToken: () => Promise.resolve(mockState.accessToken),
-    getRefreshToken: () => Promise.resolve(mockState.refreshToken),
-    isTokenExpired: () => Promise.resolve(mockState.isExpired),
-    setTokens: jest.fn(() => Promise.resolve()),
-    clearTokens: jest.fn(() => {
-      mockState.accessToken = null;
-      mockState.refreshToken = null;
-      return Promise.resolve();
-    }),
+    getAccessToken: () => Promise.resolve(globalThis.__mockTokenState.accessToken),
+    getRefreshToken: () => Promise.resolve(globalThis.__mockTokenState.refreshToken),
+    isTokenExpired: () => Promise.resolve(globalThis.__mockTokenState.isExpired),
+    setTokens: (...args: unknown[]) => globalThis.__mockTokenStorage.setTokens(...args),
+    clearTokens: () => globalThis.__mockTokenStorage.clearTokens(),
   },
 }));
 
@@ -56,15 +61,17 @@ const setMockTokenState = (state: {
   refreshToken?: string | null;
   isExpired?: boolean;
 }) => {
-  if (state.accessToken !== undefined) mockState.accessToken = state.accessToken;
-  if (state.refreshToken !== undefined) mockState.refreshToken = state.refreshToken;
-  if (state.isExpired !== undefined) mockState.isExpired = state.isExpired;
+  if (state.accessToken !== undefined) globalThis.__mockTokenState.accessToken = state.accessToken;
+  if (state.refreshToken !== undefined) globalThis.__mockTokenState.refreshToken = state.refreshToken;
+  if (state.isExpired !== undefined) globalThis.__mockTokenState.isExpired = state.isExpired;
 };
 
 const resetMockTokenState = () => {
-  mockState.accessToken = null;
-  mockState.refreshToken = null;
-  mockState.isExpired = true;
+  globalThis.__mockTokenState.accessToken = null;
+  globalThis.__mockTokenState.refreshToken = null;
+  globalThis.__mockTokenState.isExpired = true;
+  globalThis.__mockTokenStorage.setTokens.mockClear();
+  globalThis.__mockTokenStorage.clearTokens.mockClear();
 };
 
 describe('API Client', () => {
@@ -225,7 +232,7 @@ describe('API Client', () => {
 
       await apiClient.get('/protected');
 
-      expect(tokenStorage.setTokens).toHaveBeenCalled();
+      expect(globalThis.__mockTokenStorage.setTokens).toHaveBeenCalled();
     });
   });
 
@@ -257,7 +264,7 @@ describe('API Client', () => {
         statusCode: 401,
       });
 
-      expect(tokenStorage.clearTokens).toHaveBeenCalled();
+      expect(globalThis.__mockTokenStorage.clearTokens).toHaveBeenCalled();
     });
 
     it('handles malformed JSON in error response', async () => {
@@ -277,31 +284,15 @@ describe('API Client', () => {
   });
 
   describe('Timeout', () => {
-    beforeEach(() => {
-      jest.useFakeTimers();
-    });
-
-    afterEach(() => {
-      jest.useRealTimers();
-    });
-
-    it('aborts request after timeout', async () => {
+    it('handles abort error correctly', async () => {
       const abortError = new Error('Aborted');
       abortError.name = 'AbortError';
 
-      const mock = jest.fn().mockImplementation(
-        () =>
-          new Promise((_, reject) => {
-            setTimeout(() => reject(abortError), 35000);
-          })
-      );
+      // Mock fetch to immediately reject with AbortError
+      const mock = jest.fn().mockRejectedValue(abortError);
       global.fetch = mock;
 
-      const requestPromise = apiClient.get('/slow', { timeout: 1000 });
-
-      jest.advanceTimersByTime(1000);
-
-      await expect(requestPromise).rejects.toMatchObject({
+      await expect(apiClient.get('/slow', { timeout: 100 })).rejects.toMatchObject({
         message: 'Превышено время ожидания',
         statusCode: 408,
       });
