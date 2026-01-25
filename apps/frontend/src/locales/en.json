@@ -72,6 +72,59 @@
     "outOf": "of",
     "comingSoon": "Coming soon"
   },
+  "auth": {
+    "title": "Sign in to MigrantHub",
+    "welcome": "Welcome",
+    "phone": {
+      "title": "Sign in by phone",
+      "subtitle": "Enter your phone number to receive a code",
+      "placeholder": "+7 (___) ___-__-__",
+      "phoneLabel": "Phone number",
+      "getCode": "Get code",
+      "sendCode": "Get code",
+      "invalidPhone": "Enter a valid phone number",
+      "sendError": "SMS sending error. Try again later.",
+      "sending": "Sending...",
+      "telegramLogin": "Sign in via Telegram"
+    },
+    "otp": {
+      "title": "Enter code",
+      "subtitle": "Code sent to number",
+      "codeSent": "Code sent to number",
+      "resend": "Resend code",
+      "resendIn": "Resend code in {seconds} sec",
+      "invalidCode": "Invalid code",
+      "wrongCode": "Wrong code. Please try again.",
+      "verifyError": "Code verification error. Try again later.",
+      "changeNumber": "Change number",
+      "checking": "Checking..."
+    },
+    "telegram": {
+      "button": "Sign in via Telegram",
+      "connecting": "Connecting to Telegram..."
+    },
+    "method": {
+      "title": "Sign in method",
+      "subtitle": "Choose a convenient authorization method",
+      "phone": {
+        "title": "By phone number",
+        "description": "Get an SMS code to sign in"
+      },
+      "telegram": {
+        "title": "Via Telegram",
+        "description": "Quick sign in without SMS"
+      },
+      "securityNote": "Your data is protected and stored in encrypted form"
+    },
+    "demo": {
+      "title": "Demo",
+      "phoneHint": "Enter any number in format +7 (XXX) XXX-XX-XX. Verification code: 1234",
+      "otpHint": "Enter code 1234"
+    },
+    "terms": "By continuing, you agree to the terms of use and privacy policy",
+    "logout": "Log out",
+    "logoutConfirm": "Are you sure you want to log out?"
+  },
   "welcome": {
     "tagline": "Your personal protector. We help you process documents quickly, avoid fines and control the legalization process.",
     "selectLanguage": "Select language",
@@ -105,6 +158,25 @@
       "text": "I accept the User Agreement and Privacy Policy, and consent to the processing of my personal data",
       "terms": "User Agreement",
       "privacy": "Privacy Policy"
+    },
+    "whatCanDo": "What the app can do",
+    "features": {
+      "legal": {
+        "title": "Legal processing",
+        "description": "Work patent, registration, migration record — all according to Russian law"
+      },
+      "documents": {
+        "title": "Document storage",
+        "description": "Secure encrypted storage of document copies"
+      },
+      "notifications": {
+        "title": "Reminders",
+        "description": "Notifications about patent and registration renewal deadlines"
+      },
+      "map": {
+        "title": "Services map",
+        "description": "Ministry of Interior, medical centers, exams — all necessary addresses nearby"
+      }
     }
   },
   "legal": {
@@ -122,94 +194,13 @@
       "privacy": {
         "title": "Privacy Policy",
         "description": "I agree to the processing of my personal data"
+      },
+      "legalOnly": {
+        "title": "Legal actions",
+        "description": "I understand that the app only helps with legal document processing"
       }
     },
     "readMore": "Read full"
-  },
-  "auth": {
-    "title": "Sign in to MigrantHub",
-    "welcome": "Welcome",
-    "method": {
-      "title": "Sign in method",
-      "subtitle": "Choose a convenient authorization method",
-      "phone": {
-        "title": "By phone number",
-        "description": "Get an SMS code to sign in"
-      },
-      "telegram": {
-        "title": "Via Telegram",
-        "description": "Quick sign in without SMS"
-      },
-      "securityNote": "Your data is protected and stored in encrypted form"
-    }
-  },
-  "dashboard": {
-    "tabs": {
-      "home": "Home",
-      "documents": "Documents",
-      "services": "Services",
-      "assistant": "Assistant",
-      "sos": "SOS"
-    }
-  },
-  "documents": {
-    "sampleData": {
-      "fillWithSample": "Fill with sample",
-      "tooltip": "Fill form with example data to see the format",
-      "filled": "Form filled with sample data"
-    }
-  },
-  "services": {
-    "calculator": {
-      "title": "90 Days Calculator",
-      "subtitle": "Days per year",
-      "description": "Calculate remaining legal stay days for the current year",
-      "rule": "From 05.02.2025: you can stay in Russia for no more than 90 days per calendar year (January 1 - December 31)",
-      "lawReference": "FZ-260 dated 08.08.2024, effective from 05.02.2025",
-      "calendarYearNote": "Counter resets on January 1st each year",
-      "exemptions": {
-        "title": "This rule does NOT apply to:",
-        "items": {
-          "vnzh": "Residence permit (VNZh) holders",
-          "rvp": "Temporary residence permit (RVP) holders",
-          "patent": "Work patent holders",
-          "eaeu": "EAEU citizens with employment contract",
-          "student": "Students with study permit",
-          "refugee": "Refugees and temporary asylum holders"
-        }
-      },
-      "region": "Region of stay",
-      "regionMoscow": "Moscow / Moscow Oblast",
-      "regionSpb": "St. Petersburg / Leningrad Oblast",
-      "regionOther": "Other region",
-      "penalty": {
-        "title": "Possible penalties",
-        "fine": "Fine: {min} - {max} RUB",
-        "deportation": "Deportation with entry ban possible",
-        "noDeportation": "Deportation unlikely for first offense"
-      },
-      "deportationMode": {
-        "title": "Deportation Regime",
-        "subtitle": "Effective from 05.02.2025",
-        "description": "If you violate the stay period, the deportation regime may be applied with the following restrictions:",
-        "consequences": {
-          "work": "Ban on official employment",
-          "bank": "Ban on opening bank accounts",
-          "vehicle": "Ban on vehicle registration",
-          "marriage": "Ban on marriage registration",
-          "license": "Ban on obtaining a driver's license",
-          "leave": "Obligation to leave Russia within the deadline"
-        },
-        "warning": "Non-compliance results in forced deportation"
-      }
-    }
-  },
-  "wizard": {
-    "actionPlan": {
-      "fineMoscowSpb": "Fine 5000-7000₽ (Moscow, St. Petersburg)",
-      "fineOtherRegions": "Fine 2000-5000₽ (other regions)",
-      "deportationRegime": "Deportation regime (from 05.02.2025)"
-    }
   },
   "onboarding": {
     "language": {
@@ -277,6 +268,28 @@
       "purposeWarning": "To obtain a work patent, select \"Work\". You cannot change the purpose of visit without leaving Russia (except for EAEU citizens)."
     }
   },
+  "languages": {
+    "ru": "Russian",
+    "uz": "Uzbek",
+    "tg": "Tajik",
+    "ky": "Kyrgyz",
+    "kk": "Kazakh",
+    "en": "English",
+    "ar": "Arabic",
+    "fa": "Persian",
+    "tr": "Turkish",
+    "az": "Azerbaijani",
+    "hy": "Armenian",
+    "ka": "Georgian",
+    "vi": "Vietnamese",
+    "zh": "Chinese",
+    "selectTitle": "Select language",
+    "selectSubtitle": "App interface language",
+    "mainLanguages": "Main languages",
+    "otherLanguages": "Other language (AI)",
+    "aiTranslation": "On-the-fly translation",
+    "aiNote": "The interface will be translated automatically. Minor inaccuracies are possible."
+  },
   "countries": {
     "UZ": "Uzbekistan",
     "TJ": "Tajikistan",
@@ -303,26 +316,1346 @@
     "RU": "Russia",
     "OTHER": "Other country"
   },
-  "languages": {
-    "ru": "Russian",
-    "uz": "Uzbek",
-    "tg": "Tajik",
-    "ky": "Kyrgyz",
-    "kk": "Kazakh",
-    "en": "English",
-    "ar": "Arabic",
-    "fa": "Persian",
-    "tr": "Turkish",
-    "az": "Azerbaijani",
-    "hy": "Armenian",
-    "ka": "Georgian",
-    "vi": "Vietnamese",
-    "zh": "Chinese",
-    "selectTitle": "Select language",
-    "selectSubtitle": "App interface language",
-    "mainLanguages": "Main languages",
-    "otherLanguages": "Other language (AI)",
-    "aiTranslation": "On-the-fly translation",
-    "aiNote": "The interface will be translated automatically. Minor inaccuracies are possible."
+  "regions": {
+    "77": {
+      "name": "Moscow",
+      "fullName": "City of Moscow"
+    },
+    "50": {
+      "name": "Moscow Oblast",
+      "fullName": "Moscow Oblast"
+    },
+    "78": {
+      "name": "St. Petersburg",
+      "fullName": "City of St. Petersburg"
+    },
+    "47": {
+      "name": "Leningrad Oblast",
+      "fullName": "Leningrad Oblast"
+    },
+    "23": {
+      "name": "Krasnodar Krai",
+      "fullName": "Krasnodar Krai"
+    },
+    "66": {
+      "name": "Sverdlovsk Oblast",
+      "fullName": "Sverdlovsk Oblast"
+    },
+    "54": {
+      "name": "Novosibirsk Oblast",
+      "fullName": "Novosibirsk Oblast"
+    },
+    "16": {
+      "name": "Tatarstan",
+      "fullName": "Republic of Tatarstan"
+    },
+    "52": {
+      "name": "Nizhny Novgorod Oblast",
+      "fullName": "Nizhny Novgorod Oblast"
+    },
+    "63": {
+      "name": "Samara Oblast",
+      "fullName": "Samara Oblast"
+    },
+    "61": {
+      "name": "Rostov Oblast",
+      "fullName": "Rostov Oblast"
+    },
+    "74": {
+      "name": "Chelyabinsk Oblast",
+      "fullName": "Chelyabinsk Oblast"
+    },
+    "02": {
+      "name": "Bashkortostan",
+      "fullName": "Republic of Bashkortostan"
+    },
+    "59": {
+      "name": "Perm Krai",
+      "fullName": "Perm Krai"
+    },
+    "34": {
+      "name": "Volgograd Oblast",
+      "fullName": "Volgograd Oblast"
+    },
+    "36": {
+      "name": "Voronezh Oblast",
+      "fullName": "Voronezh Oblast"
+    },
+    "55": {
+      "name": "Omsk Oblast",
+      "fullName": "Omsk Oblast"
+    },
+    "72": {
+      "name": "Tyumen Oblast",
+      "fullName": "Tyumen Oblast"
+    },
+    "86": {
+      "name": "KhMAO",
+      "fullName": "Khanty-Mansi Autonomous Okrug"
+    },
+    "89": {
+      "name": "YaNAO",
+      "fullName": "Yamalo-Nenets Autonomous Okrug"
+    }
+  },
+  "cities": {
+    "moscow": "Moscow",
+    "saintPetersburg": "St. Petersburg",
+    "novosibirsk": "Novosibirsk",
+    "yekaterinburg": "Yekaterinburg",
+    "kazan": "Kazan",
+    "nizhnyNovgorod": "Nizhny Novgorod",
+    "chelyabinsk": "Chelyabinsk",
+    "samara": "Samara",
+    "omsk": "Omsk",
+    "rostovOnDon": "Rostov-on-Don",
+    "ufa": "Ufa",
+    "krasnoyarsk": "Krasnoyarsk",
+    "voronezh": "Voronezh",
+    "perm": "Perm",
+    "volgograd": "Volgograd",
+    "krasnodar": "Krasnodar",
+    "tyumen": "Tyumen",
+    "saratov": "Saratov",
+    "tolyatti": "Tolyatti",
+    "izhevsk": "Izhevsk",
+    "barnaul": "Barnaul",
+    "irkutsk": "Irkutsk",
+    "khabarovsk": "Khabarovsk",
+    "vladivostok": "Vladivostok",
+    "yaroslavl": "Yaroslavl",
+    "makhachkala": "Makhachkala",
+    "tomsk": "Tomsk",
+    "orenburg": "Orenburg",
+    "kemerovo": "Kemerovo",
+    "naberezhnyChelny": "Naberezhnye Chelny",
+    "ryazan": "Ryazan",
+    "astrakhan": "Astrakhan",
+    "penza": "Penza",
+    "lipetsk": "Lipetsk",
+    "tula": "Tula",
+    "kirov": "Kirov",
+    "cheboksary": "Cheboksary",
+    "kaliningrad": "Kaliningrad",
+    "bryansk": "Bryansk",
+    "ivanovo": "Ivanovo",
+    "magnitogorsk": "Magnitogorsk",
+    "kursk": "Kursk",
+    "tver": "Tver",
+    "nizhniTagil": "Nizhny Tagil",
+    "stavropol": "Stavropol",
+    "ulanUde": "Ulan-Ude",
+    "belgorod": "Belgorod",
+    "sochi": "Sochi",
+    "surgut": "Surgut",
+    "vladimir": "Vladimir",
+    "chita": "Chita",
+    "arkhangelsk": "Arkhangelsk",
+    "smolensk": "Smolensk",
+    "kurgan": "Kurgan",
+    "kaluga": "Kaluga",
+    "oryol": "Oryol",
+    "vologda": "Vologda",
+    "saransk": "Saransk",
+    "yoshkarOla": "Yoshkar-Ola",
+    "murmansk": "Murmansk",
+    "kostroma": "Kostroma",
+    "tambov": "Tambov",
+    "petrozavodsk": "Petrozavodsk",
+    "nizhnevartovsk": "Nizhnevartovsk",
+    "norilsk": "Norilsk",
+    "komsomolskOnAmur": "Komsomolsk-on-Amur",
+    "yakutsk": "Yakutsk",
+    "grozny": "Grozny"
+  },
+  "profile": {
+    "title": "My Profile",
+    "editTitle": "Edit Profile",
+    "scanPassport": "Scan passport",
+    "scanPassportDesc": "Automatic data filling",
+    "completeness": "Profile completeness",
+    "sections": {
+      "personal": "Personal data",
+      "documents": "Documents",
+      "work": "Work",
+      "registration": "Registration"
+    },
+    "fields": {
+      "fullName": "Full name (as in passport)",
+      "fullNamePlaceholder": "John Doe",
+      "fullNameLatin": "Full name (Latin)",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "patronymic": "Patronymic",
+      "birthDate": "Date of birth",
+      "birthPlace": "Place of birth",
+      "gender": "Gender",
+      "citizenship": "Citizenship",
+      "nationality": "Nationality",
+      "phone": "Phone",
+      "email": "Email",
+      "passportNumber": "Passport number",
+      "passportSeries": "Passport series",
+      "passportIssueDate": "Passport issue date",
+      "passportExpiryDate": "Valid until",
+      "passportIssuedBy": "Issued by",
+      "entryDate": "Entry date to Russia",
+      "entryPoint": "Entry point",
+      "migrationCardNumber": "Migration card number",
+      "migrationCardIssueDate": "Migration card issue date",
+      "purpose": "Purpose of visit",
+      "stayDuration": "Duration of stay",
+      "registrationAddress": "Registration address",
+      "registrationExpiry": "Registration valid until",
+      "actualAddress": "Actual residence address",
+      "hostFullName": "Host's full name",
+      "hostAddress": "Host's address",
+      "hostPhone": "Host's phone",
+      "hasPatent": "Has work patent",
+      "patentNumber": "Patent number",
+      "patentRegion": "Patent region",
+      "patentIssueDate": "Patent issue date",
+      "patentExpiry": "Patent valid until",
+      "employerName": "Employer name",
+      "employerINN": "Employer TIN",
+      "employerAddress": "Employer address",
+      "position": "Position",
+      "salary": "Salary",
+      "workStartDate": "Work start date",
+      "inn": "TIN",
+      "snils": "SNILS",
+      "omsPolicy": "OMS policy",
+      "region": "Destination region"
+    },
+    "genders": {
+      "male": "Male",
+      "female": "Female"
+    },
+    "purposes": {
+      "work": "Work",
+      "workSubtitle": "Employment",
+      "study": "Study",
+      "studySubtitle": "Universities/colleges",
+      "tourist": "Tourism",
+      "touristSubtitle": "Vacation",
+      "private": "Private visit",
+      "privateSubtitle": "Guests",
+      "business": "Business visit",
+      "treatment": "Medical treatment",
+      "transit": "Transit",
+      "other": "Other"
+    },
+    "settings": {
+      "title": "Settings",
+      "interfaceLanguage": "Interface language",
+      "deleteData": "Delete all data",
+      "deleteDataWarning": "This action is irreversible. All documents and history will be deleted."
+    },
+    "saveChanges": "Save changes",
+    "dateHint": "Changing entry date will recalculate the 90/180 days counter",
+    "purposeHint": "Changing the purpose of visit may affect patent eligibility",
+    "eaeuNote": "EAEU: Patent not required",
+    "myDocuments": "My documents",
+    "markDocuments": "Mark documents you have",
+    "documentsCount": "Documents"
+  },
+  "documents": {
+    "title": "My Documents",
+    "encrypted": "Encrypted",
+    "activeRegistry": "Document registry",
+    "create": "Create document",
+    "createNew": "Create new document",
+    "available": "Available forms",
+    "generated": "Generated documents",
+    "scanOcr": "Scan (OCR)",
+    "instruction": "Instructions",
+    "categories": {
+      "registration": "Registration",
+      "patent": "Patent",
+      "work": "Employment",
+      "other": "Other documents"
+    },
+    "status": {
+      "draft": "Draft",
+      "completed": "Ready",
+      "submitted": "Submitted",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "active": "Active",
+      "expired": "Expired",
+      "missing": "Missing"
+    },
+    "types": {
+      "passport": "Passport",
+      "migCard": "Migration card",
+      "registration": "Registration (Notification)",
+      "greenCard": "Green card (Fingerprinting)",
+      "education": "Certificate / Diploma",
+      "patent": "Patent",
+      "contract": "Employment contract",
+      "receipts": "Receipts (Tax)",
+      "insurance": "VHI policy",
+      "inn": "TIN / SNILS",
+      "family": "Marriage / Birth certificate"
+    },
+    "statusText": {
+      "active": "Active",
+      "activeF": "Active",
+      "activePl": "Current",
+      "expired": "Expired",
+      "missing": "Missing",
+      "payIn": "Pay in {days} days"
+    },
+    "actions": {
+      "update": "Update",
+      "add": "Add",
+      "extend": "Extend",
+      "get": "Get",
+      "apply": "Apply"
+    },
+    "wizard": {
+      "selectDocument": "Select document",
+      "fillMissing": "Fill in the data",
+      "review": "Review data",
+      "complete": "Done!",
+      "downloadPdf": "Download PDF",
+      "startOver": "Start over"
+    },
+    "forms": {
+      "notificationArrival": {
+        "title": "Foreign citizen arrival notification",
+        "titleShort": "Arrival notification",
+        "description": "Initial migration registration within 7 working days after entry"
+      },
+      "registrationExtension": {
+        "title": "Stay extension application",
+        "titleShort": "Registration extension",
+        "description": "Migration registration extension with valid grounds"
+      },
+      "departureNotification": {
+        "title": "Departure notification",
+        "titleShort": "Departure notification",
+        "description": "When changing place of stay or leaving Russia"
+      },
+      "patentInitial": {
+        "title": "Patent application",
+        "titleShort": "Patent application",
+        "description": "Initial work patent application"
+      },
+      "patentReissue": {
+        "title": "Patent reissue application",
+        "titleShort": "Patent reissue",
+        "description": "Patent extension for the next year"
+      },
+      "patentDuplicate": {
+        "title": "Patent duplicate application",
+        "titleShort": "Patent duplicate",
+        "description": "If patent is lost or damaged"
+      },
+      "patentTerritoryChange": {
+        "title": "Patent territory change application",
+        "titleShort": "Patent region change",
+        "description": "When moving to another region"
+      },
+      "employerNotification": {
+        "title": "Employment contract notification",
+        "titleShort": "Employment notification",
+        "description": "Employer must notify the Ministry of Interior within 3 days"
+      },
+      "employerTermination": {
+        "title": "Employment termination notification",
+        "titleShort": "Termination notification",
+        "description": "Employer notifies the Ministry of Interior upon dismissal"
+      },
+      "rvpApplication": {
+        "title": "Temporary residence permit application",
+        "titleShort": "TRP application",
+        "description": "Temporary residence permit"
+      },
+      "vnzhApplication": {
+        "title": "Residence permit application",
+        "titleShort": "Residence permit application",
+        "description": "Residence permit"
+      },
+      "invitationLetter": {
+        "title": "Invitation petition",
+        "titleShort": "Invitation",
+        "description": "Invitation of a foreign citizen to Russia"
+      }
+    },
+    "estimatedTime": "Estimated time",
+    "minutes": "min",
+    "patent": {
+      "title": "Patent"
+    },
+    "registration": {
+      "title": "Registration"
+    },
+    "sampleData": {
+      "fillWithSample": "Fill with sample",
+      "tooltip": "Fill form with example data to see the format",
+      "filled": "Form filled with sample data"
+    }
+  },
+  "services": {
+    "title": "Services",
+    "subtitle": "Tools and services",
+    "mainServices": "Main services",
+    "otherServices": {
+      "title": "Other services",
+      "subtitle": "Additional tools",
+      "tip": "Tip: These tools will help you in everyday life in Russia."
+    },
+    "items": {
+      "autofill": {
+        "title": "My Applications",
+        "subtitle": "Document generation"
+      },
+      "check": {
+        "title": "Ban check",
+        "subtitle": "MVD/FSSP databases"
+      },
+      "payment": {
+        "title": "Patent payment",
+        "subtitle": "Quick payment"
+      },
+      "map": {
+        "title": "Migrant Map",
+        "subtitle": "MVD, MMC, Routes"
+      },
+      "other": {
+        "title": "Other services",
+        "subtitle": "additional"
+      },
+      "translator": {
+        "title": "Translator",
+        "subtitle": "Text/Voice/Photo"
+      },
+      "contracts": {
+        "title": "Contract builder",
+        "subtitle": "RU + Native language"
+      },
+      "jobs": {
+        "title": "Job search",
+        "subtitle": "Jobs with patent"
+      },
+      "housing": {
+        "title": "Housing search",
+        "subtitle": "With registration"
+      },
+      "calculator": {
+        "title": "Calculator",
+        "subtitle": "90 days/year"
+      },
+      "exam": {
+        "title": "Russian exam",
+        "subtitle": "Test trainer"
+      },
+      "mosques": {
+        "title": "Mosque map",
+        "subtitle": "Find mosque"
+      },
+      "insurance": {
+        "title": "VHI / Medical",
+        "subtitle": "Insurance"
+      },
+      "banCheck": {
+        "title": "Check",
+        "subtitle": "MVD/FSSP"
+      }
+    },
+    "migrantMap": {
+      "title": "Migrant Map",
+      "selectCategory": "Select a category to search:",
+      "openMap": "Open map"
+    },
+    "banCheck": {
+      "title": "Ban check",
+      "subtitle": "MVD / FSSP",
+      "description": "Check for entry ban to Russia",
+      "checkMvd": "Check MVD database",
+      "checkFssp": "Check debts (FSSP)",
+      "enterPassport": "Enter passport data",
+      "noRestrictions": "No bans found",
+      "hasRestrictions": "Restrictions found",
+      "checking": "Checking..."
+    },
+    "calculator": {
+      "title": "90 Days Calculator",
+      "subtitle": "Days per year",
+      "description": "Calculate remaining legal stay days for the current year",
+      "entryDate": "Entry date",
+      "daysSpent": "Days in Russia",
+      "daysRemaining": "Days remaining",
+      "mustLeave": "Must leave by",
+      "rule": "From 05.02.2025: you can stay in Russia for no more than 90 days per calendar year (January 1 - December 31)",
+      "lawReference": "FZ-260 dated 08.08.2024, effective from 05.02.2025",
+      "calendarYearNote": "Counter resets on January 1st each year",
+      "exemptions": {
+        "title": "This rule does NOT apply to:",
+        "items": {
+          "vnzh": "Residence permit (VNZh) holders",
+          "rvp": "Temporary residence permit (RVP) holders",
+          "patent": "Work patent holders",
+          "eaeu": "EAEU citizens with employment contract",
+          "student": "Students with study permit",
+          "refugee": "Refugees and temporary asylum holders"
+        }
+      },
+      "region": "Region of stay",
+      "regionMoscow": "Moscow / Moscow Oblast",
+      "regionSpb": "St. Petersburg / Leningrad Oblast",
+      "regionOther": "Other region",
+      "penalty": {
+        "title": "Possible penalties",
+        "fine": "Fine: {min} - {max} RUB",
+        "deportation": "Deportation with entry ban possible",
+        "noDeportation": "Deportation unlikely for first offense"
+      },
+      "deportationMode": {
+        "title": "Deportation Regime",
+        "subtitle": "Effective from 05.02.2025",
+        "description": "If you violate the stay period, the deportation regime may be applied with the following restrictions:",
+        "consequences": {
+          "work": "Ban on official employment",
+          "bank": "Ban on opening bank accounts",
+          "vehicle": "Ban on vehicle registration",
+          "marriage": "Ban on marriage registration",
+          "license": "Ban on obtaining a driver's license",
+          "leave": "Obligation to leave Russia within the deadline"
+        },
+        "warning": "Non-compliance results in forced deportation"
+      }
+    },
+    "map": {
+      "title": "Migrant map",
+      "subtitle": "MVD, MMC, Medical centers",
+      "description": "Find nearest offices and centers",
+      "filters": {
+        "all": "All",
+        "mvd": "MVD",
+        "mmc": "MMC",
+        "medical": "Medical exam",
+        "exam": "Exam",
+        "mosque": "Mosques"
+      },
+      "openInMaps": "Open in maps",
+      "getDirections": "Get directions",
+      "workingHours": "Working hours",
+      "phone": "Phone",
+      "address": "Address"
+    },
+    "exam": {
+      "title": "Russian exam",
+      "subtitle": "Trainer",
+      "description": "Prepare for the Russian language exam",
+      "startTest": "Start test",
+      "questions": "questions",
+      "correct": "Correct",
+      "incorrect": "Incorrect",
+      "timeLeft": "Time left",
+      "nextQuestion": "Next question",
+      "finish": "Finish",
+      "yourScore": "Your score",
+      "passed": "Test passed!",
+      "failed": "Test failed",
+      "tryAgain": "Try again"
+    },
+    "translator": {
+      "title": "Translator",
+      "subtitle": "Yandex.Translator",
+      "description": "Translate documents and texts"
+    },
+    "mosques": {
+      "title": "Mosque map",
+      "subtitle": "Find mosque",
+      "description": "Find the nearest mosque"
+    },
+    "lawyer": {
+      "title": "Lawyer consultation",
+      "subtitle": "Online help",
+      "description": "Get legal consultation"
+    },
+    "insurance": {
+      "title": "Insurance",
+      "subtitle": "VHI and OMS",
+      "description": "Get medical insurance"
+    }
+  },
+  "payment": {
+    "title": "Patent payment",
+    "subtitle": "Monthly payment",
+    "selectRegion": "Select region",
+    "selectMonths": "Select period",
+    "paymentMethod": "Payment method",
+    "total": "Total to pay",
+    "perMonth": "per month",
+    "months": "mo.",
+    "pay": "Pay",
+    "monthsCount": {
+      "1": "1 month",
+      "2": "2 months",
+      "3": "3 months",
+      "4": "4 months",
+      "5": "5 months",
+      "6": "6 months",
+      "7": "7 months",
+      "8": "8 months",
+      "9": "9 months",
+      "10": "10 months",
+      "11": "11 months",
+      "12": "12 months"
+    },
+    "methods": {
+      "sbp": "SBP (QR code)",
+      "sbpDescription": "No commission",
+      "card": "Bank card",
+      "cardDescription": "Visa, Mastercard, MIR"
+    },
+    "success": "Payment successful!",
+    "pending": "Payment processing",
+    "failed": "Payment error",
+    "history": "Payment history",
+    "currentRates": "Current rates",
+    "payNow": "Pay now",
+    "reminder": {
+      "title": "Important information",
+      "rule1": "Patent payment must be made monthly",
+      "rule2": "Delay of more than 1 day leads to patent cancellation",
+      "rule3": "Save all payment receipts"
+    }
+  },
+  "sos": {
+    "title": "SOS Help",
+    "subtitle": "Emergency help",
+    "detained": {
+      "title": "I was detained",
+      "description": "Instructions and contacts when detained",
+      "rightsAndAlgorithm": "Your rights and action plan",
+      "whatToDo": "What to do",
+      "whatNotToDo": "What NOT to do",
+      "immediately": "Immediately",
+      "important": "Important",
+      "contacts": "Contacts",
+      "showDocumentsCalmly": "Present your passport and registration calmly",
+      "rightToRecord": "You have the right to record video (Art. 29 of the Russian Constitution)",
+      "demandProtocol": "Demand a protocol in a language you understand",
+      "dontBeRude": "Don't be rude or resist",
+      "noBribery": "Don't give bribes (criminal offense)",
+      "rightToTranslator": "Right to an interpreter (Art. 25.10 of the Administrative Code)",
+      "rightToCall": "Right to call a lawyer/relatives",
+      "rightNotToSign": "Right not to sign the protocol without understanding",
+      "demandStatement": "Say: \"I demand an interpreter and a lawyer. I will not sign the protocol.\"",
+      "demandConsulate": "Demand contact with the consulate (Vienna Convention)",
+      "dontSignWithoutTranslator": "Do not sign anything without an interpreter",
+      "recordOfficerInfo": "Write down officers' names and department number",
+      "lawyerHotline": "Lawyer 24/7",
+      "consulateHotline": "Consulate"
+    },
+    "policeReasons": {
+      "documentCheck": "Document check",
+      "noDocuments": "No documents",
+      "trafficViolation": "Traffic violation",
+      "other": "Other"
+    },
+    "lostDocuments": {
+      "title": "Lost documents",
+      "subtitle": "Document recovery",
+      "selectDocument": "Which document did you lose?",
+      "recoverySteps": "Recovery steps",
+      "importantNote": "Important",
+      "timeLimit": "The document must be recovered within 3 days",
+      "startRecovery": "Start recovery"
+    },
+    "legalHelp": {
+      "title": "Legal help",
+      "subtitle": "Lawyer consultation"
+    },
+    "embassy": {
+      "title": "Embassy contact",
+      "subtitle": "Consular assistance"
+    },
+    "emergency": "Emergency services",
+    "police": "Police",
+    "ambulance": "Ambulance",
+    "fire": "Fire department",
+    "hotline": "MVD hotline",
+    "lawyer": "Call lawyer",
+    "call": "Call",
+    "instructions": {
+      "title": "What to do when detained",
+      "step1": "Stay calm",
+      "step2": "Ask the officer to show their ID",
+      "step3": "Do not sign documents you don't understand",
+      "step4": "Call the embassy or consulate",
+      "step5": "Demand an interpreter",
+      "step6": "Write down the officer's name and rank"
+    },
+    "rights": {
+      "title": "Your rights",
+      "right1": "Right to an interpreter",
+      "right2": "Right to call the embassy",
+      "right3": "Right to legal assistance",
+      "right4": "Right not to testify against yourself"
+    },
+    "documentRecovery": {
+      "passport": {
+        "instruction": "Passport. Go to the police for a loss report, then to the Consulate for recovery.",
+        "steps": [
+          "Contact your country's embassy/consulate",
+          "File a loss report",
+          "Get a travel document or new passport"
+        ]
+      },
+      "migCard": {
+        "instruction": "Migration card. Recovered at the MVD department (only after passport recovery).",
+        "steps": [
+          "Contact the MVD department at your place of stay",
+          "File a loss report",
+          "Get a migration card duplicate"
+        ]
+      },
+      "greenCard": {
+        "instruction": "Green card. Duplicate issued at MMC/MVD."
+      },
+      "education": {
+        "instruction": "Certificate/Diploma. Contact the testing center or educational institution for a duplicate."
+      },
+      "registration": {
+        "instruction": "Registration. Done by the host at the MVD.",
+        "steps": [
+          "Contact the host",
+          "Submit a new arrival notification",
+          "Get a new tear-off coupon"
+        ]
+      },
+      "patent": {
+        "instruction": "Patent. At the MMC that issued the patent (full document package required).",
+        "steps": [
+          "Contact the migration center (MMC)",
+          "Submit a duplicate application",
+          "Pay the state fee for the duplicate"
+        ]
+      },
+      "receipts": {
+        "instruction": "Receipts. At the MMC that issued the patent (full document package required)."
+      },
+      "contract": {
+        "instruction": "Employment contract. Request a copy from your employer."
+      },
+      "insurance": {
+        "instruction": "VHI policy. Contact the insurance company for a duplicate."
+      },
+      "inn": {
+        "instruction": "TIN/SNILS. Contact the tax office or MFC."
+      },
+      "family": {
+        "instruction": "Marriage/birth certificate. Contact the registry office where the act was registered."
+      }
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome",
+    "status": "Status",
+    "actions": "Required actions",
+    "quickActions": "Quick actions",
+    "recentDocuments": "Recent documents",
+    "notifications": "Notifications",
+    "noNotifications": "No new notifications",
+    "daysRemaining": "Remaining",
+    "attentionRequired": "Attention required",
+    "tabs": {
+      "home": "Home",
+      "documents": "Documents",
+      "services": "Services",
+      "assistant": "Assistant",
+      "sos": "SOS"
+    },
+    "hero": {
+      "title": "Legalization wizard",
+      "subtitle": "Personal document plan",
+      "description": "Answer a few questions and get a step-by-step plan for processing all necessary documents"
+    },
+    "cards": {
+      "patent": {
+        "expiresIn": "Pay in {days} days"
+      },
+      "registration": {
+        "needExtend": "Registration extension required"
+      }
+    },
+    "statusCards": {
+      "registration": "Registration",
+      "patent": "Patent",
+      "stayDays": "Days in Russia"
+    },
+    "statusValues": {
+      "active": "Active",
+      "expired": "Expired",
+      "expiringSoon": "Expiring soon",
+      "notRegistered": "Not registered",
+      "paid": "Paid",
+      "unpaid": "Unpaid",
+      "legal": "Legal",
+      "risk": "Risk",
+      "illegal": "Illegal"
+    }
+  },
+  "history": {
+    "title": "History",
+    "subtitle": "Operations and payments log",
+    "items": {
+      "patentPayment": "Patent payment",
+      "registrationExtension": "Registration extension",
+      "medicalCertificate": "Medical certificate",
+      "entryRF": "Entry to Russia"
+    },
+    "details": {
+      "amount": "Amount",
+      "documentsSubmitted": "Documents submitted to MVD",
+      "receivedAt": "Received at",
+      "border": "Border"
+    }
+  },
+  "assistant": {
+    "title": "AI Assistant",
+    "subtitle": "Help 24/7",
+    "placeholder": "Ask a question about migration...",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "greeting": "Hello! I'm your personal migration assistant. How can I help you?",
+    "quickChips": {
+      "patent": "How to get a patent?",
+      "registration": "Extend registration",
+      "documents": "What documents are needed?",
+      "ban": "Check ban"
+    },
+    "quickQuestions": {
+      "title": "Frequently asked questions",
+      "registration": "How to extend registration?",
+      "patent": "How to get a patent?",
+      "documents": "What documents are needed?",
+      "ban": "How to check entry ban?",
+      "work": "How to find a job?"
+    },
+    "voiceInput": "Voice input"
+  },
+  "notifications": {
+    "patentExpiry": "Patent expiring",
+    "patentExpiryDesc": "{days} days left until patent expires",
+    "registrationExpiry": "Registration expiring",
+    "registrationExpiryDesc": "{days} days left until registration expires",
+    "paymentReminder": "Payment reminder",
+    "paymentReminderDesc": "Don't forget to pay for the patent",
+    "documentReady": "Document ready",
+    "documentReadyDesc": "Your document is ready for download"
+  },
+  "errors": {
+    "network": "No internet connection",
+    "server": "Server error",
+    "unknown": "Unknown error",
+    "timeout": "Request timeout",
+    "unauthorized": "Authorization required",
+    "forbidden": "Access denied",
+    "notFound": "Not found",
+    "validation": "Validation error",
+    "tryAgain": "Please try again"
+  },
+  "offline": {
+    "title": "No connection",
+    "description": "Check your internet connection",
+    "retry": "Retry",
+    "noConnection": "No internet connection"
+  },
+  "poi": {
+    "mvd": "MVD departments",
+    "migrationDepts": "Migration departments",
+    "medCenters": "Medical centers (MMC)",
+    "authorizedOnly": "Accredited only",
+    "examCenters": "Russian/History exam",
+    "testingCenters": "Testing centers",
+    "types": {
+      "mvd": "MVD department",
+      "mmc": "Migration center",
+      "medical": "Medical exam",
+      "exam": "Testing center",
+      "mosque": "Mosque"
+    }
+  },
+  "wizard": {
+    "title": "Legalization wizard",
+    "steps": {
+      "intro": "Situation analysis",
+      "requiredDocs": "Required documents",
+      "additionalDocs": "Additional documents",
+      "documentScan": "Document {current} of {total}",
+      "scanning": "Scanning...",
+      "verification": "Data verification",
+      "processing": "Generating...",
+      "actionPlan": "Done!"
+    },
+    "intro": {
+      "currentSituation": "Your current situation",
+      "citizenship": "Citizenship",
+      "entryDate": "Entry date",
+      "purpose": "Purpose of visit",
+      "verdict": "System verdict",
+      "needDocuments": "You need to process {count} documents before {date} ({days} days).",
+      "missingDocs": "Missing documents",
+      "startProcessing": "Start processing",
+      "scanRequired": "First we'll scan missing documents ({count}), then suggest additional ones",
+      "generateNote": "We will generate all necessary applications and show an exact action plan"
+    },
+    "requiredDocs": {
+      "title": "Missing documents",
+      "description": "For legalization you need to scan these documents",
+      "important": "Important",
+      "importantNote": "These documents are required for legal stay and work in Russia.",
+      "startScanning": "Start scanning ({count} documents)",
+      "back": "Back"
+    },
+    "additionalDocs": {
+      "title": "Additional documents",
+      "description": "Mark documents you want to add for other forms",
+      "alreadyScanned": "Already scanned",
+      "tip": "Tip",
+      "tipText": "Additional documents will help when generating other forms (TRP, Residence permit, contracts).",
+      "scanSelected": "Scan selected ({count})",
+      "skipAdditional": "Skip additional",
+      "continueWithout": "Continue without additional"
+    },
+    "quickSelect": {
+      "title": "Which documents will we scan?",
+      "description": "Mark documents you have and are ready to scan",
+      "levels": {
+        "base": "Base",
+        "entry": "Entry",
+        "work": "Work",
+        "support": "Support"
+      },
+      "docs": {
+        "passport": "Passport",
+        "passportDesc": "Valid passport",
+        "migCard": "Migration card",
+        "migCardDesc": "Card issued at the border upon entry",
+        "registration": "Registration (Notification)",
+        "registrationDesc": "Proof of registration at place of stay",
+        "greenCard": "Green card (Fingerprinting)",
+        "greenCardDesc": "Medical exam + fingerprinting from MMC",
+        "education": "Certificate / Diploma",
+        "educationDesc": "Russian language proficiency certificate",
+        "patent": "Patent",
+        "patentDesc": "Work permit",
+        "contract": "Employment contract",
+        "contractDesc": "Contract with employer",
+        "receipts": "Receipts (Tax)",
+        "receiptsDesc": "Patent payment receipts",
+        "insurance": "VHI policy",
+        "insuranceDesc": "Medical insurance",
+        "inn": "TIN / SNILS",
+        "innDesc": "Tax number",
+        "family": "Marriage / Birth certificate",
+        "familyDesc": "Certificate for TRP/Residence permit"
+      },
+      "important": "Important",
+      "importantNote": "If you don't have a document - don't mark it. We will generate applications based on available data.",
+      "scanSelected": "Scan selected ({count})",
+      "skipScanning": "Skip scanning",
+      "back": "Back"
+    },
+    "documentScan": {
+      "of": "of",
+      "recommended": "Recommended",
+      "scan": "Scan",
+      "scanDescription": "Automatic data recognition. Fast and error-free.",
+      "manual": "Enter manually",
+      "manualDescription": "Enter data yourself.",
+      "noDocSkip": "No document, skip ({current}/{total})",
+      "takePhoto": "Take a photo of the document",
+      "noGlare": "Make sure there are no glares and all data is readable",
+      "openCamera": "Open camera",
+      "havePhoto": "I have a 3x4 photo on white background",
+      "continue": "Continue",
+      "backToChoice": "Back to method selection"
+    },
+    "scanning": {
+      "recognizing": "Recognizing {title}",
+      "processingImage": "Processing image",
+      "recognizingText": "Recognizing text (OCR)",
+      "checkingFormat": "Checking data format",
+      "ocrTime": "OCR usually takes 5-10 seconds"
+    },
+    "verification": {
+      "checkData": "Check the data",
+      "autoRecognized": "We recognized the data automatically. Correct errors if any.",
+      "manualCheck": "Make sure all data is entered correctly.",
+      "accuracy": "Recognition accuracy",
+      "critical": "Critical",
+      "criticalNote": "An error in one letter makes the document invalid. Check each field carefully.",
+      "personallyChecked": "I personally checked the data.",
+      "confirmResponsibility": "I confirm correctness. I take responsibility.",
+      "nextDocument": "Next document",
+      "doneNext": "Done, next",
+      "allCorrectContinue": "All correct, continue",
+      "retakePhoto": "Retake photo",
+      "backToChoice": "Back to method selection"
+    },
+    "processing": {
+      "generating": "Generating documents",
+      "analyzingLaws": "Analyzing Russian laws",
+      "selectingForms": "Selecting MVD forms",
+      "generatingApplications": "Generating applications",
+      "usuallyTakes": "This usually takes 10-15 seconds"
+    },
+    "actionPlan": {
+      "documentsReady": "Documents ready!",
+      "preparedPackage": "We have prepared a complete legalization package",
+      "generatedDocuments": "Generated documents",
+      "patentApplication": "Patent application",
+      "arrivalNotification": "Arrival notification",
+      "stepByStepPlan": "Step-by-step action plan",
+      "whereToGo": "Where to go",
+      "mmcSakharovo": "MMC Sakharovo (Medical center)",
+      "openOnMap": "Open on map",
+      "when": "When",
+      "tomorrowTime": "Tomorrow, from 08:00 to 12:00",
+      "comeEarly": "Come in the morning, shorter queue",
+      "whatToTake": "What to bring",
+      "passportOriginal": "Passport (original)",
+      "migrationCard": "Migration card",
+      "printedApplications": "Printed applications (above)",
+      "cashAmount": "3,500 RUB in cash",
+      "whatIfNot": "What happens if you don't do it?",
+      "fine": "Fine up to 7,000 RUB",
+      "fineMoscowSpb": "Fine 5000-7000₽ (Moscow, St. Petersburg)",
+      "fineOtherRegions": "Fine 2000-5000₽ (other regions)",
+      "deportationRegime": "Deportation regime (from 05.02.2025)",
+      "stayRevoked": "Stay period revocation",
+      "entryBan": "Entry ban to Russia for 3-5 years",
+      "deportation": "Deportation at violator's expense",
+      "gotIt": "Great, I understand!"
+    },
+    "documents": {
+      "passport": {
+        "title": "Passport",
+        "description": "Page with photo and personal data"
+      },
+      "migCard": {
+        "title": "Migration card",
+        "description": "Card issued at the border upon entry"
+      },
+      "greenCard": {
+        "title": "Green card (Medical exam + Fingerprinting)",
+        "description": "Card from authorized medical center"
+      },
+      "education": {
+        "title": "Certificate (Russian language exam)",
+        "description": "Certificate from testing center"
+      },
+      "insurance": {
+        "title": "VHI policy",
+        "description": "Medical insurance contract"
+      },
+      "contract": {
+        "title": "Employment contract",
+        "description": "Contract with employer"
+      },
+      "registration": {
+        "title": "Arrival notification (Registration)",
+        "description": "Proof of registration at place of stay"
+      },
+      "photo": {
+        "title": "3x4 Photo",
+        "description": "Color photo on white background"
+      },
+      "invitation": {
+        "title": "University invitation",
+        "description": "Official invitation to study"
+      },
+      "medical": {
+        "title": "Medical certificate (form 086/u)",
+        "description": "Health status certificate"
+      },
+      "ticket": {
+        "title": "Return ticket",
+        "description": "Ticket for departure from Russia"
+      },
+      "hotel": {
+        "title": "Hotel booking",
+        "description": "Booking confirmation"
+      },
+      "privateInvitation": {
+        "title": "Invitation from Russian citizen",
+        "description": "Notarized invitation"
+      },
+      "patent": {
+        "title": "Patent",
+        "description": "Work permit"
+      },
+      "receipts": {
+        "title": "Receipts (Tax)",
+        "description": "Patent payment receipts"
+      },
+      "inn": {
+        "title": "TIN / SNILS",
+        "description": "Tax number"
+      },
+      "family": {
+        "title": "Marriage / Birth certificate",
+        "description": "Certificate for TRP/Residence permit"
+      }
+    },
+    "fields": {
+      "lastName": "Last name",
+      "firstName": "First name",
+      "middleName": "Middle name",
+      "passportNumber": "Passport number",
+      "issueDate": "Issue date",
+      "birthDate": "Date of birth",
+      "birthPlace": "Place of birth",
+      "citizenship": "Citizenship",
+      "cardNumber": "Card number",
+      "entryDate": "Entry date",
+      "borderPoint": "Border crossing point",
+      "purpose": "Purpose of visit",
+      "medicalCenter": "Medical center",
+      "expiryDate": "Expiry date",
+      "doctorName": "Doctor's name",
+      "certificateNumber": "Certificate number",
+      "testCenter": "Testing center",
+      "score": "Score",
+      "policyNumber": "Policy number",
+      "insuranceCompany": "Insurance company",
+      "employerName": "Employer name",
+      "employerINN": "Employer TIN",
+      "jobTitle": "Position",
+      "salary": "Salary (RUB/month)",
+      "startDate": "Work start date",
+      "hostFullName": "Host's full name",
+      "hostAddress": "Registration address",
+      "registrationDate": "Registration date",
+      "universityName": "University name",
+      "invitationNumber": "Invitation number",
+      "studyPeriod": "Study period",
+      "clinicName": "Clinic name",
+      "ticketNumber": "Ticket number",
+      "departureDate": "Departure date",
+      "destination": "Destination",
+      "hotelName": "Hotel name",
+      "hotelAddress": "Hotel address",
+      "checkIn": "Check-in date",
+      "checkOut": "Check-out date",
+      "inviterFullName": "Inviter's full name",
+      "inviterPassport": "Inviter's passport",
+      "inviterAddress": "Inviter's address",
+      "notaryName": "Notary's name",
+      "photoConfirm": "Photo confirmation",
+      "photoConfirmLabel": "I have a 3x4 photo on white background"
+    },
+    "dataIntake": {
+      "title": "Step 1. Passport data",
+      "description": "Choose a data entry method to generate applications",
+      "scanCamera": "Scan with camera",
+      "scanCameraDesc": "Automatic data recognition from passport. Fast and error-free.",
+      "ocrTechnology": "OCR technology",
+      "fillManually": "Fill manually",
+      "fillManuallyDesc": "Enter data yourself. Free but requires attention.",
+      "photoSpread": "Take a photo of the page with photo",
+      "checkData": "Check the data",
+      "checkDataNote": "An error in one letter makes the document invalid"
+    }
+  },
+  "audit": {
+    "title": "What do you ALREADY have?",
+    "subtitle": "Mark documents you have",
+    "hint": "Hint",
+    "tip": "Tip",
+    "tipText": "The more documents you have, the easier the legalization process will be.",
+    "receiptsHint": "Tax receipts usually exist only if you have a Patent. Check if you have a patent.",
+    "documents": {
+      "passport": "Passport",
+      "migCard": "Migration card",
+      "registration": "Registration (Notification)",
+      "greenCard": "Green card (Fingerprinting)",
+      "greenCardSubtitle": "Fingerprinting and medical card",
+      "education": "Certificate / Diploma",
+      "educationSubtitle": "Russian language or education",
+      "patent": "Patent",
+      "contract": "Employment contract",
+      "contractSubtitle": "Critical for EAEU citizens",
+      "receipts": "Receipts (Tax)",
+      "insurance": "VHI policy",
+      "inn": "TIN / SNILS",
+      "family": "Marriage / Birth certificate",
+      "familySubtitle": "For TRP/Residence permit"
+    }
+  },
+  "roadmap": {
+    "title": "Your roadmap",
+    "subtitle": "Action plan for legal stay",
+    "proceedButton": "Proceed to processing",
+    "status": {
+      "done": "Done"
+    },
+    "risk": {
+      "deportation": "Risk: Deportation"
+    },
+    "nextStep": {
+      "title": "Next step",
+      "description": "Complete migration registration within 3 days. We'll help find the nearest MVD department."
+    },
+    "steps": {
+      "passport": "Passport",
+      "passportDeadline": "Deadline: 7 days, Fine: 5000 RUB",
+      "migCard": "Migration card",
+      "migCardDeadline": "Deadline: 3 days, Fine: 5000 RUB",
+      "registration": "Registration",
+      "registrationDeadline": "Deadline: 7 days, Fine: 3000 RUB",
+      "patent": "Patent",
+      "patentDeadline": "Deadline: 30 days, Fine: 5000 RUB"
+    }
+  },
+  "docgen": {
+    "title": "Document generator",
+    "subtitle": "Form auto-fill",
+    "selectDocument": "Select document",
+    "autoFillDescription": "We will automatically fill the form with your data",
+    "important": "Important",
+    "tip": "Tip",
+    "tipText": "All forms are generated automatically based on your data. You just need to print.",
+    "missingData": "Missing data",
+    "missingDataDesc": "For document \"{document}\" you need to add missing information",
+    "thirdPartyData": "Third party data",
+    "enterEmployerData": "Enter employer data.",
+    "enterHostData": "Enter host data.",
+    "dataNotSaved": "This data is not saved to your profile.",
+    "selectCountry": "Select country",
+    "addressPlaceholder": "Moscow, Lenin st., 1, apt. 1",
+    "enterValue": "Enter value",
+    "quickFill": "Quick fill",
+    "scanPassportHint": "You can scan your passport to automatically fill in data",
+    "scanPassport": "Scan passport",
+    "saveAndContinue": "Save and continue",
+    "documentReady": "Document ready!",
+    "size": "Size",
+    "pages": "pages",
+    "filledData": "Filled data",
+    "downloadPdf": "Download PDF",
+    "edit": "Edit",
+    "readyToUse": "Document ready to use",
+    "printAndSubmit": "Print the document and submit to the appropriate authority. All data is filled according to Russian MVD requirements.",
+    "great": "Great!",
+    "categories": {
+      "work": "Work",
+      "housing": "Housing",
+      "longterm": "TRP / Residence permit",
+      "requests": "Other"
+    },
+    "templates": {
+      "patent": {
+        "title": "Patent application",
+        "subtitle": "Initial or reissue",
+        "formNumber": "Form 26.5-1"
+      },
+      "contract": {
+        "title": "Employment contract",
+        "subtitle": "Standard contract with individual or legal entity",
+        "formNumber": "Standard template"
+      },
+      "employment_notification": {
+        "title": "Employment contract notification",
+        "subtitle": "Must be sent to MVD within 2 months!",
+        "formNumber": "MVD Order No. 846"
+      },
+      "termination_notification": {
+        "title": "Contract termination notification",
+        "subtitle": "Submit upon dismissal within 3 days",
+        "formNumber": "MVD Order No. 846"
+      },
+      "arrival": {
+        "title": "Arrival notification",
+        "subtitle": "Initial registration or extension",
+        "formNumber": "Form 21"
+      },
+      "employer_petition": {
+        "title": "Employer petition",
+        "subtitle": "Grounds for registration extension",
+        "formNumber": "Free form"
+      },
+      "owner_consent": {
+        "title": "Property owner consent for registration",
+        "subtitle": "Statement from apartment owner",
+        "formNumber": "Standard form"
+      },
+      "rvp": {
+        "title": "TRP application",
+        "subtitle": "Temporary residence permit",
+        "formNumber": "TRP Form"
+      },
+      "vnzh": {
+        "title": "Residence permit application",
+        "subtitle": "Residence permit",
+        "formNumber": "Residence permit Form"
+      },
+      "annual_notification": {
+        "title": "Annual notification (TRP/Residence permit)",
+        "subtitle": "Residence confirmation",
+        "formNumber": "Notification form"
+      },
+      "lost_docs": {
+        "title": "Lost documents statement",
+        "subtitle": "For police and recovery",
+        "formNumber": "Free form"
+      },
+      "inn_application": {
+        "title": "TIN application",
+        "subtitle": "Tax registration",
+        "formNumber": "Form No. 2-2-Registration"
+      }
+    },
+    "fields": {
+      "passportNumber": "Passport number",
+      "fullName": "Full name",
+      "entryDate": "Entry date",
+      "citizenship": "Citizenship",
+      "birthDate": "Date of birth",
+      "birthPlace": "Place of birth",
+      "employerName": "Employer name",
+      "employerINN": "Employer TIN",
+      "employerAddress": "Employer address",
+      "jobTitle": "Position",
+      "salary": "Salary (RUB/month)",
+      "startDate": "Work start date",
+      "contractDate": "Contract date",
+      "terminationDate": "Termination date",
+      "reason": "Reason",
+      "hostAddress": "Registration address",
+      "hostFullName": "Host's full name",
+      "hostPassport": "Host's passport",
+      "employeeFullName": "Employee's full name",
+      "employeePassport": "Employee's passport",
+      "ownerFullName": "Owner's full name",
+      "ownerPassport": "Owner's passport",
+      "propertyAddress": "Property address",
+      "guestFullName": "Guest's full name",
+      "guestPassport": "Guest's passport",
+      "rvpNumber": "TRP number",
+      "rvpDate": "TRP issue date",
+      "vnzhNumber": "Residence permit number",
+      "address": "Residence address",
+      "income": "Annual income (RUB)",
+      "employer": "Employer",
+      "certificateNumber": "Certificate number",
+      "testCenter": "Testing center",
+      "score": "Score",
+      "educationLevel": "Education level",
+      "spouseName": "Spouse's full name",
+      "marriageDate": "Marriage date",
+      "marriageCertNumber": "Marriage certificate number",
+      "childrenCount": "Number of children",
+      "lostDocType": "Lost document type",
+      "lostDate": "Date of loss",
+      "circumstances": "Loss circumstances"
+    }
   }
 }
