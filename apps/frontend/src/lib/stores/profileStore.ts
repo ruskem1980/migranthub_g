@@ -24,6 +24,7 @@ export interface UserProfile {
   migrationCardNumber?: string;
   migrationCardExpiry?: string;
   purpose?: 'work' | 'study' | 'tourist' | 'private';
+  selectedDocuments?: string[];
 
   // Registration
   registrationAddress?: string;

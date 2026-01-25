@@ -4,6 +4,7 @@ import { Check, Info, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { useProfileStore } from '@/lib/stores';
 
 interface AuditScreenProps {
   onNext: (checkedItems: string[]) => void;
@@ -18,6 +19,7 @@ interface DocumentItem {
 
 export function AuditScreen({ onNext }: AuditScreenProps) {
   const { t } = useTranslation();
+  const { updateProfile } = useProfileStore();
   const [checked, setChecked] = useState<string[]>([]);
 
   const items: DocumentItem[] = [
@@ -134,7 +136,10 @@ export function AuditScreen({ onNext }: AuditScreenProps) {
         </div>
 
         <button
-          onClick={() => onNext(checked)}
+          onClick={() => {
+            updateProfile({ selectedDocuments: checked });
+            onNext(checked);
+          }}
           className="w-full bg-blue-600 text-white font-bold py-4 px-6 rounded-2xl hover:bg-blue-700 transition-all active:scale-98 shadow-lg"
         >
           {t('common.continue')}

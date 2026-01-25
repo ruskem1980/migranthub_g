@@ -34,7 +34,7 @@ export function HomeScreen() {
   const [editFullName, setEditFullName] = useState(profile?.fullName || '');
   const [editCitizenship, setEditCitizenship] = useState(profile?.citizenship || '');
   const [editRegion, setEditRegion] = useState(profile?.patentRegion || '');
-  const [checkedDocs, setCheckedDocs] = useState<string[]>(['passport', 'mig_card']);
+  const [checkedDocs, setCheckedDocs] = useState<string[]>(profile?.selectedDocuments || []);
 
   // Sync local state when profile changes
   useEffect(() => {
@@ -44,6 +44,7 @@ export function HomeScreen() {
       setEditFullName(profile.fullName || '');
       setEditCitizenship(profile.citizenship || '');
       setEditRegion(profile.patentRegion || '');
+      setCheckedDocs(profile.selectedDocuments || []);
     }
   }, [profile]);
 
@@ -623,6 +624,7 @@ export function HomeScreen() {
                     entryDate: editEntryDate,
                     purpose: editPurpose as 'work' | 'study' | 'tourist' | 'private',
                     patentRegion: editRegion,
+                    selectedDocuments: checkedDocs,
                   });
                   setShowProfileEdit(false);
                 }}
