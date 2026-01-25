@@ -121,6 +121,12 @@ export async function downloadPDF(options: GeneratePDFOptions): Promise<void> {
   URL.revokeObjectURL(url);
 }
 
+export async function previewPDF(options: GeneratePDFOptions): Promise<void> {
+  const blob = await generatePDF(options);
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+}
+
 export async function sharePDF(options: GeneratePDFOptions): Promise<void> {
   const blob = await generatePDF(options);
   const form = getFormById(options.formId);

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Camera, Edit3, FileText, MapPin, Calendar, AlertTriangle, Download, Printer, ChevronRight, Check, Loader2 } from 'lucide-react';
+import { X, Camera, Edit3, FileText, MapPin, Calendar, AlertTriangle, Download, Eye, ChevronRight, Check, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { previewPDF } from '@/features/documents/pdfGenerator';
 
 interface LegalizationWizardProps {
   onClose: () => void;
@@ -1381,8 +1382,12 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
               <button className="p-2 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors">
                 <Download className="w-4 h-4 text-blue-600" />
               </button>
-              <button className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                <Printer className="w-4 h-4 text-gray-600" />
+              <button
+                onClick={() => previewPDF({ formId: 'patent-application', data: scannedDocuments, profileData: { ...profileData, ...scannedDocuments } })}
+                className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                title={t('wizard.actionPlan.preview')}
+              >
+                <Eye className="w-4 h-4 text-gray-600" />
               </button>
             </div>
           </div>
@@ -1401,8 +1406,12 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
               <button className="p-2 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors">
                 <Download className="w-4 h-4 text-blue-600" />
               </button>
-              <button className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                <Printer className="w-4 h-4 text-gray-600" />
+              <button
+                onClick={() => previewPDF({ formId: 'arrival-notification', data: scannedDocuments, profileData: { ...profileData, ...scannedDocuments } })}
+                className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                title={t('wizard.actionPlan.preview')}
+              >
+                <Eye className="w-4 h-4 text-gray-600" />
               </button>
             </div>
           </div>
