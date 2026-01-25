@@ -444,8 +444,11 @@ export function HomeScreen() {
                   {[
                     { value: 'work', label: `💼 ${t('profile.purposes.work')}`, subtitle: t('profile.purposes.workSubtitle') },
                     { value: 'study', label: `📚 ${t('profile.purposes.study')}`, subtitle: t('profile.purposes.studySubtitle') },
-                    { value: 'tourism', label: `✈️ ${t('profile.purposes.tourist')}`, subtitle: t('profile.purposes.touristSubtitle') },
+                    { value: 'tourist', label: `✈️ ${t('profile.purposes.tourist')}`, subtitle: t('profile.purposes.touristSubtitle') },
                     { value: 'private', label: `🏠 ${t('profile.purposes.private')}`, subtitle: t('profile.purposes.privateSubtitle') },
+                    { value: 'business', label: `💼 ${t('profile.purposes.business')}`, subtitle: t('profile.purposes.businessSubtitle') },
+                    { value: 'official', label: `🏛️ ${t('profile.purposes.official')}`, subtitle: t('profile.purposes.officialSubtitle') },
+                    { value: 'transit', label: `🚗 ${t('profile.purposes.transit')}`, subtitle: t('profile.purposes.transitSubtitle') },
                   ].map((option) => (
                     <button
                       key={option.value}
@@ -625,7 +628,7 @@ export function HomeScreen() {
                     fullName: editFullName,
                     citizenship: editCitizenship,
                     entryDate: editEntryDate,
-                    purpose: editPurpose as 'work' | 'study' | 'tourist' | 'private',
+                    purpose: editPurpose as 'work' | 'study' | 'tourist' | 'private' | 'business' | 'official' | 'transit',
                     patentRegion: editRegion,
                     selectedDocuments: checkedDocs,
                   });

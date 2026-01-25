@@ -42,12 +42,15 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
   };
 
   // Map purpose to profileStore format
-  const getPurposeValue = (): 'work' | 'study' | 'tourist' | 'private' | undefined => {
-    const purposeMap: Record<string, 'work' | 'study' | 'tourist' | 'private'> = {
+  const getPurposeValue = (): 'work' | 'study' | 'tourist' | 'private' | 'business' | 'official' | 'transit' | undefined => {
+    const purposeMap: Record<string, 'work' | 'study' | 'tourist' | 'private' | 'business' | 'official' | 'transit'> = {
       work: 'work',
       study: 'study',
       tourism: 'tourist',
       private: 'private',
+      business: 'business',
+      official: 'official',
+      transit: 'transit',
     };
     return purposeMap[purpose];
   };
@@ -180,16 +183,16 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">{t('onboarding.profiling.selectCountry')}</option>
-                  <option value="🇦🇲 Армения">🇦🇲 {t('countries.AM')} (ЕАЭС)</option>
-                  <option value="🇦🇿 Азербайджан">🇦🇿 {t('countries.AZ')}</option>
-                  <option value="🇧🇾 Беларусь">🇧🇾 {t('countries.BY')} (ЕАЭС)</option>
-                  <option value="🇬🇪 Грузия">🇬🇪 {t('countries.GE')}</option>
-                  <option value="🇰🇿 Казахстан">🇰🇿 {t('countries.KZ')} (ЕАЭС)</option>
-                  <option value="🇲🇩 Молдова">🇲🇩 {t('countries.MD')}</option>
-                  <option value="🇺🇦 Украина">🇺🇦 {t('countries.UA')}</option>
-                  <option value="🇨🇳 Китай">🇨🇳 {t('countries.CN')}</option>
-                  <option value="🇮🇳 Индия">🇮🇳 {t('countries.IN')}</option>
-                  <option value="🇻🇳 Вьетнам">🇻🇳 {t('countries.VN')}</option>
+                  <option value="AM">🇦🇲 {t('countries.AM')} (ЕАЭС)</option>
+                  <option value="AZ">🇦🇿 {t('countries.AZ')}</option>
+                  <option value="BY">🇧🇾 {t('countries.BY')} (ЕАЭС)</option>
+                  <option value="GE">🇬🇪 {t('countries.GE')}</option>
+                  <option value="KZ">🇰🇿 {t('countries.KZ')} (ЕАЭС)</option>
+                  <option value="MD">🇲🇩 {t('countries.MD')}</option>
+                  <option value="UA">🇺🇦 {t('countries.UA')}</option>
+                  <option value="CN">🇨🇳 {t('countries.CN')}</option>
+                  <option value="IN">🇮🇳 {t('countries.IN')}</option>
+                  <option value="VN">🇻🇳 {t('countries.VN')}</option>
                 </select>
                 <button
                   onClick={() => setShowOtherCitizenship(false)}
