@@ -165,15 +165,26 @@
       "subtitle": "Days per year",
       "description": "Calculate remaining legal stay days for the current year",
       "rule": "From 05.02.2025: you can stay in Russia for no more than 90 days per calendar year (January 1 - December 31)",
-      "lawReference": "FZ-260, effective from 01.01.2025",
+      "lawReference": "FZ-260 dated 08.08.2024, effective from 05.02.2025",
       "calendarYearNote": "Counter resets on January 1st each year",
+      "exemptions": {
+        "title": "This rule does NOT apply to:",
+        "items": {
+          "vnzh": "Residence permit (VNZh) holders",
+          "rvp": "Temporary residence permit (RVP) holders",
+          "patent": "Work patent holders",
+          "eaeu": "EAEU citizens with employment contract",
+          "student": "Students with study permit",
+          "refugee": "Refugees and temporary asylum holders"
+        }
+      },
       "region": "Region of stay",
       "regionMoscow": "Moscow / Moscow Oblast",
       "regionSpb": "St. Petersburg / Leningrad Oblast",
       "regionOther": "Other region",
       "penalty": {
         "title": "Possible penalties",
-        "fine": "Fine: {{min}} - {{max}} RUB",
+        "fine": "Fine: {min} - {max} RUB",
         "deportation": "Deportation with entry ban possible",
         "noDeportation": "Deportation unlikely for first offense"
       },
@@ -199,5 +210,119 @@
       "fineOtherRegions": "Fine 2000-5000₽ (other regions)",
       "deportationRegime": "Deportation regime (from 05.02.2025)"
     }
+  },
+  "onboarding": {
+    "language": {
+      "title": "Select language",
+      "subtitle": "Which language is most comfortable for you?"
+    },
+    "citizenship": {
+      "title": "Your citizenship",
+      "subtitle": "This will help us provide relevant information"
+    },
+    "welcome": {
+      "title": "Welcome to MigrantHub!",
+      "subtitle": "Your migration assistant"
+    },
+    "profiling": {
+      "title": "Profiling",
+      "subtitle": "Tell us about yourself for personalization",
+      "citizenship": "Citizenship",
+      "voiceOver": "Voice over",
+      "other": "Other",
+      "selectCountry": "Select country",
+      "departureCountry": "Departure country",
+      "autoFill": "Auto-fill",
+      "notSelected": "Not selected",
+      "entryDate": "Entry date",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "region": "Region of stay",
+      "selectRegion": "Select region",
+      "regions": {
+        "moscow": "Moscow",
+        "spb": "St. Petersburg",
+        "novosibirsk": "Novosibirsk",
+        "ekaterinburg": "Yekaterinburg",
+        "kazan": "Kazan",
+        "nizhny": "Nizhny Novgorod",
+        "samara": "Samara",
+        "omsk": "Omsk",
+        "chelyabinsk": "Chelyabinsk",
+        "rostov": "Rostov-on-Don",
+        "ufa": "Ufa",
+        "krasnoyarsk": "Krasnoyarsk",
+        "voronezh": "Voronezh",
+        "perm": "Perm",
+        "volgograd": "Volgograd"
+      },
+      "purpose": "Purpose of visit",
+      "purposes": {
+        "work": "Work",
+        "workDesc": "Employment",
+        "study": "Study",
+        "studyDesc": "Universities/colleges",
+        "tourism": "Tourism",
+        "tourismDesc": "Vacation, travel",
+        "private": "Private",
+        "privateDesc": "Visiting, treatment",
+        "business": "Business",
+        "businessDesc": "Negotiations, business",
+        "official": "Official",
+        "officialDesc": "Delegations",
+        "transit": "Transit",
+        "transitDesc": "Passing through Russia"
+      },
+      "important": "Important",
+      "purposeWarning": "To obtain a work patent, select \"Work\". You cannot change the purpose of visit without leaving Russia (except for EAEU citizens)."
+    }
+  },
+  "countries": {
+    "UZ": "Uzbekistan",
+    "TJ": "Tajikistan",
+    "KG": "Kyrgyzstan",
+    "KZ": "Kazakhstan",
+    "AZ": "Azerbaijan",
+    "AM": "Armenia",
+    "GE": "Georgia",
+    "MD": "Moldova",
+    "UA": "Ukraine",
+    "BY": "Belarus",
+    "TM": "Turkmenistan",
+    "AF": "Afghanistan",
+    "PK": "Pakistan",
+    "IN": "India",
+    "BD": "Bangladesh",
+    "VN": "Vietnam",
+    "CN": "China",
+    "TR": "Turkey",
+    "SY": "Syria",
+    "IQ": "Iraq",
+    "IR": "Iran",
+    "EG": "Egypt",
+    "RU": "Russia",
+    "OTHER": "Other country"
+  },
+  "languages": {
+    "ru": "Russian",
+    "uz": "Uzbek",
+    "tg": "Tajik",
+    "ky": "Kyrgyz",
+    "kk": "Kazakh",
+    "en": "English",
+    "ar": "Arabic",
+    "fa": "Persian",
+    "tr": "Turkish",
+    "az": "Azerbaijani",
+    "hy": "Armenian",
+    "ka": "Georgian",
+    "vi": "Vietnamese",
+    "zh": "Chinese",
+    "selectTitle": "Select language",
+    "selectSubtitle": "App interface language",
+    "mainLanguages": "Main languages",
+    "otherLanguages": "Other language (AI)",
+    "aiTranslation": "On-the-fly translation",
+    "aiNote": "The interface will be translated automatically. Minor inaccuracies are possible."
   }
 }

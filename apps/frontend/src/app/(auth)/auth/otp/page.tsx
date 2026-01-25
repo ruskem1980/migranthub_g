@@ -95,6 +95,22 @@ export default function OtpPage() {
     }
   };
 
+  // Fallback UUID generator for non-secure contexts
+  const generateUUID = () => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      try {
+        return crypto.randomUUID();
+      } catch {
+        // Fallback for non-secure contexts (HTTP)
+      }
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  };
+
   const handleSubmit = async (code: string) => {
     setIsLoading(true);
 
@@ -104,7 +120,7 @@ export default function OtpPage() {
         // Simulate successful auth
         const now = new Date().toISOString();
         const mockUser = {
-          id: crypto.randomUUID(),
+          id: generateUUID(),
           citizenshipCode: null,
           regionCode: null,
           entryDate: null,
@@ -136,7 +152,8 @@ export default function OtpPage() {
         setOtp(Array(OTP_LENGTH).fill(''));
         inputRefs.current[0]?.focus();
       }
-    } catch {
+    } catch (err) {
+      console.error('OTP verification error:', err);
       setError(t('auth.otp.verifyError'));
     } finally {
       setIsLoading(false);

@@ -14,7 +14,9 @@
     "build:mobile": "npm run build && npm run cap:sync",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:compliance": "jest --testPathPatterns=compliance --verbose",
+    "test:compliance:ci": "jest --testPathPatterns=compliance --ci --reporters=default"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.1",

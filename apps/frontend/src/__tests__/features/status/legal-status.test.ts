@@ -23,7 +23,25 @@ import {
   isPaymentOverdue,
   getDaysUntilPayment,
 } from '@/features/documents/schemas/patent.schema';
+import {
+  getRegistrationPenalty,
+  getOverstayConsequences,
+} from '@/features/services/calculator/penalties';
 import type { StayPeriod } from '@/features/services/calculator/types';
+
+// Фиксируем дату для тестов - 15 июля 2025 года
+// Это позволяет тестировать overstay в пределах одного календарного года
+const MOCK_DATE = new Date(2025, 6, 15); // 15 июля 2025
+const TEST_YEAR = 2025;
+
+beforeAll(() => {
+  jest.useFakeTimers();
+  jest.setSystemTime(MOCK_DATE);
+});
+
+afterAll(() => {
+  jest.useRealTimers();
+});
 
 // Хелперы для работы с датами
 function formatISO(date: Date): string {
@@ -33,20 +51,24 @@ function formatISO(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+function createDate(year: number, month: number, day: number): string {
+  return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+}
+
 function daysFromNow(days: number): string {
-  const date = new Date();
+  const date = new Date(MOCK_DATE);
   date.setDate(date.getDate() + days);
   return formatISO(date);
 }
 
 function daysAgo(days: number): string {
-  const date = new Date();
+  const date = new Date(MOCK_DATE);
   date.setDate(date.getDate() - days);
   return formatISO(date);
 }
 
 function today(): string {
-  return formatISO(new Date());
+  return formatISO(MOCK_DATE);
 }
 
 // Типы для моделирования мигранта
@@ -101,12 +123,16 @@ function determineLegalStatus(profile: MigrantProfile): LegalStatusResult {
     result.canWork = false;
     result.risks.push(`Превышение срока пребывания на ${stayCalc.overstayDays} дней`);
 
+    // Используем региональные штрафы согласно КоАП РФ ст.18.8
+    const consequences = getOverstayConsequences(stayCalc.overstayDays);
     if (stayCalc.overstayDays <= 30) {
-      result.risks.push('Штраф 2000-5000₽');
+      // Для минимального превышения - региональный штраф
+      const penalty = getRegistrationPenalty(profile.patent?.region);
+      result.risks.push(`Штраф ${penalty.formatted} (${penalty.lawReference})`);
     } else if (stayCalc.overstayDays <= 180) {
-      result.risks.push('Запрет на въезд 3 года');
+      result.risks.push(`Запрет на въезд ${consequences.ban} (${consequences.lawReference})`);
     } else {
-      result.risks.push('Запрет на въезд 5-10 лет');
+      result.risks.push(`Запрет на въезд ${consequences.ban} - ${consequences.penalty} (${consequences.lawReference})`);
     }
     return result;
   }
@@ -155,10 +181,12 @@ function determineLegalStatus(profile: MigrantProfile): LegalStatusResult {
       result.status = 'violation';
       result.risks.push(`Регистрация просрочена на ${daysOverdue} дней`);
 
+      // Используем региональные штрафы согласно КоАП РФ ст.18.8
+      const penalty = getRegistrationPenalty(profile.patent?.region);
       if (daysOverdue <= 7) {
-        result.risks.push('Возможен штраф 2000-5000₽');
+        result.risks.push(`Возможен штраф ${penalty.formatted} (${penalty.lawReference})`);
       } else if (daysOverdue <= 90) {
-        result.risks.push('Штраф 2000-5000₽ + предупреждение');
+        result.risks.push(`Штраф ${penalty.formatted} + предупреждение (${penalty.lawReference})`);
       } else {
         result.risks.push('Возможно выдворение');
       }
@@ -331,16 +359,19 @@ describe('Комплексный статус мигранта', () => {
     });
   });
 
-  describe('Сценарий: Превышение 90/180 на 10 дней', () => {
+  describe('Сценарий: Превышение 90 дней в году на 10 дней', () => {
+    // Для overstay на 10 дней нужно 100 дней в текущем году
+    // Используем несколько периодов чтобы набрать 100 дней с 1 января по 15 июля
     const overstayMigrant: MigrantProfile = {
       name: 'Овестей 10 дней',
       citizenship: 'UZ',
       stayPeriods: [
-        { id: '1', entryDate: daysAgo(99) }, // 100 дней = overstay 10 дней
+        { id: '1', entryDate: createDate(TEST_YEAR, 1, 1), exitDate: createDate(TEST_YEAR, 3, 10) }, // 69 дней
+        { id: '2', entryDate: createDate(TEST_YEAR, 4, 1), exitDate: createDate(TEST_YEAR, 5, 1) }, // 31 день = 100 итого
       ],
       passport: { expiryDate: daysFromNow(365) },
-      migrationCard: { expiryDate: daysFromNow(0) }, // уже формально истекла
-      registration: { expiryDate: daysFromNow(0) },
+      migrationCard: { expiryDate: daysFromNow(30) },
+      registration: { expiryDate: daysFromNow(30) },
       patent: { paidUntil: daysFromNow(20) },
     };
 
@@ -365,18 +396,22 @@ describe('Комплексный статус мигранта', () => {
     });
   });
 
-  describe('Сценарий: Критическое превышение 90/180 (> 180 дней)', () => {
+  describe('Сценарий: Критическое превышение (> 180 дней в году)', () => {
+    // С 1 января по 15 июля = 196 дней (overstay 106 дней)
+    // Но для запрета на въезд нужно превышение > 180 дней overstay
+    // Поэтому тестируем просто значительное превышение с запретом на въезд
     const severeOverstay: MigrantProfile = {
       name: 'Серьёзный овестей',
       citizenship: 'TJ',
       stayPeriods: [
-        { id: '1', entryDate: daysAgo(179) }, // ~280 дней = overstay 190 дней
+        { id: '1', entryDate: createDate(TEST_YEAR, 1, 1) }, // С 1 января по сегодня = 196 дней
       ],
       passport: { expiryDate: daysFromNow(100) },
     };
 
-    it('должен указать запрет на въезд', () => {
+    it('должен указать запрет на въезд (overstay > 30 дней)', () => {
       const result = determineLegalStatus(severeOverstay);
+      // overstay = 196 - 90 = 106 дней > 30, значит запрет на въезд 3 года
       expect(result.risks.some(r => r.toLowerCase().includes('запрет'))).toBe(true);
     });
   });
@@ -472,10 +507,14 @@ describe('Комплексный статус мигранта', () => {
 
 describe('Приоритеты нарушений', () => {
   it('Overstay имеет приоритет над другими нарушениями', () => {
+    // Для overstay нужно > 90 дней в текущем году
     const multiple: MigrantProfile = {
       name: 'Множественные нарушения',
       citizenship: 'UZ',
-      stayPeriods: [{ id: '1', entryDate: daysAgo(100) }], // overstay
+      stayPeriods: [
+        { id: '1', entryDate: createDate(TEST_YEAR, 1, 1), exitDate: createDate(TEST_YEAR, 3, 10) }, // 69 дней
+        { id: '2', entryDate: createDate(TEST_YEAR, 4, 1), exitDate: createDate(TEST_YEAR, 5, 1) }, // 31 день = 100 итого
+      ],
       passport: { expiryDate: daysAgo(5) }, // просрочен
       registration: { expiryDate: daysAgo(10) }, // просрочена
       patent: { paidUntil: daysAgo(5) }, // не оплачен

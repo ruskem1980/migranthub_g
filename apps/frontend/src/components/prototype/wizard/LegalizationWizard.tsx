@@ -7,6 +7,7 @@ import { previewPDF } from '@/features/documents/pdfGenerator';
 
 interface LegalizationWizardProps {
   onClose: () => void;
+  onComplete?: (addedDocs: string[]) => void;
   profileData: {
     citizenship: string;
     entryDate: string;
@@ -26,7 +27,7 @@ interface DocumentToScan {
   isRequired?: boolean;
 }
 
-export function LegalizationWizard({ onClose, profileData }: LegalizationWizardProps) {
+export function LegalizationWizard({ onClose, onComplete, profileData }: LegalizationWizardProps) {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState<WizardStep>('intro');
   const [scanMode, setScanMode] = useState<'required' | 'additional' | 'quick-select' | 'step-by-step' | null>(null);
@@ -1500,7 +1501,11 @@ export function LegalizationWizard({ onClose, profileData }: LegalizationWizardP
 
       {/* CTA */}
       <button
-        onClick={onClose}
+        onClick={() => {
+          const addedDocs = Object.keys(scannedDocuments);
+          onComplete?.(addedDocs);
+          onClose();
+        }}
         className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-5 rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all active:scale-98 shadow-xl"
       >
         {t('wizard.actionPlan.gotIt')}

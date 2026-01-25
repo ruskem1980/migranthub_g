@@ -604,7 +604,7 @@
       "activePl": "Dolzarb",
       "expired": "Muddati tugagan",
       "missing": "Yo'q",
-      "payIn": "{{days}} kundan keyin to'lang"
+      "payIn": "{days} kundan keyin to'lang"
     },
     "actions": {
       "update": "Yangilash",
@@ -789,15 +789,26 @@
       "daysRemaining": "Qolgan kunlar",
       "mustLeave": "Chiqish kerak",
       "rule": "2025-yildan boshlab: RFda kalendar yilida (1-yanvardan 31-dekabrgacha) 90 kundan ortiq bo'lish mumkin emas. Asos: FZ-260",
-      "lawReference": "FZ-260, 01.01.2025-dan kuchga kirdi",
+      "lawReference": "FZ-260 08.08.2024, 05.02.2025-dan kuchga kirdi",
       "calendarYearNote": "Hisoblagich har yili 1-yanvarda nolga tushadi",
+      "exemptions": {
+        "title": "Qoida quyidagilarga TAALLUQLI EMAS:",
+        "items": {
+          "vnzh": "Yashash huquqiga ega (VNJ)",
+          "rvp": "Vaqtinchalik yashash ruxsatnomasi (RVP) egalari",
+          "patent": "Ish patenti egalari",
+          "eaeu": "Mehnat shartnomasi bilan YEAIO fuqarolari",
+          "student": "O'qish ruxsatnomasi bilan talabalar",
+          "refugee": "Qochqinlar va vaqtinchalik boshpana egalari"
+        }
+      },
       "region": "Turish hududi",
       "regionMoscow": "Moskva / Moskva viloyati",
       "regionSpb": "Sankt-Peterburg / Leningrad viloyati",
       "regionOther": "Boshqa hudud",
       "penalty": {
         "title": "Mumkin bo'lgan jarimalar",
-        "fine": "Jarima: {{min}} - {{max}} rubl",
+        "fine": "Jarima: {min} - {max} rubl",
         "deportation": "Kirish taqiqi bilan deportatsiya mumkin",
         "noDeportation": "Birinchi qoidabuzarlik uchun deportatsiya ehtimolli emas"
       },
@@ -1067,7 +1078,7 @@
     },
     "cards": {
       "patent": {
-        "expiresIn": "{{days}} kundan keyin to'lang"
+        "expiresIn": "{days} kundan keyin to'lang"
       },
       "registration": {
         "needExtend": "Ro'yxatni uzaytirish kerak"
@@ -1131,9 +1142,9 @@
   },
   "notifications": {
     "patentExpiry": "Patent muddati tugayapti",
-    "patentExpiryDesc": "Patent tugashiga {{days}} kun qoldi",
+    "patentExpiryDesc": "Patent tugashiga {days} kun qoldi",
     "registrationExpiry": "Ro'yxat muddati tugayapti",
-    "registrationExpiryDesc": "Ro'yxat tugashiga {{days}} kun qoldi",
+    "registrationExpiryDesc": "Ro'yxat tugashiga {days} kun qoldi",
     "paymentReminder": "To'lov eslatmasi",
     "paymentReminderDesc": "Patentni to'lashni unutmang",
     "documentReady": "Hujjat tayyor",
@@ -1177,7 +1188,7 @@
       "intro": "Vaziyat tahlili",
       "requiredDocs": "Majburiy hujjatlar",
       "additionalDocs": "Qo'shimcha hujjatlar",
-      "documentScan": "Hujjat {{current}} / {{total}}",
+      "documentScan": "Hujjat {current} / {total}",
       "scanning": "Skanerlash...",
       "verification": "Ma'lumotlarni tekshirish",
       "processing": "Yaratish...",
@@ -1189,10 +1200,10 @@
       "entryDate": "Kirish sanasi",
       "purpose": "Tashrif maqsadi",
       "verdict": "Tizim xulosasi",
-      "needDocuments": "{{date}} gacha {{count}} hujjatni rasmiylashtirish kerak ({{days}} kun).",
+      "needDocuments": "{date} gacha {count} hujjatni rasmiylashtirish kerak ({days} kun).",
       "missingDocs": "Yetishmayotgan hujjatlar",
       "startProcessing": "Rasmiylashtirishni boshlash",
-      "scanRequired": "Avval yetishmayotgan hujjatlarni skanerimiz ({{count}}), keyin qo'shimchalarni taklif qilamiz",
+      "scanRequired": "Avval yetishmayotgan hujjatlarni skanerimiz ({count}), keyin qo'shimchalarni taklif qilamiz",
       "generateNote": "Biz barcha kerakli arizalarni yaratamiz va aniq harakatlar rejasini ko'rsatamiz"
     },
     "requiredDocs": {
@@ -1200,7 +1211,7 @@
       "description": "Legalizatsiya uchun ushbu hujjatlarni skanerlash kerak",
       "important": "Muhim",
       "importantNote": "Bu hujjatlar RFda qonuniy yashash va ishlash uchun zarur.",
-      "startScanning": "Skanerlashni boshlash ({{count}} hujjat)",
+      "startScanning": "Skanerlashni boshlash ({count} hujjat)",
       "back": "Orqaga"
     },
     "additionalDocs": {
@@ -1209,7 +1220,7 @@
       "alreadyScanned": "Allaqachon skanerlangan",
       "tip": "Maslahat",
       "tipText": "Qo'shimcha hujjatlar boshqa shakllarni yaratishda yordam beradi (RVP, VNJ, shartnomalar).",
-      "scanSelected": "Tanlanganlarni skanerlash ({{count}})",
+      "scanSelected": "Tanlanganlarni skanerlash ({count})",
       "skipAdditional": "Qo'shimchalarni o'tkazib yuborish",
       "continueWithout": "Qo'shimchalarsiz davom etish"
     },
@@ -1248,7 +1259,7 @@
       },
       "important": "Muhim",
       "importantNote": "Agar biror hujjat bo'lmasa - uni belgilamang. Mavjud ma'lumotlar asosida arizalar yaratamiz.",
-      "scanSelected": "Tanlanganlarni skanerlash ({{count}})",
+      "scanSelected": "Tanlanganlarni skanerlash ({count})",
       "skipScanning": "Skanerlashni o'tkazib yuborish",
       "back": "Orqaga"
     },
@@ -1259,7 +1270,7 @@
       "scanDescription": "Avtomatik ma'lumotlarni aniqlash. Tez va xatosiz.",
       "manual": "Qo'lda kiritish",
       "manualDescription": "Ma'lumotlarni o'zingiz kiriting.",
-      "noDocSkip": "Hujjat yo'q, o'tkazib yuborish ({{current}}/{{total}})",
+      "noDocSkip": "Hujjat yo'q, o'tkazib yuborish ({current}/{total})",
       "takePhoto": "Hujjatni suratga oling",
       "noGlare": "Yaltiroq yo'qligiga va barcha ma'lumotlar o'qilishiga ishonch hosil qiling",
       "openCamera": "Kamerani ochish",
@@ -1268,7 +1279,7 @@
       "backToChoice": "Usul tanlashga qaytish"
     },
     "scanning": {
-      "recognizing": "{{title}} aniqlanmoqda",
+      "recognizing": "{title} aniqlanmoqda",
       "processingImage": "Rasm qayta ishlanmoqda",
       "recognizingText": "Matn aniqlanmoqda (OCR)",
       "checkingFormat": "Ma'lumotlar formati tekshirilmoqda",

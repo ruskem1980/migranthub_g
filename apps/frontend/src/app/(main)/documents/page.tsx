@@ -52,7 +52,6 @@ export default function DocumentsPage() {
   const router = useRouter();
   const [showWizard, setShowWizard] = useState(false);
   const [showTypeSelector, setShowTypeSelector] = useState(false);
-  const [selectedType, setSelectedType] = useState<DocumentTypeValue | null>(null);
   const [documents, setDocuments] = useState<TypedDocument[]>([]);
   const { profile } = useProfileStore();
   const { getDocuments, isLoading, deleteDocument } = useDocumentStorage();
@@ -81,14 +80,12 @@ export default function DocumentsPage() {
     setShowTypeSelector(true);
   }, []);
 
-  // Выбрать тип документа и перейти к форме
-  const handleSelectType = useCallback((type: DocumentTypeValue) => {
-    setSelectedType(type);
+  // Выбрать тип документа и открыть мастер создания
+  const handleSelectType = useCallback((_type: DocumentTypeValue) => {
     setShowTypeSelector(false);
-
-    // Переход на страницу формы соответствующего типа
-    router.push(`/documents/new/${type}`);
-  }, [router]);
+    // Открываем DocumentWizard вместо навигации на несуществующую страницу
+    setShowWizard(true);
+  }, []);
 
   // Перейти к детальной странице документа
   const handleSelectDocument = useCallback(

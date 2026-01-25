@@ -1,7 +1,7 @@
 'use client';
 
 import { QrCode, ChevronRight, Volume2, History, Lock, Edit2, Globe, Trash2, X, Rocket, FileText, AlertTriangle, CreditCard, Grid3x3, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { LegalizationWizard } from '../wizard/LegalizationWizard';
 import { useTranslation, LANGUAGES } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
@@ -20,6 +20,16 @@ export function HomeScreen() {
   const [editCitizenship, setEditCitizenship] = useState('UZ');
   const [editRegion, setEditRegion] = useState('moscow');
   const [checkedDocs, setCheckedDocs] = useState<string[]>(['passport', 'mig_card']);
+
+  // Calculate remaining days based on entry date (90 day rule)
+  const daysRemaining = useMemo(() => {
+    const entry = new Date(editEntryDate);
+    const deadline = new Date(entry);
+    deadline.setDate(deadline.getDate() + 90);
+    const today = new Date();
+    const diff = Math.ceil((deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.max(0, diff);
+  }, [editEntryDate]);
 
   return (
     <div className="h-full overflow-y-auto pb-4">
@@ -89,8 +99,8 @@ export function HomeScreen() {
 
             <div className="text-right">
               <p className="text-xs text-gray-500 mb-0.5">{t('dashboard.daysRemaining')}</p>
-              <div className={`text-xl font-bold ${88 > 30 ? 'text-green-600' : 88 > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
-                88
+              <div className={`text-xl font-bold ${daysRemaining > 30 ? 'text-green-600' : daysRemaining > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
+                {daysRemaining}
               </div>
               <p className="text-xs text-gray-500">{t('common.days')}</p>
             </div>
@@ -814,11 +824,15 @@ export function HomeScreen() {
       {showWizard && (
         <LegalizationWizard
           onClose={() => setShowWizard(false)}
+          onComplete={(addedDocs) => {
+            const newDocs = [...new Set([...checkedDocs, ...addedDocs])];
+            setCheckedDocs(newDocs);
+          }}
           profileData={{
-            citizenship: 'Узбекистан',
-            entryDate: '2024-01-01',
-            purpose: 'Работа',
-            checkedDocs: ['passport', 'mig_card'], // Mock data
+            citizenship: editCitizenship,
+            entryDate: editEntryDate,
+            purpose: editPurpose,
+            checkedDocs: checkedDocs,
           }}
         />
       )}
