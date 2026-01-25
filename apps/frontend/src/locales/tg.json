@@ -481,8 +481,12 @@
       "private": "Ташрифи шахсӣ",
       "privateSubtitle": "Меҳмонон",
       "business": "Ташрифи тиҷоратӣ",
-      "treatment": "Табобат",
+      "businessSubtitle": "Музокирот, тиҷорат",
+      "official": "Хизматӣ",
+      "officialSubtitle": "Ҳайатҳо",
       "transit": "Транзит",
+      "transitSubtitle": "Гузаштан аз РФ",
+      "treatment": "Табобат",
       "other": "Дигар"
     },
     "settings": {

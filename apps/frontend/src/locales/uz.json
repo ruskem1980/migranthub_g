@@ -541,8 +541,12 @@
       "private": "Shaxsiy tashrif",
       "privateSubtitle": "Mehmonlar",
       "business": "Biznes tashrif",
-      "treatment": "Davolanish",
+      "businessSubtitle": "Muzokaralar, biznes",
+      "official": "Xizmat",
+      "officialSubtitle": "Delegatsiyalar",
       "transit": "Tranzit",
+      "transitSubtitle": "RF orqali o'tish",
+      "treatment": "Davolanish",
       "other": "Boshqa"
     },
     "settings": {

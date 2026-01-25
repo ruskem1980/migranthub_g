@@ -541,8 +541,12 @@
       "private": "Частный визит",
       "privateSubtitle": "Гости",
       "business": "Деловой визит",
-      "treatment": "Лечение",
+      "businessSubtitle": "Переговоры, бизнес",
+      "official": "Служебный",
+      "officialSubtitle": "Делегации",
       "transit": "Транзит",
+      "transitSubtitle": "Проезд через РФ",
+      "treatment": "Лечение",
       "other": "Другое"
     },
     "settings": {

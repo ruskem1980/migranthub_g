@@ -481,8 +481,12 @@
       "private": "Жеке сапар",
       "privateSubtitle": "Конокторок",
       "business": "Ишкердик сапар",
-      "treatment": "Дарылануу",
+      "businessSubtitle": "Сүйлөшүүлөр, бизнес",
+      "official": "Кызматтык",
+      "officialSubtitle": "Делегациялар",
       "transit": "Транзит",
+      "transitSubtitle": "РФ аркылуу өтүү",
+      "treatment": "Дарылануу",
       "other": "Башка"
     },
     "settings": {
