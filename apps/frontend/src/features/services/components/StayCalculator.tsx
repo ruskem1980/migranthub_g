@@ -37,7 +37,7 @@ function RegionSelector({
   onChange,
   t,
 }: {
-  value: RegionType;
+  value: RegionType | null;
   onChange: (region: RegionType) => void;
   t: (key: string) => string;
 }) {
@@ -45,10 +45,13 @@ function RegionSelector({
     <div className="mb-6">
       <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
         <MapPin className="w-4 h-4" />
-        {t('services.calculator.region')}
+        {t('services.calculator.region')} <span className="text-red-500">*</span>
       </label>
+      {!value && (
+        <p className="text-sm text-orange-600 mb-2">Выберите ваш регион пребывания</p>
+      )}
       <div className="grid grid-cols-1 gap-2">
-        <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+        <label className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${value === 'moscow' ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-50 hover:bg-gray-100'}`}>
           <input
             type="radio"
             name="region"
@@ -59,7 +62,7 @@ function RegionSelector({
           />
           <span className="text-sm text-gray-900">{t('services.calculator.regionMoscow')}</span>
         </label>
-        <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+        <label className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${value === 'spb' ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-50 hover:bg-gray-100'}`}>
           <input
             type="radio"
             name="region"
@@ -70,7 +73,7 @@ function RegionSelector({
           />
           <span className="text-sm text-gray-900">{t('services.calculator.regionSpb')}</span>
         </label>
-        <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+        <label className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${value === 'other' ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-50 hover:bg-gray-100'}`}>
           <input
             type="radio"
             name="region"
@@ -290,12 +293,14 @@ export function StayCalculator({ onClose }: StayCalculatorProps) {
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingPeriodId, setEditingPeriodId] = useState<string | null>(null);
-  const [selectedRegion, setSelectedRegion] = useState<RegionType>('other');
+  const [selectedRegion, setSelectedRegion] = useState<RegionType | null>(null);
 
   // Load saved region from localStorage on mount
   useEffect(() => {
     const saved = getSavedRegion();
-    setSelectedRegion(saved);
+    if (saved) {
+      setSelectedRegion(saved);
+    }
   }, []);
 
   // Save region to localStorage when changed
@@ -397,7 +402,7 @@ export function StayCalculator({ onClose }: StayCalculatorProps) {
           />
 
           {/* Penalty warning - shown when status is danger or overstay */}
-          {showPenaltyWarning && (
+          {showPenaltyWarning && selectedRegion && (
             <PenaltyWarning region={selectedRegion} t={t} />
           )}
 

@@ -19,7 +19,7 @@ function getInitials(fullName: string): string {
 
 export function HomeScreen() {
   const { t, language, setLanguage: setAppLanguage } = useTranslation();
-  const { profile, updateProfile } = useProfileStore();
+  const { profile, updateProfile, reset: resetProfile } = useProfileStore();
 
   const [showHistory, setShowHistory] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
@@ -587,7 +587,22 @@ export function HomeScreen() {
                 </div>
 
                 {/* Delete Data */}
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 border-2 border-red-200 rounded-xl hover:bg-red-100 transition-colors">
+                <button
+                  onClick={() => {
+                    if (window.confirm(t('profile.settings.deleteConfirm'))) {
+                      resetProfile();
+                      setEditFullName('');
+                      setEditCitizenship('');
+                      setEditEntryDate('');
+                      setEditPurpose('work');
+                      setEditRegion('');
+                      setCheckedDocs([]);
+                      setShowProfileEdit(false);
+                      window.location.href = '/prototype';
+                    }
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 border-2 border-red-200 rounded-xl hover:bg-red-100 transition-colors"
+                >
                   <Trash2 className="w-5 h-5 text-red-600" />
                   <span className="font-semibold text-red-600">{t('profile.settings.deleteData')}</span>
                 </button>

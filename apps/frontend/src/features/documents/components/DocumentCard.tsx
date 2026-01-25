@@ -116,73 +116,44 @@ export function DocumentCard({
 
   if (compact) {
     return (
-      <div className="w-full flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all">
-        <button
-          onClick={onClick}
-          className="flex items-center gap-3 flex-1 min-w-0 active:scale-[0.98] transition-transform"
-        >
-          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${typeColor}`}>
-            <Icon className="w-5 h-5" />
-          </div>
-
-          <div className="flex-1 min-w-0 text-left">
-            <p className="text-sm font-medium text-gray-900 truncate">
-              {documentTypeLabels[document.type]}
-            </p>
-            {documentNumber && (
-              <p className="text-xs text-gray-500 truncate">{documentNumber}</p>
-            )}
-          </div>
-
-          <span
-            className={`text-xs px-2 py-0.5 rounded-full ${statusColors.bg} ${statusColors.text}`}
-          >
-            {getStatusText(status)}
-          </span>
-        </button>
-
-        <div className="flex items-center gap-1">
-          {onPreview && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onPreview();
-              }}
-              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
-              title="Просмотр PDF"
-            >
-              <Eye className="w-4 h-4" />
-            </button>
-          )}
-          {onDownload && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDownload();
-              }}
-              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
-              title="Скачать PDF"
-            >
-              <Download className="w-4 h-4" />
-            </button>
-          )}
-          <ChevronRight className="w-4 h-4 text-gray-400 ml-1" />
+      <button
+        onClick={onClick}
+        className="w-full flex flex-col items-center p-3 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all active:scale-[0.97]"
+      >
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2 ${typeColor}`}>
+          <Icon className="w-5 h-5" />
         </div>
-      </div>
+
+        <p className="text-xs font-medium text-gray-900 text-center line-clamp-2 leading-tight mb-1">
+          {documentTypeLabels[document.type]}
+        </p>
+
+        {document.expiryDate && (
+          <span
+            className={`text-[10px] px-1.5 py-0.5 rounded-full ${statusColors.bg} ${statusColors.text}`}
+          >
+            {status === 'valid'
+              ? formatExpiryDate(document.expiryDate)
+              : status === 'expired'
+                ? 'Истёк'
+                : `${daysRemaining} дн.`}
+          </span>
+        )}
+      </button>
     );
   }
 
   return (
-    <div className="w-full bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all">
-      <div className="p-4">
-        <div className="flex items-start gap-3">
+    <div className="w-full bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all">
+      <div className="px-3 py-2.5">
+        <div className="flex items-center gap-2.5">
           {/* Иконка типа */}
           <button
             onClick={onClick}
-            className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 active:scale-95 transition-transform"
+            className="flex-shrink-0 active:scale-95 transition-transform"
           >
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${typeColor}`}>
-              <Icon className="w-6 h-6" />
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${typeColor}`}>
+              <Icon className="w-4.5 h-4.5" />
             </div>
           </button>
 
@@ -191,43 +162,42 @@ export function DocumentCard({
             onClick={onClick}
             className="flex-1 min-w-0 text-left active:scale-[0.99] transition-transform"
           >
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="text-base font-semibold text-gray-900 truncate">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-gray-900 truncate">
                 {documentTypeLabels[document.type]}
               </h3>
+              {documentNumber && (
+                <span className="text-xs text-gray-500 truncate">{documentNumber}</span>
+              )}
             </div>
-
-            {documentNumber && (
-              <p className="text-sm text-gray-600 mt-0.5">{documentNumber}</p>
-            )}
 
             {/* Статус и дата истечения */}
             {document.expiryDate && (
-              <div className="flex items-center gap-2 mt-2">
-                <StatusIcon className={`w-4 h-4 ${statusColors.text}`} />
-                <span className={`text-sm ${statusColors.text}`}>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <StatusIcon className={`w-3.5 h-3.5 ${statusColors.text}`} />
+                <span className={`text-xs ${statusColors.text}`}>
                   {status === 'valid'
                     ? `до ${formatExpiryDate(document.expiryDate)}`
                     : status === 'expired'
                       ? `истёк ${formatExpiryDate(document.expiryDate)}`
-                      : `${daysRemaining} дн. до истечения`}
+                      : `${daysRemaining} дн.`}
                 </span>
               </div>
             )}
           </button>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-0.5 flex-shrink-0">
             {onPreview && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onPreview();
                 }}
-                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                className="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
                 title="Просмотр PDF"
               >
-                <Eye className="w-5 h-5" />
+                <Eye className="w-4 h-4" />
               </button>
             )}
             {onDownload && (
@@ -236,20 +206,20 @@ export function DocumentCard({
                   e.stopPropagation();
                   onDownload();
                 }}
-                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                className="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
                 title="Скачать PDF"
               >
-                <Download className="w-5 h-5" />
+                <Download className="w-4 h-4" />
               </button>
             )}
-            <ChevronRight className="w-5 h-5 text-gray-400 ml-1" />
+            <ChevronRight className="w-4 h-4 text-gray-300 ml-0.5" />
           </div>
         </div>
       </div>
 
       {/* Прогресс-бар до истечения */}
       {document.expiryDate && (
-        <div className="h-1 bg-gray-100">
+        <div className="h-0.5 bg-gray-100">
           <div
             className={`h-full transition-all duration-300 ${statusColors.progressBar}`}
             style={{ width: `${progressPercent}%` }}
@@ -266,30 +236,26 @@ export function DocumentCard({
 export function DocumentCardSkeleton({ compact = false }: { compact?: boolean }) {
   if (compact) {
     return (
-      <div className="w-full flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl animate-pulse">
-        <div className="w-10 h-10 rounded-lg bg-gray-200" />
-        <div className="flex-1 space-y-2">
-          <div className="h-4 bg-gray-200 rounded w-24" />
-          <div className="h-3 bg-gray-200 rounded w-16" />
-        </div>
-        <div className="h-5 bg-gray-200 rounded w-16" />
+      <div className="w-full flex flex-col items-center p-3 bg-white border border-gray-200 rounded-xl animate-pulse">
+        <div className="w-10 h-10 rounded-xl bg-gray-200 mb-2" />
+        <div className="h-3 bg-gray-200 rounded w-16 mb-1" />
+        <div className="h-4 bg-gray-200 rounded w-12" />
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-white border border-gray-200 rounded-xl overflow-hidden animate-pulse">
-      <div className="p-4">
-        <div className="flex items-start gap-3">
-          <div className="w-12 h-12 rounded-xl bg-gray-200" />
-          <div className="flex-1 space-y-2">
-            <div className="h-5 bg-gray-200 rounded w-32" />
-            <div className="h-4 bg-gray-200 rounded w-24" />
-            <div className="h-4 bg-gray-200 rounded w-28" />
+    <div className="w-full bg-white border border-gray-200 rounded-lg overflow-hidden animate-pulse">
+      <div className="px-3 py-2.5">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-lg bg-gray-200" />
+          <div className="flex-1 space-y-1.5">
+            <div className="h-4 bg-gray-200 rounded w-32" />
+            <div className="h-3 bg-gray-200 rounded w-20" />
           </div>
         </div>
       </div>
-      <div className="h-1 bg-gray-100" />
+      <div className="h-0.5 bg-gray-100" />
     </div>
   );
 }

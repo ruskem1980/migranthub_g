@@ -48,15 +48,15 @@ export const REGION_STORAGE_KEY = 'selectedRegion';
 /**
  * Get saved region from localStorage
  */
-export function getSavedRegion(): RegionType {
+export function getSavedRegion(): RegionType | null {
   if (typeof window === 'undefined') {
-    return 'other';
+    return null;
   }
   const saved = localStorage.getItem(REGION_STORAGE_KEY);
   if (saved === 'moscow' || saved === 'spb' || saved === 'other') {
     return saved;
   }
-  return 'other';
+  return null;
 }
 
 /**

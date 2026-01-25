@@ -342,30 +342,29 @@ export function DocumentsList({
         )}
 
         {/* Группы документов */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           {groupedDocuments.map((group) => (
-            <div key={group.label} className="space-y-3">
+            <div key={group.label}>
               {groupBy !== 'none' && (
-                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                   {group.label}
-                  <span className="ml-2 text-gray-400">
+                  <span className="ml-1.5 text-gray-400">
                     ({group.documents.length})
                   </span>
                 </h2>
               )}
 
-              <div className="space-y-3">
+              <div className="grid grid-cols-3 gap-2">
                 {group.documents.map((document, index) => (
                   <div
                     key={document.id}
                     className="animate-in fade-in slide-in-from-bottom-2"
-                    style={{ animationDelay: `${index * 50}ms` }}
+                    style={{ animationDelay: `${index * 30}ms` }}
                   >
                     <DocumentCard
                       document={document}
                       onClick={() => handleDocumentClick(document)}
-                      onPreview={onPreviewDocument ? () => onPreviewDocument(document) : undefined}
-                      onDownload={onDownloadDocument ? () => onDownloadDocument(document) : undefined}
+                      compact
                     />
                   </div>
                 ))}

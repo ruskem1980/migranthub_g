@@ -549,7 +549,8 @@
       "title": "Sozlamalar",
       "interfaceLanguage": "Interfeys tili",
       "deleteData": "Barcha ma'lumotlarni o'chirish",
-      "deleteDataWarning": "Bu amal qaytarib bo'lmaydi. Barcha hujjatlar va tarix o'chiriladi."
+      "deleteDataWarning": "Bu amal qaytarib bo'lmaydi. Barcha hujjatlar va tarix o'chiriladi.",
+      "deleteConfirm": "Haqiqatan ham barcha ma'lumotlarni o'chirmoqchimisiz? Bu amal qaytarib bo'lmaydi."
     },
     "saveChanges": "O'zgarishlarni saqlash",
     "dateHint": "Kirish sanasini o'zgartirish 90/180 kun hisoblagichini qayta hisoblaydi",
@@ -588,6 +589,7 @@
     "types": {
       "passport": "Pasport",
       "migCard": "Migratsiya kartasi",
+      "migration_card": "Migratsiya kartasi",
       "registration": "Ro'yxatdan o'tish (Xabarnoma)",
       "greenCard": "Yashil karta (Daktiloskopiya)",
       "education": "Sertifikat / Diplom",
@@ -595,9 +597,12 @@
       "contract": "Mehnat shartnomasi",
       "receipts": "Cheklar (NDFL)",
       "insurance": "DMS polisi",
-      "inn": "INN / SNILS",
+      "inn": "INN",
+      "snils": "SNILS",
+      "dms": "DMS polisi",
       "family": "Nikoh / tug'ilish guvohnomasi"
     },
+    "requiresDocument": "Kerakli hujjat:",
     "statusText": {
       "active": "Faol",
       "activeF": "Faol",

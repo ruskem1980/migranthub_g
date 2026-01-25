@@ -549,7 +549,8 @@
       "title": "Settings",
       "interfaceLanguage": "Interface language",
       "deleteData": "Delete all data",
-      "deleteDataWarning": "This action is irreversible. All documents and history will be deleted."
+      "deleteDataWarning": "This action is irreversible. All documents and history will be deleted.",
+      "deleteConfirm": "Are you sure you want to delete all data? This action is irreversible."
     },
     "saveChanges": "Save changes",
     "dateHint": "Changing entry date will recalculate the 90/180 days counter",
@@ -588,6 +589,7 @@
     "types": {
       "passport": "Passport",
       "migCard": "Migration card",
+      "migration_card": "Migration card",
       "registration": "Registration (Notification)",
       "greenCard": "Green card (Fingerprinting)",
       "education": "Certificate / Diploma",
@@ -595,9 +597,12 @@
       "contract": "Employment contract",
       "receipts": "Receipts (Tax)",
       "insurance": "VHI policy",
-      "inn": "TIN / SNILS",
+      "inn": "TIN",
+      "snils": "SNILS",
+      "dms": "VHI policy",
       "family": "Marriage / Birth certificate"
     },
+    "requiresDocument": "Required document:",
     "statusText": {
       "active": "Active",
       "activeF": "Active",
