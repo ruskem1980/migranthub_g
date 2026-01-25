@@ -61,7 +61,12 @@ export function BanChecker({ onClose }: BanCheckerProps) {
   const isFormValid = passportNumber.length >= 5 && birthDate;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
+    <div
+      className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title-ban-checker"
+    >
       <div className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
@@ -70,7 +75,7 @@ export function BanChecker({ onClose }: BanCheckerProps) {
               <Shield className="w-5 h-5 text-red-600" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Проверка запретов</h2>
+              <h2 id="modal-title-ban-checker" className="text-lg font-bold text-gray-900">Проверка запретов</h2>
               <p className="text-sm text-gray-500">МВД / ФССП / ФМС</p>
             </div>
           </div>

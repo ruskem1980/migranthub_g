@@ -177,7 +177,12 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
   const allData = { ...profileData, ...additionalData };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
+    <div
+      className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title-document-wizard"
+    >
       <div className="w-full sm:max-w-lg bg-white rounded-t-3xl sm:rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
@@ -191,7 +196,7 @@ export function DocumentWizard({ profileData, onClose }: DocumentWizardProps) {
               </button>
             )}
             <div>
-              <h2 className="text-lg font-bold text-gray-900">
+              <h2 id="modal-title-document-wizard" className="text-lg font-bold text-gray-900">
                 {step === 'select' && 'Выберите документ'}
                 {step === 'fill-missing' && 'Заполните данные'}
                 {step === 'review' && 'Проверьте данные'}

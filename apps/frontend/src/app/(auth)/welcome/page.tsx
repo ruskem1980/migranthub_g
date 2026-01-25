@@ -4,19 +4,15 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, ExternalLink } from 'lucide-react';
 import { useTranslation, LANGUAGES } from '@/lib/i18n';
-import { EXTENDED_LANGUAGES, type Language } from '@/lib/stores/languageStore';
-
-const MISSION_ICONS = ['shield', 'speech', 'money', 'robot', 'handshake'] as const;
+import { type Language } from '@/lib/stores/languageStore';
 
 export default function WelcomePage() {
   const router = useRouter();
   const { t, language, setLanguage } = useTranslation();
   const [agreed, setAgreed] = useState(false);
-  const [showAllLanguages, setShowAllLanguages] = useState(false);
 
   const handleLanguageSelect = (code: Language) => {
     setLanguage(code);
-    setShowAllLanguages(false);
   };
 
   const handleContinue = () => {
@@ -26,12 +22,6 @@ export default function WelcomePage() {
       router.push('/auth/method');
     }
   };
-
-  // Filter languages not in main list for modal
-  const mainLanguageCodes = LANGUAGES.map((l) => l.code);
-  const extendedLanguages = EXTENDED_LANGUAGES.filter(
-    (lang) => !mainLanguageCodes.includes(lang.code)
-  );
 
   // Убрали проверку isReady - страница должна рендериться сразу
 
@@ -55,7 +45,7 @@ export default function WelcomePage() {
         {/* Language Selection */}
         <div className="mb-6">
           <h2 className="text-white font-semibold text-lg mb-3">{t('welcome.selectLanguage')}</h2>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {LANGUAGES.map((lang) => (
               <button
                 key={lang.code}
@@ -79,14 +69,6 @@ export default function WelcomePage() {
                 )}
               </button>
             ))}
-            {/* More languages button */}
-            <button
-              onClick={() => setShowAllLanguages(true)}
-              className="flex flex-col items-center gap-1 p-3 rounded-xl bg-white/20 hover:bg-white/30 transition-all"
-            >
-              <span className="text-3xl">🌐</span>
-              <span className="text-xs font-medium text-white">{t('welcome.moreLanguages')}</span>
-            </button>
           </div>
         </div>
 
@@ -205,54 +187,6 @@ export default function WelcomePage() {
           <ArrowRight className="w-5 h-5" />
         </button>
       </div>
-
-      {/* Extended Languages Modal */}
-      {showAllLanguages && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
-          <div
-            className="fixed inset-0 bg-black/60"
-            onClick={() => setShowAllLanguages(false)}
-          />
-          <div className="relative w-full max-w-lg bg-white rounded-t-3xl max-h-[80vh] flex flex-col">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h3 className="text-lg font-bold text-gray-900">{t('welcome.chooseLanguage')}</h3>
-              <button
-                onClick={() => setShowAllLanguages(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
-              >
-                <span className="text-gray-500 text-xl">×</span>
-              </button>
-            </div>
-
-            {/* Language list */}
-            <div className="flex-1 min-h-0 overflow-y-auto p-4">
-              <div className="grid grid-cols-2 gap-2">
-                {extendedLanguages.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => handleLanguageSelect(lang.code)}
-                    className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all text-left ${
-                      lang.code === language
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                    }`}
-                  >
-                    <span className="text-xl">{lang.flag}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-gray-900 text-sm truncate">{lang.nativeName}</div>
-                      <div className="text-xs text-gray-500 truncate">{lang.name}</div>
-                    </div>
-                    {lang.code === language && (
-                      <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

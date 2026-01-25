@@ -145,7 +145,12 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
+    <div
+      className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title-exam-trainer"
+    >
       <div className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
@@ -154,7 +159,7 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
               <GraduationCap className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Тренажёр экзамена</h2>
+              <h2 id="modal-title-exam-trainer" className="text-lg font-bold text-gray-900">Тренажёр экзамена</h2>
               <p className="text-sm text-gray-500">Русский язык и история</p>
             </div>
           </div>

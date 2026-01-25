@@ -2,12 +2,12 @@
 
 import { Language } from '../stores/languageStore';
 
-// Import all translations
+// Import all translations (5 supported languages)
 import ru from '@/locales/ru.json';
+import en from '@/locales/en.json';
 import uz from '@/locales/uz.json';
 import tg from '@/locales/tg.json';
 import ky from '@/locales/ky.json';
-import en from '@/locales/en.json';
 
 export type TranslationKey = string;
 
@@ -15,13 +15,13 @@ type NestedObject = {
   [key: string]: string | string[] | NestedObject;
 };
 
-// Main languages with full translations
+// All supported languages with full translations
 const mainTranslations: Record<string, NestedObject> = {
   ru,
+  en,
   uz,
   tg,
   ky,
-  en,
 };
 
 // For extended languages, fallback to Russian

@@ -53,11 +53,16 @@ export function MapScreen({ onClose, initialFilter }: MapScreenProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-white z-50 flex flex-col">
+    <div
+      className="fixed inset-0 bg-white z-50 flex flex-col"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title-map-screen"
+    >
       {/* Header */}
       <div className="flex-shrink-0 bg-white border-b border-gray-200 px-4 py-3">
         <div className="flex items-center justify-between mb-3">
-          <h1 className="text-lg font-bold text-gray-900">Карта мигранта</h1>
+          <h1 id="modal-title-map-screen" className="text-lg font-bold text-gray-900">Карта мигранта</h1>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full"
