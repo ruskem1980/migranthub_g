@@ -561,14 +561,19 @@ describe('Проверка false positives (не пропускать пробл
   });
 
   it('НЕ должен разрешать работу при просроченном патенте', () => {
+    // Используем 2 дня просрочки чтобы избежать проблем с часовыми поясами
+    // При 1 дне Math.ceil может вернуть 0 из-за разницы между UTC и local time
     const expiredPatent: MigrantProfile = {
       name: 'test',
       citizenship: 'UZ',
       stayPeriods: [{ id: '1', entryDate: daysAgo(30) }],
-      patent: { paidUntil: daysAgo(1) },
+      passport: { expiryDate: daysFromNow(365) },
+      registration: { expiryDate: daysFromNow(60) },
+      patent: { paidUntil: daysAgo(2) }, // ПРОСРОЧЕН на 2 дня!
     };
     const result = determineLegalStatus(expiredPatent);
     expect(result.canWork).toBe(false);
+    expect(result.status).toBe('illegal_work');
   });
 });
 
