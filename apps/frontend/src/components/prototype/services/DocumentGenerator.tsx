@@ -6,6 +6,7 @@ import { useTranslation } from '@/lib/i18n';
 
 interface DocumentGeneratorProps {
   onClose: () => void;
+  onSaveProfileData?: (data: Record<string, any>) => void;
   profileData: {
     // Personal data
     passportNumber?: string;
@@ -237,7 +238,7 @@ const FIELD_LABELS: Record<string, string> = {
   circumstances: 'Обстоятельства утери',
 };
 
-export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorProps) {
+export function DocumentGenerator({ onClose, onSaveProfileData, profileData }: DocumentGeneratorProps) {
   const { t } = useTranslation();
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId | null>(null);
   const [showMissingDataModal, setShowMissingDataModal] = useState(false);
@@ -287,9 +288,12 @@ export function DocumentGenerator({ onClose, profileData }: DocumentGeneratorPro
   const handleDataSubmit = () => {
     // Validate temp data
     const allFilled = missingFields.every(field => tempData[field]);
-    
+
     if (allFilled) {
-      // Save temp data to profile (mock)
+      // Save temp data to profile
+      if (onSaveProfileData && Object.keys(tempData).length > 0) {
+        onSaveProfileData(tempData);
+      }
       setShowMissingDataModal(false);
       setShowPreview(true);
     }

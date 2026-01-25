@@ -18,6 +18,8 @@ import {
   MapPin,
   Hash,
   Building,
+  UserCheck,
+  HeartPulse,
 } from 'lucide-react';
 import { useDocumentStorage } from '@/features/documents/hooks/useDocumentStorage';
 import {
@@ -34,6 +36,9 @@ import type {
   MigrationCardDocument,
   PatentDocument,
   RegistrationDocument,
+  InnDocument,
+  SnilsDocument,
+  DmsDocument,
 } from '@/lib/db/types';
 
 const documentIcons: Record<
@@ -44,6 +49,9 @@ const documentIcons: Record<
   migration_card: FileText,
   patent: Briefcase,
   registration: Home,
+  inn: Hash,
+  snils: UserCheck,
+  dms: HeartPulse,
 };
 
 const documentTypeColors: Record<DocumentTypeValue, string> = {
@@ -51,6 +59,9 @@ const documentTypeColors: Record<DocumentTypeValue, string> = {
   migration_card: 'bg-purple-100 text-purple-600',
   patent: 'bg-orange-100 text-orange-600',
   registration: 'bg-green-100 text-green-600',
+  inn: 'bg-indigo-100 text-indigo-600',
+  snils: 'bg-teal-100 text-teal-600',
+  dms: 'bg-red-100 text-red-600',
 };
 
 export default function DocumentDetailPage() {
@@ -317,6 +328,12 @@ function DocumentDetails({ document }: { document: TypedDocument }) {
       return <PatentDetails document={document} />;
     case 'registration':
       return <RegistrationDetails document={document} />;
+    case 'inn':
+      return <InnDetails document={document} />;
+    case 'snils':
+      return <SnilsDetails document={document} />;
+    case 'dms':
+      return <DmsDetails document={document} />;
     default:
       return null;
   }
@@ -521,6 +538,77 @@ function RegistrationDetails({
         label="Принимающая сторона"
         value={data.hostFullName}
       />
+    </div>
+  );
+}
+
+function InnDetails({ document }: { document: InnDocument }) {
+  const data = document.data;
+
+  return (
+    <div className="space-y-0">
+      <DetailRow icon={User} label="ФИО" value={data.fullName} />
+      <DetailRow icon={Hash} label="Номер ИНН" value={data.innNumber} />
+      <DetailRow
+        icon={Calendar}
+        label="Дата выдачи"
+        value={data.issueDate ? formatExpiryDate(data.issueDate) : undefined}
+      />
+      <DetailRow icon={Building} label="Выдан" value={data.issuedBy} />
+      <DetailRow icon={Hash} label="Код налогового органа" value={data.taxAuthorityCode} />
+    </div>
+  );
+}
+
+function SnilsDetails({ document }: { document: SnilsDocument }) {
+  const data = document.data;
+
+  const genderLabels: Record<string, string> = {
+    male: 'Мужской',
+    female: 'Женский',
+  };
+
+  return (
+    <div className="space-y-0">
+      <DetailRow icon={User} label="ФИО" value={data.fullName} />
+      <DetailRow icon={Hash} label="Номер СНИЛС" value={data.snilsNumber} />
+      <DetailRow
+        icon={Calendar}
+        label="Дата рождения"
+        value={data.birthDate ? formatExpiryDate(data.birthDate) : undefined}
+      />
+      <DetailRow icon={MapPin} label="Место рождения" value={data.birthPlace} />
+      <DetailRow icon={User} label="Пол" value={data.gender ? genderLabels[data.gender] : undefined} />
+      <DetailRow
+        icon={Calendar}
+        label="Дата регистрации"
+        value={data.registrationDate ? formatExpiryDate(data.registrationDate) : undefined}
+      />
+    </div>
+  );
+}
+
+function DmsDetails({ document }: { document: DmsDocument }) {
+  const data = document.data;
+
+  return (
+    <div className="space-y-0">
+      <DetailRow icon={User} label="ФИО застрахованного" value={data.fullName} />
+      <DetailRow icon={Hash} label="Номер полиса" value={data.policyNumber} />
+      <DetailRow icon={Building} label="Страховая компания" value={data.insuranceCompany} />
+      <DetailRow icon={FileText} label="Программа страхования" value={data.programName} />
+      <DetailRow
+        icon={Calendar}
+        label="Дата начала"
+        value={data.startDate ? formatExpiryDate(data.startDate) : undefined}
+      />
+      <DetailRow
+        icon={Calendar}
+        label="Дата окончания"
+        value={data.expiryDate ? formatExpiryDate(data.expiryDate) : undefined}
+      />
+      <DetailRow icon={MapPin} label="Территория покрытия" value={data.coverageTerritory} />
+      <DetailRow icon={Hash} label="Телефон страховой" value={data.insurancePhone} />
     </div>
   );
 }

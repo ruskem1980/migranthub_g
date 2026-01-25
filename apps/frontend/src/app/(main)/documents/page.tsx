@@ -80,7 +80,7 @@ export default function DocumentsPage() {
   const [showTypeSelector, setShowTypeSelector] = useState(false);
   const [editingDocumentType, setEditingDocumentType] = useState<DocumentTypeValue | null>(null);
   const [documents, setDocuments] = useState<TypedDocument[]>([]);
-  const { profile } = useProfileStore();
+  const { profile, updateProfile } = useProfileStore();
   const { getDocuments, isLoading, deleteDocument } = useDocumentStorage();
 
   // Загрузка документов
@@ -280,6 +280,7 @@ export default function DocumentsPage() {
         <DocumentWizard
           profileData={profileData}
           onClose={() => setShowWizard(false)}
+          onSaveProfileData={updateProfile}
         />
       )}
 

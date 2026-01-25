@@ -16,7 +16,7 @@ export function HomeScreen() {
   const [showAILanguages, setShowAILanguages] = useState(false);
   const [editEntryDate, setEditEntryDate] = useState('2024-01-01');
   const [editPurpose, setEditPurpose] = useState('work');
-  const [editFullName, setEditFullName] = useState('Алишер Усманов');
+  const [editFullName, setEditFullName] = useState('Рустам Ибрагимов');
   const [editCitizenship, setEditCitizenship] = useState('UZ');
   const [editRegion, setEditRegion] = useState('moscow');
   const [checkedDocs, setCheckedDocs] = useState<string[]>(['passport', 'mig_card']);
