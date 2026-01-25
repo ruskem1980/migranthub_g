@@ -6,6 +6,7 @@ import { useServiceWorker } from '@/lib/hooks/useServiceWorker';
 import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
 import { NotificationProvider } from '@/lib/hooks/useNotifications';
 import { useTranslation } from '@/lib/i18n';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 function AppInitializer({ children }: { children: ReactNode }) {
   // Register service worker
@@ -55,10 +56,12 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <QueryProvider>
-      <NotificationProvider>
-        <AppInitializer>{children}</AppInitializer>
-      </NotificationProvider>
-    </QueryProvider>
+    <ErrorBoundary>
+      <QueryProvider>
+        <NotificationProvider>
+          <AppInitializer>{children}</AppInitializer>
+        </NotificationProvider>
+      </QueryProvider>
+    </ErrorBoundary>
   );
 }

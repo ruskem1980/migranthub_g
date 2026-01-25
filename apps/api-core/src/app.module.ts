@@ -8,6 +8,7 @@ import { HealthModule } from './modules/health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { UtilitiesModule } from './modules/utilities/utilities.module';
+import { SentryModule } from './common/sentry';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import jwtConfig from './config/jwt.config';
@@ -64,6 +65,9 @@ import jwtConfig from './config/jwt.config';
         logging: configService.get<string>('app.nodeEnv') === 'development',
       }),
     }),
+
+    // Monitoring
+    SentryModule.forRootAsync(),
 
     // Feature modules
     HealthModule,
