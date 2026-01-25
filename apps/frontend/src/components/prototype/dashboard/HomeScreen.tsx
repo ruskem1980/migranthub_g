@@ -105,6 +105,9 @@ export function HomeScreen() {
                 {editCitizenship === 'KZ' && '🇰🇿'}
                 {editCitizenship === 'MD' && '🇲🇩'}
                 {editCitizenship === 'UA' && '🇺🇦'}
+                {editCitizenship === 'CN' && '🇨🇳'}
+                {editCitizenship === 'IN' && '🇮🇳'}
+                {editCitizenship === 'VN' && '🇻🇳'}
                 {' '}{t(`countries.${editCitizenship}`)}
               </p>
             </div>

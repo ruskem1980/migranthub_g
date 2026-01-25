@@ -215,7 +215,13 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                     citizenship === 'uz' ? `🇺🇿 ${t('countries.UZ')}` :
                     citizenship === 'tj' ? `🇹🇯 ${t('countries.TJ')}` :
                     citizenship === 'kg' ? `🇰🇬 ${t('countries.KG')}` :
-                    citizenship === 'other' && otherCitizenshipValue ? otherCitizenshipValue :
+                    citizenship === 'other' && otherCitizenshipValue ? (() => {
+                      const flagMap: Record<string, string> = {
+                        AM: '🇦🇲', AZ: '🇦🇿', BY: '🇧🇾', GE: '🇬🇪', KZ: '🇰🇿',
+                        MD: '🇲🇩', UA: '🇺🇦', CN: '🇨🇳', IN: '🇮🇳', VN: '🇻🇳'
+                      };
+                      return `${flagMap[otherCitizenshipValue] || ''} ${t(`countries.${otherCitizenshipValue}`)}`;
+                    })() :
                     t('onboarding.profiling.notSelected')
                   }
                 </p>
