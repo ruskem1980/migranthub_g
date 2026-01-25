@@ -30,7 +30,7 @@ export function HomeScreen() {
 
   // Initialize from profile store, fallback to empty
   const [editEntryDate, setEditEntryDate] = useState(profile?.entryDate || '');
-  const [editPurpose, setEditPurpose] = useState<string>(profile?.purpose || 'work');
+  const [editPurpose, setEditPurpose] = useState<string>(profile?.purpose === 'tourist' ? 'tourism' : (profile?.purpose || 'work'));
   const [editFullName, setEditFullName] = useState(profile?.fullName || '');
   const [editCitizenship, setEditCitizenship] = useState(profile?.citizenship || '');
   const [editRegion, setEditRegion] = useState(profile?.patentRegion || '');
@@ -40,7 +40,7 @@ export function HomeScreen() {
   useEffect(() => {
     if (profile) {
       setEditEntryDate(profile.entryDate || '');
-      setEditPurpose(profile.purpose || 'work');
+      setEditPurpose(profile.purpose === 'tourist' ? 'tourism' : (profile.purpose || 'work'));
       setEditFullName(profile.fullName || '');
       setEditCitizenship(profile.citizenship || '');
       setEditRegion(profile.patentRegion || '');
@@ -445,13 +445,13 @@ export function HomeScreen() {
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { value: 'work', label: `💼 ${t('profile.purposes.work')}`, subtitle: t('profile.purposes.workSubtitle') },
-                    { value: 'study', label: `📚 ${t('profile.purposes.study')}`, subtitle: t('profile.purposes.studySubtitle') },
-                    { value: 'tourist', label: `✈️ ${t('profile.purposes.tourist')}`, subtitle: t('profile.purposes.touristSubtitle') },
-                    { value: 'private', label: `🏠 ${t('profile.purposes.private')}`, subtitle: t('profile.purposes.privateSubtitle') },
-                    { value: 'business', label: `💼 ${t('profile.purposes.business')}`, subtitle: t('profile.purposes.businessSubtitle') },
-                    { value: 'official', label: `🏛️ ${t('profile.purposes.official')}`, subtitle: t('profile.purposes.officialSubtitle') },
-                    { value: 'transit', label: `🚗 ${t('profile.purposes.transit')}`, subtitle: t('profile.purposes.transitSubtitle') },
+                    { value: 'work', label: `💼 ${t('onboarding.profiling.purposes.work')}`, subtitle: t('onboarding.profiling.purposes.workDesc') },
+                    { value: 'study', label: `📚 ${t('onboarding.profiling.purposes.study')}`, subtitle: t('onboarding.profiling.purposes.studyDesc') },
+                    { value: 'tourism', label: `✈️ ${t('onboarding.profiling.purposes.tourism')}`, subtitle: t('onboarding.profiling.purposes.tourismDesc') },
+                    { value: 'private', label: `🏠 ${t('onboarding.profiling.purposes.private')}`, subtitle: t('onboarding.profiling.purposes.privateDesc') },
+                    { value: 'business', label: `💼 ${t('onboarding.profiling.purposes.business')}`, subtitle: t('onboarding.profiling.purposes.businessDesc') },
+                    { value: 'official', label: `🏛️ ${t('onboarding.profiling.purposes.official')}`, subtitle: t('onboarding.profiling.purposes.officialDesc') },
+                    { value: 'transit', label: `🚗 ${t('onboarding.profiling.purposes.transit')}`, subtitle: t('onboarding.profiling.purposes.transitDesc') },
                   ].map((option) => (
                     <button
                       key={option.value}
@@ -626,12 +626,21 @@ export function HomeScreen() {
             <div className="space-y-3 mt-6">
               <button
                 onClick={() => {
-                  // Save to profile store
+                  // Save to profile store (map 'tourism' to 'tourist' for storage)
+                  const purposeMap: Record<string, 'work' | 'study' | 'tourist' | 'private' | 'business' | 'official' | 'transit'> = {
+                    work: 'work',
+                    study: 'study',
+                    tourism: 'tourist',
+                    private: 'private',
+                    business: 'business',
+                    official: 'official',
+                    transit: 'transit',
+                  };
                   updateProfile({
                     fullName: editFullName,
                     citizenship: editCitizenship,
                     entryDate: editEntryDate,
-                    purpose: editPurpose as 'work' | 'study' | 'tourist' | 'private' | 'business' | 'official' | 'transit',
+                    purpose: purposeMap[editPurpose] || 'work',
                     patentRegion: editRegion,
                     selectedDocuments: checkedDocs,
                   });
