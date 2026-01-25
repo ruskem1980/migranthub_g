@@ -606,7 +606,6 @@
       "dms": "Полис ДМС",
       "family": "Св-во о браке / рождении"
     },
-    "requiresDocument": "Нужен документ:",
     "statusText": {
       "active": "Активен",
       "activeF": "Активна",

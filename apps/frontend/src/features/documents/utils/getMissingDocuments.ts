@@ -103,13 +103,9 @@ export function getMissingDocuments(
 /**
  * Get placeholder text for a missing field in PDF
  * @param field - The field name
- * @returns Placeholder text indicating which document is needed
+ * @returns Placeholder text (empty line for manual fill)
  */
-export function getFieldPlaceholder(field: string): string {
-  const sourceInfo = FIELD_SOURCE_DOCUMENT[field];
-  if (sourceInfo && sourceInfo.document !== 'manual') {
-    return `[Нужен документ: ${sourceInfo.label}]`;
-  }
+export function getFieldPlaceholder(_field: string): string {
   return '_______________';
 }
 
