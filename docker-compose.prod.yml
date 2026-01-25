@@ -5,22 +5,28 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: migranthub-postgres
-    restart: unless-stopped
+    restart: always
     environment:
-      POSTGRES_USER: ${DB_USERNAME:-migranthub}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-migranthub_secret}
-      POSTGRES_DB: ${DB_DATABASE:-migranthub}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "${DB_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-migranthub}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - migranthub-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
   # ===========================================
   # Redis Cache
@@ -28,65 +34,61 @@ services:
   redis:
     image: redis:7-alpine
     container_name: migranthub-redis
-    restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_secret}
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_secret}", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - migranthub-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
 
   # ===========================================
-  # API Core Service (Development with Hot Reload)
+  # API Core Service (Production)
   # ===========================================
   api-core:
     build:
       context: ./apps/api-core
       dockerfile: Dockerfile
-      target: deps
+      target: runner
     container_name: migranthub-api-core
-    restart: unless-stopped
-    working_dir: /app
-    command: npm run start:dev
+    restart: always
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       PORT: 3000
 
       # Database
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_USERNAME: ${DB_USERNAME:-migranthub}
-      DB_PASSWORD: ${DB_PASSWORD:-migranthub_secret}
-      DB_NAME: ${DB_DATABASE:-migranthub}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_DATABASE}
 
       # Redis
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_secret}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
 
       # App
-      LOG_LEVEL: ${LOG_LEVEL:-debug}
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3001}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      CORS_ORIGINS: ${CORS_ORIGINS}
 
       # JWT
-      JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-in-production}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev-refresh-secret-change-in-production}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN:-24h}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-30d}
-    volumes:
-      # Mount source code for hot reload
-      - ./apps/api-core/src:/app/src:delegated
-      - ./apps/api-core/test:/app/test:delegated
-      # Prevent overwriting node_modules
-      - /app/node_modules
-    ports:
-      - "${API_PORT:-3000}:3000"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/v1/health"]
       interval: 30s
@@ -100,6 +102,14 @@ services:
         condition: service_healthy
     networks:
       - migranthub-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
 # ===========================================
 # Volumes
