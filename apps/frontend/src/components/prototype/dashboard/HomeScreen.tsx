@@ -1,25 +1,54 @@
 'use client';
 
 import { QrCode, ChevronRight, Volume2, History, Lock, Edit2, Globe, Trash2, X, Rocket, FileText, AlertTriangle, CreditCard, Grid3x3, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { LegalizationWizard } from '../wizard/LegalizationWizard';
 import { useTranslation, LANGUAGES } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { useProfileStore } from '@/lib/stores';
+
+// Generate initials from full name
+function getInitials(fullName: string): string {
+  if (!fullName) return '??';
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return fullName.slice(0, 2).toUpperCase();
+}
 
 export function HomeScreen() {
   const { t, language, setLanguage: setAppLanguage } = useTranslation();
+  const { profile, updateProfile } = useProfileStore();
+
   const [showHistory, setShowHistory] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
   const [showOtherServices, setShowOtherServices] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showAILanguages, setShowAILanguages] = useState(false);
-  const [editEntryDate, setEditEntryDate] = useState('2024-01-01');
-  const [editPurpose, setEditPurpose] = useState('work');
-  const [editFullName, setEditFullName] = useState('Рустам Ибрагимов');
-  const [editCitizenship, setEditCitizenship] = useState('UZ');
-  const [editRegion, setEditRegion] = useState('moscow');
+
+  // Initialize from profile store, fallback to empty
+  const [editEntryDate, setEditEntryDate] = useState(profile?.entryDate || '');
+  const [editPurpose, setEditPurpose] = useState(profile?.purpose || 'work');
+  const [editFullName, setEditFullName] = useState(profile?.fullName || '');
+  const [editCitizenship, setEditCitizenship] = useState(profile?.citizenship || '');
+  const [editRegion, setEditRegion] = useState(profile?.patentRegion || '');
   const [checkedDocs, setCheckedDocs] = useState<string[]>(['passport', 'mig_card']);
+
+  // Sync local state when profile changes
+  useEffect(() => {
+    if (profile) {
+      if (profile.entryDate) setEditEntryDate(profile.entryDate);
+      if (profile.purpose) setEditPurpose(profile.purpose);
+      if (profile.fullName) setEditFullName(profile.fullName);
+      if (profile.citizenship) setEditCitizenship(profile.citizenship);
+      if (profile.patentRegion) setEditRegion(profile.patentRegion);
+    }
+  }, [profile]);
+
+  // Calculate initials from name
+  const userInitials = useMemo(() => getInitials(editFullName), [editFullName]);
 
   // Calculate remaining days based on entry date (90 day rule)
   const daysRemaining = useMemo(() => {
@@ -48,7 +77,7 @@ export function HomeScreen() {
               onClick={() => setShowProfileEdit(true)}
               className="w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-base shadow-md hover:from-blue-600 hover:to-blue-700 transition-all active:scale-95"
             >
-              АУ
+              {userInitials}
             </button>
             <div>
               <div className="flex items-center gap-1.5">
@@ -644,7 +673,10 @@ export function HomeScreen() {
               </button>
 
               {/* Calculator */}
-              <button className="bg-blue-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md">
+              <button
+                onClick={() => window.location.href = '/calculator'}
+                className="bg-blue-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md"
+              >
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
                   <Calculator className="w-7 h-7 text-blue-600" strokeWidth={2} />
                 </div>

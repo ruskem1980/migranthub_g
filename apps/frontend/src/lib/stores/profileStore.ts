@@ -99,11 +99,31 @@ export const useProfileStore = create<ProfileState>()(
         set({ profile, error: null }),
 
       updateProfile: (data) =>
-        set((state) => ({
-          profile: state.profile
-            ? { ...state.profile, ...data, updatedAt: new Date().toISOString() }
-            : null,
-        })),
+        set((state) => {
+          if (state.profile) {
+            // Update existing profile
+            return {
+              profile: { ...state.profile, ...data, updatedAt: new Date().toISOString() },
+            };
+          } else {
+            // Create new profile with provided data
+            const now = new Date().toISOString();
+            return {
+              profile: {
+                id: crypto.randomUUID(),
+                userId: crypto.randomUUID(),
+                fullName: '',
+                passportNumber: '',
+                citizenship: '',
+                language: 'ru',
+                onboardingCompleted: false,
+                createdAt: now,
+                updatedAt: now,
+                ...data,
+              } as UserProfile,
+            };
+          }
+        }),
 
       setDocuments: (documents) =>
         set({ documents }),
