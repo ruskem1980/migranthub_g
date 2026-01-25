@@ -13,6 +13,8 @@ import {
   Hash,
   UserCheck,
   HeartPulse,
+  Eye,
+  Download,
 } from 'lucide-react';
 import type { TypedDocument, DocumentTypeValue, DocumentStatus } from '@/lib/db/types';
 import { documentTypeLabels } from '@/lib/db/types';
@@ -53,12 +55,16 @@ interface DocumentCardProps {
   document: TypedDocument;
   onClick?: () => void;
   onSwipeDelete?: () => void;
+  onPreview?: () => void;
+  onDownload?: () => void;
   compact?: boolean;
 }
 
 export function DocumentCard({
   document,
   onClick,
+  onPreview,
+  onDownload,
   compact = false,
 }: DocumentCardProps) {
   const Icon = documentIcons[document.type];
@@ -110,54 +116,85 @@ export function DocumentCard({
 
   if (compact) {
     return (
-      <button
-        onClick={onClick}
-        className="w-full flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all active:scale-[0.98]"
-      >
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${typeColor}`}>
-          <Icon className="w-5 h-5" />
-        </div>
+      <div className="w-full flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all">
+        <button
+          onClick={onClick}
+          className="flex items-center gap-3 flex-1 min-w-0 active:scale-[0.98] transition-transform"
+        >
+          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${typeColor}`}>
+            <Icon className="w-5 h-5" />
+          </div>
 
-        <div className="flex-1 min-w-0 text-left">
-          <p className="text-sm font-medium text-gray-900 truncate">
-            {documentTypeLabels[document.type]}
-          </p>
-          {documentNumber && (
-            <p className="text-xs text-gray-500 truncate">{documentNumber}</p>
-          )}
-        </div>
+          <div className="flex-1 min-w-0 text-left">
+            <p className="text-sm font-medium text-gray-900 truncate">
+              {documentTypeLabels[document.type]}
+            </p>
+            {documentNumber && (
+              <p className="text-xs text-gray-500 truncate">{documentNumber}</p>
+            )}
+          </div>
 
-        <div className="flex items-center gap-2">
           <span
             className={`text-xs px-2 py-0.5 rounded-full ${statusColors.bg} ${statusColors.text}`}
           >
             {getStatusText(status)}
           </span>
-          <ChevronRight className="w-4 h-4 text-gray-400" />
+        </button>
+
+        <div className="flex items-center gap-1">
+          {onPreview && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onPreview();
+              }}
+              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+              title="Просмотр PDF"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+          )}
+          {onDownload && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDownload();
+              }}
+              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+              title="Скачать PDF"
+            >
+              <Download className="w-4 h-4" />
+            </button>
+          )}
+          <ChevronRight className="w-4 h-4 text-gray-400 ml-1" />
         </div>
-      </button>
+      </div>
     );
   }
 
   return (
-    <button
-      onClick={onClick}
-      className="w-full bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all active:scale-[0.99]"
-    >
+    <div className="w-full bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all">
       <div className="p-4">
         <div className="flex items-start gap-3">
           {/* Иконка типа */}
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${typeColor}`}>
-            <Icon className="w-6 h-6" />
-          </div>
+          <button
+            onClick={onClick}
+            className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 active:scale-95 transition-transform"
+          >
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${typeColor}`}>
+              <Icon className="w-6 h-6" />
+            </div>
+          </button>
 
           {/* Основная информация */}
-          <div className="flex-1 min-w-0 text-left">
+          <button
+            onClick={onClick}
+            className="flex-1 min-w-0 text-left active:scale-[0.99] transition-transform"
+          >
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-base font-semibold text-gray-900 truncate">
                 {documentTypeLabels[document.type]}
               </h3>
-              <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
             </div>
 
             {documentNumber && (
@@ -177,6 +214,35 @@ export function DocumentCard({
                 </span>
               </div>
             )}
+          </button>
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {onPreview && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPreview();
+                }}
+                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                title="Просмотр PDF"
+              >
+                <Eye className="w-5 h-5" />
+              </button>
+            )}
+            {onDownload && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDownload();
+                }}
+                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                title="Скачать PDF"
+              >
+                <Download className="w-5 h-5" />
+              </button>
+            )}
+            <ChevronRight className="w-5 h-5 text-gray-400 ml-1" />
           </div>
         </div>
       </div>
@@ -190,7 +256,7 @@ export function DocumentCard({
           />
         </div>
       )}
-    </button>
+    </div>
   );
 }
 

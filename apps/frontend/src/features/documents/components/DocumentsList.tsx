@@ -50,6 +50,8 @@ interface DocumentsListProps {
   onAddDocument?: () => void;
   onSelectDocument?: (document: TypedDocument) => void;
   onDeleteDocument?: (document: TypedDocument) => void;
+  onPreviewDocument?: (document: TypedDocument) => void;
+  onDownloadDocument?: (document: TypedDocument) => void;
   showFilters?: boolean;
   showWarnings?: boolean;
   emptyStateAction?: () => void;
@@ -62,6 +64,8 @@ export function DocumentsList({
   onAddDocument,
   onSelectDocument,
   onDeleteDocument,
+  onPreviewDocument,
+  onDownloadDocument,
   showFilters = true,
   showWarnings = true,
   emptyStateAction,
@@ -360,6 +364,8 @@ export function DocumentsList({
                     <DocumentCard
                       document={document}
                       onClick={() => handleDocumentClick(document)}
+                      onPreview={onPreviewDocument ? () => onPreviewDocument(document) : undefined}
+                      onDownload={onDownloadDocument ? () => onDownloadDocument(document) : undefined}
                     />
                   </div>
                 ))}
