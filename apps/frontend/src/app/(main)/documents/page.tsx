@@ -2,10 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, X, FileText, CreditCard, Briefcase, Home } from 'lucide-react';
+import { ArrowLeft, X, FileText, CreditCard, Briefcase, Home, Hash, UserCheck, HeartPulse } from 'lucide-react';
 import {
   DocumentWizard,
   DocumentsList,
+  PassportForm,
+  MigrationCardForm,
+  PatentForm,
+  RegistrationForm,
   documentTypeLabels,
   type DocumentTypeValue,
 } from '@/features/documents';
@@ -46,12 +50,34 @@ const documentTypeConfig: Record<
     bgColor: 'bg-green-100',
     description: 'Миграционный учёт по месту пребывания',
   },
+  inn: {
+    icon: Hash,
+    color: 'text-indigo-600',
+    bgColor: 'bg-indigo-100',
+    description: 'Идентификационный номер налогоплательщика',
+  },
+  snils: {
+    icon: UserCheck,
+    color: 'text-teal-600',
+    bgColor: 'bg-teal-100',
+    description: 'Страховой номер индивидуального лицевого счёта',
+  },
+  dms: {
+    icon: HeartPulse,
+    color: 'text-red-600',
+    bgColor: 'bg-red-100',
+    description: 'Добровольное медицинское страхование',
+  },
 };
+
+// Типы документов с формами ввода (остальные в разработке)
+const SUPPORTED_FORM_TYPES: DocumentTypeValue[] = ['passport', 'migration_card', 'patent', 'registration'];
 
 export default function DocumentsPage() {
   const router = useRouter();
   const [showWizard, setShowWizard] = useState(false);
   const [showTypeSelector, setShowTypeSelector] = useState(false);
+  const [editingDocumentType, setEditingDocumentType] = useState<DocumentTypeValue | null>(null);
   const [documents, setDocuments] = useState<TypedDocument[]>([]);
   const { profile } = useProfileStore();
   const { getDocuments, isLoading, deleteDocument } = useDocumentStorage();
@@ -80,12 +106,27 @@ export default function DocumentsPage() {
     setShowTypeSelector(true);
   }, []);
 
-  // Выбрать тип документа и открыть мастер создания
-  const handleSelectType = useCallback((_type: DocumentTypeValue) => {
+  // Выбрать тип документа и открыть форму ввода
+  const handleSelectType = useCallback((type: DocumentTypeValue) => {
     setShowTypeSelector(false);
-    // Открываем DocumentWizard вместо навигации на несуществующую страницу
-    setShowWizard(true);
+    if (SUPPORTED_FORM_TYPES.includes(type)) {
+      setEditingDocumentType(type);
+    } else {
+      // Для типов без форм показываем уведомление
+      alert(`Форма для "${documentTypeLabels[type]}" в разработке`);
+    }
   }, []);
+
+  // Закрыть форму редактирования
+  const handleFormClose = useCallback(() => {
+    setEditingDocumentType(null);
+  }, []);
+
+  // После успешного сохранения документа
+  const handleFormSuccess = useCallback(() => {
+    setEditingDocumentType(null);
+    loadDocuments();
+  }, [loadDocuments]);
 
   // Перейти к детальной странице документа
   const handleSelectDocument = useCallback(
@@ -135,10 +176,10 @@ export default function DocumentsPage() {
         </div>
         <button
           onClick={() => setShowWizard(true)}
-          className="flex items-center gap-2 bg-blue-600 text-white font-semibold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 bg-gray-100 text-gray-700 font-semibold px-4 py-2 rounded-xl hover:bg-gray-200 transition-colors"
         >
-          <Plus className="w-5 h-5" />
-          Формы
+          <FileText className="w-5 h-5" />
+          Скачать PDF
         </button>
       </div>
 
@@ -222,6 +263,40 @@ export default function DocumentsPage() {
           profileData={profileData}
           onClose={() => setShowWizard(false)}
         />
+      )}
+
+      {/* Document Input Forms */}
+      {editingDocumentType && profile?.id && (
+        <div className="fixed inset-0 z-50 bg-white">
+          {editingDocumentType === 'passport' && (
+            <PassportForm
+              userId={profile.id}
+              onSuccess={handleFormSuccess}
+              onCancel={handleFormClose}
+            />
+          )}
+          {editingDocumentType === 'migration_card' && (
+            <MigrationCardForm
+              userId={profile.id}
+              onSuccess={handleFormSuccess}
+              onCancel={handleFormClose}
+            />
+          )}
+          {editingDocumentType === 'patent' && (
+            <PatentForm
+              userId={profile.id}
+              onSuccess={handleFormSuccess}
+              onCancel={handleFormClose}
+            />
+          )}
+          {editingDocumentType === 'registration' && (
+            <RegistrationForm
+              userId={profile.id}
+              onSuccess={handleFormSuccess}
+              onCancel={handleFormClose}
+            />
+          )}
+        </div>
       )}
     </div>
   );

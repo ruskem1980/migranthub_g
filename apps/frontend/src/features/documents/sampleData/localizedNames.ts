@@ -1,9 +1,9 @@
 /**
  * Локализованные имена для образцов данных документов
- * Поддерживаемые языки: ru, uz, tg, ky, en
+ * Поддерживаемые языки: ru, uz, tg, ky
  */
 
-export type SupportedLanguage = 'ru' | 'uz' | 'tg' | 'ky' | 'en';
+export type SupportedLanguage = 'ru' | 'uz' | 'tg' | 'ky';
 
 export interface LocalizedName {
   lastName: string;
@@ -64,16 +64,6 @@ export const localizedNames: Record<SupportedLanguage, LocalizedName> = {
     citizenshipCode: 'KGZ',
     birthPlace: 'г. Бишкек, Кыргызстан',
   },
-  en: {
-    lastName: 'Smith',
-    firstName: 'John',
-    middleName: 'Michael',
-    lastNameLatin: 'SMITH',
-    firstNameLatin: 'JOHN',
-    citizenship: 'United States',
-    citizenshipCode: 'USA',
-    birthPlace: 'New York, USA',
-  },
 };
 
 /**
@@ -84,7 +74,6 @@ export const localizedHostNames: Record<SupportedLanguage, LocalizedHostName> = 
   uz: { fullName: 'Алимов Бахтиёр Шавкатович' },
   tg: { fullName: 'Назаров Бахром Исмоилович' },
   ky: { fullName: 'Жумабеков Эрлан Кыдырович' },
-  en: { fullName: 'Johnson Robert William' },
 };
 
 /**
@@ -112,5 +101,5 @@ export function getLocalizedHostName(language: string): LocalizedHostName {
  * @param language Код языка
  */
 export function isSupportedLanguage(language: string): language is SupportedLanguage {
-  return ['ru', 'uz', 'tg', 'ky', 'en'].includes(language);
+  return ['ru', 'uz', 'tg', 'ky'].includes(language);
 }

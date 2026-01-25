@@ -1384,7 +1384,7 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
                 <Download className="w-4 h-4 text-blue-600" />
               </button>
               <button
-                onClick={() => previewPDF({ formId: 'patent-application', data: scannedDocuments, profileData: { ...profileData, ...scannedDocuments } })}
+                onClick={() => previewPDF({ formId: 'patent-initial', data: scannedDocuments, profileData: { ...profileData, ...scannedDocuments } })}
                 className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 title={t('wizard.actionPlan.preview')}
               >
@@ -1408,7 +1408,7 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
                 <Download className="w-4 h-4 text-blue-600" />
               </button>
               <button
-                onClick={() => previewPDF({ formId: 'arrival-notification', data: scannedDocuments, profileData: { ...profileData, ...scannedDocuments } })}
+                onClick={() => previewPDF({ formId: 'notification-arrival', data: scannedDocuments, profileData: { ...profileData, ...scannedDocuments } })}
                 className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 title={t('wizard.actionPlan.preview')}
               >

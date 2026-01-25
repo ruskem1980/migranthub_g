@@ -1,6 +1,5 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
-import { LANGUAGES } from '@/lib/stores/languageStore';
 
 // Mock the i18n hook
 const mockSetLanguage = jest.fn();
@@ -17,7 +16,6 @@ jest.mock('@/lib/i18n', () => ({
   }),
   LANGUAGES: [
     { code: 'ru', name: 'Русский', nativeName: 'Русский', flag: '🇷🇺' },
-    { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
     { code: 'uz', name: 'Узбекский', nativeName: "O'zbek", flag: '🇺🇿' },
     { code: 'tg', name: 'Таджикский', nativeName: 'Тоҷикӣ', flag: '🇹🇯' },
     { code: 'ky', name: 'Кыргызский', nativeName: 'Кыргызча', flag: '🇰🇬' },
@@ -43,8 +41,7 @@ describe('LanguageSwitcher', () => {
       const trigger = screen.getByText('Русский');
       fireEvent.click(trigger);
 
-      // Should show all main languages in dropdown (use getAllByText due to nativeName and name both showing)
-      expect(screen.getAllByText('English').length).toBeGreaterThan(0);
+      // Should show all main languages in dropdown
       expect(screen.getByText("O'zbek")).toBeInTheDocument();
       expect(screen.getByText('Тоҷикӣ')).toBeInTheDocument();
       expect(screen.getByText('Кыргызча')).toBeInTheDocument();
@@ -56,11 +53,10 @@ describe('LanguageSwitcher', () => {
       // Open dropdown
       fireEvent.click(screen.getByText('Русский'));
 
-      // Click on English (use first match with font-medium class for the main name)
-      const englishOptions = screen.getAllByText('English');
-      fireEvent.click(englishOptions[0]);
+      // Click on Uzbek
+      fireEvent.click(screen.getByText("O'zbek"));
 
-      expect(mockSetLanguage).toHaveBeenCalledWith('en');
+      expect(mockSetLanguage).toHaveBeenCalledWith('uz');
     });
 
     it('closes dropdown when backdrop is clicked', () => {
@@ -68,7 +64,7 @@ describe('LanguageSwitcher', () => {
 
       // Open dropdown
       fireEvent.click(screen.getByText('Русский'));
-      expect(screen.getAllByText('English').length).toBeGreaterThan(0);
+      expect(screen.getByText("O'zbek")).toBeInTheDocument();
 
       // Click on backdrop (fixed inset-0 div)
       const backdrop = document.querySelector('.fixed.inset-0');
@@ -76,8 +72,7 @@ describe('LanguageSwitcher', () => {
         fireEvent.click(backdrop);
       }
 
-      // Dropdown should be closed - English should still be in document since it's part of main display
-      // but the dropdown menu should be gone
+      // Dropdown should be closed
     });
 
     it('applies custom className', () => {
@@ -98,7 +93,7 @@ describe('LanguageSwitcher', () => {
       fireEvent.click(screen.getByText('RU'));
 
       // Should show language options
-      expect(screen.getByText('English')).toBeInTheDocument();
+      expect(screen.getByText("O'zbek")).toBeInTheDocument();
     });
 
     it('displays chevron icon that rotates when open', () => {
@@ -122,67 +117,20 @@ describe('LanguageSwitcher', () => {
     it('renders grid of language options', () => {
       render(<LanguageSwitcher variant="list" />);
 
-      // Should show all main languages as grid items
+      // Should show all 4 languages as grid items
       expect(screen.getByText('Русский')).toBeInTheDocument();
-      expect(screen.getByText('English')).toBeInTheDocument();
       expect(screen.getByText("O'zbek")).toBeInTheDocument();
       expect(screen.getByText('Тоҷикӣ')).toBeInTheDocument();
       expect(screen.getByText('Кыргызча')).toBeInTheDocument();
     });
 
-    it('shows "More" button for extended languages', () => {
-      render(<LanguageSwitcher variant="list" />);
-
-      expect(screen.getByText('Другой...')).toBeInTheDocument();
-    });
-
-    it('opens modal when "More" button is clicked', () => {
-      render(<LanguageSwitcher variant="list" />);
-
-      fireEvent.click(screen.getByText('Другой...'));
-
-      // Modal should be visible with search and language list
-      expect(screen.getByText('Выберите язык')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('Поиск языка...')).toBeInTheDocument();
-    });
-
-    it('filters languages when searching in modal', async () => {
-      render(<LanguageSwitcher variant="list" />);
-
-      // Open modal
-      fireEvent.click(screen.getByText('Другой...'));
-
-      // Type in search field
-      const searchInput = screen.getByPlaceholderText('Поиск языка...');
-      fireEvent.change(searchInput, { target: { value: 'Казах' } });
-
-      // Should show filtered results
-      await waitFor(() => {
-        expect(screen.getByText('Қазақша')).toBeInTheDocument();
-      });
-    });
-
-    it('closes modal when close button is clicked', () => {
-      render(<LanguageSwitcher variant="list" />);
-
-      // Open modal
-      fireEvent.click(screen.getByText('Другой...'));
-      expect(screen.getByText('Выберите язык')).toBeInTheDocument();
-
-      // Find and click close button (X icon)
-      const closeButton = screen.getByText('Выберите язык').parentElement?.querySelector('div[class*="cursor-pointer"]');
-      if (closeButton) {
-        fireEvent.click(closeButton);
-      }
-    });
-
     it('calls setLanguage when a language is selected from grid', () => {
       render(<LanguageSwitcher variant="list" />);
 
-      // Click on English in the grid
-      fireEvent.click(screen.getByText('English'));
+      // Click on Uzbek in the grid
+      fireEvent.click(screen.getByText("O'zbek"));
 
-      expect(mockSetLanguage).toHaveBeenCalledWith('en');
+      expect(mockSetLanguage).toHaveBeenCalledWith('uz');
     });
 
     it('highlights currently selected language', () => {

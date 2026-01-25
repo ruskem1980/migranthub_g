@@ -33,14 +33,6 @@ describe('LanguageStore', () => {
   });
 
   describe('setLanguage', () => {
-    it('should set language to English', () => {
-      const { setLanguage } = useLanguageStore.getState();
-
-      setLanguage('en');
-
-      expect(useLanguageStore.getState().language).toBe('en');
-    });
-
     it('should set language to Uzbek', () => {
       const { setLanguage } = useLanguageStore.getState();
 
@@ -65,21 +57,10 @@ describe('LanguageStore', () => {
       expect(useLanguageStore.getState().language).toBe('ky');
     });
 
-    it('should support all CIS languages', () => {
-      const cisLanguages: Language[] = ['ru', 'uz', 'tg', 'ky', 'kk', 'uk', 'be', 'mo', 'az', 'hy', 'ka', 'tk'];
+    it('should support all 4 migrant languages', () => {
+      const supportedLanguages: Language[] = ['ru', 'uz', 'tg', 'ky'];
 
-      cisLanguages.forEach((lang) => {
-        const { setLanguage } = useLanguageStore.getState();
-        setLanguage(lang);
-
-        expect(useLanguageStore.getState().language).toBe(lang);
-      });
-    });
-
-    it('should support international languages', () => {
-      const internationalLanguages: Language[] = ['en', 'zh', 'vi', 'ko', 'tr', 'mn'];
-
-      internationalLanguages.forEach((lang) => {
+      supportedLanguages.forEach((lang) => {
         const { setLanguage } = useLanguageStore.getState();
         setLanguage(lang);
 
@@ -109,8 +90,8 @@ describe('LanguageStore', () => {
 });
 
 describe('LANGUAGES constant', () => {
-  it('should have 5 main languages', () => {
-    expect(LANGUAGES).toHaveLength(5);
+  it('should have 4 main languages', () => {
+    expect(LANGUAGES).toHaveLength(4);
   });
 
   it('should include Russian as first language', () => {
@@ -120,12 +101,6 @@ describe('LANGUAGES constant', () => {
       nativeName: 'Русский',
       flag: expect.any(String),
     });
-  });
-
-  it('should include English', () => {
-    const english = LANGUAGES.find((l) => l.code === 'en');
-    expect(english).toBeDefined();
-    expect(english?.name).toBe('English');
   });
 
   it('should include Uzbek', () => {
@@ -154,50 +129,15 @@ describe('LANGUAGES constant', () => {
 });
 
 describe('EXTENDED_LANGUAGES constant', () => {
-  it('should have more than 40 languages', () => {
-    expect(EXTENDED_LANGUAGES.length).toBeGreaterThan(40);
+  it('should equal LANGUAGES (4 languages)', () => {
+    expect(EXTENDED_LANGUAGES).toHaveLength(4);
+    expect(EXTENDED_LANGUAGES).toEqual(LANGUAGES);
   });
 
   it('should include all main languages', () => {
     const mainLanguageCodes = LANGUAGES.map((l) => l.code);
 
     mainLanguageCodes.forEach((code) => {
-      const found = EXTENDED_LANGUAGES.find((l) => l.code === code);
-      expect(found).toBeDefined();
-    });
-  });
-
-  it('should include South Asian languages', () => {
-    const southAsianCodes: Language[] = ['hi', 'bn', 'pa', 'ur', 'ne'];
-
-    southAsianCodes.forEach((code) => {
-      const found = EXTENDED_LANGUAGES.find((l) => l.code === code);
-      expect(found).toBeDefined();
-    });
-  });
-
-  it('should include Middle Eastern languages', () => {
-    const middleEasternCodes: Language[] = ['ar', 'fa', 'ps'];
-
-    middleEasternCodes.forEach((code) => {
-      const found = EXTENDED_LANGUAGES.find((l) => l.code === code);
-      expect(found).toBeDefined();
-    });
-  });
-
-  it('should include African languages', () => {
-    const africanCodes: Language[] = ['sw', 'am', 'so'];
-
-    africanCodes.forEach((code) => {
-      const found = EXTENDED_LANGUAGES.find((l) => l.code === code);
-      expect(found).toBeDefined();
-    });
-  });
-
-  it('should include European languages', () => {
-    const europeanCodes: Language[] = ['de', 'fr', 'es', 'pt', 'pl'];
-
-    europeanCodes.forEach((code) => {
       const found = EXTENDED_LANGUAGES.find((l) => l.code === code);
       expect(found).toBeDefined();
     });
@@ -225,13 +165,6 @@ describe('getLanguageInfo', () => {
     });
   });
 
-  it('should return English language info', () => {
-    const info = getLanguageInfo('en');
-
-    expect(info.code).toBe('en');
-    expect(info.nativeName).toBe('English');
-  });
-
   it('should return Uzbek language info', () => {
     const info = getLanguageInfo('uz');
 
@@ -239,17 +172,24 @@ describe('getLanguageInfo', () => {
     expect(info.nativeName).toBe("O'zbek");
   });
 
+  it('should return Tajik language info', () => {
+    const info = getLanguageInfo('tg');
+
+    expect(info.code).toBe('tg');
+    expect(info.nativeName).toBe('Тоҷикӣ');
+  });
+
+  it('should return Kyrgyz language info', () => {
+    const info = getLanguageInfo('ky');
+
+    expect(info.code).toBe('ky');
+    expect(info.nativeName).toBe('Кыргызча');
+  });
+
   it('should return default (Russian) for unknown code', () => {
     // Cast to Language to test fallback behavior
     const info = getLanguageInfo('xx' as Language);
 
     expect(info).toEqual(LANGUAGES[0]);
-  });
-
-  it('should find language from extended list', () => {
-    const info = getLanguageInfo('ar');
-
-    expect(info.code).toBe('ar');
-    expect(info.nativeName).toBe('العربية');
   });
 });

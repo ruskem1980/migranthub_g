@@ -5,12 +5,11 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Shield, Calculator, MapPin, GraduationCap, Languages, FileText, Briefcase, Home, CreditCard, Map } from 'lucide-react';
 import {
   MapScreen,
-  StayCalculator,
   BanChecker,
   ExamTrainer,
 } from '@/features/services';
 
-type ServiceModal = 'map' | 'calculator' | 'ban-check' | 'exam' | null;
+type ServiceModal = 'map' | 'ban-check' | 'exam' | null;
 
 interface Service {
   id: string;
@@ -21,6 +20,7 @@ interface Service {
   bgColor: string;
   modal?: ServiceModal;
   external?: string;
+  href?: string;
 }
 
 const services: Service[] = [
@@ -40,7 +40,7 @@ const services: Service[] = [
     icon: Calculator,
     color: 'text-blue-600',
     bgColor: 'bg-blue-50',
-    modal: 'calculator',
+    href: '/calculator',
   },
   {
     id: 'map',
@@ -88,6 +88,11 @@ export default function ServicesPage() {
   const handleServiceClick = (service: Service) => {
     if (service.external) {
       window.open(service.external, '_blank');
+      return;
+    }
+
+    if (service.href) {
+      router.push(service.href);
       return;
     }
 
@@ -206,9 +211,6 @@ export default function ServicesPage() {
       {/* Modals */}
       {activeModal === 'map' && (
         <MapScreen onClose={closeModal} initialFilter={mapInitialFilter} />
-      )}
-      {activeModal === 'calculator' && (
-        <StayCalculator onClose={closeModal} />
       )}
       {activeModal === 'ban-check' && (
         <BanChecker onClose={closeModal} />
