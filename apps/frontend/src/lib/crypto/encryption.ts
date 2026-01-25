@@ -106,7 +106,7 @@ export async function encryptData(
   }
 
   const encoder = new TextEncoder();
-  const jsonString = typeof data === 'string' ? data : JSON.stringify(data);
+  const jsonString = JSON.stringify(data);
   const dataBuffer = encoder.encode(jsonString);
 
   const salt = generateSalt();
