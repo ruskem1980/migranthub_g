@@ -1,14 +1,13 @@
 /**
- * Калькулятор пребывания 90/180
+ * Калькулятор пребывания 90 дней в календарный год
  *
- * Правило 90/180: иностранные граждане могут находиться в РФ
- * не более 90 дней в течение любого 180-дневного периода.
+ * С 05.02.2025 действует новое правило: иностранные граждане могут находиться в РФ
+ * не более 90 дней в течение календарного года (с 1 января по 31 декабря).
  */
 
 import type { StayPeriod, StayCalculation, StayRecommendation } from './types';
 
 const MAX_STAY_DAYS = 90;
-const WINDOW_DAYS = 180;
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
 /**
@@ -36,12 +35,27 @@ function daysBetween(start: Date, end: Date): number {
 }
 
 /**
+ * Получить начало текущего календарного года
+ */
+function getYearStart(date: Date): Date {
+  return new Date(date.getFullYear(), 0, 1); // 1 января текущего года
+}
+
+/**
+ * Получить начало следующего календарного года
+ */
+function getNextYearStart(date: Date): Date {
+  return new Date(date.getFullYear() + 1, 0, 1); // 1 января следующего года
+}
+
+/**
  * Основной расчёт пребывания
+ * С 05.02.2025: 90 дней в календарный год (1 января - 31 декабря)
  */
 export function calculateStay(periods: StayPeriod[]): StayCalculation {
   const today = startOfDay(new Date());
-  const windowStart = new Date(today);
-  windowStart.setDate(windowStart.getDate() - WINDOW_DAYS + 1);
+  const currentYear = today.getFullYear();
+  const yearStart = getYearStart(today);
 
   let totalDays = 0;
   const periodsInWindow: StayCalculation['periodsInWindow'] = [];
@@ -56,12 +70,12 @@ export function calculateStay(periods: StayPeriod[]): StayCalculation {
     const exit = period.exitDate ? parseDate(period.exitDate) : today;
     const isActive = !period.exitDate;
 
-    // Пропускаем периоды полностью вне окна
-    if (exit < windowStart) continue;
+    // Пропускаем периоды полностью вне текущего года
+    if (exit < yearStart) continue;
     if (entry > today) continue;
 
-    // Обрезаем период по границам окна
-    const effectiveEntry = entry < windowStart ? windowStart : entry;
+    // Обрезаем период по границам года (с 1 января текущего года до сегодня)
+    const effectiveEntry = entry < yearStart ? yearStart : entry;
     const effectiveExit = exit > today ? today : exit;
 
     if (effectiveEntry <= effectiveExit) {
@@ -81,23 +95,9 @@ export function calculateStay(periods: StayPeriod[]): StayCalculation {
   const overstayDays = isOverstay ? totalDays - MAX_STAY_DAYS : 0;
   const usagePercent = Math.round((totalDays / MAX_STAY_DAYS) * 100);
 
-  // Расчёт даты следующего сброса
-  // Это дата, когда самый старый период в окне выйдет за пределы 180 дней
-  let nextResetDate: Date | null = null;
-  let daysUntilReset: number | null = null;
-
-  if (periodsInWindow.length > 0 && totalDays > 0) {
-    // Находим самый ранний эффективный день в окне
-    const earliestEntry = periodsInWindow
-      .map(p => (p.entry < windowStart ? windowStart : p.entry))
-      .sort((a, b) => a.getTime() - b.getTime())[0];
-
-    // Дата сброса = ранняя дата + 180 дней
-    nextResetDate = new Date(earliestEntry);
-    nextResetDate.setDate(nextResetDate.getDate() + WINDOW_DAYS);
-
-    daysUntilReset = Math.max(0, daysBetween(today, nextResetDate) - 1);
-  }
+  // Дата сброса лимита — 1 января следующего года
+  const nextResetDate = getNextYearStart(today);
+  const daysUntilReset = Math.max(0, daysBetween(today, nextResetDate) - 1);
 
   // Определяем статус
   let status: StayCalculation['status'];
@@ -117,7 +117,8 @@ export function calculateStay(periods: StayPeriod[]): StayCalculation {
     isOverstay,
     overstayDays,
     usagePercent,
-    windowStart,
+    currentYear,
+    yearStart,
     nextResetDate,
     daysUntilReset,
     periodsInWindow,
@@ -129,12 +130,12 @@ export function calculateStay(periods: StayPeriod[]): StayCalculation {
  * Получить рекомендации на основе расчёта
  */
 export function getRecommendation(calculation: StayCalculation): StayRecommendation {
-  const { totalDays, daysRemaining, isOverstay, overstayDays, status, daysUntilReset } = calculation;
+  const { totalDays, daysRemaining, isOverstay, overstayDays, status, daysUntilReset, currentYear } = calculation;
 
   if (isOverstay) {
     return {
       title: 'Превышение срока пребывания',
-      message: `Вы превысили разрешённый срок на ${overstayDays} ${getDaysWord(overstayDays)}. ` +
+      message: `Вы превысили разрешённый срок на ${overstayDays} ${getDaysWord(overstayDays)} в ${currentYear} году. ` +
         'Это может повлечь штраф и запрет на въезд в РФ. Рекомендуем срочно обратиться к миграционному юристу.',
       type: 'error',
     };
@@ -143,7 +144,7 @@ export function getRecommendation(calculation: StayCalculation): StayRecommendat
   if (status === 'danger') {
     return {
       title: 'Критически мало дней',
-      message: `Осталось всего ${daysRemaining} ${getDaysWord(daysRemaining)}. ` +
+      message: `Осталось всего ${daysRemaining} ${getDaysWord(daysRemaining)} до конца ${currentYear} года. ` +
         'Рекомендуем запланировать выезд из России в ближайшее время.',
       type: 'warning',
     };
@@ -152,7 +153,7 @@ export function getRecommendation(calculation: StayCalculation): StayRecommendat
   if (status === 'warning') {
     return {
       title: 'Внимание: лимит заканчивается',
-      message: `Использовано ${totalDays} из 90 дней. Осталось ${daysRemaining} ${getDaysWord(daysRemaining)}. ` +
+      message: `Использовано ${totalDays} из 90 дней в ${currentYear} году. Осталось ${daysRemaining} ${getDaysWord(daysRemaining)}. ` +
         'Следите за датами и планируйте выезд заранее.',
       type: 'warning',
     };
@@ -160,8 +161,8 @@ export function getRecommendation(calculation: StayCalculation): StayRecommendat
 
   if (daysUntilReset !== null && daysUntilReset <= 30) {
     return {
-      title: 'Скоро обновится лимит',
-      message: `Через ${daysUntilReset} ${getDaysWord(daysUntilReset)} часть лимита освободится. ` +
+      title: 'Скоро новый год — лимит обнулится',
+      message: `Через ${daysUntilReset} ${getDaysWord(daysUntilReset)} наступит ${currentYear + 1} год и лимит обнулится. ` +
         `Сейчас использовано ${totalDays} из 90 дней.`,
       type: 'info',
     };
@@ -169,7 +170,7 @@ export function getRecommendation(calculation: StayCalculation): StayRecommendat
 
   return {
     title: 'Всё в порядке',
-    message: `Использовано ${totalDays} из 90 дней. У вас достаточный запас — ${daysRemaining} ${getDaysWord(daysRemaining)}.`,
+    message: `Использовано ${totalDays} из 90 дней в ${currentYear} году. У вас достаточный запас — ${daysRemaining} ${getDaysWord(daysRemaining)}.`,
     type: 'success',
   };
 }

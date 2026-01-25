@@ -13,6 +13,7 @@ import {
 } from '../schemas/migrationCard.schema';
 import { useDocumentStorage } from '../hooks/useDocumentStorage';
 import { DocumentFormWrapper } from './DocumentFormWrapper';
+import { SampleDataButton } from './SampleDataButton';
 
 // Популярные пункты пропуска
 const ENTRY_POINTS = [
@@ -76,6 +77,7 @@ export function MigrationCardForm({
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors, isDirty },
   } = useForm<MigrationCardData>({
     resolver: zodResolver(migrationCardSchema),
@@ -160,6 +162,11 @@ export function MigrationCardForm({
     setValue('entryDate', formatDate(addDays(new Date(), -1)), { shouldValidate: true });
   };
 
+  // Обработчик заполнения образцом
+  const handleFillSample = (data: Record<string, unknown>) => {
+    reset(data as MigrationCardData, { keepDefaultValues: false });
+  };
+
   return (
     <DocumentFormWrapper
       title={documentId ? 'Редактирование миграционной карты' : 'Новая миграционная карта'}
@@ -199,6 +206,14 @@ export function MigrationCardForm({
             </div>
           </div>
         )}
+
+        {/* Кнопка заполнения образцом */}
+        <div className="flex justify-end">
+          <SampleDataButton
+            documentType="migrationCard"
+            onFillSample={handleFillSample}
+          />
+        </div>
 
         {/* Номер миграционной карты */}
         <section className="space-y-4">

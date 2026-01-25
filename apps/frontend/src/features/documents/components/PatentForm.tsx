@@ -5,8 +5,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Banknote, Calendar, MapPin, FileText, Loader2 } from 'lucide-react';
 import { patentSchema, type PatentData, russianRegions, getDaysUntilPayment, isPaymentOverdue } from '../schemas';
-import { PATENT_REGIONS, getRegionByCode, calculateMonthlyPayment } from '@/features/payments/patentPayment';
+import { getRegionByCode } from '@/features/payments/patentPayment';
 import { useDocumentStorage } from '../hooks/useDocumentStorage';
+import { SampleDataButton } from './SampleDataButton';
 
 interface PatentFormProps {
   userId: string;
@@ -46,6 +47,7 @@ export function PatentForm({
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm<PatentData>({
     resolver: zodResolver(patentSchema),
@@ -88,6 +90,10 @@ export function PatentForm({
     if (!paidUntil) return false;
     return isPaymentOverdue(paidUntil);
   }, [paidUntil]);
+
+  const handleFillSample = (data: Record<string, unknown>) => {
+    reset(data as PatentData);
+  };
 
   const onSubmit = async (data: PatentData) => {
     setIsSubmitting(true);
@@ -134,16 +140,22 @@ export function PatentForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Заголовок */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-          <FileText className="w-6 h-6 text-blue-600" />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+            <FileText className="w-6 h-6 text-blue-600" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">
+              {documentId ? 'Редактировать патент' : 'Добавить патент'}
+            </h2>
+            <p className="text-sm text-gray-500">Патент на работу иностранному гражданину</p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-xl font-bold text-gray-900">
-            {documentId ? 'Редактировать патент' : 'Добавить патент'}
-          </h2>
-          <p className="text-sm text-gray-500">Патент на работу иностранному гражданину</p>
-        </div>
+        <SampleDataButton
+          documentType="patent"
+          onFillSample={handleFillSample}
+        />
       </div>
 
       {/* Серия и номер */}

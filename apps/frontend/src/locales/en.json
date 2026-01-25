@@ -155,7 +155,49 @@
   "documents": {
     "sampleData": {
       "fillWithSample": "Fill with sample",
-      "tooltip": "Fill form with example data to see the format"
+      "tooltip": "Fill form with example data to see the format",
+      "filled": "Form filled with sample data"
+    }
+  },
+  "services": {
+    "calculator": {
+      "title": "90 Days Calculator",
+      "subtitle": "Days per year",
+      "description": "Calculate remaining legal stay days for the current year",
+      "rule": "From 05.02.2025: you can stay in Russia for no more than 90 days per calendar year (January 1 - December 31)",
+      "lawReference": "FZ-260, effective from 01.01.2025",
+      "calendarYearNote": "Counter resets on January 1st each year",
+      "region": "Region of stay",
+      "regionMoscow": "Moscow / Moscow Oblast",
+      "regionSpb": "St. Petersburg / Leningrad Oblast",
+      "regionOther": "Other region",
+      "penalty": {
+        "title": "Possible penalties",
+        "fine": "Fine: {{min}} - {{max}} RUB",
+        "deportation": "Deportation with entry ban possible",
+        "noDeportation": "Deportation unlikely for first offense"
+      },
+      "deportationMode": {
+        "title": "Deportation Regime",
+        "subtitle": "Effective from 05.02.2025",
+        "description": "If you violate the stay period, the deportation regime may be applied with the following restrictions:",
+        "consequences": {
+          "work": "Ban on official employment",
+          "bank": "Ban on opening bank accounts",
+          "vehicle": "Ban on vehicle registration",
+          "marriage": "Ban on marriage registration",
+          "license": "Ban on obtaining a driver's license",
+          "leave": "Obligation to leave Russia within the deadline"
+        },
+        "warning": "Non-compliance results in forced deportation"
+      }
+    }
+  },
+  "wizard": {
+    "actionPlan": {
+      "fineMoscowSpb": "Fine 5000-7000₽ (Moscow, St. Petersburg)",
+      "fineOtherRegions": "Fine 2000-5000₽ (other regions)",
+      "deportationRegime": "Deportation regime (from 05.02.2025)"
     }
   }
 }

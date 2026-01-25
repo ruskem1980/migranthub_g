@@ -16,6 +16,7 @@ import {
 } from '../schemas';
 import { russianRegions } from '../schemas/patent.schema';
 import { useDocumentStorage } from '../hooks/useDocumentStorage';
+import { SampleDataButton } from './SampleDataButton';
 
 interface RegistrationFormProps {
   userId: string;
@@ -42,6 +43,7 @@ export function RegistrationForm({
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<RegistrationData>({
     resolver: zodResolver(registrationSchema),
@@ -116,6 +118,10 @@ export function RegistrationForm({
     }
   };
 
+  const handleFillSample = (data: Record<string, unknown>) => {
+    reset(data as RegistrationData);
+  };
+
   const onSubmit = async (data: RegistrationData) => {
     setIsSubmitting(true);
     setSubmitError(null);
@@ -161,16 +167,22 @@ export function RegistrationForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Заголовок */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-          <Home className="w-6 h-6 text-green-600" />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+            <Home className="w-6 h-6 text-green-600" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">
+              {documentId ? 'Редактировать регистрацию' : 'Добавить регистрацию'}
+            </h2>
+            <p className="text-sm text-gray-500">Миграционный учёт по месту пребывания</p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-xl font-bold text-gray-900">
-            {documentId ? 'Редактировать регистрацию' : 'Добавить регистрацию'}
-          </h2>
-          <p className="text-sm text-gray-500">Миграционный учёт по месту пребывания</p>
-        </div>
+        <SampleDataButton
+          documentType="registration"
+          onFillSample={handleFillSample}
+        />
       </div>
 
       {/* Тип регистрации */}

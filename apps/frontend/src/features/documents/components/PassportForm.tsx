@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { passportSchema, type PassportData } from '../schemas/passport.schema';
 import { useDocumentStorage } from '../hooks/useDocumentStorage';
 import { DocumentFormWrapper } from './DocumentFormWrapper';
+import { SampleDataButton } from './SampleDataButton';
 
 // Таблица транслитерации кириллица → латиница (ГОСТ 7.79-2000)
 const TRANSLIT_MAP: Record<string, string> = {
@@ -68,6 +69,7 @@ export function PassportForm({
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors, isDirty },
   } = useForm<PassportData>({
     resolver: zodResolver(passportSchema),
@@ -147,6 +149,11 @@ export function PassportForm({
     }
   };
 
+  // Обработчик заполнения образцом
+  const handleFillSample = (data: Record<string, unknown>) => {
+    reset(data as PassportData, { keepDefaultValues: false });
+  };
+
   return (
     <DocumentFormWrapper
       title={documentId ? 'Редактирование паспорта' : 'Новый паспорт'}
@@ -156,6 +163,14 @@ export function PassportForm({
       onBack={handleCancel}
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Кнопка заполнения образцом */}
+        <div className="flex justify-end">
+          <SampleDataButton
+            documentType="passport"
+            onFillSample={handleFillSample}
+          />
+        </div>
+
         {/* ФИО (кириллица) */}
         <section className="space-y-4">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">

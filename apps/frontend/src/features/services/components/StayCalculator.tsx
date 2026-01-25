@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Calendar,
   AlertTriangle,
@@ -12,12 +12,117 @@ import {
   Edit3,
   RefreshCw,
   Clock,
+  MapPin,
 } from 'lucide-react';
 import { useStayPeriods } from '../hooks/useStayPeriods';
+import { DeportationModeWarning } from './DeportationModeWarning';
 import { formatDate, formatDateShort } from '../calculator/stay-calculator';
+import {
+  RegionType,
+  getPenaltyInfo,
+  getSavedRegion,
+  saveRegion,
+} from '../calculator/penalty-calculator';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface StayCalculatorProps {
   onClose: () => void;
+}
+
+/**
+ * Region selector component
+ */
+function RegionSelector({
+  value,
+  onChange,
+  t,
+}: {
+  value: RegionType;
+  onChange: (region: RegionType) => void;
+  t: (key: string) => string;
+}) {
+  return (
+    <div className="mb-6">
+      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+        <MapPin className="w-4 h-4" />
+        {t('services.calculator.region')}
+      </label>
+      <div className="grid grid-cols-1 gap-2">
+        <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+          <input
+            type="radio"
+            name="region"
+            value="moscow"
+            checked={value === 'moscow'}
+            onChange={() => onChange('moscow')}
+            className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-900">{t('services.calculator.regionMoscow')}</span>
+        </label>
+        <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+          <input
+            type="radio"
+            name="region"
+            value="spb"
+            checked={value === 'spb'}
+            onChange={() => onChange('spb')}
+            className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-900">{t('services.calculator.regionSpb')}</span>
+        </label>
+        <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+          <input
+            type="radio"
+            name="region"
+            value="other"
+            checked={value === 'other'}
+            onChange={() => onChange('other')}
+            className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-900">{t('services.calculator.regionOther')}</span>
+        </label>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Penalty warning component shown when status is danger or overstay
+ */
+function PenaltyWarning({
+  region,
+  t,
+}: {
+  region: RegionType;
+  t: (key: string, params?: Record<string, string | number>) => string;
+}) {
+  const penaltyInfo = getPenaltyInfo(region);
+
+  return (
+    <div className="p-4 bg-red-50 border border-red-200 rounded-xl mb-6">
+      <div className="flex items-start gap-3">
+        <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+        <div className="flex-1">
+          <h4 className="font-semibold text-red-900 mb-2">
+            {t('services.calculator.penalty.title')}
+          </h4>
+          <div className="text-sm text-red-800 space-y-1">
+            <p>
+              {t('services.calculator.penalty.fine', {
+                min: penaltyInfo.minFine.toLocaleString(),
+                max: penaltyInfo.maxFine.toLocaleString(),
+              })}
+            </p>
+            <p className={penaltyInfo.canBeDeported ? 'font-semibold' : ''}>
+              {penaltyInfo.canBeDeported
+                ? t('services.calculator.penalty.deportation')
+                : t('services.calculator.penalty.noDeportation')}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /**
@@ -171,6 +276,7 @@ function PeriodForm({
 }
 
 export function StayCalculator({ onClose }: StayCalculatorProps) {
+  const { t } = useTranslation();
   const {
     periods,
     isLoading,
@@ -184,6 +290,21 @@ export function StayCalculator({ onClose }: StayCalculatorProps) {
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingPeriodId, setEditingPeriodId] = useState<string | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<RegionType>('other');
+
+  // Load saved region from localStorage on mount
+  useEffect(() => {
+    const saved = getSavedRegion();
+    setSelectedRegion(saved);
+  }, []);
+
+  // Save region to localStorage when changed
+  const handleRegionChange = useCallback((region: RegionType) => {
+    setSelectedRegion(region);
+    saveRegion(region);
+  }, []);
+
+  const showPenaltyWarning = calculation.status === 'danger' || calculation.status === 'overstay';
 
   const handleAddPeriod = useCallback(async (entry: string, exit?: string) => {
     await addPeriod(entry, exit);
@@ -245,8 +366,8 @@ export function StayCalculator({ onClose }: StayCalculatorProps) {
               <Calendar className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Калькулятор 90/180</h2>
-              <p className="text-sm text-gray-500">Расчёт дней пребывания</p>
+              <h2 className="text-lg font-bold text-gray-900">Калькулятор 90 дней</h2>
+              <p className="text-sm text-gray-500">Расчёт дней пребывания в {calculation.currentYear} году</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -268,6 +389,18 @@ export function StayCalculator({ onClose }: StayCalculatorProps) {
 
         {/* Content */}
         <div className="flex-1 min-h-0 overflow-y-auto p-4">
+          {/* Region selector */}
+          <RegionSelector
+            value={selectedRegion}
+            onChange={handleRegionChange}
+            t={t}
+          />
+
+          {/* Penalty warning - shown when status is danger or overstay */}
+          {showPenaltyWarning && (
+            <PenaltyWarning region={selectedRegion} t={t} />
+          )}
+
           {/* Circular progress card */}
           <div className={`p-6 rounded-xl mb-6 ${colors.bg} border-2 ${colors.border}`}>
             <div className="flex items-center justify-center mb-4">
@@ -298,7 +431,7 @@ export function StayCalculator({ onClose }: StayCalculatorProps) {
                 }`} />
               )}
               <span className={`font-semibold ${colors.text}`}>
-                Использовано {calculation.totalDays} из 90 дней
+                Использовано {calculation.totalDays} из 90 дней в {calculation.currentYear} году
               </span>
             </div>
 
@@ -317,15 +450,15 @@ export function StayCalculator({ onClose }: StayCalculatorProps) {
             </div>
           </div>
 
-          {/* Next reset date */}
-          {calculation.nextResetDate && calculation.daysUntilReset !== null && (
+          {/* Next reset date - January 1st of next year */}
+          {calculation.nextResetDate && (
             <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-xl mb-6">
               <Clock className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
               <div className="text-sm text-purple-800">
-                <strong>Следующий сброс:</strong> {formatDate(calculation.nextResetDate)}
+                <strong>Сброс лимита:</strong> 1 января {calculation.currentYear + 1} года
                 <br />
                 <span className="text-purple-600">
-                  Через {calculation.daysUntilReset} дн. часть лимита освободится
+                  Через {calculation.daysUntilReset} дн. лимит обнулится
                 </span>
               </div>
             </div>
@@ -363,8 +496,8 @@ export function StayCalculator({ onClose }: StayCalculatorProps) {
           <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl mb-6">
             <Info className="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-gray-600">
-              <strong>Правило 90/180:</strong> Иностранные граждане могут находиться в России
-              не более 90 дней в течение каждого 180-дневного периода без визы.
+              <strong>Правило 90 дней:</strong> С 05.02.2025 иностранные граждане могут находиться в России
+              не более 90 дней в течение календарного года (с 1 января по 31 декабря).
             </div>
           </div>
 
@@ -460,6 +593,9 @@ export function StayCalculator({ onClose }: StayCalculatorProps) {
               ))}
             </div>
           )}
+
+          {/* Deportation mode warning - shown only for danger/overstay */}
+          <DeportationModeWarning status={calculation.status} />
         </div>
       </div>
     </div>

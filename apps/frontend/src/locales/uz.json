@@ -693,7 +693,8 @@
     },
     "sampleData": {
       "fillWithSample": "Namuna bilan to'ldirish",
-      "tooltip": "Formatni ko'rish uchun namuna ma'lumotlar bilan formani to'ldirish"
+      "tooltip": "Formatni ko'rish uchun namuna ma'lumotlar bilan formani to'ldirish",
+      "filled": "Forma namuna bilan to'ldirildi"
     }
   },
   "services": {
@@ -744,7 +745,7 @@
       },
       "calculator": {
         "title": "🧮 Kalkulyator",
-        "subtitle": "90/180 kun"
+        "subtitle": "90 kun/yil"
       },
       "exam": {
         "title": "📚 Rus tili imtihoni",
@@ -780,14 +781,40 @@
       "checking": "Tekshirilmoqda..."
     },
     "calculator": {
-      "title": "90/180 kalkulyator",
-      "subtitle": "Turish kunlari",
-      "description": "Qolgan qonuniy turish kunlarini hisoblang",
+      "title": "90 kun kalkulyatori",
+      "subtitle": "Yilda turish kunlari",
+      "description": "Joriy yilda qolgan qonuniy turish kunlarini hisoblang",
       "entryDate": "Kirish sanasi",
       "daysSpent": "RFda kunlar",
       "daysRemaining": "Qolgan kunlar",
       "mustLeave": "Chiqish kerak",
-      "rule": "90/180 qoidasi: har qanday 180 kunlik davrda RFda 90 kundan ortiq bo'lish mumkin emas"
+      "rule": "2025-yildan boshlab: RFda kalendar yilida (1-yanvardan 31-dekabrgacha) 90 kundan ortiq bo'lish mumkin emas. Asos: FZ-260",
+      "lawReference": "FZ-260, 01.01.2025-dan kuchga kirdi",
+      "calendarYearNote": "Hisoblagich har yili 1-yanvarda nolga tushadi",
+      "region": "Turish hududi",
+      "regionMoscow": "Moskva / Moskva viloyati",
+      "regionSpb": "Sankt-Peterburg / Leningrad viloyati",
+      "regionOther": "Boshqa hudud",
+      "penalty": {
+        "title": "Mumkin bo'lgan jarimalar",
+        "fine": "Jarima: {{min}} - {{max}} rubl",
+        "deportation": "Kirish taqiqi bilan deportatsiya mumkin",
+        "noDeportation": "Birinchi qoidabuzarlik uchun deportatsiya ehtimolli emas"
+      },
+      "deportationMode": {
+        "title": "Chiqarib yuborish rejimi",
+        "subtitle": "05.02.2025 dan kuchga kiradi",
+        "description": "Turish muddatini buzgan taqdirda quyidagi cheklovlar bilan chiqarib yuborish rejimi qo'llanilishi mumkin:",
+        "consequences": {
+          "work": "Rasmiy ishga joylashishga taqiq",
+          "bank": "Bank hisobvaraqlarini ochishga taqiq",
+          "vehicle": "Transport vositalarini ro'yxatdan o'tkazishga taqiq",
+          "marriage": "Nikohni ro'yxatdan o'tkazishga taqiq",
+          "license": "Haydovchilik guvohnomasi olishga taqiq",
+          "leave": "Muddatida RFdan chiqish majburiyati"
+        },
+        "warning": "Bajarilmagan taqdirda — majburiy deportatsiya"
+      }
     },
     "map": {
       "title": "Migrant xaritasi",
@@ -1289,6 +1316,9 @@
       "cashAmount": "3,500₽ naqd pul",
       "whatIfNot": "Agar qilmasangiz nima bo'ladi?",
       "fine": "7,000₽ gacha jarima",
+      "fineMoscowSpb": "Jarima 5000-7000₽ (Moskva, Sankt-Peterburg)",
+      "fineOtherRegions": "Jarima 2000-5000₽ (boshqa mintaqalar)",
+      "deportationRegime": "Chiqarib yuborish rejimi (05.02.2025-dan)",
       "stayRevoked": "Turish muddatlarini bekor qilish",
       "entryBan": "RFga 3-5 yil kirish taqiqi",
       "deportation": "Buzg'unchining hisobidan deportatsiya",
