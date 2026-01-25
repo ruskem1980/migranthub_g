@@ -23,3 +23,4 @@ export {
   WarningBanner,
   FilterBar,
 } from './DocumentsList';
+export { SampleDataButton, type SampleDataButtonProps } from './SampleDataButton';

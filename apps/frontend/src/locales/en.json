@@ -151,5 +151,11 @@
       "assistant": "Assistant",
       "sos": "SOS"
     }
+  },
+  "documents": {
+    "sampleData": {
+      "fillWithSample": "Fill with sample",
+      "tooltip": "Fill form with example data to see the format"
+    }
   }
 }

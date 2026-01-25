@@ -690,6 +690,10 @@
     },
     "registration": {
       "title": "Ro'yxatdan o'tish"
+    },
+    "sampleData": {
+      "fillWithSample": "Namuna bilan to'ldirish",
+      "tooltip": "Formatni ko'rish uchun namuna ma'lumotlar bilan formani to'ldirish"
     }
   },
   "services": {
