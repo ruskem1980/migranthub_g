@@ -8,7 +8,7 @@
 | UsersModule | ✅ Готов | 1 | 1 | Профиль пользователя |
 | UtilitiesModule | ⚠️ Частично | 2 | 2 | Ban-check (заглушка), Patent |
 | HealthModule | ✅ Готов | 1 | 0 | Health check |
-| SentryModule | ✅ Готов | 0 | 0 | Мониторинг (production) |
+| SentryModule | ✅ Готов | 0 | 1 | Мониторинг (production only) |
 
 ---
 
@@ -97,6 +97,12 @@
 |-------|----------|------------|
 | `getRegions()` | Список регионов с ценами | ✅ Полная (статические данные) |
 | `getRegionByCode(code)` | Поиск региона по коду | ✅ Полная |
+
+**Статические данные**: `data/regions.json` содержит 22 региона с ценами патентов (обновлено 2024-01-01):
+- Москва: 7500 руб/мес
+- ЯНАО: 9500 руб/мес (максимум)
+- ХМАО: 8200 руб/мес
+- Ростовская область: 4200 руб/мес (минимум)
 
 ---
 
@@ -211,10 +217,12 @@
 
 ### JwtAuthGuard
 
-- Глобальный guard (APP_GUARD)
 - Extends `AuthGuard('jwt')`
+- Применяется через `@UseGuards(JwtAuthGuard)` на контроллерах
 - Поддерживает `@Public()` decorator для исключения
 - Проверяет Bearer token в Authorization header
+
+**Примечание**: ThrottlerGuard зарегистрирован как APP_GUARD (глобальный)
 
 ### JwtStrategy
 
@@ -227,11 +235,27 @@
 
 ## Decorators
 
+### Auth Decorators
+
 | Декоратор | Описание | Использование |
 |-----------|----------|---------------|
 | `@Public()` | Отмечает эндпоинт как публичный | На методах контроллера |
 | `@CurrentUser()` | Извлекает текущего пользователя | В параметрах методов |
 | `@CurrentUser('id')` | Извлекает конкретное поле | В параметрах методов |
+
+### Swagger Decorators
+
+| Декоратор | Описание |
+|-----------|----------|
+| `@ApiResponseWrapper(DtoClass)` | Оборачивает DTO в стандартный формат ответа |
+| `@ApiCreatedWrapper(DtoClass)` | Для 201 Created ответов |
+| `@ApiPaginatedResponse(DtoClass)` | Для пагинированных списков |
+| `@ApiErrorResponse(code, desc)` | Для документации ошибок |
+| `@ApiBadRequestResponse()` | Предзаданный 400 ответ |
+| `@ApiUnauthorizedResponse()` | Предзаданный 401 ответ |
+| `@ApiForbiddenResponse()` | Предзаданный 403 ответ |
+| `@ApiNotFoundResponse()` | Предзаданный 404 ответ |
+| `@ApiInternalServerErrorResponse()` | Предзаданный 500 ответ |
 
 ---
 
@@ -274,6 +298,8 @@
 ### TransformInterceptor
 
 - Оборачивает ответы в стандартный формат
+- Пропускает health check endpoints без трансформации
+- Автоматически определяет пагинированные ответы
 - Структура:
 ```typescript
 {
@@ -282,10 +308,24 @@
     timestamp: string
     path: string
     version: 'v1'
-    pagination?: {...}
+    pagination?: {...}  // только для пагинированных ответов
   }
 }
 ```
+
+---
+
+## SentryModule
+
+- Инициализируется только в production (`NODE_ENV=production`)
+- Требует `SENTRY_DSN` env variable
+- Настройки:
+  - `tracesSampleRate`: 0.1 (10%)
+  - `profilesSampleRate`: 0.1 (10%)
+  - Интеграция с `nodeProfilingIntegration()`
+- **PII фильтрация** в `beforeSend`:
+  - Удаляет `user.email`, `user.ip_address`, `user.username`
+  - Удаляет `cookies`, `authorization` и `cookie` headers
 
 ---
 
@@ -325,9 +365,18 @@
 
 - **API Prefix**: `/api`
 - **Versioning**: URI-based, default v1 → `/api/v1/...`
-- **Rate Limiting**: 100 req/60s (по умолчанию)
+- **Rate Limiting (ThrottlerModule)**:
+  - Default: 100 req/60s
+  - Auth device: 5 req/60s
+  - Auth refresh: 10 req/60s
+  - Ban check: 10 req/60s
 - **Swagger**: `/api/docs`
-- **Validation**: whitelist, forbidNonWhitelisted, transform
+- **Validation (ValidationPipe)**:
+  - `whitelist: true` — удаляет неизвестные поля
+  - `forbidNonWhitelisted: true` — ошибка при неизвестных полях
+  - `transform: true` — автоматическое преобразование типов
+  - `enableImplicitConversion: true`
+- **CORS**: Настраивается через `CORS_ORIGINS` env
 
 ---
 
@@ -358,47 +407,70 @@
 ```
 apps/api-core/src/
 ├── app.module.ts                           # Главный модуль
-├── main.ts                                 # Точка входа
+├── main.ts                                 # Точка входа, Swagger, pipes, filters
 ├── config/
-│   ├── app.config.ts
-│   ├── database.config.ts
-│   └── jwt.config.ts
+│   ├── app.config.ts                       # PORT, NODE_ENV, CORS
+│   ├── database.config.ts                  # PostgreSQL config
+│   ├── jwt.config.ts                       # JWT secrets, expiration
+│   └── index.ts
 ├── common/
 │   ├── decorators/
-│   │   ├── current-user.decorator.ts
-│   │   └── public.decorator.ts
+│   │   └── api-response.decorator.ts       # Swagger response wrappers
 │   ├── filters/
-│   │   └── http-exception.filter.ts
+│   │   └── http-exception.filter.ts        # Global exception handler
 │   ├── interceptors/
-│   │   ├── logging.interceptor.ts
-│   │   └── transform.interceptor.ts
-│   └── sentry/
-│       └── sentry.module.ts
+│   │   ├── logging.interceptor.ts          # HTTP request/response logging
+│   │   └── transform.interceptor.ts        # Response wrapper
+│   ├── sentry/
+│   │   ├── sentry.module.ts                # Sentry init with PII filter
+│   │   └── index.ts
+│   └── index.ts
 └── modules/
     ├── auth/
     │   ├── auth.module.ts
-    │   ├── auth.controller.ts
-    │   ├── auth.service.ts
+    │   ├── auth.controller.ts              # POST /device, /refresh
+    │   ├── auth.service.ts                 # Token generation, validation
     │   ├── dto/
+    │   │   ├── device-auth.dto.ts
+    │   │   ├── refresh-token.dto.ts
+    │   │   ├── auth-response.dto.ts
+    │   │   └── index.ts
     │   ├── guards/
-    │   └── strategies/
+    │   │   └── jwt-auth.guard.ts           # JWT + @Public() support
+    │   ├── strategies/
+    │   │   └── jwt.strategy.ts             # Passport JWT strategy
+    │   └── decorators/
+    │       ├── public.decorator.ts         # @Public()
+    │       ├── current-user.decorator.ts   # @CurrentUser()
+    │       └── index.ts
     ├── users/
     │   ├── users.module.ts
-    │   ├── users.controller.ts
+    │   ├── users.controller.ts             # GET/PATCH /me
     │   ├── users.service.ts
     │   ├── dto/
+    │   │   ├── update-user.dto.ts
+    │   │   ├── user-response.dto.ts
+    │   │   └── index.ts
     │   └── entities/
+    │       └── user.entity.ts              # TypeORM entity
     ├── utilities/
     │   ├── utilities.module.ts
     │   ├── ban-check/
-    │   │   ├── ban-check.controller.ts
-    │   │   ├── ban-check.service.ts
+    │   │   ├── ban-check.controller.ts     # GET /utilities/ban-check
+    │   │   ├── ban-check.service.ts        # Заглушка
     │   │   └── dto/
+    │   │       ├── ban-check-query.dto.ts
+    │   │       ├── ban-check-response.dto.ts
+    │   │       └── index.ts
     │   └── patent/
-    │       ├── patent.controller.ts
+    │       ├── patent.controller.ts        # GET /utilities/patent/regions
     │       ├── patent.service.ts
     │       ├── dto/
-    │       └── data/regions.json
+    │       │   ├── patent-region.dto.ts
+    │       │   └── index.ts
+    │       └── data/
+    │           └── regions.json            # 22 региона с ценами
     └── health/
-        └── health.controller.ts
+        ├── health.module.ts
+        └── health.controller.ts            # GET /health
 ```

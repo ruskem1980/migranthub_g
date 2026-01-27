@@ -18,6 +18,14 @@
    - [Features](#features)
 3. [MVP Scope](#mvp-scope)
 4. [Post-MVP Features](#post-mvp-features)
+5. [Типы документов](#типы-документов)
+6. [Типы уведомлений](#типы-уведомлений)
+7. [Архитектурные принципы](#архитектурные-принципы)
+8. [Критерии приёмки](#критерии-приёмки-из-тз)
+9. [Security Requirements](#security-requirements)
+10. [Infrastructure Requirements](#infrastructure-requirements)
+11. [Business Logic Requirements](#business-logic-requirements)
+12. [Итоговая статистика](#итоговая-статистика-требований)
 
 ---
 
@@ -485,5 +493,137 @@
 
 ---
 
+## Security Requirements
+
+| ID | Требование | Описание | Приоритет | Источник |
+|----|------------|----------|-----------|----------|
+| REQ-SEC-001 | Local-First | PII только на устройстве пользователя | MVP | 00-ARCHITECTURE-OVERVIEW.md:89-113 |
+| REQ-SEC-002 | No PII on Server | Сервер не хранит ФИО, паспорт, адрес, телефон | MVP | 00-ARCHITECTURE-OVERVIEW.md:299-312 |
+| REQ-SEC-003 | AES-256-GCM | Шифрование локальных данных | MVP | 00-ARCHITECTURE-OVERVIEW.md:106 |
+| REQ-SEC-004 | E2E Backup | Бэкапы шифруются ключом пользователя | Post-MVP (v1.1) | 00-ARCHITECTURE-OVERVIEW.md:269-276 |
+| REQ-SEC-005 | Rate Limiting | global: 100/min, auth: 5/min, backup: 10/hour | MVP | TECHNICAL_SPECIFICATION.md:345-353 |
+| REQ-SEC-006 | Request Signing | HMAC-SHA256 подпись всех запросов | MVP | TECHNICAL_SPECIFICATION.md:356-369 |
+| REQ-SEC-007 | JWT Auth | Access token 24h, Refresh token 30d | MVP | TECHNICAL_SPECIFICATION.md:493-511 |
+| REQ-SEC-008 | PII Filter AI | 3-уровневый фильтр (client, gateway, proxy) | Post-MVP (v1.2) | TECHNICAL_SPECIFICATION.md:769-855 |
+| REQ-SEC-009 | AI Kill Switch | Экстренное отключение AI при аномалиях | Post-MVP (v1.2) | TECHNICAL_SPECIFICATION.md:920-972 |
+| REQ-SEC-010 | Webhook Signature | Проверка подписи платёжных webhooks | Post-MVP (v1.2) | TECHNICAL_SPECIFICATION.md:1186-1198 |
+| REQ-SEC-011 | 152-FZ Compliance | Не оператор персональных данных | MVP | 00-ARCHITECTURE-OVERVIEW.md:282-338 |
+| REQ-SEC-012 | OTP Security | 6 цифр, TTL 5 мин, 3 попытки, блок 15 мин | Post-MVP (v1.1) | TECHNICAL_SPECIFICATION.md:483-489 |
+| REQ-SEC-013 | Biometric Access | Face ID / Fingerprint для доступа | Post-MVP (v1.1) | 04-FRONTEND.md:49 |
+
+---
+
+## Infrastructure Requirements
+
+| ID | Требование | Описание | Приоритет | Источник |
+|----|------------|----------|-----------|----------|
+| REQ-INFRA-001 | PostgreSQL 16 | Основная база данных | MVP | 00-ARCHITECTURE-OVERVIEW.md:377 |
+| REQ-INFRA-002 | Redis 7 | Cache, sessions, rate limiting | MVP | 00-ARCHITECTURE-OVERVIEW.md:378 |
+| REQ-INFRA-003 | RabbitMQ 3 | Message queue для событий | Post-MVP (v1.1) | 00-ARCHITECTURE-OVERVIEW.md:379 |
+| REQ-INFRA-004 | S3/MinIO | Object storage для бэкапов | Post-MVP (v1.1) | 00-ARCHITECTURE-OVERVIEW.md:380 |
+| REQ-INFRA-005 | Docker Compose | Контейнеризация сервисов | MVP | TECHNICAL_SPECIFICATION.md:1682-1772 |
+| REQ-INFRA-006 | GitHub Actions | CI/CD pipeline | MVP | TECHNICAL_SPECIFICATION.md:1777-1829 |
+| REQ-INFRA-007 | Cloudflare | WAF, CDN, DDoS protection | MVP | 00-ARCHITECTURE-OVERVIEW.md:385 |
+| REQ-INFRA-008 | Sentry | Error monitoring | MVP | 00-ARCHITECTURE-OVERVIEW.md:389 |
+| REQ-INFRA-009 | Grafana + Loki | Metrics и logs dashboard | Post-MVP | 00-ARCHITECTURE-OVERVIEW.md:389-390 |
+| REQ-INFRA-010 | Selectel Cloud | Hosting (VPC) | MVP | 00-ARCHITECTURE-OVERVIEW.md:385 |
+| REQ-INFRA-011 | pgvector | Vector extension для RAG | Post-MVP (v1.2) | TECHNICAL_SPECIFICATION.md:861-879 |
+
+---
+
+## Business Logic Requirements
+
+### Subscription Plans
+
+| ID | Требование | Описание | Приоритет | Источник |
+|----|------------|----------|-----------|----------|
+| REQ-BIZ-001 | Free Plan | 3 документа, 5 AI вопросов/день, базовые напоминания | MVP | 06-BUSINESS-LOGIC.md:26-48 |
+| REQ-BIZ-002 | Plus Plan | 99р/мес, безлимит документов, 30 AI, backup 500MB | Post-MVP (v1.2) | 06-BUSINESS-LOGIC.md:50-65 |
+| REQ-BIZ-003 | Pro Plan | 249р/мес, безлимит AI, backup 1GB, поддержка | Post-MVP (v1.2) | 06-BUSINESS-LOGIC.md:67-87 |
+| REQ-BIZ-004 | AI Packs | Pay-per-use пакеты: 10 за 49р, 30 за 99р, 100 за 249р | Post-MVP (v1.2) | 06-BUSINESS-LOGIC.md:93-115 |
+| REQ-BIZ-005 | Regional Pricing | UZ: 80%, TJ: 70%, KG: 75% от базовой цены | Post-MVP (v1.2) | 06-BUSINESS-LOGIC.md:196-214 |
+| REQ-BIZ-006 | Promo Codes | Скидки для студентов, многодетных, диаспор | Post-MVP (v1.2) | 06-BUSINESS-LOGIC.md:155-188 |
+| REQ-BIZ-007 | Referral Program | Приглашённый +30% скидка, пригласивший +1 месяц | Post-MVP (v1.2) | 06-BUSINESS-LOGIC.md:172-175 |
+
+### Deadline & Notification Logic
+
+| ID | Требование | Описание | Приоритет | Источник |
+|----|------------|----------|-----------|----------|
+| REQ-BIZ-010 | Registration Deadline | UZ: 7 дней, TJ: 15 дней, ЕАЭС: 30 дней | MVP | 06-BUSINESS-LOGIC.md:271-298 |
+| REQ-BIZ-011 | Patent Payment | Напоминания за 30, 14, 7, 3, 1 день | MVP | 06-BUSINESS-LOGIC.md:281-284 |
+| REQ-BIZ-012 | 90/180 Rule | Расчёт оставшихся дней, предупреждения | MVP | 06-BUSINESS-LOGIC.md:285-291 |
+| REQ-BIZ-013 | Smart Timing | Отправка в активные часы пользователя | Post-MVP (v1.1) | 06-BUSINESS-LOGIC.md:330-418 |
+| REQ-BIZ-014 | Escalation | Telegram если push не прочитан через 4 часа | Post-MVP (v1.1) | 06-BUSINESS-LOGIC.md:364-380 |
+| REQ-BIZ-015 | Quiet Hours | Не отправлять с 22:00 до 08:00 | Post-MVP (v1.1) | 06-BUSINESS-LOGIC.md:359-361 |
+
+### Onboarding Flow
+
+| ID | Требование | Описание | Приоритет | Источник |
+|----|------------|----------|-----------|----------|
+| REQ-BIZ-020 | Phase 1: Trust | Welcome + Privacy экраны (2 шага) | MVP | 06-BUSINESS-LOGIC.md:487-515 |
+| REQ-BIZ-021 | Phase 2: Value | Citizenship + Entry Date + Instant Result | MVP | 06-BUSINESS-LOGIC.md:517-553 |
+| REQ-BIZ-022 | Phase 3: Complete | Purpose + Region + Notifications (skippable) | MVP | 06-BUSINESS-LOGIC.md:555-598 |
+| REQ-BIZ-023 | A/B Testing | Тестирование вариантов онбординга | Post-MVP | 06-BUSINESS-LOGIC.md:604-644 |
+
+### Legal Monitoring
+
+| ID | Требование | Описание | Приоритет | Источник |
+|----|------------|----------|-----------|----------|
+| REQ-BIZ-030 | Source Monitoring | Парсинг Consultant+, GARANT, МВД каждые 2 часа | Post-MVP (v1.1) | 06-BUSINESS-LOGIC.md:652-722 |
+| REQ-BIZ-031 | AI Analysis | Автоматический анализ изменений через GPT-4 | Post-MVP (v1.2) | 06-BUSINESS-LOGIC.md:728-780 |
+| REQ-BIZ-032 | User Notification | Уведомление затронутых по гражданству/региону | Post-MVP (v1.1) | 06-BUSINESS-LOGIC.md:786-836 |
+| REQ-BIZ-033 | Criticality Levels | critical/important/info классификация | Post-MVP (v1.1) | 06-BUSINESS-LOGIC.md:773-779 |
+
+### B2B Features (Future)
+
+| ID | Требование | Описание | Приоритет | Источник |
+|----|------------|----------|-----------|----------|
+| REQ-BIZ-040 | Employer Dashboard | Панель для работодателей | v2.0+ | 06-BUSINESS-LOGIC.md:846-892 |
+| REQ-BIZ-041 | Employee Status API | API проверки статуса сотрудника (с согласием) | v2.0+ | 06-BUSINESS-LOGIC.md:866-890 |
+| REQ-BIZ-042 | Diaspora Partnerships | 20% скидка через партнёрские коды | Post-MVP (v1.2) | 06-BUSINESS-LOGIC.md:900-928 |
+| REQ-BIZ-043 | White-label | Кастомизация для банков | v2.0+ | 06-BUSINESS-LOGIC.md:934-968 |
+
+---
+
+## Conversion Triggers
+
+| ID | Триггер | Действие | Offer | Источник |
+|----|---------|----------|-------|----------|
+| CONV-001 | 4-й документ | User добавляет 4-й документ | Plus -50% first month | 06-BUSINESS-LOGIC.md:221-230 |
+| CONV-002 | AI лимит | Исчерпаны 5 вопросов/день | AI pack 10 за 49р | 06-BUSINESS-LOGIC.md:232-240 |
+| CONV-003 | 5+ документов | Много документов без бэкапа | Cloud Safe предложение | 06-BUSINESS-LOGIC.md:242-249 |
+| CONV-004 | 7 дней активности | Активный free пользователь | 7 дней Pro trial | 06-BUSINESS-LOGIC.md:251-260 |
+
+---
+
+## Always Free Features (Safety Critical)
+
+| ID | Функция | Описание | Источник |
+|----|---------|----------|----------|
+| FREE-001 | Deadline Calculator | Расчёт 90/180, регистрации, патента | 06-BUSINESS-LOGIC.md:43 |
+| FREE-002 | Critical Alerts | Срочные уведомления о дедлайнах | 06-BUSINESS-LOGIC.md:44 |
+| FREE-003 | Legal Reference | Базовый справочник законов | 06-BUSINESS-LOGIC.md:45 |
+| FREE-004 | Emergency Contacts | Контакты УФМС, посольств | 06-BUSINESS-LOGIC.md:46 |
+
+---
+
+## Итоговая статистика требований
+
+| Категория | MVP | Post-MVP v1.1 | Post-MVP v1.2 | v2.0+ | Всего |
+|-----------|-----|---------------|---------------|-------|-------|
+| API Endpoints | 17 | 16 | 14 | - | 47 |
+| Backend Modules | 10 | 7 | 7 | 4 | 28 |
+| Database Tables | 2 | 1 | 2 | - | 5 |
+| Frontend Screens | 10 | - | 1 | - | 11 |
+| Frontend Components | 20 | 2 | 4 | - | 26 |
+| Frontend Features | 14 | 4 | - | - | 18 |
+| Security Requirements | 7 | 3 | 3 | - | 13 |
+| Infrastructure | 8 | 2 | 1 | - | 11 |
+| Business Logic | 12 | 7 | 6 | 4 | 29 |
+| **Всего** | **100** | **42** | **38** | **8** | **188** |
+
+---
+
 *Документ создан: 2026-01-27*
 *Источники: 6 файлов документации*
+*Всего извлечено: 188 требований*
