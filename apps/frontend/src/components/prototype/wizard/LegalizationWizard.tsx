@@ -43,7 +43,7 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
     firstName: '',
     passportNumber: '',
     issueDate: '',
-    citizenship: 'Узбекистан'
+    citizenship: 'UZ'
   });
 
   // Calculate missing documents
@@ -838,9 +838,9 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
         <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <FileText className="w-8 h-8 text-blue-600" />
         </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">Шаг 1. Паспортные данные</h3>
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('wizard.dataIntake.title')}</h3>
         <p className="text-sm text-gray-600">
-          Выберите способ ввода данных для генерации заявлений
+          {t('wizard.dataIntake.description')}
         </p>
       </div>
 
@@ -852,22 +852,22 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
             className="relative p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-3 border-blue-300 rounded-2xl hover:from-blue-100 hover:to-blue-200 transition-all active:scale-98 text-left group"
           >
             <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-              Рекомендуется
+              {t('wizard.documentScan.recommended')}
             </div>
-            
+
             <div className="flex items-start gap-4">
               <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                 <Camera className="w-7 h-7 text-white" />
               </div>
-              
+
               <div className="flex-1">
-                <h4 className="text-lg font-bold text-gray-900 mb-2">📸 Сканировать камерой</h4>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">📸 {t('wizard.dataIntake.scanCamera')}</h4>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  Автоматическое распознавание данных из паспорта. Быстро и без ошибок.
+                  {t('wizard.dataIntake.scanCameraDesc')}
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <Check className="w-4 h-4 text-green-600" />
-                  <span className="text-xs text-green-700 font-medium">OCR технология</span>
+                  <span className="text-xs text-green-700 font-medium">{t('wizard.dataIntake.ocrTechnology')}</span>
                 </div>
               </div>
             </div>
@@ -882,11 +882,11 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
               <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
                 <Edit3 className="w-7 h-7 text-gray-600" />
               </div>
-              
+
               <div className="flex-1">
-                <h4 className="text-lg font-bold text-gray-900 mb-2">✍️ Заполнить вручную</h4>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">✍️ {t('wizard.dataIntake.fillManually')}</h4>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  Введите данные самостоятельно. Бесплатно, но требует внимательности.
+                  {t('wizard.dataIntake.fillManuallyDesc')}
                 </p>
               </div>
             </div>
@@ -900,20 +900,20 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
                 <div className="w-32 h-32 bg-blue-100 rounded-2xl mx-auto mb-4 flex items-center justify-center">
                   <Camera className="w-16 h-16 text-blue-600" />
                 </div>
-                <h4 className="font-bold text-gray-900 mb-2">Сфотографируйте разворот с фото</h4>
+                <h4 className="font-bold text-gray-900 mb-2">{t('wizard.dataIntake.photoSpread')}</h4>
                 <p className="text-sm text-gray-600">
-                  Убедитесь, что нет бликов и все данные читаемы
+                  {t('wizard.documentScan.noGlare')}
                 </p>
               </div>
 
-              <button 
+              <button
                 onClick={() => {
                   // Mock: Simulate OCR scanning
                   setCurrentStep('scanning');
                 }}
                 className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-colors"
               >
-                Открыть камеру
+                {t('wizard.documentScan.openCamera')}
               </button>
             </div>
           )}
@@ -922,33 +922,33 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Фамилия
+                  {t('wizard.fields.lastName')}
                 </label>
                 <input
                   type="text"
                   value={passportData.lastName}
                   onChange={(e) => setPassportData({...passportData, lastName: e.target.value})}
-                  placeholder="УСМАНОВ"
+                  placeholder="USMONOV"
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Имя
+                  {t('wizard.fields.firstName')}
                 </label>
                 <input
                   type="text"
                   value={passportData.firstName}
                   onChange={(e) => setPassportData({...passportData, firstName: e.target.value})}
-                  placeholder="АЛИШЕР"
+                  placeholder="ALISHER"
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Номер паспорта
+                  {t('wizard.fields.passportNumber')}
                 </label>
                 <input
                   type="text"
@@ -961,7 +961,7 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Дата выдачи
+                  {t('wizard.fields.issueDate')}
                 </label>
                 <input
                   type="date"
@@ -973,17 +973,17 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Гражданство
+                  {t('wizard.fields.citizenship')}
                 </label>
                 <select
                   value={passportData.citizenship}
                   onChange={(e) => setPassportData({...passportData, citizenship: e.target.value})}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="Узбекистан">🇺🇿 Узбекистан</option>
-                  <option value="Таджикистан">🇹🇯 Таджикистан</option>
-                  <option value="Киргизия">🇰🇬 Киргизия</option>
-                  <option value="Другая">Другая</option>
+                  <option value="UZ">🇺🇿 {t('countries.UZ')}</option>
+                  <option value="TJ">🇹🇯 {t('countries.TJ')}</option>
+                  <option value="KG">🇰🇬 {t('countries.KG')}</option>
+                  <option value="OTHER">{t('countries.OTHER')}</option>
                 </select>
               </div>
             </div>
@@ -996,9 +996,9 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-yellow-900 mb-1">Проверьте данные</p>
+                    <p className="text-sm font-semibold text-yellow-900 mb-1">{t('wizard.dataIntake.checkData')}</p>
                     <p className="text-xs text-yellow-800">
-                      Ошибка в одной букве делает документ недействительным
+                      {t('wizard.dataIntake.checkDataNote')}
                     </p>
                   </div>
                 </div>
@@ -1013,14 +1013,14 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
                     : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 }`}
               >
-                Продолжить
+                {t('common.continue')}
               </button>
 
               <button
                 onClick={() => setDataMethod(null)}
                 className="w-full bg-gray-100 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-200 transition-colors"
               >
-                ← Назад к выбору способа
+                {t('wizard.verification.backToChoice')}
               </button>
             </>
           )}

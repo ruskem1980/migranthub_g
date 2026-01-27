@@ -808,9 +808,15 @@
       "title": "90 kun kalkulyatori",
       "subtitle": "Yilda turish kunlari",
       "description": "Joriy yilda qolgan qonuniy turish kunlarini hisoblang",
+      "pageSubtitle": "{year} yilda turish kunlarini hisoblash",
       "entryDate": "Kirish sanasi",
+      "exitDate": "Chiqish sanasi",
+      "exitDateHint": "Agar siz hali Rossiyada bo'lsangiz, chiqish sanasini bo'sh qoldiring",
       "daysSpent": "RFda kunlar",
       "daysRemaining": "Qolgan kunlar",
+      "daysOver": "kun ortiqcha",
+      "daysLeft": "kun qoldi",
+      "usedDays": "{year} yilda {total} kundan {used} kun ishlatildi",
       "mustLeave": "Chiqish kerak",
       "rule": "2025-yildan boshlab: RFda kalendar yilida (1-yanvardan 31-dekabrgacha) 90 kundan ortiq bo'lish mumkin emas. Asos: FZ-260",
       "lawReference": "FZ-260 08.08.2024, 05.02.2025-dan kuchga kirdi",
@@ -827,12 +833,17 @@
         }
       },
       "region": "Turish hududi",
+      "regionRequired": "Turish hududingizni tanlang",
       "regionMoscow": "Moskva / Moskva viloyati",
       "regionSpb": "Sankt-Peterburg / Leningrad viloyati",
       "regionOther": "Boshqa hudud",
+      "increasedFines": "Yuqori jarimalar",
+      "standardFines": "Boshqa hududlar",
       "penalty": {
         "title": "Mumkin bo'lgan jarimalar",
         "fine": "Jarima: {min} - {max} rubl",
+        "fineWithDeportation": "Jarima {min}-{max}₽, deportatsiya mumkin",
+        "fineOnly": "Jarima {min}-{max}₽",
         "deportation": "Kirish taqiqi bilan deportatsiya mumkin",
         "noDeportation": "Birinchi qoidabuzarlik uchun deportatsiya ehtimolli emas"
       },
@@ -849,7 +860,23 @@
           "leave": "Muddatida RFdan chiqish majburiyati"
         },
         "warning": "Bajarilmagan taqdirda — majburiy deportatsiya"
-      }
+      },
+      "periods": {
+        "title": "Turish davrlari",
+        "count": "{count} ta yozuv",
+        "addEntry": "Kirish qo'shish",
+        "noPeriods": "Turish yozuvlari yo'q",
+        "addDatesHint": "Kirish va chiqish sanalarini qo'shing",
+        "currentlyInRussia": "Hozir RFda",
+        "linkedToMigrationCard": "Migratsiya kartasiga bog'langan"
+      },
+      "resetLimit": {
+        "title": "Limit qayta tiklash",
+        "date": "{year} yil 1-yanvar",
+        "daysUntil": "{days} kundan keyin limit nolga tushadi"
+      },
+      "close": "Yopish",
+      "refresh": "Yangilash"
     },
     "map": {
       "title": "Migrant xaritasi",
@@ -1183,7 +1210,11 @@
     "forbidden": "Kirish taqiqlangan",
     "notFound": "Topilmadi",
     "validation": "Tekshirish xatosi",
-    "tryAgain": "Qayta urinib ko'ring"
+    "tryAgain": "Qayta urinib ko'ring",
+    "boundary": {
+      "title": "Nimadir xato ketdi",
+      "description": "Kutilmagan xato yuz berdi"
+    }
   },
   "offline": {
     "title": "Aloqa yo'q",
