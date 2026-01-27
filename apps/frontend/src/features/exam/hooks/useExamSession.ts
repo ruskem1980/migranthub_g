@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useEffect, useRef, useState } from 'react';
+import { useTranslation } from '@/lib/i18n';
 import {
   useExamStore,
   selectCurrentQuestion,
@@ -75,6 +76,7 @@ const TIME_LIMITS: Record<ExamMode, number | undefined> = {
 export function useExamSession(
   options: UseExamSessionOptions = {}
 ): UseExamSessionReturn {
+  const { t } = useTranslation();
   const { autoSubmit = true } = options;
 
   // Store state
@@ -255,7 +257,7 @@ export function useExamSession(
   }, [currentSession?.timeLimit, timeSpent]);
 
   // Combined error
-  const error = storeError || (questionsError ? 'Не удалось загрузить вопросы' : null);
+  const error = storeError || (questionsError ? t('exam.session.loadError') : null);
 
   return {
     // State

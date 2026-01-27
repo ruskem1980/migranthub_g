@@ -6,6 +6,8 @@ export {
   useStatistics,
   usePrefetchQuestions,
   useInvalidateExamQueries,
+  useExamCacheStatus,
+  usePreloadQuestionsToCache,
   examQueryKeys,
 } from './useExamApi';
 

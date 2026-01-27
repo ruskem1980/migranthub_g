@@ -1754,7 +1754,8 @@
       "cancel": "Cancel",
       "error": "Error",
       "tryAgain": "Try Again",
-      "testPaused": "Test paused. Press resume to continue."
+      "testPaused": "Test paused. Press resume to continue.",
+      "loadError": "Failed to load questions"
     },
     "question": {
       "correct": "Correct!",

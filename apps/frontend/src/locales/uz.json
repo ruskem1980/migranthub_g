@@ -1785,7 +1785,8 @@
       "cancel": "Bekor qilish",
       "error": "Xato",
       "tryAgain": "Qaytadan urinib ko'ring",
-      "testPaused": "Test to'xtatildi. Davom ettirish uchun bosing."
+      "testPaused": "Test to'xtatildi. Davom ettirish uchun bosing.",
+      "loadError": "Savollarni yuklab bo'lmadi"
     },
     "question": {
       "correct": "To'g'ri!",

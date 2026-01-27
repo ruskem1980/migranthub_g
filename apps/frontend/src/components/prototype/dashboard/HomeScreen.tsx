@@ -930,69 +930,10 @@ export function HomeScreen() {
               ))}
             </div>
 
-            {/* AI Translation Option */}
-            <div className="pt-4 border-t-2 border-gray-200">
-              <button
-                onClick={() => setShowAILanguages(!showAILanguages)}
-                className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200 rounded-xl hover:from-purple-100 hover:to-blue-100 transition-all"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                    <Globe className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-semibold text-gray-900">🌍 {t('languages.otherLanguages')}</p>
-                    <p className="text-xs text-gray-600">{t('languages.aiTranslation')}</p>
-                  </div>
-                </div>
-                <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${showAILanguages ? 'rotate-90' : ''}`} />
-              </button>
-
-              {/* AI Languages List */}
-              {showAILanguages && (
-                <div className="mt-3 space-y-2 pl-4">
-                  {[
-                    { code: 'en', flag: '🇬🇧', name: 'English' },
-                    { code: 'ar', flag: '🇸🇦', name: 'العربية' },
-                    { code: 'fa', flag: '🇮🇷', name: 'فارسی' },
-                    { code: 'tr', flag: '🇹🇷', name: 'Türkçe' },
-                    { code: 'hi', flag: '🇮🇳', name: 'हिन्दी' },
-                    { code: 'zh', flag: '🇨🇳', name: '中文' },
-                    { code: 'vi', flag: '🇻🇳', name: 'Tiếng Việt' },
-                    { code: 'am', flag: '🇦🇲', name: 'Հայերեն' },
-                    { code: 'az', flag: '🇦🇿', name: 'Azərbaycan' },
-                    { code: 'ka', flag: '🇬🇪', name: 'ქართული' },
-                  ].map((lang) => (
-                    <div
-                      key={lang.code}
-                      className="w-full flex items-center justify-between p-3 rounded-lg border bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">{lang.flag}</span>
-                        <span className="text-sm font-medium text-gray-500">{lang.name}</span>
-                      </div>
-                      <span className="text-xs text-gray-400 font-medium">{t('common.comingSoon')}</span>
-                    </div>
-                  ))}
-
-                  <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                    <div className="flex items-start gap-2">
-                      <Globe className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" />
-                      <p className="text-xs text-purple-800 leading-relaxed">
-                        {t('languages.aiNote')}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
 
             {/* Close Button */}
             <button
-              onClick={() => {
-                setShowLanguageModal(false);
-                setShowAILanguages(false);
-              }}
+              onClick={() => setShowLanguageModal(false)}
               className="w-full mt-6 bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition-colors"
             >
               {t('common.close')}

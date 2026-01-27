@@ -11,7 +11,9 @@ import {
   ExamResultDto,
   ExamProgressDto,
   ExamStatisticsDto,
+  CategoryResultDto,
 } from './dto';
+import { allQuestions, questionsByCategory, questionCounts } from './data';
 
 @Injectable()
 export class ExamService {
@@ -31,21 +33,21 @@ export class ExamService {
         id: QuestionCategory.RUSSIAN_LANGUAGE,
         name: 'Русский язык',
         description: 'Вопросы по русскому языку для экзамена',
-        totalQuestions: 0,
+        totalQuestions: questionCounts[QuestionCategory.RUSSIAN_LANGUAGE],
         icon: 'book',
       },
       {
         id: QuestionCategory.HISTORY,
         name: 'История России',
         description: 'Вопросы по истории России',
-        totalQuestions: 0,
-        icon: 'history',
+        totalQuestions: questionCounts[QuestionCategory.HISTORY],
+        icon: 'landmark',
       },
       {
         id: QuestionCategory.LAW,
         name: 'Основы законодательства',
         description: 'Вопросы по законодательству РФ',
-        totalQuestions: 0,
+        totalQuestions: questionCounts[QuestionCategory.LAW],
         icon: 'scale',
       },
     ];
@@ -56,33 +58,114 @@ export class ExamService {
    */
   getQuestions(query: GetQuestionsQueryDto): QuestionDto[] {
     this.logger.log(`Getting questions with query: ${JSON.stringify(query)}`);
-    // TODO: Implement question fetching from data source
-    // This is a stub - questions will be added in a separate task
-    return [];
+
+    const { category, count = 20, difficulty } = query;
+
+    // 1. Выбираем базовый набор вопросов
+    let questions: QuestionDto[] = category
+      ? [...questionsByCategory[category]]
+      : [...allQuestions];
+
+    // 2. Фильтруем по сложности (если указана)
+    if (difficulty) {
+      questions = questions.filter((q) => q.difficulty === difficulty);
+    }
+
+    // 3. Перемешиваем (Fisher-Yates shuffle)
+    for (let i = questions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [questions[i], questions[j]] = [questions[j], questions[i]];
+    }
+
+    // 4. Ограничиваем количество
+    const result = questions.slice(0, Math.min(count, questions.length));
+
+    this.logger.log(`Returning ${result.length} questions`);
+    return result;
   }
 
   /**
    * Submit exam answers and calculate results
    */
-  async submitExam(deviceId: string, dto: SubmitExamDto): Promise<ExamResultDto> {
-    this.logger.log(`Submitting exam for device: ${deviceId}, mode: ${dto.mode}`);
+  async submitExam(
+    deviceId: string,
+    dto: SubmitExamDto,
+  ): Promise<ExamResultDto> {
+    this.logger.log(
+      `Submitting exam for device: ${deviceId}, mode: ${dto.mode}, answers: ${dto.answers.length}`,
+    );
 
-    // TODO: Implement actual answer checking against questions
-    // This is a stub implementation
     const totalQuestions = dto.answers.length;
-    const correctAnswers = 0; // Will be calculated when questions are added
-    const percentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
 
-    // Update progress
-    await this.updateProgress(deviceId, dto, correctAnswers);
+    // 1. Проверяем каждый ответ
+    const answersWithResults = dto.answers.map((answer) => {
+      const question = this.findQuestionById(answer.questionId);
+      if (!question) {
+        this.logger.warn(`Question not found: ${answer.questionId}`);
+        return {
+          ...answer,
+          isCorrect: false,
+          category: null as string | null,
+        };
+      }
+      return {
+        ...answer,
+        isCorrect: question.correctIndex === answer.selectedIndex,
+        category: question.category as string | null,
+      };
+    });
+
+    // 2. Считаем правильные ответы
+    const correctAnswers = answersWithResults.filter((a) => a.isCorrect).length;
+    const percentage =
+      totalQuestions > 0
+        ? Math.round((correctAnswers / totalQuestions) * 100)
+        : 0;
+
+    // 3. Группируем по категориям
+    const categoryResults: Record<string, { total: number; correct: number }> =
+      {};
+
+    for (const answer of answersWithResults) {
+      if (!answer.category) continue;
+
+      if (!categoryResults[answer.category]) {
+        categoryResults[answer.category] = { total: 0, correct: 0 };
+      }
+      categoryResults[answer.category].total += 1;
+      if (answer.isCorrect) {
+        categoryResults[answer.category].correct += 1;
+      }
+    }
+
+    // 4. Формируем результаты по категориям
+    const byCategory: CategoryResultDto[] = Object.entries(categoryResults).map(
+      ([category, data]) => ({
+        category,
+        total: data.total,
+        correct: data.correct,
+        percentage:
+          data.total > 0
+            ? Math.round((data.correct / data.total) * 100)
+            : 0,
+      }),
+    );
+
+    // 5. Определяем слабые темы (< 70%)
+    const weakTopics = byCategory
+      .filter((cat) => cat.percentage < 70)
+      .map((cat) => cat.category);
+
+    // 6. Обновляем прогресс пользователя
+    await this.updateProgress(deviceId, dto, correctAnswers, byCategory);
 
     return {
       totalQuestions,
       correctAnswers,
       percentage,
       passed: percentage >= 70,
-      byCategory: [],
-      weakTopics: [],
+      byCategory,
+      weakTopics,
       timeSpentSeconds: dto.timeSpentSeconds,
     };
   }
@@ -155,6 +238,13 @@ export class ExamService {
   }
 
   /**
+   * Find question by ID in the question database
+   */
+  private findQuestionById(questionId: string): QuestionDto | undefined {
+    return allQuestions.find((q) => q.id === questionId);
+  }
+
+  /**
    * Get or create progress record for device
    */
   private async getOrCreateProgress(deviceId: string): Promise<ExamProgress> {
@@ -187,12 +277,13 @@ export class ExamService {
     deviceId: string,
     dto: SubmitExamDto,
     correctAnswers: number,
+    byCategory: CategoryResultDto[],
   ): Promise<void> {
     const progress = await this.getOrCreateProgress(deviceId);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Update streak
+    // Логика streak
     if (progress.lastActivityDate) {
       const lastActivity = new Date(progress.lastActivityDate);
       lastActivity.setHours(0, 0, 0, 0);
@@ -211,7 +302,16 @@ export class ExamService {
 
     progress.lastActivityDate = today;
 
-    // Update test statistics
+    // Обновляем прогресс по категориям
+    for (const cat of byCategory) {
+      if (!progress.categoryProgress[cat.category]) {
+        progress.categoryProgress[cat.category] = { answered: 0, correct: 0 };
+      }
+      progress.categoryProgress[cat.category].answered += cat.total;
+      progress.categoryProgress[cat.category].correct += cat.correct;
+    }
+
+    // Обновляем статистику для режима exam
     const percentage =
       dto.answers.length > 0
         ? Math.round((correctAnswers / dto.answers.length) * 100)
@@ -223,19 +323,19 @@ export class ExamService {
         progress.bestScore = percentage;
       }
 
-      // Add to recent results (keep last 20)
       progress.recentResults = [
         { date: today.toISOString().split('T')[0], score: percentage },
         ...progress.recentResults,
       ].slice(0, 20);
     }
 
-    // Add answered question IDs
+    // Добавление ID отвеченных вопросов
     const newQuestionIds = dto.answers.map((a) => a.questionId);
     progress.answeredQuestionIds = [
       ...new Set([...progress.answeredQuestionIds, ...newQuestionIds]),
     ];
 
     await this.examProgressRepository.save(progress);
+    this.logger.log(`Progress updated for device: ${deviceId}`);
   }
 }
