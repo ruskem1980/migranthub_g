@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { Toast } from '@/components/ui/Toast';
 
 describe('Toast', () => {
@@ -90,7 +90,9 @@ describe('Toast', () => {
     fireEvent.click(dismissButton);
 
     // Should wait for animation before calling onDismiss
-    jest.advanceTimersByTime(200);
+    act(() => {
+      jest.advanceTimersByTime(200);
+    });
 
     expect(onDismiss).toHaveBeenCalledWith('toast-1');
   });
@@ -100,10 +102,14 @@ describe('Toast', () => {
     render(<Toast {...defaultProps} onDismiss={onDismiss} />);
 
     // Fast-forward time
-    jest.advanceTimersByTime(5000);
+    act(() => {
+      jest.advanceTimersByTime(5000);
+    });
 
     // Should wait for animation
-    jest.advanceTimersByTime(200);
+    act(() => {
+      jest.advanceTimersByTime(200);
+    });
 
     expect(onDismiss).toHaveBeenCalledWith('toast-1');
   });
@@ -113,10 +119,14 @@ describe('Toast', () => {
     render(<Toast {...defaultProps} onDismiss={onDismiss} duration={3000} />);
 
     // Fast-forward time
-    jest.advanceTimersByTime(3000);
+    act(() => {
+      jest.advanceTimersByTime(3000);
+    });
 
     // Should wait for animation
-    jest.advanceTimersByTime(200);
+    act(() => {
+      jest.advanceTimersByTime(200);
+    });
 
     expect(onDismiss).toHaveBeenCalledWith('toast-1');
   });
