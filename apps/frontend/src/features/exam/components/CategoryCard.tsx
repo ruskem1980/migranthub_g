@@ -50,6 +50,7 @@ export function CategoryCard({
   totalQuestions,
   onClick,
 }: CategoryCardProps) {
+  const { t } = useTranslation();
   const config = categoryConfig[category];
   const Icon = config.icon;
 
@@ -81,7 +82,7 @@ export function CategoryCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-base font-semibold text-gray-900 truncate">
-                {config.title}
+                {t(config.titleKey)}
               </h3>
               <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
             </div>
@@ -89,7 +90,7 @@ export function CategoryCard({
             {/* Stats */}
             <div className="mt-1 flex items-center gap-3 text-sm text-gray-500">
               <span>
-                {progress.answered}/{totalQuestions} вопросов
+                {progress.answered}/{totalQuestions} {t('exam.categoryCard.questions')}
               </span>
               {progress.answered > 0 && (
                 <span
@@ -101,7 +102,7 @@ export function CategoryCard({
                         : 'text-red-600'
                   }`}
                 >
-                  {percentage}% верно
+                  {percentage}% {t('exam.categoryCard.correct')}
                 </span>
               )}
             </div>
