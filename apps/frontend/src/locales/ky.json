@@ -1746,6 +1746,14 @@
       "law": "Мыйзамдар",
       "questions": "суроо",
       "correct": "туура"
+    },
+    "start": {
+      "title": "Тест жөндөөлөрү",
+      "back": "Артка",
+      "selectCategory": "Категорияны тандаңыз",
+      "selectCount": "Суроолордун саны",
+      "allCategories": "Бардык категориялар",
+      "startButton": "Тестти баштоо"
     }
   }
 }

@@ -1801,6 +1801,14 @@
       "law": "Legislation",
       "questions": "questions",
       "correct": "correct"
+    },
+    "start": {
+      "title": "Test Setup",
+      "back": "Back",
+      "selectCategory": "Select Category",
+      "selectCount": "Number of Questions",
+      "allCategories": "All Categories",
+      "startButton": "Start Test"
     }
   }
 }

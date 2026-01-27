@@ -1832,6 +1832,14 @@
       "law": "Qonunchilik",
       "questions": "savollar",
       "correct": "to'g'ri"
+    },
+    "start": {
+      "title": "Test sozlamalari",
+      "back": "Orqaga",
+      "selectCategory": "Kategoriyani tanlang",
+      "selectCount": "Savollar soni",
+      "allCategories": "Barcha kategoriyalar",
+      "startButton": "Testni boshlash"
     }
   }
 }

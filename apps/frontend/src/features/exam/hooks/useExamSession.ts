@@ -17,6 +17,7 @@ import type {
   Question,
   ExamResult,
   SessionSummary,
+  Answer,
 } from '../types';
 
 interface UseExamSessionOptions {
@@ -37,6 +38,7 @@ interface UseExamSessionReturn {
   isFirstQuestion: boolean;
   isLastQuestion: boolean;
   hasAnswer: boolean;
+  currentAnswer: Answer | null;
   timeRemaining: number | null; // в секундах
   timeSpent: number; // в секундах
 
@@ -272,6 +274,7 @@ export function useExamSession(
     isFirstQuestion,
     isLastQuestion,
     hasAnswer: !!currentAnswer,
+    currentAnswer,
     timeRemaining,
     timeSpent,
 
