@@ -11,6 +11,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { useBackButtonHandler } from '@/hooks/useBackButton';
 
 export type SheetSnapPoint = 'half' | 'full';
 
@@ -41,6 +42,15 @@ export function Sheet({
   const [dragOffset, setDragOffset] = useState(0);
   const startY = useRef(0);
   const currentY = useRef(0);
+
+  // Close sheet on Android back button
+  useBackButtonHandler(() => {
+    if (isOpen) {
+      onClose();
+      return true;
+    }
+    return false;
+  }, [isOpen, onClose]);
 
   // Lock body scroll when sheet is open
   useEffect(() => {

@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { useBackButtonHandler } from '@/hooks/useBackButton';
 
 export type ModalSize = 'sm' | 'md' | 'lg' | 'full';
 
@@ -39,6 +40,15 @@ export function Modal({
   closeOnEscape = true,
   showCloseButton = true,
 }: ModalProps) {
+  // Close modal on Android back button
+  useBackButtonHandler(() => {
+    if (isOpen) {
+      onClose();
+      return true;
+    }
+    return false;
+  }, [isOpen, onClose]);
+
   // Lock body scroll when modal is open
   useEffect(() => {
     if (isOpen) {

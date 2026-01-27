@@ -8,6 +8,7 @@ import { useDeepLinks } from '@/lib/hooks/useDeepLinks';
 import { NotificationProvider } from '@/lib/hooks/useNotifications';
 import { useTranslation } from '@/lib/i18n';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useBackButton } from '@/hooks/useBackButton';
 
 function AppInitializer({ children }: { children: ReactNode }) {
   // Register service worker
@@ -18,6 +19,9 @@ function AppInitializer({ children }: { children: ReactNode }) {
 
   // Initialize deep links handler
   useDeepLinks();
+
+  // Initialize back button handler for Android
+  useBackButton({ confirmExit: true });
 
   // Translations
   const { t, language } = useTranslation();

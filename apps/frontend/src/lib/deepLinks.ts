@@ -1,6 +1,14 @@
 'use client';
 
-export type DeepLinkRoute = 'home' | 'documents' | 'calculator' | 'profile' | 'settings';
+export type DeepLinkRoute =
+  | 'home'
+  | 'documents'
+  | 'calculator'
+  | 'profile'
+  | 'settings'
+  | 'services'
+  | 'reference'
+  | 'recovery';
 
 export interface ParsedDeepLink {
   route: DeepLinkRoute | null;
@@ -16,6 +24,9 @@ const ROUTE_MAP: Record<string, DeepLinkRoute> = {
   calculator: 'calculator',
   profile: 'profile',
   settings: 'settings',
+  services: 'services',
+  reference: 'reference',
+  recovery: 'recovery',
 };
 
 const ROUTE_TO_PATH: Record<DeepLinkRoute, string> = {
@@ -24,6 +35,9 @@ const ROUTE_TO_PATH: Record<DeepLinkRoute, string> = {
   calculator: '/calculator',
   profile: '/profile',
   settings: '/settings',
+  services: '/services',
+  reference: '/reference',
+  recovery: '/auth/recovery',
 };
 
 export function parseDeepLink(url: string): ParsedDeepLink {
@@ -42,9 +56,15 @@ export function parseDeepLink(url: string): ParsedDeepLink {
     const withoutScheme = url.replace(`${SCHEME}://`, '');
     const [pathPart, queryPart] = withoutScheme.split('?');
 
-    // Extract route
-    const routeKey = pathPart.split('/')[0].toLowerCase();
+    // Extract route and path segments
+    const pathSegments = pathPart.split('/').filter(Boolean);
+    const routeKey = pathSegments[0]?.toLowerCase();
     result.route = ROUTE_MAP[routeKey] || null;
+
+    // Extract path params (e.g., documents/{id})
+    if (pathSegments.length > 1) {
+      result.params.id = pathSegments[1];
+    }
 
     // Extract query params
     if (queryPart) {
