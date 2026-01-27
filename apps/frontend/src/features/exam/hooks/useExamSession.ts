@@ -165,6 +165,20 @@ export function useExamSession(
     }
   }, [questions, pendingStart, options.timeLimit, storeStartSession]);
 
+  // Handle questions error or empty result
+  useEffect(() => {
+    if (pendingStart && !questionsLoading) {
+      // Error occurred
+      if (questionsError) {
+        setPendingStart(null);
+      }
+      // Questions loaded but empty
+      if (questions && questions.length === 0) {
+        setPendingStart(null);
+      }
+    }
+  }, [pendingStart, questionsLoading, questionsError, questions]);
+
   // Start session
   const startSession = useCallback(
     async (

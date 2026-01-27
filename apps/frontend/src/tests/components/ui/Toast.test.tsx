@@ -136,7 +136,9 @@ describe('Toast', () => {
     render(<Toast {...defaultProps} onDismiss={onDismiss} duration={0} />);
 
     // Fast-forward time beyond default duration
-    jest.advanceTimersByTime(10000);
+    act(() => {
+      jest.advanceTimersByTime(10000);
+    });
 
     expect(onDismiss).not.toHaveBeenCalled();
   });
@@ -154,7 +156,9 @@ describe('Toast', () => {
     unmount();
 
     // Fast-forward time
-    jest.advanceTimersByTime(6000);
+    act(() => {
+      jest.advanceTimersByTime(6000);
+    });
 
     // onDismiss should not be called after unmount
     expect(onDismiss).not.toHaveBeenCalled();
