@@ -1786,6 +1786,20 @@
       "categories": "Categories",
       "tip": "Preparation Tip",
       "tipText": "Start with Learning mode to study the material with hints. Then reinforce your knowledge in Practice."
+    },
+    "progress": {
+      "answered": "Answered",
+      "correct": "Correct",
+      "previous": "Previous question",
+      "next": "Next question",
+      "outOf": "of"
+    },
+    "categoryCard": {
+      "russian": "Russian Language",
+      "history": "History of Russia",
+      "law": "Legislation",
+      "questions": "questions",
+      "correct": "correct"
     }
   }
 }

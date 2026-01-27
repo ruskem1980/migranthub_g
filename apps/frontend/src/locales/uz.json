@@ -1817,6 +1817,20 @@
       "categories": "Kategoriyalar",
       "tip": "Tayyorgarlik uchun maslahat",
       "tipText": "Materialni maslahatlar bilan o'rganish uchun «O'qish» rejimidan boshlang. Keyin «Mashq»da bilimingizni mustahkamlang."
+    },
+    "progress": {
+      "answered": "Javob berildi",
+      "correct": "To'g'ri",
+      "previous": "Oldingi savol",
+      "next": "Keyingi savol",
+      "outOf": "dan"
+    },
+    "categoryCard": {
+      "russian": "Rus tili",
+      "history": "Rossiya tarixi",
+      "law": "Qonunchilik",
+      "questions": "savollar",
+      "correct": "to'g'ri"
     }
   }
 }

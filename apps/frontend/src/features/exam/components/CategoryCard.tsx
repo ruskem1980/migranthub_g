@@ -2,12 +2,13 @@
 
 import { Languages, Book, Scale, ChevronRight } from 'lucide-react';
 import type { QuestionCategory, CategoryProgress } from '../types';
+import { useTranslation } from '@/lib/i18n';
 
 const categoryConfig: Record<
   QuestionCategory,
   {
     icon: React.ComponentType<{ className?: string }>;
-    title: string;
+    titleKey: string;
     color: string;
     bgColor: string;
     progressColor: string;
@@ -15,21 +16,21 @@ const categoryConfig: Record<
 > = {
   russian_language: {
     icon: Languages,
-    title: 'Русский язык',
+    titleKey: 'exam.categoryCard.russian',
     color: 'text-blue-600',
     bgColor: 'bg-blue-50',
     progressColor: 'bg-blue-500',
   },
   history: {
     icon: Book,
-    title: 'История России',
+    titleKey: 'exam.categoryCard.history',
     color: 'text-amber-600',
     bgColor: 'bg-amber-50',
     progressColor: 'bg-amber-500',
   },
   law: {
     icon: Scale,
-    title: 'Законодательство',
+    titleKey: 'exam.categoryCard.law',
     color: 'text-emerald-600',
     bgColor: 'bg-emerald-50',
     progressColor: 'bg-emerald-500',

@@ -2,6 +2,7 @@
 
 import { Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { QuestionCategory } from '../types';
+import { useTranslation } from '@/lib/i18n';
 
 interface ProgressBarProps {
   currentQuestion: number;
@@ -44,6 +45,7 @@ export function ProgressBar({
   canGoPrevious = true,
   canGoNext = true,
 }: ProgressBarProps) {
+  const { t } = useTranslation();
   const progressPercent = ((currentQuestion + 1) / totalQuestions) * 100;
   const answeredPercent = (answeredCount / totalQuestions) * 100;
   const correctPercent = answeredCount > 0 ? (correctCount / answeredCount) * 100 : 0;
@@ -75,20 +77,20 @@ export function ProgressBar({
             onClick={onPrevious}
             disabled={!canGoPrevious}
             className="p-1.5 rounded-lg hover:bg-gray-100 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-            aria-label="Предыдущий вопрос"
+            aria-label={t('exam.progress.previous')}
           >
             <ChevronLeft className="w-5 h-5 text-gray-600" />
           </button>
 
           <span className="text-sm font-medium text-gray-900 min-w-[80px] text-center">
-            {currentQuestion + 1} из {totalQuestions}
+            {currentQuestion + 1} {t('exam.progress.outOf')} {totalQuestions}
           </span>
 
           <button
             onClick={onNext}
             disabled={!canGoNext}
             className="p-1.5 rounded-lg hover:bg-gray-100 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-            aria-label="Следующий вопрос"
+            aria-label={t('exam.progress.next')}
           >
             <ChevronRight className="w-5 h-5 text-gray-600" />
           </button>
@@ -97,11 +99,11 @@ export function ProgressBar({
         {/* Center: Stats */}
         <div className="flex items-center gap-3 text-xs text-gray-500">
           <span>
-            Отвечено: <span className="font-medium text-gray-700">{answeredCount}</span>
+            {t('exam.progress.answered')}: <span className="font-medium text-gray-700">{answeredCount}</span>
           </span>
           {answeredCount > 0 && (
             <span>
-              Верно:{' '}
+              {t('exam.progress.correct')}:{' '}
               <span
                 className={`font-medium ${
                   correctPercent >= 70
