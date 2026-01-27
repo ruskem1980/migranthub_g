@@ -114,7 +114,7 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
         <div className="flex items-center gap-2">
           <GraduationCap className="w-6 h-6 text-emerald-600" />
           <h1 className="text-lg font-bold text-gray-900">
-            Подготовка к экзамену
+            {t('exam.title')}
           </h1>
         </div>
       </div>
@@ -130,7 +130,7 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
             <div className="text-xl font-bold text-gray-900">
               {stats.totalAnswered}
             </div>
-            <div className="text-xs text-gray-500">Вопросов</div>
+            <div className="text-xs text-gray-500">{t('exam.stats.questions')}</div>
           </div>
 
           <div className="bg-white rounded-xl p-3 border border-gray-200 text-center">
