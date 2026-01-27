@@ -15,6 +15,10 @@ import type {
   PatentRegionsResponse,
   HealthResponse,
   AuthTokens,
+  CategoryDto,
+  LawDto,
+  FormDto,
+  FaqItemDto,
 } from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
@@ -288,6 +292,30 @@ export const utilitiesApi = {
 // Health API
 export const healthApi = {
   check: () => apiClient.get<HealthResponse>('/health', { skipAuth: true }),
+};
+
+// Legal API
+export const legalApi = {
+  getCategories: () =>
+    apiClient.get<CategoryDto[]>('/legal/categories', { skipAuth: true }),
+
+  getLaws: (categoryId?: string, search?: string) => {
+    const params = new URLSearchParams();
+    if (categoryId) params.append('categoryId', categoryId);
+    if (search) params.append('search', search);
+    const query = params.toString();
+    return apiClient.get<LawDto[]>(`/legal/laws${query ? `?${query}` : ''}`, { skipAuth: true });
+  },
+
+  getForms: (categoryId?: string) => {
+    const query = categoryId ? `?categoryId=${categoryId}` : '';
+    return apiClient.get<FormDto[]>(`/legal/forms${query}`, { skipAuth: true });
+  },
+
+  getFaq: (categoryId?: string) => {
+    const query = categoryId ? `?categoryId=${categoryId}` : '';
+    return apiClient.get<FaqItemDto[]>(`/legal/faq${query}`, { skipAuth: true });
+  },
 };
 
 export { API_BASE_URL };

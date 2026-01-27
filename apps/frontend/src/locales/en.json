@@ -557,8 +557,12 @@
       "private": "Private visit",
       "privateSubtitle": "Guests",
       "business": "Business visit",
+      "businessSubtitle": "Negotiations, business",
+      "official": "Official",
+      "officialSubtitle": "Delegations",
       "treatment": "Medical treatment",
       "transit": "Transit",
+      "transitSubtitle": "Passing through Russia",
       "other": "Other"
     },
     "settings": {
@@ -1541,6 +1545,22 @@
       "patent": "Patent",
       "patentDeadline": "Deadline: 30 days, Fine: 5000 RUB"
     }
+  },
+  "reference": {
+    "title": "Legal Reference",
+    "tabs": {
+      "categories": "Categories",
+      "laws": "Laws",
+      "forms": "Forms",
+      "faq": "FAQ"
+    },
+    "searchPlaceholder": "Search laws...",
+    "allCategories": "All categories",
+    "noLaws": "No laws found",
+    "noForms": "No forms found",
+    "noFaq": "No questions found",
+    "openDocument": "Open document",
+    "download": "Download"
   },
   "docgen": {
     "title": "Document generator",

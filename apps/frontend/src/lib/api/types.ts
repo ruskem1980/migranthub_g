@@ -90,3 +90,41 @@ export interface HealthResponse {
   timestamp: string;
   version: string;
 }
+
+// Legal Types
+export interface CategoryDto {
+  id: string;
+  name: string;
+  nameEn: string;
+  description: string;
+  icon: string;
+  order: number;
+}
+
+export interface LawDto {
+  id: string;
+  categoryId: string;
+  title: string;
+  number: string;
+  date: string;
+  url: string;
+  summary: string;
+}
+
+export interface FormDto {
+  id: string;
+  categoryId: string;
+  title: string;
+  description: string;
+  fileUrl: string;
+  format: string;
+  size?: string;
+}
+
+export interface FaqItemDto {
+  id: string;
+  categoryId: string;
+  question: string;
+  answer: string;
+  order: number;
+}

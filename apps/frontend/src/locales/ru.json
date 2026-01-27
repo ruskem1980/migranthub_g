@@ -1546,6 +1546,22 @@
       "patentDeadline": "Срок: 30 дней, Штраф: 5000₽"
     }
   },
+  "reference": {
+    "title": "Справочник законов",
+    "tabs": {
+      "categories": "Категории",
+      "laws": "Законы",
+      "forms": "Формы",
+      "faq": "FAQ"
+    },
+    "searchPlaceholder": "Поиск по законам...",
+    "allCategories": "Все категории",
+    "noLaws": "Законы не найдены",
+    "noForms": "Формы не найдены",
+    "noFaq": "Вопросы не найдены",
+    "openDocument": "Открыть документ",
+    "download": "Скачать"
+  },
   "docgen": {
     "title": "Генератор документов",
     "subtitle": "Автозаполнение форм",

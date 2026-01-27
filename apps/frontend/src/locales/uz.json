@@ -1546,6 +1546,22 @@
       "patentDeadline": "Muddat: 30 kun, Jarima: 5000₽"
     }
   },
+  "reference": {
+    "title": "Qonunlar ma'lumotnomasi",
+    "tabs": {
+      "categories": "Kategoriyalar",
+      "laws": "Qonunlar",
+      "forms": "Formalar",
+      "faq": "FAQ"
+    },
+    "searchPlaceholder": "Qonunlarni qidirish...",
+    "allCategories": "Barcha kategoriyalar",
+    "noLaws": "Qonunlar topilmadi",
+    "noForms": "Formalar topilmadi",
+    "noFaq": "Savollar topilmadi",
+    "openDocument": "Hujjatni ochish",
+    "download": "Yuklab olish"
+  },
   "docgen": {
     "title": "Hujjat generatori",
     "subtitle": "Formalarni avtomatik to'ldirish",
