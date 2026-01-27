@@ -2,17 +2,27 @@ import request from 'supertest';
 import { getTestApp } from './setup';
 
 describe('UsersController (e2e)', () => {
-  const generateDeviceId = () => `test-device-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  // Generate UUID-like deviceId (36+ characters required)
+  const generateDeviceId = () =>
+    `${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`;
+
+  const authPayload = (
+    deviceId: string,
+    platform: 'ios' | 'android' | 'web' = 'ios',
+  ) => ({
+    deviceId,
+    platform,
+    appVersion: '1.0.0',
+  });
 
   let accessToken: string;
-  let deviceId: string;
 
   beforeAll(async () => {
-    deviceId = generateDeviceId();
+    const deviceId = generateDeviceId();
 
     const auth = await request(getTestApp().getHttpServer())
       .post('/api/v1/auth/device')
-      .send({ deviceId, platform: 'ios' });
+      .send(authPayload(deviceId, 'ios'));
 
     accessToken = auth.body.accessToken;
   });
@@ -25,8 +35,10 @@ describe('UsersController (e2e)', () => {
         .expect(200);
 
       expect(response.body).toHaveProperty('id');
-      expect(response.body).toHaveProperty('deviceId');
-      expect(response.body.deviceId).toBe(deviceId);
+      expect(response.body).toHaveProperty('settings');
+      expect(response.body.settings).toHaveProperty('locale');
+      expect(response.body).toHaveProperty('subscriptionType');
+      expect(response.body).toHaveProperty('createdAt');
     });
 
     it('should reject request without auth', async () => {
@@ -44,24 +56,51 @@ describe('UsersController (e2e)', () => {
   });
 
   describe('PATCH /api/v1/users/me', () => {
-    it('should update user profile', async () => {
+    it('should update user settings', async () => {
       const response = await request(getTestApp().getHttpServer())
         .patch('/api/v1/users/me')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          preferredLanguage: 'ru',
+          settings: {
+            locale: 'uz',
+          },
         })
         .expect(200);
 
-      expect(response.body).toHaveProperty('preferredLanguage', 'ru');
+      expect(response.body).toHaveProperty('settings');
+      expect(response.body.settings).toHaveProperty('locale', 'uz');
     });
 
-    it('should reject invalid data', async () => {
+    it('should update user citizenship', async () => {
+      const response = await request(getTestApp().getHttpServer())
+        .patch('/api/v1/users/me')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          citizenshipCode: 'UZB',
+        })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('citizenshipCode', 'UZB');
+    });
+
+    it('should update entry date', async () => {
+      const response = await request(getTestApp().getHttpServer())
+        .patch('/api/v1/users/me')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          entryDate: '2024-01-15',
+        })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('entryDate');
+    });
+
+    it('should reject invalid citizenship code length', async () => {
       await request(getTestApp().getHttpServer())
         .patch('/api/v1/users/me')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
-          preferredLanguage: 'invalid-language',
+          citizenshipCode: 'US', // Should be 3 characters
         })
         .expect(400);
     });
@@ -73,7 +112,7 @@ describe('UsersController (e2e)', () => {
         .post('/api/v1/users/calculate')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({ entryDate: '2024-01-15' })
-        .expect(200);
+        .expect(201); // POST returns 201 by default in NestJS
 
       expect(response.body).toHaveProperty('registration');
       expect(response.body).toHaveProperty('stay90Days');
@@ -94,7 +133,7 @@ describe('UsersController (e2e)', () => {
           patentDate: '2024-02-01',
           purpose: 'work',
         })
-        .expect(200);
+        .expect(201);
 
       expect(response.body).toHaveProperty('patentPayment');
       expect(response.body.patentPayment).toHaveProperty('date');
@@ -123,35 +162,70 @@ describe('UsersController (e2e)', () => {
       const newDeviceId = generateDeviceId();
       const auth = await request(getTestApp().getHttpServer())
         .post('/api/v1/auth/device')
-        .send({ deviceId: newDeviceId, platform: 'android' });
+        .send(authPayload(newDeviceId, 'android'));
 
       const response = await request(getTestApp().getHttpServer())
         .post('/api/v1/users/onboarding/complete')
         .set('Authorization', `Bearer ${auth.body.accessToken}`)
         .send({
-          citizenship: 'TJ',
+          citizenshipCode: 'TJK', // 3-letter ISO code
           entryDate: '2024-01-15',
           purpose: 'work',
-          preferredLanguage: 'tg',
         })
-        .expect(200);
+        .expect(201); // POST returns 201 by default in NestJS
 
-      expect(response.body).toHaveProperty('onboardingCompleted', true);
-      expect(response.body).toHaveProperty('citizenship', 'TJ');
+      expect(response.body).toHaveProperty('onboardingCompletedAt');
+      expect(response.body.onboardingCompletedAt).not.toBeNull();
+      expect(response.body).toHaveProperty('citizenshipCode', 'TJK');
+      expect(response.body).toHaveProperty('visitPurpose', 'work');
     });
 
     it('should reject incomplete onboarding data', async () => {
       const newDeviceId = generateDeviceId();
       const auth = await request(getTestApp().getHttpServer())
         .post('/api/v1/auth/device')
-        .send({ deviceId: newDeviceId, platform: 'ios' });
+        .send(authPayload(newDeviceId, 'ios'));
 
       await request(getTestApp().getHttpServer())
         .post('/api/v1/users/onboarding/complete')
         .set('Authorization', `Bearer ${auth.body.accessToken}`)
         .send({
-          citizenship: 'TJ',
-          // missing required fields
+          citizenshipCode: 'UZB',
+          // missing entryDate and purpose
+        })
+        .expect(400);
+    });
+
+    it('should reject invalid citizenship code', async () => {
+      const newDeviceId = generateDeviceId();
+      const auth = await request(getTestApp().getHttpServer())
+        .post('/api/v1/auth/device')
+        .send(authPayload(newDeviceId, 'ios'));
+
+      await request(getTestApp().getHttpServer())
+        .post('/api/v1/users/onboarding/complete')
+        .set('Authorization', `Bearer ${auth.body.accessToken}`)
+        .send({
+          citizenshipCode: 'US', // Should be 3 characters
+          entryDate: '2024-01-15',
+          purpose: 'work',
+        })
+        .expect(400);
+    });
+
+    it('should reject invalid purpose', async () => {
+      const newDeviceId = generateDeviceId();
+      const auth = await request(getTestApp().getHttpServer())
+        .post('/api/v1/auth/device')
+        .send(authPayload(newDeviceId, 'ios'));
+
+      await request(getTestApp().getHttpServer())
+        .post('/api/v1/users/onboarding/complete')
+        .set('Authorization', `Bearer ${auth.body.accessToken}`)
+        .send({
+          citizenshipCode: 'UZB',
+          entryDate: '2024-01-15',
+          purpose: 'invalid_purpose', // Invalid enum value
         })
         .expect(400);
     });
@@ -163,7 +237,7 @@ describe('UsersController (e2e)', () => {
       const newDeviceId = generateDeviceId();
       const auth = await request(getTestApp().getHttpServer())
         .post('/api/v1/auth/device')
-        .send({ deviceId: newDeviceId, platform: 'ios' });
+        .send(authPayload(newDeviceId, 'ios'));
 
       await request(getTestApp().getHttpServer())
         .delete('/api/v1/users/account')
