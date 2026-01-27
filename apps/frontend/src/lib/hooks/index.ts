@@ -8,3 +8,4 @@ export {
   NotificationProvider,
   type NotificationPermission,
 } from './useNotifications';
+export { useOfflineQueue, type UseOfflineQueueReturn } from '../../hooks/useOfflineQueue';

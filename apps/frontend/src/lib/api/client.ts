@@ -1,6 +1,8 @@
 'use client';
 
 import { tokenStorage } from './storage';
+import { offlineQueue } from '../sync/offlineQueue';
+import type { QueueableMethod } from '../sync/types';
 import type {
   ApiError,
   AuthResponse,
@@ -20,6 +22,19 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/a
 interface RequestConfig extends RequestInit {
   timeout?: number;
   skipAuth?: boolean;
+  /** Название операции для отображения в очереди */
+  offlineAction?: string;
+  /** Пропустить сохранение в offline queue */
+  skipOfflineQueue?: boolean;
+}
+
+/** Методы, которые сохраняются в offline queue */
+const QUEUEABLE_METHODS: QueueableMethod[] = ['POST', 'PATCH', 'PUT', 'DELETE'];
+
+/** Результат offline запроса */
+interface OfflineQueuedResult {
+  queued: true;
+  queueId: string;
 }
 
 class ApiClient {
@@ -35,8 +50,29 @@ class ApiClient {
     return tokenStorage.getAccessToken();
   }
 
+  private isQueueableMethod(method?: string): method is QueueableMethod {
+    return QUEUEABLE_METHODS.includes(method as QueueableMethod);
+  }
+
+  private isOnline(): boolean {
+    return typeof navigator !== 'undefined' ? navigator.onLine : true;
+  }
+
   private async request<T>(endpoint: string, config: RequestConfig = {}): Promise<T> {
-    const { timeout = 30000, skipAuth = false, ...fetchConfig } = config;
+    const { timeout = 30000, skipAuth = false, offlineAction, skipOfflineQueue = false, ...fetchConfig } = config;
+
+    // Проверка offline режима для queueable методов
+    const method = fetchConfig.method || 'GET';
+    if (!this.isOnline() && this.isQueueableMethod(method) && !skipOfflineQueue) {
+      const queueId = await offlineQueue.enqueue({
+        action: offlineAction || `${method} ${endpoint}`,
+        endpoint,
+        method,
+        body: fetchConfig.body ? JSON.parse(fetchConfig.body as string) : undefined,
+      });
+
+      return { queued: true, queueId } as unknown as T;
+    }
 
     // Get token if needed
     let token: string | null = null;
@@ -106,6 +142,23 @@ class ApiClient {
           message: 'Превышено время ожидания',
           statusCode: 408,
         } as ApiError;
+      }
+
+      // При сетевой ошибке для queueable методов сохраняем в очередь
+      if (
+        error instanceof TypeError &&
+        error.message === 'Failed to fetch' &&
+        this.isQueueableMethod(method) &&
+        !skipOfflineQueue
+      ) {
+        const queueId = await offlineQueue.enqueue({
+          action: offlineAction || `${method} ${endpoint}`,
+          endpoint,
+          method,
+          body: fetchConfig.body ? JSON.parse(fetchConfig.body as string) : undefined,
+        });
+
+        return { queued: true, queueId } as unknown as T;
       }
 
       throw error;
@@ -204,7 +257,10 @@ export const authApi = {
 export const usersApi = {
   getMe: () => apiClient.get<ApiUser>('/users/me'),
 
-  updateMe: (data: UpdateUserRequest) => apiClient.patch<ApiUser>('/users/me', data),
+  updateMe: (data: UpdateUserRequest) =>
+    apiClient.patch<ApiUser | OfflineQueuedResult>('/users/me', data, {
+      offlineAction: 'Обновление профиля',
+    }),
 };
 
 // Utilities API
@@ -228,3 +284,4 @@ export const healthApi = {
 };
 
 export { API_BASE_URL };
+export type { OfflineQueuedResult };

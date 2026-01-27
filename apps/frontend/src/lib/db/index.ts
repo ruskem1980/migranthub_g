@@ -80,6 +80,19 @@ export interface DBStayPeriod {
   updatedAt: string;
 }
 
+export interface DBOfflineQueueItem {
+  id: string;
+  action: string;
+  endpoint: string;
+  method: 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+  body?: string;
+  createdAt: string;
+  retryCount: number;
+  status: 'pending' | 'processing' | 'failed' | 'completed';
+  lastError?: string;
+  lastAttemptAt?: string;
+}
+
 // Database class
 export class MigrantHubDB extends Dexie {
   profiles!: Table<DBProfile>;
@@ -87,6 +100,7 @@ export class MigrantHubDB extends Dexie {
   forms!: Table<DBForm>;
   syncQueue!: Table<DBSyncQueue>;
   stayPeriods!: Table<DBStayPeriod>;
+  offlineQueue!: Table<DBOfflineQueueItem>;
 
   constructor() {
     super('migranthub');
@@ -104,6 +118,15 @@ export class MigrantHubDB extends Dexie {
       forms: 'id, oderId, formType, status, createdAt, updatedAt, syncedAt',
       syncQueue: 'id, action, table, recordId, createdAt, attempts',
       stayPeriods: 'id, oderId, entryDate, exitDate, migrationCardId, createdAt',
+    });
+
+    this.version(3).stores({
+      profiles: 'id, oderId, fullName, passportNumber, citizenship, updatedAt, syncedAt',
+      documents: 'id, oderId, type, expiryDate, createdAt, syncedAt',
+      forms: 'id, oderId, formType, status, createdAt, updatedAt, syncedAt',
+      syncQueue: 'id, action, table, recordId, createdAt, attempts',
+      stayPeriods: 'id, oderId, entryDate, exitDate, migrationCardId, createdAt',
+      offlineQueue: 'id, action, endpoint, method, status, createdAt, retryCount',
     });
   }
 }
@@ -168,6 +191,7 @@ export async function clearAllData(): Promise<void> {
   await db.forms.clear();
   await db.syncQueue.clear();
   await db.stayPeriods.clear();
+  await db.offlineQueue.clear();
 }
 
 // Stay periods helpers
