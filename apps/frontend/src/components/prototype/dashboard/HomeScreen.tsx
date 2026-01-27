@@ -1,6 +1,6 @@
 'use client';
 
-import { QrCode, ChevronRight, Volume2, History, Lock, Edit2, Globe, Trash2, X, Rocket, FileText, AlertTriangle, CreditCard, Grid3x3, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert } from 'lucide-react';
+import { QrCode, ChevronRight, History, Lock, Edit2, Globe, Trash2, X, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert } from 'lucide-react';
 import { useState, useMemo, useEffect } from 'react';
 import { LegalizationWizard } from '../wizard/LegalizationWizard';
 import { BanChecker } from '@/features/services/components/BanChecker';
@@ -213,46 +213,39 @@ export function HomeScreen() {
           {t('dashboard.attentionRequired')}
         </h3>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
           {/* Urgent Card - Patent */}
-          <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-5 shadow-xl">
-            <div className="inline-block px-2 py-1 bg-white/20 rounded-md text-xs font-semibold text-white mb-2">
+          <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-4 shadow-xl">
+            <div className="inline-block px-2 py-0.5 bg-white/20 rounded-md text-xs font-semibold text-white mb-2">
               {t('common.urgent')}
             </div>
-            <h4 className="text-white font-bold text-lg mb-1">
+            <h4 className="text-white font-bold text-base mb-1">
               {t('documents.patent.title')}
             </h4>
-            <p className="text-white/90 text-sm mb-4">
+            <p className="text-white/90 text-xs mb-3">
               {t('dashboard.cards.patent.expiresIn', { days: '3' })}
             </p>
-            <div className="flex gap-2">
-              <button className="flex-1 bg-white text-red-600 font-semibold py-3 px-4 rounded-xl hover:bg-gray-50 transition-colors active:scale-98 flex items-center justify-center shadow-lg">
-                {t('payment.pay')}
-                <ChevronRight className="w-5 h-5 ml-1" />
-              </button>
-              <button className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center hover:bg-white/30 transition-colors">
-                <Volume2 className="w-5 h-5 text-white" />
-              </button>
-            </div>
+            <button className="w-full bg-white text-red-600 font-semibold py-2.5 px-3 rounded-xl hover:bg-gray-50 transition-colors active:scale-98 flex items-center justify-center shadow-lg text-sm">
+              {t('payment.pay')}
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </button>
           </div>
 
           {/* Secondary Card - Registration */}
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-5 shadow-lg">
-            <h4 className="text-white font-bold text-lg mb-1">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-4 shadow-lg">
+            <div className="inline-block px-2 py-0.5 bg-white/20 rounded-md text-xs font-semibold text-white mb-2">
+              {t('common.new')}
+            </div>
+            <h4 className="text-white font-bold text-base mb-1">
               {t('documents.registration.title')}
             </h4>
-            <p className="text-white/90 text-sm mb-4">
+            <p className="text-white/90 text-xs mb-3">
               {t('dashboard.cards.registration.needExtend')}
             </p>
-            <div className="flex gap-2">
-              <button className="flex-1 bg-white text-blue-600 font-semibold py-3 px-4 rounded-xl hover:bg-gray-50 transition-colors active:scale-98 flex items-center justify-center shadow-lg">
-                {t('common.extend')}
-                <ChevronRight className="w-5 h-5 ml-1" />
-              </button>
-              <button className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center hover:bg-white/30 transition-colors">
-                <Volume2 className="w-5 h-5 text-white" />
-              </button>
-            </div>
+            <button className="w-full bg-white text-blue-600 font-semibold py-2.5 px-3 rounded-xl hover:bg-gray-50 transition-colors active:scale-98 flex items-center justify-center shadow-lg text-sm">
+              {t('common.extend')}
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </button>
           </div>
         </div>
       </div>
