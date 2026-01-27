@@ -112,12 +112,12 @@ describe('UsersService', () => {
       expect(result.entryDate).toEqual(new Date('2024-02-01'));
     });
 
-    it('should clear entry date when null is passed', async () => {
+    it('should clear entry date when empty string is passed', async () => {
       usersRepository.findOne.mockResolvedValue({ ...mockUser } as User);
       usersRepository.save.mockImplementation(async (user) => user as User);
 
       const result = await service.updateProfile(mockUser.id!, {
-        entryDate: null,
+        entryDate: '',
       });
 
       expect(result.entryDate).toBeNull();

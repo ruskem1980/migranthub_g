@@ -28,10 +28,21 @@ describe('CacheService', () => {
     // Mock checkConnection to pass
     cacheManager.set.mockResolvedValue(undefined);
     cacheManager.get.mockResolvedValue('ok');
-    cacheManager.del.mockResolvedValue(undefined);
+    cacheManager.del.mockResolvedValue(true);
 
     // Trigger checkConnection
     await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // Clear mocks after checkConnection has run
+    jest.clearAllMocks();
+
+    // Reset mocks to default resolved values
+    cacheManager.set.mockResolvedValue(undefined);
+    cacheManager.get.mockResolvedValue(undefined);
+    cacheManager.del.mockResolvedValue(true);
+
+    // Ensure service is marked as available for tests
+    (service as any).isAvailable = true;
   });
 
   afterEach(() => {
@@ -41,7 +52,7 @@ describe('CacheService', () => {
   describe('get', () => {
     it('should return cached value', async () => {
       const testValue = { foo: 'bar' };
-      cacheManager.get.mockResolvedValue(testValue);
+      cacheManager.get.mockResolvedValueOnce(testValue);
 
       const result = await service.get<typeof testValue>('test-key');
 
@@ -68,6 +79,7 @@ describe('CacheService', () => {
     it('should return null when cache is unavailable', async () => {
       // Make service unavailable
       (service as any).isAvailable = false;
+      cacheManager.get.mockClear();
 
       const result = await service.get('test-key');
 
@@ -139,7 +151,7 @@ describe('CacheService', () => {
 
   describe('wrap', () => {
     it('should return cached value if exists', async () => {
-      cacheManager.get.mockResolvedValue('cached-value');
+      cacheManager.get.mockResolvedValueOnce('cached-value');
       const fn = jest.fn();
 
       const result = await service.wrap('test-key', fn);
@@ -149,7 +161,8 @@ describe('CacheService', () => {
     });
 
     it('should call function and cache result on miss', async () => {
-      cacheManager.get.mockResolvedValue(undefined);
+      cacheManager.get.mockResolvedValueOnce(null);
+      cacheManager.set.mockClear();
       const fn = jest.fn().mockResolvedValue('computed-value');
 
       const result = await service.wrap('test-key', fn, 5000);
@@ -226,8 +239,9 @@ describe('CacheService', () => {
     });
 
     it('should log warning on error', async () => {
+      (service as any).isAvailable = true;
       const loggerSpy = jest.spyOn((service as any).logger, 'warn');
-      cacheManager.get.mockRejectedValue(new Error('Test error'));
+      cacheManager.get.mockRejectedValueOnce(new Error('Test error'));
 
       await service.get('test-key');
 

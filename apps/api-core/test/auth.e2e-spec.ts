@@ -2,7 +2,17 @@ import request from 'supertest';
 import { getTestApp } from './setup';
 
 describe('AuthController (e2e)', () => {
-  const generateDeviceId = () => `test-device-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const generateDeviceId = () =>
+    `test-device-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+
+  const authPayload = (
+    deviceId: string,
+    platform: 'ios' | 'android' | 'web' = 'ios',
+  ) => ({
+    deviceId,
+    platform,
+    appVersion: '1.0.0',
+  });
 
   describe('POST /api/v1/auth/device', () => {
     it('should register new device and return tokens', async () => {
@@ -10,11 +20,7 @@ describe('AuthController (e2e)', () => {
 
       const response = await request(getTestApp().getHttpServer())
         .post('/api/v1/auth/device')
-        .send({
-          deviceId,
-          platform: 'ios',
-          deviceModel: 'iPhone 14',
-        })
+        .send(authPayload(deviceId, 'ios'))
         .expect(200);
 
       expect(response.body).toHaveProperty('accessToken');
@@ -31,12 +37,12 @@ describe('AuthController (e2e)', () => {
 
       const first = await request(getTestApp().getHttpServer())
         .post('/api/v1/auth/device')
-        .send({ deviceId, platform: 'android' })
+        .send(authPayload(deviceId, 'android'))
         .expect(200);
 
       const second = await request(getTestApp().getHttpServer())
         .post('/api/v1/auth/device')
-        .send({ deviceId, platform: 'android' })
+        .send(authPayload(deviceId, 'android'))
         .expect(200);
 
       expect(first.body.user.id).toBe(second.body.user.id);
@@ -45,14 +51,22 @@ describe('AuthController (e2e)', () => {
     it('should reject request without deviceId', async () => {
       await request(getTestApp().getHttpServer())
         .post('/api/v1/auth/device')
-        .send({ platform: 'ios' })
+        .send({ platform: 'ios', appVersion: '1.0.0' })
         .expect(400);
     });
 
     it('should reject empty deviceId', async () => {
       await request(getTestApp().getHttpServer())
         .post('/api/v1/auth/device')
-        .send({ deviceId: '', platform: 'ios' })
+        .send({ deviceId: '', platform: 'ios', appVersion: '1.0.0' })
+        .expect(400);
+    });
+
+    it('should reject request without appVersion', async () => {
+      const deviceId = generateDeviceId();
+      await request(getTestApp().getHttpServer())
+        .post('/api/v1/auth/device')
+        .send({ deviceId, platform: 'ios' })
         .expect(400);
     });
   });
@@ -63,7 +77,7 @@ describe('AuthController (e2e)', () => {
 
       const register = await request(getTestApp().getHttpServer())
         .post('/api/v1/auth/device')
-        .send({ deviceId, platform: 'ios' })
+        .send(authPayload(deviceId, 'ios'))
         .expect(200);
 
       const response = await request(getTestApp().getHttpServer())
@@ -98,7 +112,7 @@ describe('AuthController (e2e)', () => {
 
       const register = await request(getTestApp().getHttpServer())
         .post('/api/v1/auth/device')
-        .send({ deviceId, platform: 'ios' })
+        .send(authPayload(deviceId, 'ios'))
         .expect(200);
 
       const newDeviceId = generateDeviceId();
@@ -124,7 +138,7 @@ describe('AuthController (e2e)', () => {
 
       await request(getTestApp().getHttpServer())
         .post('/api/v1/auth/device')
-        .send({ deviceId, platform: 'ios' })
+        .send(authPayload(deviceId, 'ios'))
         .expect(200);
 
       await request(getTestApp().getHttpServer())

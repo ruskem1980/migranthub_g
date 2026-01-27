@@ -97,14 +97,21 @@ describe('AuthService', () => {
   });
 
   describe('deviceAuth', () => {
+    const baseAuthDto = {
+      deviceId: 'device-id-123',
+      platform: 'android' as const,
+      appVersion: '1.0.0',
+      locale: 'ru',
+    };
+
     it('should create new user with device if not exists', async () => {
       userRepository.findOne.mockResolvedValue(null);
       userRepository.create.mockReturnValue(mockUser as User);
       userRepository.save.mockResolvedValue(mockUser as User);
 
       const result = await service.deviceAuth({
+        ...baseAuthDto,
         deviceId: 'new-device-id',
-        locale: 'ru',
       });
 
       expect(userRepository.findOne).toHaveBeenCalledWith({
@@ -121,10 +128,7 @@ describe('AuthService', () => {
     it('should return existing user for same deviceId', async () => {
       userRepository.findOne.mockResolvedValue(mockUser as User);
 
-      const result = await service.deviceAuth({
-        deviceId: 'device-id-123',
-        locale: 'ru',
-      });
+      const result = await service.deviceAuth(baseAuthDto);
 
       expect(userRepository.findOne).toHaveBeenCalledWith({
         where: { deviceId: 'device-id-123' },
@@ -137,9 +141,7 @@ describe('AuthService', () => {
     it('should generate valid JWT tokens', async () => {
       userRepository.findOne.mockResolvedValue(mockUser as User);
 
-      const result = await service.deviceAuth({
-        deviceId: 'device-id-123',
-      });
+      const result = await service.deviceAuth(baseAuthDto);
 
       expect(jwtService.signAsync).toHaveBeenCalledTimes(2);
       expect(jwtService.signAsync).toHaveBeenCalledWith(
@@ -171,9 +173,7 @@ describe('AuthService', () => {
     it('should generate signing key on auth', async () => {
       userRepository.findOne.mockResolvedValue(mockUser as User);
 
-      const result = await service.deviceAuth({
-        deviceId: 'device-id-123',
-      });
+      const result = await service.deviceAuth(baseAuthDto);
 
       expect(signingService.generateSigningKey).toHaveBeenCalled();
       expect(result.signingKey).toBe(mockSigningKey);
@@ -182,9 +182,7 @@ describe('AuthService', () => {
     it('should store refresh token hash', async () => {
       userRepository.findOne.mockResolvedValue(mockUser as User);
 
-      await service.deviceAuth({
-        deviceId: 'device-id-123',
-      });
+      await service.deviceAuth(baseAuthDto);
 
       expect(userRepository.update).toHaveBeenCalledWith(
         mockUser.id,
@@ -200,7 +198,9 @@ describe('AuthService', () => {
       userRepository.create.mockReturnValue(mockUser as User);
       userRepository.save.mockResolvedValue(mockUser as User);
 
+      const { locale, ...dtoWithoutLocale } = baseAuthDto;
       await service.deviceAuth({
+        ...dtoWithoutLocale,
         deviceId: 'new-device-id',
       });
 
