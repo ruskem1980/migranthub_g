@@ -371,22 +371,9 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">{t('onboarding.profiling.selectRegion')}</option>
-                  {/* Millionaire cities first (excluding top 3 which are buttons) */}
-                  {getMillionaireCities()
-                    .filter(city => !['moscow', 'saint-petersburg', 'novosibirsk'].includes(city.id))
-                    .map(city => (
-                      <option key={city.id} value={city.id}>
-                        {city.name[language === 'en' ? 'en' : 'ru']}
-                      </option>
-                    ))
-                  }
-                  <option disabled>──────────</option>
-                  {/* Other major cities (500k+) */}
+                  {/* All cities sorted by population, excluding top 3 which are buttons */}
                   {RUSSIAN_CITIES
-                    .filter(city =>
-                      (city.population ?? 0) >= 500000 &&
-                      (city.population ?? 0) < 1000000
-                    )
+                    .filter(city => !['moscow', 'saint-petersburg', 'novosibirsk'].includes(city.id))
                     .map(city => (
                       <option key={city.id} value={city.id}>
                         {city.name[language === 'en' ? 'en' : 'ru']}
