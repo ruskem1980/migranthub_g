@@ -4,6 +4,7 @@ import { type ReactNode, useEffect } from 'react';
 import { QueryProvider } from '@/lib/providers/QueryProvider';
 import { useServiceWorker } from '@/lib/hooks/useServiceWorker';
 import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
+import { useDeepLinks } from '@/lib/hooks/useDeepLinks';
 import { NotificationProvider } from '@/lib/hooks/useNotifications';
 import { useTranslation } from '@/lib/i18n';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -14,6 +15,9 @@ function AppInitializer({ children }: { children: ReactNode }) {
 
   // Track online status
   const isOnline = useOnlineStatus();
+
+  // Initialize deep links handler
+  useDeepLinks();
 
   // Translations
   const { t, language } = useTranslation();

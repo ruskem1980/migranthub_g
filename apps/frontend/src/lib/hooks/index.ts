@@ -9,3 +9,4 @@ export {
   type NotificationPermission,
 } from './useNotifications';
 export { useOfflineQueue, type UseOfflineQueueReturn } from '../../hooks/useOfflineQueue';
+export { useDeepLinks } from './useDeepLinks';
