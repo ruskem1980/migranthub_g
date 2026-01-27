@@ -13,6 +13,7 @@ export enum ExamMode {
   PRACTICE = 'practice',
   EXAM = 'exam',
   LEARNING = 'learning',
+  MARATHON = 'marathon',
 }
 
 export class AnswerDto {
