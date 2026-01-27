@@ -87,7 +87,7 @@ export function HomeScreen() {
             </button>
             <div>
               <div className="flex items-center gap-1.5">
-                <h2 className="text-sm font-bold text-gray-900">{editFullName}</h2>
+                <h2 className="text-lg font-bold text-gray-900">{editFullName}</h2>
                 <button
                   onClick={() => setShowProfileEdit(true)}
                   className="p-1 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors active:scale-95"
@@ -119,19 +119,19 @@ export function HomeScreen() {
           <div className="flex items-center gap-3">
             {/* Status Badge */}
             {checkedDocs.length >= 7 ? (
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-green-500 rounded-full">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                <span className="text-xs font-bold text-white">{t('dashboard.statusValues.legal')}</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-green-500 rounded-full">
+                <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
+                <span className="text-base font-bold text-white">{t('dashboard.statusValues.legal')}</span>
               </div>
             ) : checkedDocs.length >= 4 ? (
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-yellow-500 rounded-full">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                <span className="text-xs font-bold text-white">{t('dashboard.statusValues.risk')}</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-500 rounded-full">
+                <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
+                <span className="text-base font-bold text-white">{t('dashboard.statusValues.risk')}</span>
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-red-500 rounded-full">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                <span className="text-xs font-bold text-white">{t('dashboard.statusValues.illegal')}</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500 rounded-full">
+                <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
+                <span className="text-base font-bold text-white">{t('dashboard.statusValues.illegal')}</span>
               </div>
             )}
 
