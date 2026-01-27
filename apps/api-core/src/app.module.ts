@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { UtilitiesModule } from './modules/utilities/utilities.module';
 import { LegalModule } from './modules/legal/legal.module';
+import { ExamModule } from './modules/exam/exam.module';
 import { CacheModule } from './modules/cache/cache.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { SentryModule } from './common/sentry';
@@ -86,6 +87,7 @@ import mvdConfig from './config/mvd.config';
     AuthModule,
     UtilitiesModule,
     LegalModule,
+    ExamModule,
   ],
   providers: [
     {
