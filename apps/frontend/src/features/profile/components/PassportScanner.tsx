@@ -1,19 +1,14 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Camera, Upload, Scan, Check, AlertCircle, RotateCcw } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
-
-interface PassportData {
-  fullName?: string;
-  fullNameLatin?: string;
-  passportNumber?: string;
-  birthDate?: string;
-  gender?: 'male' | 'female';
-  citizenship?: string;
-  passportIssueDate?: string;
-  passportExpiryDate?: string;
-}
+import {
+  recognizePassport,
+  terminateOcr,
+  OcrProgress,
+  PassportData,
+} from '@/lib/ocr/passportOcr';
 
 interface PassportScannerProps {
   onScanComplete: (data: PassportData, imageUri: string) => void;
@@ -27,11 +22,24 @@ export function PassportScanner({ onScanComplete, onCancel }: PassportScannerPro
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [scannedData, setScannedData] = useState<PassportData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [ocrProgress, setOcrProgress] = useState<OcrProgress | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Cleanup OCR worker on unmount
+  useEffect(() => {
+    return () => {
+      terminateOcr();
+    };
+  }, []);
+
+  const handleOcrProgress = (progress: OcrProgress) => {
+    setOcrProgress(progress);
+  };
 
   const processImage = async (file: File) => {
     setStep('processing');
     setError(null);
+    setOcrProgress(null);
 
     try {
       // Compress image
@@ -42,33 +50,35 @@ export function PassportScanner({ onScanComplete, onCancel }: PassportScannerPro
       });
 
       // Create data URL for preview
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImageUri(reader.result as string);
-      };
-      reader.readAsDataURL(compressedFile);
+      const dataUrl = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsDataURL(compressedFile);
+      });
 
-      // Simulate OCR processing (in production, use capacitor-cyrillic-ocr or server-side OCR)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setImageUri(dataUrl);
 
-      // Demo: Return mock data
-      // In production, this would be real OCR result
-      const mockData: PassportData = {
-        fullName: 'УСМАНОВ АЛИШЕР БАХТИЯРОВИЧ',
-        fullNameLatin: 'USMANOV ALISHER BAKHTIYAROVICH',
-        passportNumber: 'AA 1234567',
-        birthDate: '1990-05-15',
-        gender: 'male',
-        citizenship: 'UZB',
-        passportIssueDate: '2020-01-10',
-        passportExpiryDate: '2030-01-10',
-      };
+      // Perform real OCR recognition
+      const recognizedData = await recognizePassport(dataUrl, handleOcrProgress);
 
-      setScannedData(mockData);
+      // Check if we got meaningful data
+      const hasData = recognizedData.fullName ||
+        recognizedData.passportNumber ||
+        recognizedData.birthDate;
+
+      if (!hasData) {
+        throw new Error('Не удалось извлечь данные из изображения');
+      }
+
+      setScannedData(recognizedData);
       setStep('review');
     } catch (err) {
       console.error('OCR error:', err);
-      setError('Не удалось распознать документ. Попробуйте сделать фото лучшего качества.');
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Не удалось распознать документ. Попробуйте сделать фото лучшего качества.'
+      );
       setStep('error');
     }
   };
@@ -89,12 +99,23 @@ export function PassportScanner({ onScanComplete, onCancel }: PassportScannerPro
     setImageUri(null);
     setScannedData(null);
     setError(null);
+    setOcrProgress(null);
   };
 
   const handleConfirm = () => {
     if (scannedData && imageUri) {
       onScanComplete(scannedData, imageUri);
     }
+  };
+
+  const getProgressMessage = (): string => {
+    if (!ocrProgress) return 'Подготовка...';
+    return ocrProgress.message;
+  };
+
+  const getProgressPercent = (): number => {
+    if (!ocrProgress) return 0;
+    return Math.round(ocrProgress.progress);
   };
 
   return (
@@ -139,6 +160,9 @@ export function PassportScanner({ onScanComplete, onCancel }: PassportScannerPro
                 Убедитесь, что фото чёткое и все данные видны.
                 Лучше всего при хорошем освещении.
               </p>
+              <p className="text-xs mt-2 text-white/60">
+                Для лучшего результата сфотографируйте страницу с MRZ-зоной (машиночитаемая строка внизу)
+              </p>
             </div>
 
             {/* Capture buttons */}
@@ -178,14 +202,46 @@ export function PassportScanner({ onScanComplete, onCancel }: PassportScannerPro
 
         {step === 'processing' && (
           <div className="text-center text-white">
-            <div className="w-20 h-20 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-6" />
+            <div className="relative w-24 h-24 mx-auto mb-6">
+              {/* Progress circle */}
+              <svg className="w-full h-full transform -rotate-90">
+                <circle
+                  cx="48"
+                  cy="48"
+                  r="44"
+                  stroke="rgba(255,255,255,0.3)"
+                  strokeWidth="8"
+                  fill="none"
+                />
+                <circle
+                  cx="48"
+                  cy="48"
+                  r="44"
+                  stroke="white"
+                  strokeWidth="8"
+                  fill="none"
+                  strokeDasharray={`${2 * Math.PI * 44}`}
+                  strokeDashoffset={`${2 * Math.PI * 44 * (1 - getProgressPercent() / 100)}`}
+                  strokeLinecap="round"
+                  className="transition-all duration-300"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-lg font-bold">{getProgressPercent()}%</span>
+              </div>
+            </div>
             <div className="flex items-center justify-center gap-2 mb-2">
               <Scan className="w-6 h-6" />
               <h3 className="text-xl font-bold">Распознаём данные...</h3>
             </div>
             <p className="text-white/70">
-              Это займёт несколько секунд
+              {getProgressMessage()}
             </p>
+            {ocrProgress?.status === 'loading' && (
+              <p className="text-white/50 text-sm mt-4">
+                Первая загрузка может занять до 30 секунд
+              </p>
+            )}
           </div>
         )}
 
@@ -210,23 +266,59 @@ export function PassportScanner({ onScanComplete, onCancel }: PassportScannerPro
             <div className="bg-white rounded-xl p-4 mb-6">
               <h3 className="font-bold text-gray-900 mb-3">Распознанные данные:</h3>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">ФИО:</span>
-                  <span className="font-medium text-gray-900">{scannedData.fullName}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Номер паспорта:</span>
-                  <span className="font-medium text-gray-900">{scannedData.passportNumber}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Дата рождения:</span>
-                  <span className="font-medium text-gray-900">{scannedData.birthDate}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Гражданство:</span>
-                  <span className="font-medium text-gray-900">{scannedData.citizenship}</span>
-                </div>
+                {scannedData.fullName && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">ФИО:</span>
+                    <span className="font-medium text-gray-900 text-right max-w-[60%]">
+                      {scannedData.fullName}
+                    </span>
+                  </div>
+                )}
+                {scannedData.fullNameLatin && scannedData.fullNameLatin !== scannedData.fullName && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">ФИО (лат.):</span>
+                    <span className="font-medium text-gray-900 text-right max-w-[60%]">
+                      {scannedData.fullNameLatin}
+                    </span>
+                  </div>
+                )}
+                {scannedData.passportNumber && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Номер паспорта:</span>
+                    <span className="font-medium text-gray-900">{scannedData.passportNumber}</span>
+                  </div>
+                )}
+                {scannedData.birthDate && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Дата рождения:</span>
+                    <span className="font-medium text-gray-900">{scannedData.birthDate}</span>
+                  </div>
+                )}
+                {scannedData.gender && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Пол:</span>
+                    <span className="font-medium text-gray-900">
+                      {scannedData.gender === 'male' ? 'Мужской' : 'Женский'}
+                    </span>
+                  </div>
+                )}
+                {scannedData.citizenship && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Гражданство:</span>
+                    <span className="font-medium text-gray-900">{scannedData.citizenship}</span>
+                  </div>
+                )}
+                {scannedData.passportExpiryDate && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Действителен до:</span>
+                    <span className="font-medium text-gray-900">{scannedData.passportExpiryDate}</span>
+                  </div>
+                )}
               </div>
+
+              <p className="text-xs text-gray-400 mt-4">
+                Проверьте данные и при необходимости отредактируйте их вручную после подтверждения
+              </p>
             </div>
 
             {/* Actions */}
@@ -258,6 +350,15 @@ export function PassportScanner({ onScanComplete, onCancel }: PassportScannerPro
             <p className="text-white/70 mb-6 max-w-sm">
               {error}
             </p>
+            <div className="text-white/50 text-sm mb-6 max-w-sm">
+              <p>Советы для лучшего распознавания:</p>
+              <ul className="text-left mt-2 space-y-1">
+                <li>- Сфотографируйте страницу с MRZ-зоной</li>
+                <li>- Убедитесь в хорошем освещении</li>
+                <li>- Держите камеру параллельно документу</li>
+                <li>- Избегайте бликов и теней</li>
+              </ul>
+            </div>
             <button
               onClick={handleRetry}
               className="flex items-center justify-center gap-2 bg-white text-gray-900 font-semibold px-6 py-3 rounded-xl mx-auto"
@@ -267,13 +368,6 @@ export function PassportScanner({ onScanComplete, onCancel }: PassportScannerPro
             </button>
           </div>
         )}
-      </div>
-
-      {/* Demo notice */}
-      <div className="p-4">
-        <div className="bg-yellow-500/20 text-yellow-200 text-xs text-center p-2 rounded-lg">
-          Демо: При загрузке любого изображения будут показаны тестовые данные
-        </div>
       </div>
     </div>
   );
