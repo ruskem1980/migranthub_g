@@ -37,7 +37,6 @@ export function HomeScreen() {
   const [showWizard, setShowWizard] = useState(false);
   const [showOtherServices, setShowOtherServices] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
-  const [showAILanguages, setShowAILanguages] = useState(false);
   const [showBanChecker, setShowBanChecker] = useState(false);
 
   // Initialize from profile store, fallback to empty
@@ -892,11 +891,8 @@ export function HomeScreen() {
                 <h3 className="text-xl font-bold text-gray-900">{t('languages.selectTitle')}</h3>
                 <p className="text-sm text-gray-500">{t('languages.selectSubtitle')}</p>
               </div>
-              <button 
-                onClick={() => {
-                  setShowLanguageModal(false);
-                  setShowAILanguages(false);
-                }} 
+              <button
+                onClick={() => setShowLanguageModal(false)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
                 <X className="w-6 h-6 text-gray-600" />
