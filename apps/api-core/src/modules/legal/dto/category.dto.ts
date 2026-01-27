@@ -1,36 +1,32 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsInt, Min } from 'class-validator';
 
 export class CategoryDto {
-  @ApiProperty({
-    description: 'Unique category identifier',
-    example: 'registration',
-  })
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({ example: 'registration' })
   id!: string;
 
-  @ApiProperty({
-    description: 'Category display name',
-    example: 'Миграционный учёт',
-  })
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({ example: 'Миграционный учёт' })
   name!: string;
 
-  @ApiProperty({
-    description: 'Category icon name',
-    example: 'home',
-  })
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({ example: 'Migration Registration' })
+  nameEn!: string;
+
+  @ApiProperty({ example: 'Постановка на учёт, продление' })
+  description!: string;
+
+  @ApiProperty({ example: '📋' })
   icon!: string;
 
-  @ApiProperty({
-    description: 'Number of items in category',
-    example: 5,
-  })
-  @IsInt()
-  @Min(0)
-  itemCount!: number;
+  @ApiProperty({ example: 1 })
+  order!: number;
+}
+
+export class CategoryItemsDto {
+  @ApiProperty({ type: [Object] })
+  laws!: object[];
+
+  @ApiProperty({ type: [Object] })
+  forms!: object[];
+
+  @ApiProperty({ type: [Object] })
+  faq!: object[];
 }

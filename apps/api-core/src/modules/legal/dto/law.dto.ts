@@ -1,60 +1,37 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsDateString, IsUrl, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 
 export class LawDto {
-  @ApiProperty({
-    description: 'Unique law identifier',
-    example: 'fz-115',
-  })
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({ example: 'fz-115' })
   id!: string;
 
-  @ApiProperty({
-    description: 'Law title',
-    example: 'О правовом положении иностранных граждан в Российской Федерации',
-  })
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({ example: 'registration' })
+  categoryId!: string;
+
+  @ApiProperty({ example: 'О правовом положении иностранных граждан в РФ' })
   title!: string;
 
-  @ApiProperty({
-    description: 'Law number',
-    example: '115-ФЗ',
-  })
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({ example: '115-ФЗ' })
   number!: string;
 
-  @ApiProperty({
-    description: 'Law description',
-    example: 'Федеральный закон определяющий правовое положение иностранных граждан в РФ',
-  })
-  @IsString()
-  @IsNotEmpty()
-  description!: string;
+  @ApiProperty({ example: '2002-07-25' })
+  date!: string;
 
-  @ApiProperty({
-    description: 'Law effective date',
-    example: '2002-07-25',
-  })
-  @IsDateString()
-  effectiveDate!: string;
+  @ApiProperty({ example: 'http://consultant.ru/...' })
+  url!: string;
 
-  @ApiProperty({
-    description: 'URL to official law text',
-    example: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102078073',
-    required: false,
-  })
+  @ApiProperty({ example: 'Основной закон о статусе иностранцев' })
+  summary!: string;
+}
+
+export class LawFilterDto {
+  @ApiPropertyOptional({ description: 'Filter by category ID' })
   @IsOptional()
-  @IsUrl()
-  url?: string;
-
-  @ApiProperty({
-    description: 'Category ID this law belongs to',
-    example: 'registration',
-  })
   @IsString()
-  @IsNotEmpty()
-  categoryId!: string;
+  categoryId?: string;
+
+  @ApiPropertyOptional({ description: 'Search in title' })
+  @IsOptional()
+  @IsString()
+  search?: string;
 }

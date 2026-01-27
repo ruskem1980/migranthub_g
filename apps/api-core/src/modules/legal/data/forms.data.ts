@@ -1,83 +1,48 @@
-import { FormDto } from '../dto';
+export interface Form {
+  id: string;
+  categoryId: string;
+  title: string;
+  description: string;
+  fileUrl: string;
+  format: 'pdf' | 'doc' | 'docx';
+  size?: string;
+}
 
-export const LEGAL_FORMS: FormDto[] = [
+export const forms: Form[] = [
   {
-    id: 'notice-arrival',
+    id: 'form-registration',
+    categoryId: 'registration',
     title: 'Уведомление о прибытии иностранного гражданина',
-    description:
-      'Бланк уведомления о прибытии иностранного гражданина в место пребывания для постановки на миграционный учёт.',
-    downloadUrl: 'https://мвд.рф/upload/site1/document_file/Uvedomlenie_o_pribytii.pdf',
-    categoryId: 'registration',
+    description: 'Форма для постановки на миграционный учёт',
+    fileUrl: '/forms/uvedomlenie-o-pribytii.pdf',
+    format: 'pdf',
+    size: '156 KB',
   },
   {
-    id: 'notice-departure',
-    title: 'Уведомление об убытии иностранного гражданина',
-    description: 'Бланк уведомления об убытии иностранного гражданина из места пребывания.',
-    downloadUrl: 'https://мвд.рф/upload/site1/document_file/Uvedomlenie_ob_ubytii.pdf',
-    categoryId: 'registration',
-  },
-  {
-    id: 'patent-application',
-    title: 'Заявление о выдаче патента на работу',
-    description:
-      'Заявление иностранного гражданина о выдаче патента, дающего право на осуществление трудовой деятельности.',
-    downloadUrl: 'https://мвд.рф/upload/site1/document_file/Zayavlenie_patent.pdf',
+    id: 'form-patent-application',
     categoryId: 'patent',
+    title: 'Заявление о выдаче патента',
+    description: 'Форма заявления на получение патента на работу',
+    fileUrl: '/forms/zayavlenie-patent.pdf',
+    format: 'pdf',
+    size: '203 KB',
   },
   {
-    id: 'form-2p',
-    title: 'Форма 2П - Заявление о выдаче (замене) паспорта',
-    description:
-      'Заявление о выдаче (замене) паспорта гражданина Российской Федерации по форме № 2П.',
-    downloadUrl: 'https://мвд.рф/upload/site1/document_file/Forma_2P.pdf',
+    id: 'form-migration-card',
     categoryId: 'documents',
-  },
-  {
-    id: 'rvp-application',
-    title: 'Заявление о выдаче разрешения на временное проживание',
-    description:
-      'Заявление иностранного гражданина о выдаче разрешения на временное проживание (РВП) в Российской Федерации.',
-    downloadUrl: 'https://мвд.рф/upload/site1/document_file/Zayavlenie_RVP.pdf',
-    categoryId: 'visa',
-  },
-  {
-    id: 'vnzh-application',
-    title: 'Заявление о выдаче вида на жительство',
-    description:
-      'Заявление иностранного гражданина о выдаче вида на жительство (ВНЖ) в Российской Федерации.',
-    downloadUrl: 'https://мвд.рф/upload/site1/document_file/Zayavlenie_VNZh.pdf',
-    categoryId: 'visa',
-  },
-  {
-    id: 'citizenship-application',
-    title: 'Заявление о приёме в гражданство РФ',
-    description:
-      'Заявление о приёме в гражданство Российской Федерации в общем или упрощённом порядке.',
-    downloadUrl: 'https://мвд.рф/upload/site1/document_file/Zayavlenie_grazhdanstvo.pdf',
-    categoryId: 'citizenship',
-  },
-  {
-    id: 'work-permit-application',
-    title: 'Заявление о выдаче разрешения на работу',
-    description:
-      'Заявление о выдаче разрешения на работу для иностранных граждан, прибывших в визовом порядке.',
-    downloadUrl: 'https://мвд.рф/upload/site1/document_file/Zayavlenie_razreshenie_rabota.pdf',
-    categoryId: 'work',
-  },
-  {
-    id: 'employer-notification',
-    title: 'Уведомление о заключении трудового договора с иностранцем',
-    description:
-      'Форма уведомления работодателя о заключении трудового договора с иностранным гражданином.',
-    downloadUrl: 'https://мвд.рф/upload/site1/document_file/Uvedomlenie_trudovoy_dogovor.pdf',
-    categoryId: 'work',
-  },
-  {
-    id: 'migration-card',
     title: 'Миграционная карта (образец)',
-    description:
-      'Образец заполнения миграционной карты при въезде на территорию Российской Федерации.',
-    downloadUrl: 'https://мвд.рф/upload/site1/document_file/Migracionnaya_karta.pdf',
-    categoryId: 'visa',
+    description: 'Образец заполнения миграционной карты',
+    fileUrl: '/forms/migration-card-sample.pdf',
+    format: 'pdf',
+    size: '89 KB',
+  },
+  {
+    id: 'form-ban-appeal',
+    categoryId: 'ban',
+    title: 'Жалоба на запрет въезда',
+    description: 'Шаблон жалобы для обжалования запрета на въезд',
+    fileUrl: '/forms/ban-appeal-template.docx',
+    format: 'docx',
+    size: '45 KB',
   },
 ];

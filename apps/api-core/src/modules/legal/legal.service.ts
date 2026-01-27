@@ -1,7 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
+  categories,
+  laws,
+  forms,
+  faqItems,
+  patentRegions,
+  BASE_NDFL,
+} from './data';
+import {
   CategoryDto,
+  CategoryItemsDto,
   LawDto,
+  LawFilterDto,
   FormDto,
   FaqItemDto,
   PatentCalcRequestDto,
@@ -11,131 +21,153 @@ import {
   StayCalcResponseDto,
   StayPeriodDto,
 } from './dto';
-import {
-  LEGAL_CATEGORIES,
-  LEGAL_LAWS,
-  LEGAL_FORMS,
-  LEGAL_FAQ,
-  getRegionByCode,
-} from './data';
 
 @Injectable()
 export class LegalService {
-  /**
-   * Получить все категории законодательства
-   */
+  // ==================== Categories ====================
+
   getCategories(): CategoryDto[] {
-    return LEGAL_CATEGORIES.map((category) => ({
-      ...category,
-      itemCount: LEGAL_LAWS.filter((law) => law.categoryId === category.id).length,
-    }));
+    return categories.sort((a, b) => a.order - b.order);
   }
 
-  /**
-   * Получить законы по категории
-   */
-  getCategoryItems(categoryId: string): LawDto[] {
-    return LEGAL_LAWS.filter((law) => law.categoryId === categoryId);
+  getCategoryById(id: string): CategoryDto {
+    const category = categories.find((c) => c.id === id);
+    if (!category) {
+      throw new NotFoundException(`Category ${id} not found`);
+    }
+    return category;
   }
 
-  /**
-   * Получить все законы или поиск по названию/номеру
-   */
-  getLaws(search?: string): LawDto[] {
-    if (!search) {
-      return LEGAL_LAWS;
+  getCategoryItems(categoryId: string): CategoryItemsDto {
+    this.getCategoryById(categoryId);
+
+    return {
+      laws: laws.filter((l) => l.categoryId === categoryId),
+      forms: forms.filter((f) => f.categoryId === categoryId),
+      faq: faqItems
+        .filter((f) => f.categoryId === categoryId)
+        .sort((a, b) => a.order - b.order),
+    };
+  }
+
+  // ==================== Laws ====================
+
+  getLaws(filter?: LawFilterDto): LawDto[] {
+    let result = [...laws];
+
+    if (filter?.categoryId) {
+      result = result.filter((l) => l.categoryId === filter.categoryId);
     }
 
-    const searchLower = search.toLowerCase();
-    return LEGAL_LAWS.filter(
-      (law) =>
-        law.title.toLowerCase().includes(searchLower) ||
-        law.number.toLowerCase().includes(searchLower),
-    );
+    if (filter?.search) {
+      const search = filter.search.toLowerCase();
+      result = result.filter(
+        (l) =>
+          l.title.toLowerCase().includes(search) ||
+          l.number.toLowerCase().includes(search) ||
+          l.summary.toLowerCase().includes(search),
+      );
+    }
+
+    return result;
   }
 
-  /**
-   * Получить закон по ID
-   */
-  getLawById(id: string): LawDto | null {
-    return LEGAL_LAWS.find((law) => law.id === id) || null;
+  getLawById(id: string): LawDto {
+    const law = laws.find((l) => l.id === id);
+    if (!law) {
+      throw new NotFoundException(`Law ${id} not found`);
+    }
+    return law;
   }
 
-  /**
-   * Получить формы документов
-   */
+  // ==================== Forms ====================
+
   getForms(categoryId?: string): FormDto[] {
-    if (!categoryId) {
-      return LEGAL_FORMS;
+    if (categoryId) {
+      return forms.filter((f) => f.categoryId === categoryId);
     }
-    return LEGAL_FORMS.filter((form) => form.categoryId === categoryId);
+    return forms;
   }
 
-  /**
-   * Получить FAQ
-   */
+  getFormById(id: string): FormDto {
+    const form = forms.find((f) => f.id === id);
+    if (!form) {
+      throw new NotFoundException(`Form ${id} not found`);
+    }
+    return form;
+  }
+
+  // ==================== FAQ ====================
+
   getFaq(categoryId?: string): FaqItemDto[] {
-    if (!categoryId) {
-      return LEGAL_FAQ;
+    let result = [...faqItems];
+
+    if (categoryId) {
+      result = result.filter((f) => f.categoryId === categoryId);
     }
-    return LEGAL_FAQ.filter((faq) => faq.categoryId === categoryId);
+
+    return result.sort((a, b) => a.order - b.order);
   }
 
-  /**
-   * Рассчитать стоимость патента на работу
-   * Формула: monthlyPrice * months (monthlyPrice уже содержит baseRate * coefficient * deflator)
-   */
-  calculatePatentPrice(dto: PatentCalcRequestDto): PatentCalcResponseDto {
-    const region = getRegionByCode(dto.regionCode);
+  // ==================== Patent Calculator ====================
+
+  calculatePatentPrice(request: PatentCalcRequestDto): PatentCalcResponseDto {
+    const region = patentRegions.find((r) => r.code === request.regionCode);
 
     if (!region) {
-      throw new NotFoundException(`Регион с кодом "${dto.regionCode}" не найден`);
+      throw new NotFoundException(
+        `Region with code ${request.regionCode} not found`,
+      );
     }
 
-    const { months } = dto;
-    const pricePerMonth = region.monthlyPrice;
-    const totalPrice = pricePerMonth * months;
+    const totalPrice = region.monthlyCost * request.months;
 
-    // Формируем детализацию по месяцам
+    // Build breakdown
     const breakdown: PatentCalcBreakdownDto[] = [];
-    for (let i = 1; i <= months; i++) {
+    for (let i = 1; i <= request.months; i++) {
       breakdown.push({
         month: i,
-        price: pricePerMonth,
+        price: region.monthlyCost,
       });
     }
 
     return {
       regionCode: region.code,
       regionName: region.name,
-      baseRate: region.baseRate,
+      baseRate: BASE_NDFL,
       coefficient: region.coefficient,
-      months,
+      months: request.months,
       totalPrice,
       breakdown,
     };
   }
 
-  /**
-   * Рассчитать срок пребывания по правилу 90/180
-   * Правило: максимум 90 дней пребывания в любом 180-дневном периоде
-   */
-  calculateStay(dto: StayCalcRequestDto): StayCalcResponseDto {
-    const entryDate = new Date(dto.entryDate);
+  getPatentRegions() {
+    return patentRegions.map((r) => ({
+      code: r.code,
+      name: r.name,
+      monthlyCost: r.monthlyCost,
+    }));
+  }
+
+  // ==================== Stay Calculator (90/180) ====================
+
+  calculateStay(request: StayCalcRequestDto): StayCalcResponseDto {
+    const entryDate = new Date(request.entryDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     entryDate.setHours(0, 0, 0, 0);
 
-    const exitDates = (dto.exitDates || []).map((d) => {
+    const exitDates = (request.exitDates || []).map((d: string) => {
       const date = new Date(d);
       date.setHours(0, 0, 0, 0);
       return date;
     });
 
-    // Сортируем даты выезда
-    exitDates.sort((a, b) => a.getTime() - b.getTime());
+    // Sort exit dates
+    exitDates.sort((a: Date, b: Date) => a.getTime() - b.getTime());
 
-    // Считаем периоды пребывания
+    // Calculate stay periods
     const periods: StayPeriodDto[] = [];
     let totalDaysInRussia = 0;
     let currentEntryDate = entryDate;
@@ -149,13 +181,12 @@ export class LegalService {
           days,
         });
         totalDaysInRussia += days;
-        // После выезда считаем, что следующий въезд - на следующий день
-        // (упрощённая логика, в реальности нужна дата повторного въезда)
       }
+      // After exit, assume re-entry next day (simplified logic)
       currentEntryDate = new Date(exitDate.getTime() + 24 * 60 * 60 * 1000);
     }
 
-    // Добавляем текущий период (от последнего въезда до сегодня)
+    // Add current period (from last entry to today)
     if (currentEntryDate <= today) {
       const days = this.daysBetween(currentEntryDate, today);
       periods.push({
@@ -166,9 +197,10 @@ export class LegalService {
       totalDaysInRussia += days;
     }
 
-    // Если не было выездов, считаем от даты въезда до сегодня
+    // If no exits, count from entry date to today
     if (exitDates.length === 0) {
       totalDaysInRussia = this.daysBetween(entryDate, today);
+      periods.length = 0; // Clear any periods
       periods.push({
         startDate: this.formatDate(entryDate),
         endDate: this.formatDate(today),
@@ -176,15 +208,15 @@ export class LegalService {
       });
     }
 
-    // Рассчитываем оставшиеся дни (максимум 90 дней)
+    // Calculate remaining days (max 90 days)
     const maxDays = 90;
     const daysRemaining = Math.max(0, maxDays - totalDaysInRussia);
 
-    // Максимальная дата пребывания (entryDate + 90 дней)
+    // Max stay date (entry + 90 days)
     const maxStayDate = new Date(entryDate);
     maxStayDate.setDate(maxStayDate.getDate() + maxDays);
 
-    // Проверяем превышение срока
+    // Check overstay
     const isOverstay = totalDaysInRussia > maxDays;
 
     return {
@@ -198,7 +230,7 @@ export class LegalService {
   }
 
   /**
-   * Количество дней между двумя датами (включительно)
+   * Days between two dates (inclusive)
    */
   private daysBetween(startDate: Date, endDate: Date): number {
     const diffTime = endDate.getTime() - startDate.getTime();
@@ -206,7 +238,7 @@ export class LegalService {
   }
 
   /**
-   * Форматировать дату в ISO формат (YYYY-MM-DD)
+   * Format date to ISO (YYYY-MM-DD)
    */
   private formatDate(date: Date): string {
     return date.toISOString().split('T')[0];

@@ -1,45 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsUrl, IsOptional } from 'class-validator';
 
 export class FormDto {
-  @ApiProperty({
-    description: 'Unique form identifier',
-    example: 'notice-arrival',
-  })
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({ example: 'form-registration' })
   id!: string;
 
-  @ApiProperty({
-    description: 'Form title',
-    example: 'Уведомление о прибытии иностранного гражданина',
-  })
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({ example: 'registration' })
+  categoryId!: string;
+
+  @ApiProperty({ example: 'Уведомление о прибытии' })
   title!: string;
 
-  @ApiProperty({
-    description: 'Form description',
-    example: 'Бланк уведомления для постановки на миграционный учёт',
-  })
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({ example: 'Форма для постановки на учёт' })
   description!: string;
 
-  @ApiProperty({
-    description: 'URL to download the form',
-    example: 'https://мвд.рф/upload/site1/document_file/blank_uvedomlenie.pdf',
-    required: false,
-  })
-  @IsOptional()
-  @IsUrl()
-  downloadUrl?: string;
+  @ApiProperty({ example: '/forms/uvedomlenie.pdf' })
+  fileUrl!: string;
 
-  @ApiProperty({
-    description: 'Category ID this form belongs to',
-    example: 'registration',
-  })
-  @IsString()
-  @IsNotEmpty()
-  categoryId!: string;
+  @ApiProperty({ example: 'pdf', enum: ['pdf', 'doc', 'docx'] })
+  format!: string;
+
+  @ApiProperty({ example: '156 KB', required: false })
+  size?: string;
 }

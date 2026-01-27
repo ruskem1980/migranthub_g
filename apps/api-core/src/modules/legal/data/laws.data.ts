@@ -1,84 +1,57 @@
-import { LawDto } from '../dto';
+export interface Law {
+  id: string;
+  categoryId: string;
+  title: string;
+  number: string;
+  date: string;
+  url: string;
+  summary: string;
+}
 
-export const LEGAL_LAWS: LawDto[] = [
+export const laws: Law[] = [
   {
     id: 'fz-115',
-    title: 'О правовом положении иностранных граждан в Российской Федерации',
-    number: '115-ФЗ',
-    description:
-      'Основной федеральный закон, определяющий правовое положение иностранных граждан в РФ, порядок их въезда, выезда, пребывания и проживания на территории России.',
-    effectiveDate: '2002-07-25',
-    url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102078073',
     categoryId: 'registration',
+    title: 'О правовом положении иностранных граждан в РФ',
+    number: '115-ФЗ',
+    date: '2002-07-25',
+    url: 'http://www.consultant.ru/document/cons_doc_LAW_37868/',
+    summary: 'Основной закон о статусе иностранцев, визах, РВП, ВНЖ, трудовой деятельности',
   },
   {
     id: 'fz-109',
-    title: 'О миграционном учёте иностранных граждан и лиц без гражданства в Российской Федерации',
+    categoryId: 'registration',
+    title: 'О миграционном учёте иностранных граждан и лиц без гражданства',
     number: '109-ФЗ',
-    description:
-      'Регулирует отношения в сфере миграционного учёта иностранных граждан, устанавливает порядок постановки на учёт и снятия с учёта.',
-    effectiveDate: '2006-07-18',
-    url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102108504',
-    categoryId: 'registration',
-  },
-  {
-    id: 'pp-9',
-    title: 'О порядке осуществления миграционного учёта иностранных граждан и лиц без гражданства',
-    number: 'Постановление Правительства РФ № 9',
-    description:
-      'Устанавливает правила и порядок осуществления миграционного учёта иностранных граждан, формы документов и сроки их подачи.',
-    effectiveDate: '2007-01-15',
-    url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102111024',
-    categoryId: 'registration',
-  },
-  {
-    id: 'nk-227-1',
-    title: 'Налоговый кодекс РФ, статья 227.1',
-    number: 'НК РФ ст. 227.1',
-    description:
-      'Устанавливает порядок исчисления и уплаты НДФЛ в виде фиксированных авансовых платежей (патент на работу) иностранными гражданами.',
-    effectiveDate: '2010-07-01',
-    url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102067058',
-    categoryId: 'patent',
-  },
-  {
-    id: 'fz-62',
-    title: 'О гражданстве Российской Федерации',
-    number: '62-ФЗ',
-    description:
-      'Определяет принципы гражданства РФ, правила приобретения и прекращения гражданства, порядок производства по делам о гражданстве.',
-    effectiveDate: '2002-05-31',
-    url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102076357',
-    categoryId: 'citizenship',
+    date: '2006-07-18',
+    url: 'http://www.consultant.ru/document/cons_doc_LAW_61569/',
+    summary: 'Порядок постановки на миграционный учёт, сроки, ответственность',
   },
   {
     id: 'fz-114',
-    title: 'О порядке выезда из Российской Федерации и въезда в Российскую Федерацию',
+    categoryId: 'ban',
+    title: 'О порядке выезда из РФ и въезда в РФ',
     number: '114-ФЗ',
-    description:
-      'Регулирует порядок оформления и выдачи документов для выезда и въезда, устанавливает ограничения и основания для отказа.',
-    effectiveDate: '1996-08-15',
-    url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102042952',
-    categoryId: 'visa',
+    date: '1996-08-15',
+    url: 'http://www.consultant.ru/document/cons_doc_LAW_11376/',
+    summary: 'Основания для запрета въезда, сроки, порядок обжалования',
   },
   {
-    id: 'tk-rf-327',
-    title: 'Трудовой кодекс РФ, глава 50.1',
-    number: 'ТК РФ гл. 50.1',
-    description:
-      'Особенности регулирования труда работников, являющихся иностранными гражданами или лицами без гражданства.',
-    effectiveDate: '2014-12-01',
-    url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102074279',
-    categoryId: 'work',
-  },
-  {
-    id: 'prikaz-mvd-514',
-    title: 'Административный регламент МВД по оформлению патента',
-    number: 'Приказ МВД России № 514',
-    description:
-      'Административный регламент предоставления государственной услуги по оформлению и выдаче патентов на работу иностранным гражданам.',
-    effectiveDate: '2020-08-05',
-    url: 'https://мвд.рф/documents/',
+    id: 'nk-227',
     categoryId: 'patent',
+    title: 'Налоговый кодекс РФ, статья 227.1',
+    number: 'НК РФ ст.227.1',
+    date: '2000-08-05',
+    url: 'http://www.consultant.ru/document/cons_doc_LAW_19671/a59e3676f6c5a065c28e7f82bff3d70b5b95c4f3/',
+    summary: 'Порядок уплаты НДФЛ по патенту, авансовые платежи',
+  },
+  {
+    id: 'koap-18',
+    categoryId: 'deportation',
+    title: 'КоАП РФ, глава 18',
+    number: 'КоАП РФ гл.18',
+    date: '2001-12-30',
+    url: 'http://www.consultant.ru/document/cons_doc_LAW_34661/5c8f5d4c61e5a8c8f3d0c2a5c7e8b9d0/',
+    summary: 'Административные правонарушения в области миграции, штрафы, выдворение',
   },
 ];

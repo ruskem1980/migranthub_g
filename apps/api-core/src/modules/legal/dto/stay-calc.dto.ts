@@ -1,92 +1,44 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsDateString, IsArray, IsOptional, IsInt, IsBoolean, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
-
-export class StayCalcRequestDto {
-  @ApiProperty({
-    description: 'Entry date in ISO format',
-    example: '2024-01-15',
-  })
-  @IsDateString()
-  @IsNotEmpty()
-  entryDate!: string;
-
-  @ApiProperty({
-    description: 'Array of exit dates (for multiple entries)',
-    example: ['2024-03-01', '2024-04-15'],
-    required: false,
-  })
-  @IsOptional()
-  @IsArray()
-  @IsDateString({}, { each: true })
-  exitDates?: string[];
-}
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsDateString, IsArray, IsOptional } from 'class-validator';
 
 export class StayPeriodDto {
-  @ApiProperty({
-    description: 'Period start date',
-    example: '2024-01-15',
-  })
-  @IsDateString()
+  @ApiProperty({ example: '2024-01-15' })
   startDate!: string;
 
-  @ApiProperty({
-    description: 'Period end date',
-    example: '2024-03-01',
-  })
-  @IsDateString()
+  @ApiProperty({ example: '2024-03-01' })
   endDate!: string;
 
-  @ApiProperty({
-    description: 'Days in this period',
-    example: 46,
-  })
-  @IsInt()
+  @ApiProperty({ example: 45 })
   days!: number;
 }
 
-export class StayCalcResponseDto {
-  @ApiProperty({
-    description: 'Entry date',
-    example: '2024-01-15',
-  })
+export class StayCalcRequestDto {
+  @ApiProperty({ example: '2024-01-15', description: 'Entry date to Russia' })
   @IsDateString()
   entryDate!: string;
 
-  @ApiProperty({
-    description: 'Total days spent in Russia within 180-day period',
-    example: 45,
-  })
-  @IsInt()
+  @ApiPropertyOptional({ type: [String], description: 'Exit dates from Russia' })
+  @IsOptional()
+  @IsArray()
+  exitDates?: string[];
+}
+
+export class StayCalcResponseDto {
+  @ApiProperty({ example: '2024-01-15' })
+  entryDate!: string;
+
+  @ApiProperty({ example: 45 })
   daysInRussia!: number;
 
-  @ApiProperty({
-    description: 'Days remaining until 90-day limit',
-    example: 45,
-  })
-  @IsInt()
+  @ApiProperty({ example: 45 })
   daysRemaining!: number;
 
-  @ApiProperty({
-    description: 'Maximum allowed stay date',
-    example: '2024-04-14',
-  })
-  @IsDateString()
+  @ApiProperty({ example: '2024-04-14' })
   maxStayDate!: string;
 
-  @ApiProperty({
-    description: 'Whether the stay exceeds allowed limit',
-    example: false,
-  })
-  @IsBoolean()
+  @ApiProperty({ example: false })
   isOverstay!: boolean;
 
-  @ApiProperty({
-    description: 'Breakdown of stay periods',
-    type: [StayPeriodDto],
-  })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => StayPeriodDto)
+  @ApiProperty({ type: [StayPeriodDto] })
   periods!: StayPeriodDto[];
 }
