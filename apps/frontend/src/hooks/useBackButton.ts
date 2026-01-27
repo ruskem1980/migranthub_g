@@ -44,16 +44,20 @@ export function useBackButton(options: UseBackButtonOptions = {}) {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
 
-    const listener = App.addListener('backButton', () => {
+    let listenerHandle: Awaited<ReturnType<typeof App.addListener>> | null = null;
+
+    App.addListener('backButton', () => {
       const handled = backButtonService.handle();
 
       if (!handled) {
         defaultHandler();
       }
+    }).then((handle) => {
+      listenerHandle = handle;
     });
 
     return () => {
-      listener.remove();
+      listenerHandle?.remove();
     };
   }, [defaultHandler]);
 }

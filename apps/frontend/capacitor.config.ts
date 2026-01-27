@@ -8,8 +8,6 @@ const config: CapacitorConfig = {
     androidScheme: 'https',
     iosScheme: 'https',
   },
-  // Deep links configuration
-  appUrlSchemes: ['migranthub'],
   plugins: {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],

@@ -30,7 +30,7 @@ const profileSchema = z.object({
   entryDate: z.string().optional(),
   migrationCardNumber: z.string().optional(),
   migrationCardExpiry: z.string().optional(),
-  purpose: z.enum(['work', 'study', 'tourist', 'private']).optional(),
+  purpose: z.enum(['work', 'study', 'tourist', 'private', 'business', 'official', 'transit']).optional(),
 
   // Registration
   registrationAddress: z.string().optional(),
