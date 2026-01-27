@@ -1,6 +1,6 @@
 'use client';
 
-import { QrCode, ChevronRight, History, Lock, Edit2, Globe, Trash2, X, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert } from 'lucide-react';
+import { QrCode, ChevronRight, History, Lock, Edit2, Globe, Trash2, X, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert, ClipboardList } from 'lucide-react';
 import { useState, useMemo, useEffect } from 'react';
 import { LegalizationWizard } from '../wizard/LegalizationWizard';
 import { BanChecker } from '@/features/services/components/BanChecker';
@@ -203,6 +203,65 @@ export function HomeScreen() {
               </h2>
               <p className="text-center text-amber-100 text-xs">
                 {t('services.banCheck.subtitle')}
+              </p>
+            </div>
+          </button>
+        </div>
+
+        {/* Second Row - Calculator & Applications */}
+        <div className="grid grid-cols-2 gap-3 mt-3">
+          {/* Residency Calculator */}
+          <button
+            onClick={() => window.location.href = '/calculator'}
+            className="bg-gradient-to-br from-teal-500 via-emerald-500 to-green-600 text-white rounded-2xl p-5 shadow-xl hover:shadow-2xl transition-all active:scale-98 relative overflow-hidden group"
+          >
+            {/* Animated Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-green-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+            {/* Decorative Elements */}
+            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-10 translate-x-10"></div>
+
+            {/* Content */}
+            <div className="relative z-10">
+              <div className="flex items-center justify-center mb-3">
+                <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <Calculator className="w-7 h-7 text-white" />
+                </div>
+              </div>
+
+              <h2 className="text-base font-bold text-center mb-1">
+                {t('services.items.calculator.title')}
+              </h2>
+              <p className="text-center text-teal-100 text-xs">
+                {t('services.items.calculator.subtitle')}
+              </p>
+            </div>
+          </button>
+
+          {/* My Applications */}
+          <button
+            onClick={() => window.location.href = '/applications'}
+            className="bg-gradient-to-br from-indigo-500 via-purple-500 to-violet-600 text-white rounded-2xl p-5 shadow-xl hover:shadow-2xl transition-all active:scale-98 relative overflow-hidden group"
+          >
+            {/* Animated Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-400 to-violet-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+            {/* Decorative Elements */}
+            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-10 translate-x-10"></div>
+
+            {/* Content */}
+            <div className="relative z-10">
+              <div className="flex items-center justify-center mb-3">
+                <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <ClipboardList className="w-7 h-7 text-white" />
+                </div>
+              </div>
+
+              <h2 className="text-base font-bold text-center mb-1">
+                {t('services.items.applications.title')}
+              </h2>
+              <p className="text-center text-indigo-100 text-xs">
+                {t('services.items.applications.subtitle')}
               </p>
             </div>
           </button>

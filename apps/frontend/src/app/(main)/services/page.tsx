@@ -2,14 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Shield, Calculator, MapPin, GraduationCap, Languages, FileText, Briefcase, Home, CreditCard, Map } from 'lucide-react';
+import { ArrowLeft, MapPin, GraduationCap, Languages, Map } from 'lucide-react';
 import {
   MapScreen,
-  BanChecker,
   ExamTrainer,
 } from '@/features/services';
 
-type ServiceModal = 'map' | 'ban-check' | 'exam' | null;
+type ServiceModal = 'map' | 'exam' | null;
 
 interface Service {
   id: string;
@@ -24,24 +23,6 @@ interface Service {
 }
 
 const services: Service[] = [
-  {
-    id: 'ban-check',
-    title: 'Проверка запретов',
-    description: 'МВД / ФССП',
-    icon: Shield,
-    color: 'text-red-600',
-    bgColor: 'bg-red-50',
-    modal: 'ban-check',
-  },
-  {
-    id: 'calculator',
-    title: 'Калькулятор 90/180',
-    description: 'Дни пребывания',
-    icon: Calculator,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-50',
-    href: '/calculator',
-  },
   {
     id: 'map',
     title: 'Карта мигранта',
@@ -211,9 +192,6 @@ export default function ServicesPage() {
       {/* Modals */}
       {activeModal === 'map' && (
         <MapScreen onClose={closeModal} initialFilter={mapInitialFilter} />
-      )}
-      {activeModal === 'ban-check' && (
-        <BanChecker onClose={closeModal} />
       )}
       {activeModal === 'exam' && (
         <ExamTrainer onClose={closeModal} />
