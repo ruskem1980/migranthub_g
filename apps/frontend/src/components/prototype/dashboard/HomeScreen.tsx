@@ -1,8 +1,9 @@
 'use client';
 
-import { QrCode, ChevronRight, Volume2, History, Lock, Edit2, Globe, Trash2, X, Rocket, FileText, AlertTriangle, CreditCard, Grid3x3, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check } from 'lucide-react';
+import { QrCode, ChevronRight, Volume2, History, Lock, Edit2, Globe, Trash2, X, Rocket, FileText, AlertTriangle, CreditCard, Grid3x3, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert } from 'lucide-react';
 import { useState, useMemo, useEffect } from 'react';
 import { LegalizationWizard } from '../wizard/LegalizationWizard';
+import { BanChecker } from '@/features/services/components/BanChecker';
 import { useTranslation, LANGUAGES } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useProfileStore } from '@/lib/stores';
@@ -27,6 +28,7 @@ export function HomeScreen() {
   const [showOtherServices, setShowOtherServices] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showAILanguages, setShowAILanguages] = useState(false);
+  const [showBanChecker, setShowBanChecker] = useState(false);
 
   // Initialize from profile store, fallback to empty
   const [editEntryDate, setEditEntryDate] = useState(profile?.entryDate || '');
@@ -144,41 +146,65 @@ export function HomeScreen() {
         </div>
       </div>
 
-      {/* Hero Section - Single Primary Action */}
-      <div className="px-4 py-8">
-        <button
-          onClick={() => setShowWizard(true)}
-          className="w-full bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-600 text-white rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all active:scale-98 relative overflow-hidden group"
-        >
-          {/* Animated Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          
-          {/* Decorative Elements */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
-          
-          {/* Content */}
-          <div className="relative z-10">
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm animate-pulse">
-                <FileCheck className="w-10 h-10 text-white" />
-              </div>
-            </div>
-            
-            <h2 className="text-2xl font-bold text-center mb-2">
-              {t('dashboard.hero.title')}
-            </h2>
-            <p className="text-center text-blue-100 text-sm mb-4">
-              {t('dashboard.hero.subtitle')}
-            </p>
+      {/* Hero Section - Two Primary Actions */}
+      <div className="px-4 py-6">
+        <div className="grid grid-cols-2 gap-3">
+          {/* Legalization Wizard */}
+          <button
+            onClick={() => setShowWizard(true)}
+            className="bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-600 text-white rounded-2xl p-5 shadow-xl hover:shadow-2xl transition-all active:scale-98 relative overflow-hidden group"
+          >
+            {/* Animated Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-              <p className="text-xs text-white/90 text-center leading-relaxed">
-                {t('dashboard.hero.description')}
+            {/* Decorative Elements */}
+            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-10 translate-x-10"></div>
+
+            {/* Content */}
+            <div className="relative z-10">
+              <div className="flex items-center justify-center mb-3">
+                <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <FileCheck className="w-7 h-7 text-white" />
+                </div>
+              </div>
+
+              <h2 className="text-base font-bold text-center mb-1">
+                {t('dashboard.hero.title')}
+              </h2>
+              <p className="text-center text-blue-100 text-xs">
+                {t('dashboard.hero.subtitle')}
               </p>
             </div>
-          </div>
-        </button>
+          </button>
+
+          {/* Ban Checker */}
+          <button
+            onClick={() => setShowBanChecker(true)}
+            className="bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 text-white rounded-2xl p-5 shadow-xl hover:shadow-2xl transition-all active:scale-98 relative overflow-hidden group"
+          >
+            {/* Animated Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-red-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+            {/* Decorative Elements */}
+            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-10 translate-x-10"></div>
+
+            {/* Content */}
+            <div className="relative z-10">
+              <div className="flex items-center justify-center mb-3">
+                <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <ShieldAlert className="w-7 h-7 text-white" />
+                </div>
+              </div>
+
+              <h2 className="text-base font-bold text-center mb-1">
+                {t('services.banCheck.title')}
+              </h2>
+              <p className="text-center text-amber-100 text-xs">
+                {t('services.banCheck.subtitle')}
+              </p>
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Task Carousel */}
@@ -912,6 +938,11 @@ export function HomeScreen() {
             checkedDocs: checkedDocs,
           }}
         />
+      )}
+
+      {/* Ban Checker */}
+      {showBanChecker && (
+        <BanChecker onClose={() => setShowBanChecker(false)} />
       )}
     </div>
   );
