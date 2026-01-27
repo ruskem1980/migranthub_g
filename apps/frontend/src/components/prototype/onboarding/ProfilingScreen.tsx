@@ -5,13 +5,22 @@ import { useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useProfileStore } from '@/lib/stores';
+import {
+  COUNTRIES,
+  PRIORITY_COUNTRIES,
+  isEAEUCountry,
+  getCountryByIso,
+  type SupportedLanguage,
+  RUSSIAN_CITIES,
+  getMillionaireCities,
+} from '@/data';
 
 interface ProfilingScreenProps {
   onNext: () => void;
 }
 
 export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { updateProfile } = useProfileStore();
   const [citizenship, setCitizenship] = useState('');
   const [entryDate, setEntryDate] = useState('');
@@ -183,16 +192,31 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">{t('onboarding.profiling.selectCountry')}</option>
-                  <option value="AM">🇦🇲 {t('countries.AM')} (ЕАЭС)</option>
-                  <option value="AZ">🇦🇿 {t('countries.AZ')}</option>
-                  <option value="BY">🇧🇾 {t('countries.BY')} (ЕАЭС)</option>
-                  <option value="GE">🇬🇪 {t('countries.GE')}</option>
-                  <option value="KZ">🇰🇿 {t('countries.KZ')} (ЕАЭС)</option>
-                  <option value="MD">🇲🇩 {t('countries.MD')}</option>
-                  <option value="UA">🇺🇦 {t('countries.UA')}</option>
-                  <option value="CN">🇨🇳 {t('countries.CN')}</option>
-                  <option value="IN">🇮🇳 {t('countries.IN')}</option>
-                  <option value="VN">🇻🇳 {t('countries.VN')}</option>
+                  {/* Priority countries (excluding top 3 which are buttons) */}
+                  {COUNTRIES
+                    .filter(c => PRIORITY_COUNTRIES.includes(c.iso) && !['UZ', 'TJ', 'KG'].includes(c.iso))
+                    .map(country => (
+                      <option key={country.iso} value={country.iso}>
+                        {country.flag} {country.name[language as SupportedLanguage] || country.name.ru}
+                        {isEAEUCountry(country.iso) ? ' (ЕАЭС)' : ''}
+                      </option>
+                    ))
+                  }
+                  <option disabled>──────────</option>
+                  {/* All other countries */}
+                  {COUNTRIES
+                    .filter(c => !PRIORITY_COUNTRIES.includes(c.iso))
+                    .sort((a, b) => {
+                      const nameA = a.name[language as SupportedLanguage] || a.name.ru;
+                      const nameB = b.name[language as SupportedLanguage] || b.name.ru;
+                      return nameA.localeCompare(nameB, language);
+                    })
+                    .map(country => (
+                      <option key={country.iso} value={country.iso}>
+                        {country.flag} {country.name[language as SupportedLanguage] || country.name.ru}
+                      </option>
+                    ))
+                  }
                 </select>
                 <button
                   onClick={() => setShowOtherCitizenship(false)}
@@ -211,19 +235,19 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
               <div>
                 <p className="text-sm font-semibold text-blue-900 mb-1">{t('onboarding.profiling.departureCountry')}</p>
                 <p className="text-xs text-blue-800">
-                  {t('onboarding.profiling.autoFill')}: {
-                    citizenship === 'uz' ? `🇺🇿 ${t('countries.UZ')}` :
-                    citizenship === 'tj' ? `🇹🇯 ${t('countries.TJ')}` :
-                    citizenship === 'kg' ? `🇰🇬 ${t('countries.KG')}` :
-                    citizenship === 'other' && otherCitizenshipValue ? (() => {
-                      const flagMap: Record<string, string> = {
-                        AM: '🇦🇲', AZ: '🇦🇿', BY: '🇧🇾', GE: '🇬🇪', KZ: '🇰🇿',
-                        MD: '🇲🇩', UA: '🇺🇦', CN: '🇨🇳', IN: '🇮🇳', VN: '🇻🇳'
-                      };
-                      return `${flagMap[otherCitizenshipValue] || ''} ${t(`countries.${otherCitizenshipValue}`)}`;
-                    })() :
-                    t('onboarding.profiling.notSelected')
-                  }
+                  {t('onboarding.profiling.autoFill')}: {(() => {
+                    const isoCode = citizenship === 'uz' ? 'UZ' :
+                                    citizenship === 'tj' ? 'TJ' :
+                                    citizenship === 'kg' ? 'KG' :
+                                    citizenship === 'other' ? otherCitizenshipValue : null;
+                    if (isoCode) {
+                      const country = getCountryByIso(isoCode);
+                      if (country) {
+                        return `${country.flag} ${country.name[language as SupportedLanguage] || country.name.ru}`;
+                      }
+                    }
+                    return t('onboarding.profiling.notSelected');
+                  })()}
                 </p>
               </div>
             </div>
@@ -347,18 +371,28 @@ export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">{t('onboarding.profiling.selectRegion')}</option>
-                  <option value="yekaterinburg">{t('onboarding.profiling.regions.ekaterinburg')}</option>
-                  <option value="kazan">{t('onboarding.profiling.regions.kazan')}</option>
-                  <option value="nizhnyNovgorod">{t('onboarding.profiling.regions.nizhny')}</option>
-                  <option value="samara">{t('onboarding.profiling.regions.samara')}</option>
-                  <option value="omsk">{t('onboarding.profiling.regions.omsk')}</option>
-                  <option value="chelyabinsk">{t('onboarding.profiling.regions.chelyabinsk')}</option>
-                  <option value="rostov">{t('onboarding.profiling.regions.rostov')}</option>
-                  <option value="ufa">{t('onboarding.profiling.regions.ufa')}</option>
-                  <option value="krasnoyarsk">{t('onboarding.profiling.regions.krasnoyarsk')}</option>
-                  <option value="voronezh">{t('onboarding.profiling.regions.voronezh')}</option>
-                  <option value="perm">{t('onboarding.profiling.regions.perm')}</option>
-                  <option value="volgograd">{t('onboarding.profiling.regions.volgograd')}</option>
+                  {/* Millionaire cities first (excluding top 3 which are buttons) */}
+                  {getMillionaireCities()
+                    .filter(city => !['moscow', 'saint-petersburg', 'novosibirsk'].includes(city.id))
+                    .map(city => (
+                      <option key={city.id} value={city.id}>
+                        {city.name[language === 'en' ? 'en' : 'ru']}
+                      </option>
+                    ))
+                  }
+                  <option disabled>──────────</option>
+                  {/* Other major cities (500k+) */}
+                  {RUSSIAN_CITIES
+                    .filter(city =>
+                      (city.population ?? 0) >= 500000 &&
+                      (city.population ?? 0) < 1000000
+                    )
+                    .map(city => (
+                      <option key={city.id} value={city.id}>
+                        {city.name[language === 'en' ? 'en' : 'ru']}
+                      </option>
+                    ))
+                  }
                 </select>
                 <button
                   onClick={() => setShowOtherRegion(false)}

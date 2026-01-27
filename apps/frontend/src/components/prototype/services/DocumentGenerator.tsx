@@ -3,6 +3,11 @@
 import { useState } from 'react';
 import { X, FileText, Home, Briefcase, FileCheck, Plus, Download, AlertCircle, Camera, Edit3, Check, ChevronRight, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import {
+  COUNTRIES,
+  PRIORITY_COUNTRIES,
+  type SupportedLanguage,
+} from '@/data';
 
 interface DocumentGeneratorProps {
   onClose: () => void;
@@ -239,7 +244,7 @@ const FIELD_LABELS: Record<string, string> = {
 };
 
 export function DocumentGenerator({ onClose, onSaveProfileData, profileData }: DocumentGeneratorProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId | null>(null);
   const [showMissingDataModal, setShowMissingDataModal] = useState(false);
   const [missingFields, setMissingFields] = useState<string[]>([]);
@@ -434,9 +439,26 @@ export function DocumentGenerator({ onClose, onSaveProfileData, profileData }: D
                     className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="">{t('docgen.selectCountry')}</option>
-                    <option value="Узбекистан">🇺🇿 {t('countries.UZ')}</option>
-                    <option value="Таджикистан">🇹🇯 {t('countries.TJ')}</option>
-                    <option value="Киргизия">🇰🇬 {t('countries.KG')}</option>
+                    {/* Priority countries */}
+                    {COUNTRIES
+                      .filter(c => PRIORITY_COUNTRIES.includes(c.iso))
+                      .map(country => (
+                        <option key={country.iso} value={country.name.ru}>
+                          {country.flag} {country.name[language as SupportedLanguage] || country.name.ru}
+                        </option>
+                      ))
+                    }
+                    <option disabled>──────────</option>
+                    {/* Other countries */}
+                    {COUNTRIES
+                      .filter(c => !PRIORITY_COUNTRIES.includes(c.iso))
+                      .slice(0, 50) // Limit for performance
+                      .map(country => (
+                        <option key={country.iso} value={country.name.ru}>
+                          {country.flag} {country.name[language as SupportedLanguage] || country.name.ru}
+                        </option>
+                      ))
+                    }
                   </select>
                 ) : field === 'hostAddress' ? (
                   <textarea

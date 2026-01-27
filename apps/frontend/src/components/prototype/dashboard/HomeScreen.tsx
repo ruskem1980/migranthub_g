@@ -7,6 +7,15 @@ import { BanChecker } from '@/features/services/components/BanChecker';
 import { useTranslation, LANGUAGES } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useProfileStore } from '@/lib/stores';
+import {
+  COUNTRIES,
+  PRIORITY_COUNTRIES,
+  getCountryByIso,
+  isEAEUCountry,
+  type SupportedLanguage,
+  RUSSIAN_CITIES,
+  getMillionaireCities,
+} from '@/data';
 
 // Generate initials from full name
 function getInitials(fullName: string): string {
@@ -97,20 +106,13 @@ export function HomeScreen() {
                 </button>
               </div>
               <p className="text-xs text-gray-500">
-                {editCitizenship === 'UZ' && '🇺🇿'}
-                {editCitizenship === 'TJ' && '🇹🇯'}
-                {editCitizenship === 'KG' && '🇰🇬'}
-                {editCitizenship === 'AM' && '🇦🇲'}
-                {editCitizenship === 'AZ' && '🇦🇿'}
-                {editCitizenship === 'BY' && '🇧🇾'}
-                {editCitizenship === 'GE' && '🇬🇪'}
-                {editCitizenship === 'KZ' && '🇰🇿'}
-                {editCitizenship === 'MD' && '🇲🇩'}
-                {editCitizenship === 'UA' && '🇺🇦'}
-                {editCitizenship === 'CN' && '🇨🇳'}
-                {editCitizenship === 'IN' && '🇮🇳'}
-                {editCitizenship === 'VN' && '🇻🇳'}
-                {' '}{t(`countries.${editCitizenship}`)}
+                {(() => {
+                  const country = getCountryByIso(editCitizenship);
+                  if (country) {
+                    return `${country.flag} ${country.name[language as SupportedLanguage] || country.name.ru}`;
+                  }
+                  return editCitizenship;
+                })()}
               </p>
             </div>
           </div>
@@ -366,23 +368,35 @@ export function HomeScreen() {
                   onChange={(e) => setEditCitizenship(e.target.value)}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="UZ">🇺🇿 {t('countries.UZ')}</option>
-                  <option value="TJ">🇹🇯 {t('countries.TJ')}</option>
-                  <option value="KG">🇰🇬 {t('countries.KG')}</option>
-                  <option value="AM">🇦🇲 {t('countries.AM')} (ЕАЭС)</option>
-                  <option value="AZ">🇦🇿 {t('countries.AZ')}</option>
-                  <option value="BY">🇧🇾 {t('countries.BY')} (ЕАЭС)</option>
-                  <option value="GE">🇬🇪 {t('countries.GE')}</option>
-                  <option value="KZ">🇰🇿 {t('countries.KZ')} (ЕАЭС)</option>
-                  <option value="MD">🇲🇩 {t('countries.MD')}</option>
-                  <option value="UA">🇺🇦 {t('countries.UA')}</option>
-                  <option value="CN">🇨🇳 {t('countries.CN')}</option>
-                  <option value="IN">🇮🇳 {t('countries.IN')}</option>
-                  <option value="VN">🇻🇳 {t('countries.VN')}</option>
+                  {/* Priority countries */}
+                  {COUNTRIES
+                    .filter(c => PRIORITY_COUNTRIES.includes(c.iso))
+                    .map(country => (
+                      <option key={country.iso} value={country.iso}>
+                        {country.flag} {country.name[language as SupportedLanguage] || country.name.ru}
+                        {isEAEUCountry(country.iso) ? ' (ЕАЭС)' : ''}
+                      </option>
+                    ))
+                  }
+                  <option disabled>──────────</option>
+                  {/* All other countries */}
+                  {COUNTRIES
+                    .filter(c => !PRIORITY_COUNTRIES.includes(c.iso))
+                    .sort((a, b) => {
+                      const nameA = a.name[language as SupportedLanguage] || a.name.ru;
+                      const nameB = b.name[language as SupportedLanguage] || b.name.ru;
+                      return nameA.localeCompare(nameB, language);
+                    })
+                    .map(country => (
+                      <option key={country.iso} value={country.iso}>
+                        {country.flag} {country.name[language as SupportedLanguage] || country.name.ru}
+                      </option>
+                    ))
+                  }
                 </select>
 
                 {/* EAEU Note */}
-                {['AM', 'BY', 'KZ'].includes(editCitizenship) && (
+                {isEAEUCountry(editCitizenship) && (
                   <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg">
                     <p className="text-xs text-green-800">
                       ✅ {t('profile.eaeuNote')}
@@ -401,21 +415,33 @@ export function HomeScreen() {
                   onChange={(e) => setEditRegion(e.target.value)}
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="moscow">🏙️ {t('cities.moscow')}</option>
-                  <option value="saintPetersburg">🏛️ {t('cities.saintPetersburg')}</option>
-                  <option value="novosibirsk">❄️ {t('cities.novosibirsk')}</option>
-                  <option value="yekaterinburg">{t('cities.yekaterinburg')}</option>
-                  <option value="kazan">{t('cities.kazan')}</option>
-                  <option value="nizhnyNovgorod">{t('cities.nizhnyNovgorod')}</option>
-                  <option value="samara">{t('cities.samara')}</option>
-                  <option value="omsk">{t('cities.omsk')}</option>
-                  <option value="chelyabinsk">{t('cities.chelyabinsk')}</option>
-                  <option value="rostovOnDon">{t('cities.rostovOnDon')}</option>
-                  <option value="ufa">{t('cities.ufa')}</option>
-                  <option value="krasnoyarsk">{t('cities.krasnoyarsk')}</option>
-                  <option value="voronezh">{t('cities.voronezh')}</option>
-                  <option value="perm">{t('cities.perm')}</option>
-                  <option value="volgograd">{t('cities.volgograd')}</option>
+                  {/* Top 3 cities with icons */}
+                  <option value="moscow">🏙️ {RUSSIAN_CITIES.find(c => c.id === 'moscow')?.name[language === 'en' ? 'en' : 'ru'] || 'Москва'}</option>
+                  <option value="saint-petersburg">🏛️ {RUSSIAN_CITIES.find(c => c.id === 'saint-petersburg')?.name[language === 'en' ? 'en' : 'ru'] || 'Санкт-Петербург'}</option>
+                  <option value="novosibirsk">❄️ {RUSSIAN_CITIES.find(c => c.id === 'novosibirsk')?.name[language === 'en' ? 'en' : 'ru'] || 'Новосибирск'}</option>
+                  <option disabled>──────────</option>
+                  {/* Other millionaire cities */}
+                  {getMillionaireCities()
+                    .filter(city => !['moscow', 'saint-petersburg', 'novosibirsk'].includes(city.id))
+                    .map(city => (
+                      <option key={city.id} value={city.id}>
+                        {city.name[language === 'en' ? 'en' : 'ru']}
+                      </option>
+                    ))
+                  }
+                  <option disabled>──────────</option>
+                  {/* Cities 500k+ */}
+                  {RUSSIAN_CITIES
+                    .filter(city =>
+                      (city.population ?? 0) >= 500000 &&
+                      (city.population ?? 0) < 1000000
+                    )
+                    .map(city => (
+                      <option key={city.id} value={city.id}>
+                        {city.name[language === 'en' ? 'en' : 'ru']}
+                      </option>
+                    ))
+                  }
                 </select>
               </div>
 

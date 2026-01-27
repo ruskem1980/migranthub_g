@@ -6,6 +6,12 @@ import { z } from 'zod';
 import { Camera, Save, User, FileText, Briefcase, MapPin } from 'lucide-react';
 import { useState } from 'react';
 import { PassportScanner } from './PassportScanner';
+import {
+  COUNTRIES,
+  PRIORITY_COUNTRIES,
+  isEAEUCountry,
+  RUSSIAN_CITIES,
+} from '@/data';
 
 const profileSchema = z.object({
   // Personal Info
@@ -52,25 +58,20 @@ interface ProfileFormProps {
   isLoading?: boolean;
 }
 
-const CITIZENSHIPS = [
-  { code: 'UZB', name: 'Узбекистан' },
-  { code: 'TJK', name: 'Таджикистан' },
-  { code: 'KGZ', name: 'Кыргызстан' },
-  { code: 'AZE', name: 'Азербайджан' },
-  { code: 'ARM', name: 'Армения' },
-  { code: 'MDA', name: 'Молдова' },
-  { code: 'UKR', name: 'Украина' },
-];
+// Get priority countries for citizenship dropdown
+const CITIZENSHIPS = COUNTRIES
+  .filter(c => PRIORITY_COUNTRIES.includes(c.iso))
+  .map(c => ({
+    code: c.iso,
+    name: c.name.ru,
+    flag: c.flag,
+    isEAEU: isEAEUCountry(c.iso),
+  }));
 
-const PATENT_REGIONS = [
-  'Москва',
-  'Московская область',
-  'Санкт-Петербург',
-  'Ленинградская область',
-  'Краснодарский край',
-  'Свердловская область',
-  'Новосибирская область',
-];
+// Get major cities for patent regions
+const PATENT_REGIONS = RUSSIAN_CITIES
+  .filter(city => (city.population ?? 0) >= 500000)
+  .map(city => city.name.ru);
 
 export function ProfileForm({ initialData, onSubmit, isLoading }: ProfileFormProps) {
   const [showScanner, setShowScanner] = useState(false);
@@ -227,7 +228,7 @@ export function ProfileForm({ initialData, onSubmit, isLoading }: ProfileFormPro
                 <option value="">Выберите страну</option>
                 {CITIZENSHIPS.map((c) => (
                   <option key={c.code} value={c.code}>
-                    {c.name}
+                    {c.flag} {c.name}{c.isEAEU ? ' (ЕАЭС)' : ''}
                   </option>
                 ))}
               </select>
