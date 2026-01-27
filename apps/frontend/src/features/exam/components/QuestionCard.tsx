@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle2, XCircle, Lightbulb, ChevronRight } from 'lucide-react';
 import { Question, QuestionCategory, QuestionDifficulty } from '../types';
+import { successHaptic, errorHaptic } from '@/lib/haptics';
 
 interface QuestionCardProps {
   question: Question;
@@ -70,6 +71,14 @@ export function QuestionCard({
 
   const handleOptionClick = (index: number) => {
     if (hasAnswered) return;
+
+    // Trigger haptic feedback based on answer correctness
+    if (index === question.correctIndex) {
+      successHaptic();
+    } else {
+      errorHaptic();
+    }
+
     onAnswer(index);
   };
 

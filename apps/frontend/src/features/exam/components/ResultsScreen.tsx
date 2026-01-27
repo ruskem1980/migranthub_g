@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Trophy,
@@ -13,6 +14,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { ExamResult, QuestionCategory } from '../types';
+import { successHaptic, errorHaptic } from '@/lib/haptics';
 
 interface ResultsScreenProps {
   result: ExamResult;
@@ -112,6 +114,18 @@ function CircularProgress({
 export function ResultsScreen({ result, onRetry, onHome }: ResultsScreenProps) {
   const router = useRouter();
 
+  const passThreshold = 70;
+  const isPassed = result.passed ?? result.percentage >= passThreshold;
+
+  // Trigger haptic feedback when results are shown
+  useEffect(() => {
+    if (isPassed) {
+      successHaptic();
+    } else {
+      errorHaptic();
+    }
+  }, [isPassed]);
+
   const handleRetry = () => {
     if (onRetry) {
       onRetry();
@@ -127,9 +141,6 @@ export function ResultsScreen({ result, onRetry, onHome }: ResultsScreenProps) {
       router.push('/exam');
     }
   };
-
-  const passThreshold = 70;
-  const isPassed = result.passed ?? result.percentage >= passThreshold;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-safe">
