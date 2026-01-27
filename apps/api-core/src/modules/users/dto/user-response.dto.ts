@@ -53,6 +53,22 @@ export class UserResponseDto {
   @Expose()
   entryDate!: Date | null;
 
+  @ApiPropertyOptional({ description: 'Visit purpose', example: 'work' })
+  @Expose()
+  visitPurpose!: string | null;
+
+  @ApiPropertyOptional({ description: 'Registration date', example: '2024-01-20' })
+  @Expose()
+  registrationDate!: Date | null;
+
+  @ApiPropertyOptional({ description: 'Patent date', example: '2024-02-01' })
+  @Expose()
+  patentDate!: Date | null;
+
+  @ApiPropertyOptional({ description: 'Onboarding completion date' })
+  @Expose()
+  onboardingCompletedAt!: Date | null;
+
   @ApiProperty({ description: 'Subscription type', example: 'free' })
   @Expose()
   subscriptionType!: string;
@@ -80,6 +96,10 @@ export class UserResponseDto {
     dto.citizenshipCode = user.citizenshipCode;
     dto.regionCode = user.regionCode;
     dto.entryDate = user.entryDate;
+    dto.visitPurpose = user.visitPurpose;
+    dto.registrationDate = user.registrationDate;
+    dto.patentDate = user.patentDate;
+    dto.onboardingCompletedAt = user.onboardingCompletedAt;
     dto.subscriptionType = user.subscriptionType;
     dto.subscriptionExpiresAt = user.subscriptionExpiresAt;
     dto.settings = user.settings;

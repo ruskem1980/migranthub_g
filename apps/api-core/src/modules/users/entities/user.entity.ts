@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   Index,
 } from 'typeorm';
 
@@ -47,6 +48,18 @@ export class User {
   @Column({ name: 'entry_date', type: 'date', nullable: true })
   entryDate!: Date | null;
 
+  @Column({ name: 'visit_purpose', type: 'varchar', length: 20, nullable: true })
+  visitPurpose!: string | null;
+
+  @Column({ name: 'registration_date', type: 'date', nullable: true })
+  registrationDate!: Date | null;
+
+  @Column({ name: 'patent_date', type: 'date', nullable: true })
+  patentDate!: Date | null;
+
+  @Column({ name: 'onboarding_completed_at', type: 'timestamptz', nullable: true })
+  onboardingCompletedAt!: Date | null;
+
   @Column({
     name: 'subscription_type',
     type: 'varchar',
@@ -68,9 +81,24 @@ export class User {
   @Column({ name: 'refresh_token_hash', type: 'varchar', length: 64, nullable: true })
   refreshTokenHash!: string | null;
 
+  @Column({ name: 'signing_key', type: 'varchar', length: 64, nullable: true })
+  signingKey!: string | null;
+
+  @Column({ name: 'recovery_code_hash', type: 'varchar', length: 64, nullable: true })
+  recoveryCodeHash!: string | null;
+
+  @Column({ name: 'recovery_attempts', type: 'int', default: 0 })
+  recoveryAttempts!: number;
+
+  @Column({ name: 'recovery_blocked_until', type: 'timestamptz', nullable: true })
+  recoveryBlockedUntil!: Date | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt!: Date;
+
+  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamptz', nullable: true })
+  deletedAt!: Date | null;
 }

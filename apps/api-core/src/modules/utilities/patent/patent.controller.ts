@@ -23,7 +23,7 @@ export class PatentController {
     description: 'List of regions with patent prices',
     type: PatentRegionsResponseDto,
   })
-  getRegions(): PatentRegionsResponseDto {
+  async getRegions(): Promise<PatentRegionsResponseDto> {
     return this.patentService.getRegions();
   }
 }

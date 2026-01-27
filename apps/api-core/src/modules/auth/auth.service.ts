@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import { User } from '../users/entities/user.entity';
 import { DeviceAuthDto, AuthResponseDto } from './dto';
+import { SigningService } from './signing.service';
 
 interface JwtPayload {
   sub: string;
@@ -26,6 +27,7 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly signingService: SigningService,
   ) {}
 
   async deviceAuth(dto: DeviceAuthDto): Promise<AuthResponseDto> {
@@ -35,9 +37,13 @@ export class AuthService {
 
     const isNewUser = !user;
 
+    // Генерируем новый signing key при каждой аутентификации
+    const signingKey = this.signingService.generateSigningKey();
+
     if (!user) {
       user = this.userRepository.create({
         deviceId: dto.deviceId,
+        signingKey,
         settings: {
           locale: dto.locale || 'ru',
           notifications: {
@@ -57,14 +63,15 @@ export class AuthService {
 
     const tokens = await this.generateTokens(user);
 
-    // Store refresh token hash
+    // Store refresh token hash and signing key
     const refreshTokenHash = this.hashToken(tokens.refreshToken);
-    await this.userRepository.update(user.id, { refreshTokenHash });
+    await this.userRepository.update(user.id, { refreshTokenHash, signingKey });
 
     return {
       ...tokens,
       userId: user.id,
       isNewUser,
+      signingKey,
     };
   }
 
@@ -94,16 +101,21 @@ export class AuthService {
 
       const tokens = await this.generateTokens(user);
 
-      // Update refresh token hash
+      // Генерируем новый signing key при refresh
+      const signingKey = this.signingService.generateSigningKey();
+
+      // Update refresh token hash and signing key
       const newRefreshTokenHash = this.hashToken(tokens.refreshToken);
       await this.userRepository.update(user.id, {
         refreshTokenHash: newRefreshTokenHash,
+        signingKey,
       });
 
       return {
         ...tokens,
         userId: user.id,
         isNewUser: false,
+        signingKey,
       };
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';

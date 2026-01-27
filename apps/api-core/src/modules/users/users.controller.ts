@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Delete, Body, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -8,7 +8,14 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, CurrentUserPayload } from '../auth/decorators';
 import { UsersService } from './users.service';
-import { UpdateUserDto, UserResponseDto } from './dto';
+import { DeadlineCalculatorService } from './deadline-calculator.service';
+import {
+  UpdateUserDto,
+  UserResponseDto,
+  CompleteOnboardingDto,
+  CalculateDeadlinesDto,
+  DeadlinesResponseDto,
+} from './dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -18,7 +25,10 @@ import { UpdateUserDto, UserResponseDto } from './dto';
   version: '1',
 })
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly deadlineCalculatorService: DeadlineCalculatorService,
+  ) {}
 
   @Get('me')
   @ApiOperation({ summary: 'Get current user profile' })
@@ -50,5 +60,49 @@ export class UsersController {
   ): Promise<UserResponseDto> {
     const profile = await this.usersService.updateProfile(user.id, dto);
     return UserResponseDto.fromEntity(profile);
+  }
+
+  @Post('onboarding/complete')
+  @ApiOperation({ summary: 'Complete user onboarding' })
+  @ApiResponse({
+    status: 200,
+    description: 'Onboarding completed successfully',
+    type: UserResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Invalid request body or onboarding already completed' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async completeOnboarding(
+    @CurrentUser() user: CurrentUserPayload,
+    @Body() dto: CompleteOnboardingDto,
+  ): Promise<UserResponseDto> {
+    const profile = await this.usersService.completeOnboarding(user.id, dto);
+    return UserResponseDto.fromEntity(profile);
+  }
+
+  @Post('calculate')
+  @ApiOperation({ summary: 'Calculate migration deadlines' })
+  @ApiResponse({
+    status: 200,
+    description: 'Deadlines calculated successfully',
+    type: DeadlinesResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Invalid request body' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  calculateDeadlines(@Body() dto: CalculateDeadlinesDto): DeadlinesResponseDto {
+    return this.deadlineCalculatorService.calculateDeadlines(dto);
+  }
+
+  @Delete('account')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete user account (soft delete)' })
+  @ApiResponse({
+    status: 204,
+    description: 'Account deleted successfully',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async deleteAccount(@CurrentUser() user: CurrentUserPayload): Promise<void> {
+    await this.usersService.deleteAccount(user.id);
   }
 }

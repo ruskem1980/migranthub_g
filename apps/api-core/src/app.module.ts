@@ -8,17 +8,20 @@ import { HealthModule } from './modules/health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { UtilitiesModule } from './modules/utilities/utilities.module';
+import { CacheModule } from './modules/cache/cache.module';
+import { AuditModule } from './modules/audit/audit.module';
 import { SentryModule } from './common/sentry';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import jwtConfig from './config/jwt.config';
+import redisConfig from './config/redis.config';
 
 @Module({
   imports: [
     // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, jwtConfig],
+      load: [appConfig, databaseConfig, jwtConfig, redisConfig],
       envFilePath: ['.env.local', '.env'],
     }),
 
@@ -68,6 +71,12 @@ import jwtConfig from './config/jwt.config';
 
     // Monitoring
     SentryModule.forRootAsync(),
+
+    // Cache (Redis)
+    CacheModule,
+
+    // Audit logging
+    AuditModule,
 
     // Feature modules
     HealthModule,
