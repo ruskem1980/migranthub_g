@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, ExternalLink, Key } from 'lucide-react';
@@ -11,6 +11,11 @@ export default function WelcomePage() {
   const router = useRouter();
   const { t, language, setLanguage } = useTranslation();
   const [agreed, setAgreed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLanguageSelect = (code: Language) => {
     setLanguage(code);
@@ -47,29 +52,32 @@ export default function WelcomePage() {
         <div className="mb-6">
           <h2 className="text-white font-semibold text-lg mb-3">{t('welcome.selectLanguage')}</h2>
           <div className="grid grid-cols-2 gap-2">
-            {LANGUAGES.map((lang) => (
-              <button
-                key={lang.code}
-                onClick={() => handleLanguageSelect(lang.code)}
-                className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all ${
-                  lang.code === language
-                    ? 'bg-white shadow-lg'
-                    : 'bg-white/20 hover:bg-white/30'
-                }`}
-              >
-                <span className="text-3xl">{lang.flag}</span>
-                <span className={`text-xs font-medium ${
-                  lang.code === language ? 'text-gray-900' : 'text-white'
-                }`}>
-                  {lang.nativeName}
-                </span>
-                {lang.code === language && (
-                  <div className="absolute top-1 right-1 w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
-                    <Check className="w-3 h-3 text-white" />
-                  </div>
-                )}
-              </button>
-            ))}
+            {LANGUAGES.map((lang) => {
+              const isSelected = mounted && lang.code === language;
+              return (
+                <button
+                  key={lang.code}
+                  onClick={() => handleLanguageSelect(lang.code)}
+                  className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all ${
+                    isSelected
+                      ? 'bg-white shadow-lg'
+                      : 'bg-white/20 hover:bg-white/30'
+                  }`}
+                >
+                  <span className="text-3xl">{lang.flag}</span>
+                  <span className={`text-xs font-medium ${
+                    isSelected ? 'text-gray-900' : 'text-white'
+                  }`}>
+                    {lang.nativeName}
+                  </span>
+                  {isSelected && (
+                    <div className="absolute top-1 right-1 w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                      <Check className="w-3 h-3 text-white" />
+                    </div>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
