@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Check, ExternalLink } from 'lucide-react';
+import { ArrowRight, Check, ExternalLink, Key } from 'lucide-react';
 import { useTranslation, LANGUAGES } from '@/lib/i18n';
 import { type Language } from '@/lib/stores/languageStore';
 
@@ -172,8 +173,18 @@ export default function WelcomePage() {
         </button>
       </div>
 
-      {/* Bottom Button */}
+      {/* Bottom Section */}
       <div className="fixed bottom-0 left-0 right-0 px-6 py-4 bg-gradient-to-t from-blue-800 via-blue-800/95 to-transparent pt-8">
+        {/* Recovery Link */}
+        <Link
+          href="/recovery"
+          className="flex items-center justify-center gap-2 text-white/70 hover:text-white mb-3 text-sm transition-colors"
+        >
+          <Key className="w-4 h-4" />
+          {t('recovery.alreadyHaveCode')}
+        </Link>
+
+        {/* Get Started Button */}
         <button
           onClick={handleContinue}
           disabled={!agreed}

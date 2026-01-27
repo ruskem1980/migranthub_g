@@ -251,6 +251,13 @@ export const authApi = {
       { refreshToken } as RefreshTokenRequest,
       { skipAuth: true }
     ),
+
+  verifyRecovery: (deviceId: string, recoveryCode: string) =>
+    apiClient.post<AuthResponse>(
+      '/auth/recovery/verify',
+      { deviceId, recoveryCode },
+      { skipAuth: true }
+    ),
 };
 
 // Users API

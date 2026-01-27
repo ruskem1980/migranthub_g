@@ -125,6 +125,22 @@
     "logout": "Log out",
     "logoutConfirm": "Are you sure you want to log out?"
   },
+  "recovery": {
+    "title": "Restore Access",
+    "subtitle": "Enter your 12-character recovery code",
+    "placeholder": "XXXX-XXXX-XXXX",
+    "submit": "Restore Access",
+    "backToLogin": "Back to login",
+    "alreadyHaveCode": "Already have a recovery code?",
+    "helpText": "The recovery code was provided when you first registered. If you lost it, please contact support.",
+    "error": {
+      "invalid": "Invalid recovery code. Please check and try again.",
+      "incomplete": "Please enter the complete 12-character code"
+    },
+    "demo": {
+      "hint": "Use code: DEMO-1234-TEST"
+    }
+  },
   "welcome": {
     "tagline": "Your personal protector. We help you process documents quickly, avoid fines and control the legalization process.",
     "selectLanguage": "Select language",
@@ -1170,6 +1186,13 @@
     "description": "Check your internet connection",
     "retry": "Retry",
     "noConnection": "No internet connection"
+  },
+  "sync": {
+    "offline": "Offline",
+    "pending": "{count} changes pending sync",
+    "synced": "Synced",
+    "syncing": "Syncing...",
+    "syncNow": "Sync now"
   },
   "poi": {
     "mvd": "MVD departments",

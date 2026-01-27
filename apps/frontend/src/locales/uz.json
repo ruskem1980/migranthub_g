@@ -125,6 +125,22 @@
     "logout": "Chiqish",
     "logoutConfirm": "Rostdan ham chiqmoqchimisiz?"
   },
+  "recovery": {
+    "title": "Kirishni tiklash",
+    "subtitle": "12 belgili tiklash kodini kiriting",
+    "placeholder": "XXXX-XXXX-XXXX",
+    "submit": "Kirishni tiklash",
+    "backToLogin": "Kirishga qaytish",
+    "alreadyHaveCode": "Tiklash kodingiz bormi?",
+    "helpText": "Tiklash kodi birinchi ro'yxatdan o'tganingizda berilgan. Agar uni yo'qotgan bo'lsangiz, qo'llab-quvvatlash xizmatiga murojaat qiling.",
+    "error": {
+      "invalid": "Noto'g'ri tiklash kodi. Tekshirib, qayta urinib ko'ring.",
+      "incomplete": "To'liq 12 belgili kodni kiriting"
+    },
+    "demo": {
+      "hint": "Kodni ishlating: DEMO-1234-TEST"
+    }
+  },
   "welcome": {
     "tagline": "Shaxsiy himoyachingiz. Hujjatlarni tez rasmiylashtirish, jarimalardan qochish va legalizatsiya jarayonini nazorat qilishda yordam beramiz.",
     "selectLanguage": "Tilni tanlang",
@@ -1174,6 +1190,13 @@
     "description": "Internet aloqasini tekshiring",
     "retry": "Qayta urinish",
     "noConnection": "Internet aloqasi yo'q"
+  },
+  "sync": {
+    "offline": "Oflayn",
+    "pending": "{count} ta o'zgarish sinxronlanishni kutmoqda",
+    "synced": "Sinxronlangan",
+    "syncing": "Sinxronlanmoqda...",
+    "syncNow": "Sinxronlash"
   },
   "poi": {
     "mvd": "IIV bo'limlari",
