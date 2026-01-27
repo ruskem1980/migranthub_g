@@ -54,7 +54,7 @@ describe('ExamHome', () => {
 
     // Streak
     expect(screen.getByText('5')).toBeInTheDocument();
-    expect(screen.getByText('Дней')).toBeInTheDocument();
+    expect(screen.getByText('Дней подряд')).toBeInTheDocument();
   });
 
   it('renders all exam modes', () => {

@@ -56,10 +56,16 @@ export function ExamSessionView({ mode, category, questionCount }: ExamSessionVi
 
   // Start session on mount
   useEffect(() => {
-    if (!isActive && !result) {
+    // Always start a new session when component mounts with parameters
+    // Cancel any existing session first
+    if (!result) {
+      if (isActive) {
+        cancelSession();
+      }
       startSession(sessionMode, sessionCategory, sessionCount);
     }
-  }, [isActive, result, sessionMode, sessionCategory, sessionCount, startSession]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Handle answer
   const handleAnswer = useCallback(

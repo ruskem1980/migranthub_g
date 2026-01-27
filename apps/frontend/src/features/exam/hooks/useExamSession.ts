@@ -120,6 +120,7 @@ export function useExamSession(
     category?: QuestionCategory;
     count: number;
   } | null>(null);
+  const [noQuestionsError, setNoQuestionsError] = useState(false);
 
   const { data: questions, isLoading: questionsLoading, error: questionsError } = useQuestions(
     pendingStart?.category,
@@ -174,6 +175,7 @@ export function useExamSession(
       }
       // Questions loaded but empty
       if (questions && questions.length === 0) {
+        setNoQuestionsError(true);
         setPendingStart(null);
       }
     }
@@ -187,6 +189,7 @@ export function useExamSession(
       questionCount?: number
     ) => {
       const count = questionCount ?? DEFAULT_QUESTION_COUNT[mode];
+      setNoQuestionsError(false);
       setPendingStart({ mode, category, count });
     },
     []
@@ -273,7 +276,9 @@ export function useExamSession(
   }, [currentSession?.timeLimit, timeSpent]);
 
   // Combined error
-  const error = storeError || (questionsError ? t('exam.session.loadError') : null);
+  const error = storeError ||
+    (questionsError ? t('exam.session.loadError') : null) ||
+    (noQuestionsError ? t('exam.session.noQuestions') : null);
 
   return {
     // State

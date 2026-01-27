@@ -163,8 +163,8 @@ describe('Sheet', () => {
 
   describe('Drag functionality', () => {
     it('handles touch start event', () => {
-      const { container } = render(<Sheet {...defaultProps} />);
-      const dragHandle = container.querySelector('.cursor-grab');
+      render(<Sheet {...defaultProps} />);
+      const dragHandle = document.querySelector('.cursor-grab');
 
       expect(dragHandle).toBeInTheDocument();
 
@@ -177,8 +177,8 @@ describe('Sheet', () => {
     });
 
     it('handles touch move event', () => {
-      const { container } = render(<Sheet {...defaultProps} />);
-      const dragHandle = container.querySelector('.cursor-grab');
+      render(<Sheet {...defaultProps} />);
+      const dragHandle = document.querySelector('.cursor-grab');
 
       expect(dragHandle).toBeInTheDocument();
 
@@ -196,8 +196,8 @@ describe('Sheet', () => {
 
     it('closes sheet when dragged down more than 100px', () => {
       const onClose = jest.fn();
-      const { container } = render(<Sheet {...defaultProps} onClose={onClose} />);
-      const dragHandle = container.querySelector('.cursor-grab');
+      render(<Sheet {...defaultProps} onClose={onClose} />);
+      const dragHandle = document.querySelector('.cursor-grab');
 
       expect(dragHandle).toBeInTheDocument();
 
@@ -216,8 +216,8 @@ describe('Sheet', () => {
 
     it('does not close sheet when dragged less than 100px', () => {
       const onClose = jest.fn();
-      const { container } = render(<Sheet {...defaultProps} onClose={onClose} />);
-      const dragHandle = container.querySelector('.cursor-grab');
+      render(<Sheet {...defaultProps} onClose={onClose} />);
+      const dragHandle = document.querySelector('.cursor-grab');
 
       expect(dragHandle).toBeInTheDocument();
 
@@ -235,8 +235,8 @@ describe('Sheet', () => {
     });
 
     it('handles mouse down event for desktop', () => {
-      const { container } = render(<Sheet {...defaultProps} />);
-      const dragHandle = container.querySelector('.cursor-grab');
+      render(<Sheet {...defaultProps} />);
+      const dragHandle = document.querySelector('.cursor-grab');
 
       expect(dragHandle).toBeInTheDocument();
 
@@ -249,8 +249,8 @@ describe('Sheet', () => {
     });
 
     it('handles mouse move event for desktop', () => {
-      const { container } = render(<Sheet {...defaultProps} />);
-      const dragHandle = container.querySelector('.cursor-grab');
+      render(<Sheet {...defaultProps} />);
+      const dragHandle = document.querySelector('.cursor-grab');
       const dialog = screen.getByRole('dialog');
 
       expect(dragHandle).toBeInTheDocument();
@@ -268,8 +268,8 @@ describe('Sheet', () => {
     });
 
     it('handles mouse up event for desktop', () => {
-      const { container } = render(<Sheet {...defaultProps} />);
-      const dragHandle = container.querySelector('.cursor-grab');
+      render(<Sheet {...defaultProps} />);
+      const dragHandle = document.querySelector('.cursor-grab');
       const dialog = screen.getByRole('dialog');
 
       expect(dragHandle).toBeInTheDocument();
@@ -290,18 +290,16 @@ describe('Sheet', () => {
 
     it('ignores drag when enableDrag is false', () => {
       const onClose = jest.fn();
-      const { container } = render(
-        <Sheet {...defaultProps} onClose={onClose} enableDrag={false} />
-      );
+      render(<Sheet {...defaultProps} onClose={onClose} enableDrag={false} />);
 
       // Drag handle should not exist
-      const dragHandle = container.querySelector('.cursor-grab');
+      const dragHandle = document.querySelector('.cursor-grab');
       expect(dragHandle).not.toBeInTheDocument();
     });
 
     it('only allows dragging down, not up', () => {
-      const { container } = render(<Sheet {...defaultProps} />);
-      const dragHandle = container.querySelector('.cursor-grab');
+      render(<Sheet {...defaultProps} />);
+      const dragHandle = document.querySelector('.cursor-grab');
 
       expect(dragHandle).toBeInTheDocument();
 
@@ -316,8 +314,8 @@ describe('Sheet', () => {
 
       // Since we're dragging up (negative delta), the dragOffset should remain 0
       // The sheet should not be translated upwards
-      const sheetContent = container.querySelector('[class*="max-h"]');
-      expect(sheetContent).toBeInTheDocument();
+      const dialog = screen.getByRole('dialog');
+      expect(dialog).toBeInTheDocument();
     });
   });
 

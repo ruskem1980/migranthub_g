@@ -1755,7 +1755,8 @@
       "error": "Error",
       "tryAgain": "Try Again",
       "testPaused": "Test paused. Press resume to continue.",
-      "loadError": "Failed to load questions"
+      "loadError": "Failed to load questions",
+      "noQuestions": "No questions available for selected category"
     },
     "question": {
       "correct": "Correct!",

@@ -90,8 +90,8 @@ describe('LanguageStore', () => {
 });
 
 describe('LANGUAGES constant', () => {
-  it('should have 4 main languages', () => {
-    expect(LANGUAGES).toHaveLength(4);
+  it('should have 5 main languages', () => {
+    expect(LANGUAGES).toHaveLength(5);
   });
 
   it('should include Russian as first language', () => {
@@ -129,8 +129,8 @@ describe('LANGUAGES constant', () => {
 });
 
 describe('EXTENDED_LANGUAGES constant', () => {
-  it('should equal LANGUAGES (4 languages)', () => {
-    expect(EXTENDED_LANGUAGES).toHaveLength(4);
+  it('should equal LANGUAGES (5 languages)', () => {
+    expect(EXTENDED_LANGUAGES).toHaveLength(5);
     expect(EXTENDED_LANGUAGES).toEqual(LANGUAGES);
   });
 

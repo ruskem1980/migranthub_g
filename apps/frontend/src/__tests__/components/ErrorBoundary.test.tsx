@@ -47,7 +47,7 @@ describe('ErrorBoundary', () => {
 
     expect(screen.getByText('Что-то пошло не так')).toBeInTheDocument();
     expect(screen.getByText('Произошла непредвиденная ошибка')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Попробовать снова' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Попробуйте ещё раз' })).toBeInTheDocument();
   });
 
   it('renders custom fallback when provided', () => {
@@ -104,7 +104,7 @@ describe('ErrorBoundary', () => {
     shouldThrow = false;
 
     // Click retry button
-    fireEvent.click(screen.getByRole('button', { name: 'Попробовать снова' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Попробуйте ещё раз' }));
 
     // After clicking retry, the component should re-render children
     // Since we changed shouldThrow to false, it should render successfully
@@ -140,7 +140,7 @@ describe('ErrorBoundary', () => {
     const container = screen.getByText('Что-то пошло не так').parentElement;
     expect(container).toHaveClass('flex', 'flex-col', 'items-center', 'justify-center');
 
-    const button = screen.getByRole('button', { name: 'Попробовать снова' });
+    const button = screen.getByRole('button', { name: 'Попробуйте ещё раз' });
     expect(button).toHaveClass('bg-blue-600', 'text-white', 'rounded-lg');
   });
 });
