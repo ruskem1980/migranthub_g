@@ -128,11 +128,13 @@ describe('ProfileStore', () => {
         expect(state.profile?.updatedAt).not.toBe(mockProfile.updatedAt);
       });
 
-      it('should not update profile if profile is null', () => {
+      it('should create profile if profile is null', () => {
         const { updateProfile } = useProfileStore.getState();
         updateProfile({ fullName: 'Test' });
 
-        expect(useProfileStore.getState().profile).toBeNull();
+        const profile = useProfileStore.getState().profile;
+        expect(profile).not.toBeNull();
+        expect(profile?.fullName).toBe('Test');
       });
 
       it('should update multiple fields at once', () => {

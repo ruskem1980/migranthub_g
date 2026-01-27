@@ -213,11 +213,14 @@ export function getDocumentStatus(
   const expiry = new Date(expiryDate);
   const today = new Date();
   const diffTime = expiry.getTime() - today.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  if (diffDays < 0) {
+  // Если дата истечения в прошлом - документ просрочен
+  if (diffTime < 0) {
     return 'expired';
   }
+
+  // Используем floor для подсчёта полных дней до истечения
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
   if (diffDays <= warningDays) {
     return 'expiring_soon';
