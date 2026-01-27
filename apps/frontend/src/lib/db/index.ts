@@ -93,6 +93,19 @@ export interface DBOfflineQueueItem {
   lastAttemptAt?: string;
 }
 
+export interface DBExamQuestion {
+  id: string;
+  category: string;
+  difficulty: string;
+  question: string;
+  options: string; // JSON array
+  correctIndex: number;
+  explanation?: string;
+  imageUrl?: string;
+  tags?: string; // JSON array
+  cachedAt: string;
+}
+
 // Database class
 export class MigrantHubDB extends Dexie {
   profiles!: Table<DBProfile>;
@@ -101,6 +114,7 @@ export class MigrantHubDB extends Dexie {
   syncQueue!: Table<DBSyncQueue>;
   stayPeriods!: Table<DBStayPeriod>;
   offlineQueue!: Table<DBOfflineQueueItem>;
+  examQuestions!: Table<DBExamQuestion>;
 
   constructor() {
     super('migranthub');
@@ -127,6 +141,16 @@ export class MigrantHubDB extends Dexie {
       syncQueue: 'id, action, table, recordId, createdAt, attempts',
       stayPeriods: 'id, oderId, entryDate, exitDate, migrationCardId, createdAt',
       offlineQueue: 'id, action, endpoint, method, status, createdAt, retryCount',
+    });
+
+    this.version(4).stores({
+      profiles: 'id, oderId, fullName, passportNumber, citizenship, updatedAt, syncedAt',
+      documents: 'id, oderId, type, expiryDate, createdAt, syncedAt',
+      forms: 'id, oderId, formType, status, createdAt, updatedAt, syncedAt',
+      syncQueue: 'id, action, table, recordId, createdAt, attempts',
+      stayPeriods: 'id, oderId, entryDate, exitDate, migrationCardId, createdAt',
+      offlineQueue: 'id, action, endpoint, method, status, createdAt, retryCount',
+      examQuestions: 'id, category, difficulty, cachedAt',
     });
   }
 }
@@ -192,6 +216,7 @@ export async function clearAllData(): Promise<void> {
   await db.syncQueue.clear();
   await db.stayPeriods.clear();
   await db.offlineQueue.clear();
+  await db.examQuestions.clear();
 }
 
 // Stay periods helpers
@@ -205,4 +230,72 @@ export async function getStayPeriods(userId: string): Promise<DBStayPeriod[]> {
 
 export async function deleteStayPeriod(id: string): Promise<void> {
   await db.stayPeriods.delete(id);
+}
+
+// Exam questions helpers
+export interface ExamQuestionData {
+  id: string;
+  category: string;
+  difficulty: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation?: string;
+  imageUrl?: string;
+  tags?: string[];
+}
+
+export async function saveExamQuestions(questions: ExamQuestionData[]): Promise<void> {
+  const cachedAt = new Date().toISOString();
+  const dbQuestions: DBExamQuestion[] = questions.map((q) => ({
+    id: q.id,
+    category: q.category,
+    difficulty: q.difficulty,
+    question: q.question,
+    options: JSON.stringify(q.options),
+    correctIndex: q.correctIndex,
+    explanation: q.explanation,
+    imageUrl: q.imageUrl,
+    tags: q.tags ? JSON.stringify(q.tags) : undefined,
+    cachedAt,
+  }));
+  await db.examQuestions.bulkPut(dbQuestions);
+}
+
+export async function getExamQuestions(): Promise<ExamQuestionData[]> {
+  const dbQuestions = await db.examQuestions.toArray();
+  return dbQuestions.map((q) => ({
+    id: q.id,
+    category: q.category,
+    difficulty: q.difficulty,
+    question: q.question,
+    options: JSON.parse(q.options) as string[],
+    correctIndex: q.correctIndex,
+    explanation: q.explanation,
+    imageUrl: q.imageUrl,
+    tags: q.tags ? (JSON.parse(q.tags) as string[]) : undefined,
+  }));
+}
+
+export async function getExamQuestionsByCategory(category: string): Promise<ExamQuestionData[]> {
+  const dbQuestions = await db.examQuestions.where('category').equals(category).toArray();
+  return dbQuestions.map((q) => ({
+    id: q.id,
+    category: q.category,
+    difficulty: q.difficulty,
+    question: q.question,
+    options: JSON.parse(q.options) as string[],
+    correctIndex: q.correctIndex,
+    explanation: q.explanation,
+    imageUrl: q.imageUrl,
+    tags: q.tags ? (JSON.parse(q.tags) as string[]) : undefined,
+  }));
+}
+
+export async function getExamQuestionsCount(): Promise<number> {
+  return db.examQuestions.count();
+}
+
+export async function clearExamQuestionsCache(): Promise<void> {
+  await db.examQuestions.clear();
 }
