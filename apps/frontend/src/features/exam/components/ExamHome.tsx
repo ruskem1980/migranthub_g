@@ -11,6 +11,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from '@/lib/i18n';
 import { CategoryCard, CategoryCardSkeleton } from './CategoryCard';
 import { useExamStore } from '../stores';
 import { QuestionCategory, ExamMode } from '../types';
@@ -19,8 +20,8 @@ const TOTAL_QUESTIONS_PER_CATEGORY = 100;
 
 interface ExamModeButton {
   mode: ExamMode;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   icon: React.ComponentType<{ className?: string }>;
   color: string;
   bgColor: string;
@@ -29,24 +30,24 @@ interface ExamModeButton {
 const examModes: ExamModeButton[] = [
   {
     mode: ExamMode.LEARNING,
-    title: 'Обучение',
-    description: 'Изучайте с подсказками',
+    titleKey: 'exam.modes.learning.title',
+    descriptionKey: 'exam.modes.learning.description',
     icon: BookOpen,
     color: 'text-blue-600',
     bgColor: 'bg-blue-50 hover:bg-blue-100',
   },
   {
     mode: ExamMode.PRACTICE,
-    title: 'Практика',
-    description: 'Тренируйтесь без таймера',
+    titleKey: 'exam.modes.practice.title',
+    descriptionKey: 'exam.modes.practice.description',
     icon: Target,
     color: 'text-amber-600',
     bgColor: 'bg-amber-50 hover:bg-amber-100',
   },
   {
     mode: ExamMode.EXAM,
-    title: 'Экзамен',
-    description: '30 вопросов за 60 минут',
+    titleKey: 'exam.modes.exam.title',
+    descriptionKey: 'exam.modes.exam.description',
     icon: ClipboardCheck,
     color: 'text-emerald-600',
     bgColor: 'bg-emerald-50 hover:bg-emerald-100',
@@ -65,6 +66,7 @@ interface ExamHomeProps {
 }
 
 export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const progress = useExamStore((state) => state.progress);
 
