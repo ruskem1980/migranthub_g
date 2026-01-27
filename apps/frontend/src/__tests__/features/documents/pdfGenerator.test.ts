@@ -10,6 +10,9 @@ const mockJsPDF = {
   setDrawColor: jest.fn(),
   line: jest.fn(),
   addPage: jest.fn(),
+  addFileToVFS: jest.fn(),
+  addFont: jest.fn(),
+  setFont: jest.fn(),
   output: jest.fn().mockReturnValue(new Blob(['pdf content'], { type: 'application/pdf' })),
   internal: {
     pageSize: {

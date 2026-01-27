@@ -125,11 +125,15 @@ export function getDaysUntilPayment(paidUntil: string | undefined): number | nul
   const paidDate = new Date(paidUntil);
   const today = new Date();
   const diffTime = paidDate.getTime() - today.getTime();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  // Используем floor для полных дней
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
 }
 
 // Хелпер: проверка просрочки оплаты
 export function isPaymentOverdue(paidUntil: string | undefined): boolean {
-  const days = getDaysUntilPayment(paidUntil);
-  return days !== null && days < 0;
+  if (!paidUntil) return false;
+  const paidDate = new Date(paidUntil);
+  const today = new Date();
+  // Проверяем напрямую время, чтобы избежать проблемы с -0
+  return paidDate.getTime() < today.getTime();
 }

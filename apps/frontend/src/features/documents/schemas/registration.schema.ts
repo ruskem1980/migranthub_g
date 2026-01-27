@@ -133,18 +133,27 @@ export function getDaysUntilExpiry(expiryDate: string): number {
   const expiry = new Date(expiryDate);
   const today = new Date();
   const diffTime = expiry.getTime() - today.getTime();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  // Используем floor для полных дней
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
 }
 
 // Хелпер: проверка истечения регистрации
 export function isRegistrationExpired(expiryDate: string): boolean {
-  return getDaysUntilExpiry(expiryDate) < 0;
+  const expiry = new Date(expiryDate);
+  const today = new Date();
+  // Проверяем напрямую время, чтобы избежать проблемы с -0
+  return expiry.getTime() < today.getTime();
 }
 
 // Хелпер: проверка скорого истечения (менее 7 дней)
 export function isRegistrationExpiringSoon(expiryDate: string, daysThreshold = 7): boolean {
-  const days = getDaysUntilExpiry(expiryDate);
-  return days >= 0 && days <= daysThreshold;
+  const expiry = new Date(expiryDate);
+  const today = new Date();
+  const diffTime = expiry.getTime() - today.getTime();
+  // Не истёк и осталось меньше daysThreshold дней
+  if (diffTime < 0) return false;
+  const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return days <= daysThreshold;
 }
 
 // Хелпер: формирование полного адреса
