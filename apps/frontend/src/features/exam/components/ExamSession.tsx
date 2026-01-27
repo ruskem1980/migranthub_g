@@ -41,6 +41,7 @@ export function ExamSessionView({ mode, category, questionCount }: ExamSessionVi
     isFirstQuestion,
     isLastQuestion,
     hasAnswer,
+    currentAnswer,
     timeRemaining,
     timeSpent,
     startSession,
@@ -214,7 +215,7 @@ export function ExamSessionView({ mode, category, questionCount }: ExamSessionVi
       <div className="flex-1 px-4 py-6 overflow-auto">
         <QuestionCard
           question={currentQuestion}
-          selectedAnswer={undefined}
+          selectedAnswer={currentAnswer?.selectedIndex}
           onAnswer={handleAnswer}
           onNext={handleNext}
           showExplanation={sessionMode !== ExamMode.EXAM}
