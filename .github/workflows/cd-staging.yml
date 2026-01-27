@@ -1,0 +1,230 @@
+# ===========================================
+# CD Staging Pipeline
+# ===========================================
+# Автоматический деплой на staging при push в main
+#
+# Необходимые секреты (Settings > Secrets and variables > Actions):
+#   - DOCKER_REGISTRY: URL Docker registry (например: ghcr.io или registry.example.com)
+#   - DOCKER_USERNAME: Логин для Docker registry
+#   - DOCKER_PASSWORD: Пароль/токен для Docker registry
+#   - STAGING_SSH_HOST: Хост staging сервера
+#   - STAGING_SSH_USER: SSH пользователь
+#   - STAGING_SSH_KEY: Приватный SSH ключ
+# ===========================================
+
+name: CD Staging
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Ручной запуск
+
+env:
+  NODE_VERSION: '20'
+  REGISTRY: ${{ secrets.DOCKER_REGISTRY || 'ghcr.io' }}
+  IMAGE_NAME_API: ${{ github.repository }}/api-core
+  IMAGE_NAME_FRONTEND: ${{ github.repository }}/frontend
+
+jobs:
+  # ============================================
+  # Wait for CI to pass
+  # ============================================
+  wait-for-ci:
+    name: Wait for CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for CI workflow
+        uses: fountainhead/action-wait-for-check@v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: CI Success
+          ref: ${{ github.sha }}
+          timeoutSeconds: 600
+          intervalSeconds: 30
+
+  # ============================================
+  # Build and Push Docker Images
+  # ============================================
+  build-and-push:
+    name: Build & Push Images
+    runs-on: ubuntu-latest
+    needs: wait-for-ci
+    permissions:
+      contents: read
+      packages: write
+
+    outputs:
+      api_image: ${{ steps.meta-api.outputs.tags }}
+      frontend_image: ${{ steps.meta-frontend.outputs.tags }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME || github.actor }}
+          password: ${{ secrets.DOCKER_PASSWORD || secrets.GITHUB_TOKEN }}
+
+      # ---------- API Core ----------
+      - name: Extract metadata for API Core
+        id: meta-api
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}
+          tags: |
+            type=sha,prefix=staging-
+            type=raw,value=staging-latest
+
+      - name: Build and push API Core
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/api-core
+          push: true
+          tags: ${{ steps.meta-api.outputs.tags }}
+          labels: ${{ steps.meta-api.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production
+
+      # ---------- Frontend ----------
+      - name: Create Frontend Dockerfile
+        run: |
+          cat > ./apps/frontend/Dockerfile << 'EOF'
+          # ===========================================
+          # Stage 1: Dependencies
+          # ===========================================
+          FROM node:20-alpine AS deps
+          WORKDIR /app
+          RUN apk add --no-cache libc6-compat
+          COPY package*.json ./
+          RUN npm ci
+
+          # ===========================================
+          # Stage 2: Builder
+          # ===========================================
+          FROM node:20-alpine AS builder
+          WORKDIR /app
+          COPY --from=deps /app/node_modules ./node_modules
+          COPY . .
+          ENV NEXT_TELEMETRY_DISABLED=1
+          RUN npm run build
+
+          # ===========================================
+          # Stage 3: Production Runner
+          # ===========================================
+          FROM node:20-alpine AS runner
+          WORKDIR /app
+          ENV NODE_ENV=production
+          ENV NEXT_TELEMETRY_DISABLED=1
+
+          RUN addgroup --system --gid 1001 nodejs && \
+              adduser --system --uid 1001 nextjs
+
+          COPY --from=builder /app/public ./public
+          COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+          COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+          USER nextjs
+          EXPOSE 3000
+          ENV PORT=3000
+          ENV HOSTNAME="0.0.0.0"
+
+          CMD ["node", "server.js"]
+          EOF
+
+      - name: Extract metadata for Frontend
+        id: meta-frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}
+          tags: |
+            type=sha,prefix=staging-
+            type=raw,value=staging-latest
+
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/frontend
+          push: true
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production
+
+  # ============================================
+  # Deploy to Staging
+  # ============================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    environment:
+      name: staging
+      url: https://staging.migranthub.example.com
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Staging Server
+        run: |
+          echo "=========================================="
+          echo "  Deploying to Staging"
+          echo "=========================================="
+          echo ""
+          echo "API Image: ${{ needs.build-and-push.outputs.api_image }}"
+          echo "Frontend Image: ${{ needs.build-and-push.outputs.frontend_image }}"
+          echo ""
+          echo "TODO: Implement actual deployment"
+          echo ""
+          echo "Example deployment commands:"
+          echo "  - SSH to staging server"
+          echo "  - Pull new images"
+          echo "  - Run docker-compose up -d"
+          echo "  - Verify health checks"
+          echo ""
+          # Пример реального деплоя (раскомментировать при настройке):
+          # ssh -o StrictHostKeyChecking=no ${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }} << 'DEPLOY'
+          #   cd /opt/migranthub
+          #   docker-compose pull
+          #   docker-compose up -d
+          #   docker-compose ps
+          # DEPLOY
+
+      - name: Verify Deployment
+        run: |
+          echo "Staging deployment completed successfully"
+          echo "URL: https://staging.migranthub.example.com"
+          # Пример проверки здоровья:
+          # curl -f https://staging.migranthub.example.com/api/v1/health || exit 1
+
+  # ============================================
+  # Notify on completion
+  # ============================================
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    if: always()
+
+    steps:
+      - name: Notify on Success
+        if: needs.deploy-staging.result == 'success'
+        run: |
+          echo "Staging deployment successful!"
+          # Здесь можно добавить уведомления в Slack/Telegram/etc
+
+      - name: Notify on Failure
+        if: needs.deploy-staging.result == 'failure'
+        run: |
+          echo "Staging deployment failed!"
+          exit 1

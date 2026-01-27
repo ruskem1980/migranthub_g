@@ -1,0 +1,304 @@
+# ===========================================
+# CD Production Pipeline
+# ===========================================
+# Деплой на production при публикации релиза
+#
+# Необходимые секреты (Settings > Secrets and variables > Actions):
+#   - DOCKER_REGISTRY: URL Docker registry (например: ghcr.io или registry.example.com)
+#   - DOCKER_USERNAME: Логин для Docker registry
+#   - DOCKER_PASSWORD: Пароль/токен для Docker registry
+#   - PRODUCTION_SSH_HOST: Хост production сервера
+#   - PRODUCTION_SSH_USER: SSH пользователь
+#   - PRODUCTION_SSH_KEY: Приватный SSH ключ
+#
+# Environment "production" требует manual approval:
+#   Settings > Environments > production > Required reviewers
+# ===========================================
+
+name: CD Production
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to deploy (e.g., v1.0.0)'
+        required: true
+        type: string
+
+env:
+  NODE_VERSION: '20'
+  REGISTRY: ${{ secrets.DOCKER_REGISTRY || 'ghcr.io' }}
+  IMAGE_NAME_API: ${{ github.repository }}/api-core
+  IMAGE_NAME_FRONTEND: ${{ github.repository }}/frontend
+
+jobs:
+  # ============================================
+  # Validate Release
+  # ============================================
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.event.inputs.tag }}
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION="${{ github.event.release.tag_name || github.event.inputs.tag }}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Deploying version: ${VERSION}"
+
+      - name: Validate tag format
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$ ]]; then
+            echo "Error: Invalid version format. Expected: v1.0.0 or v1.0.0-beta"
+            exit 1
+          fi
+          echo "Version format is valid: $VERSION"
+
+  # ============================================
+  # Build and Push Docker Images
+  # ============================================
+  build-and-push:
+    name: Build & Push Images
+    runs-on: ubuntu-latest
+    needs: validate
+    permissions:
+      contents: read
+      packages: write
+
+    outputs:
+      api_image: ${{ steps.meta-api.outputs.tags }}
+      frontend_image: ${{ steps.meta-frontend.outputs.tags }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.validate.outputs.version }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME || github.actor }}
+          password: ${{ secrets.DOCKER_PASSWORD || secrets.GITHUB_TOKEN }}
+
+      # ---------- API Core ----------
+      - name: Extract metadata for API Core
+        id: meta-api
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+
+      - name: Build and push API Core
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/api-core
+          push: true
+          tags: ${{ steps.meta-api.outputs.tags }}
+          labels: ${{ steps.meta-api.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production
+
+      # ---------- Frontend ----------
+      - name: Create Frontend Dockerfile
+        run: |
+          cat > ./apps/frontend/Dockerfile << 'EOF'
+          # ===========================================
+          # Stage 1: Dependencies
+          # ===========================================
+          FROM node:20-alpine AS deps
+          WORKDIR /app
+          RUN apk add --no-cache libc6-compat
+          COPY package*.json ./
+          RUN npm ci
+
+          # ===========================================
+          # Stage 2: Builder
+          # ===========================================
+          FROM node:20-alpine AS builder
+          WORKDIR /app
+          COPY --from=deps /app/node_modules ./node_modules
+          COPY . .
+          ENV NEXT_TELEMETRY_DISABLED=1
+          RUN npm run build
+
+          # ===========================================
+          # Stage 3: Production Runner
+          # ===========================================
+          FROM node:20-alpine AS runner
+          WORKDIR /app
+          ENV NODE_ENV=production
+          ENV NEXT_TELEMETRY_DISABLED=1
+
+          RUN addgroup --system --gid 1001 nodejs && \
+              adduser --system --uid 1001 nextjs
+
+          COPY --from=builder /app/public ./public
+          COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+          COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+          USER nextjs
+          EXPOSE 3000
+          ENV PORT=3000
+          ENV HOSTNAME="0.0.0.0"
+
+          CMD ["node", "server.js"]
+          EOF
+
+      - name: Extract metadata for Frontend
+        id: meta-frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/frontend
+          push: true
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production
+
+  # ============================================
+  # Deploy to Production (requires approval)
+  # ============================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [validate, build-and-push]
+    environment:
+      name: production
+      url: https://migranthub.example.com
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Production Server
+        run: |
+          echo "=========================================="
+          echo "  Deploying to Production"
+          echo "=========================================="
+          echo ""
+          echo "Version: ${{ needs.validate.outputs.version }}"
+          echo "API Image: ${{ needs.build-and-push.outputs.api_image }}"
+          echo "Frontend Image: ${{ needs.build-and-push.outputs.frontend_image }}"
+          echo ""
+          echo "TODO: Implement actual deployment"
+          echo ""
+          echo "Example deployment commands:"
+          echo "  - SSH to production server"
+          echo "  - Backup current state"
+          echo "  - Pull new images"
+          echo "  - Run database migrations"
+          echo "  - Deploy with zero-downtime"
+          echo "  - Verify health checks"
+          echo "  - Rollback if needed"
+          echo ""
+          # Пример реального деплоя (раскомментировать при настройке):
+          # ssh -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_SSH_USER }}@${{ secrets.PRODUCTION_SSH_HOST }} << 'DEPLOY'
+          #   cd /opt/migranthub
+          #
+          #   # Backup
+          #   docker-compose exec -T postgres pg_dump -U migranthub migranthub > backup-$(date +%Y%m%d_%H%M%S).sql
+          #
+          #   # Deploy
+          #   export VERSION=${{ needs.validate.outputs.version }}
+          #   docker-compose pull
+          #   docker-compose up -d --no-deps api-core
+          #   docker-compose up -d --no-deps frontend
+          #
+          #   # Health check
+          #   sleep 10
+          #   curl -f http://localhost:3000/api/v1/health || exit 1
+          # DEPLOY
+
+      - name: Verify Deployment
+        run: |
+          echo "Production deployment completed successfully"
+          echo "Version: ${{ needs.validate.outputs.version }}"
+          echo "URL: https://migranthub.example.com"
+          # Пример проверки здоровья:
+          # curl -f https://migranthub.example.com/api/v1/health || exit 1
+
+  # ============================================
+  # Post-deployment tasks
+  # ============================================
+  post-deploy:
+    name: Post-Deploy Tasks
+    runs-on: ubuntu-latest
+    needs: [validate, deploy-production]
+    if: success()
+
+    steps:
+      - name: Create deployment record
+        run: |
+          echo "Recording deployment..."
+          echo "Version: ${{ needs.validate.outputs.version }}"
+          echo "Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "Deployed by: ${{ github.actor }}"
+
+      - name: Notify on Success
+        run: |
+          echo "=========================================="
+          echo "  Production Deployment Successful!"
+          echo "=========================================="
+          echo ""
+          echo "Version: ${{ needs.validate.outputs.version }}"
+          echo "URL: https://migranthub.example.com"
+          echo ""
+          # Здесь можно добавить уведомления в Slack/Telegram/etc
+          # curl -X POST ${{ secrets.SLACK_WEBHOOK }} \
+          #   -H "Content-Type: application/json" \
+          #   -d '{"text": "Production deployed: ${{ needs.validate.outputs.version }}"}'
+
+  # ============================================
+  # Notify on failure
+  # ============================================
+  notify-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [validate, build-and-push, deploy-production]
+    if: failure()
+
+    steps:
+      - name: Notify on Failure
+        run: |
+          echo "=========================================="
+          echo "  Production Deployment FAILED!"
+          echo "=========================================="
+          echo ""
+          echo "Version: ${{ needs.validate.outputs.version }}"
+          echo "Please check the logs and fix the issue."
+          echo ""
+          # Здесь можно добавить уведомления в Slack/Telegram/etc
+          exit 1
