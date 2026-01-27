@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { CheckCircle2, XCircle, Lightbulb, ChevronRight } from 'lucide-react';
 import { Question, QuestionCategory, QuestionDifficulty } from '../types';
 import { successHaptic, errorHaptic } from '@/lib/haptics';
+import { useTranslation } from '@/lib/i18n';
 
 interface QuestionCardProps {
   question: Question;
@@ -14,10 +15,16 @@ interface QuestionCardProps {
   isLastQuestion?: boolean;
 }
 
-const categoryLabels: Record<QuestionCategory, string> = {
-  [QuestionCategory.RUSSIAN_LANGUAGE]: 'Русский язык',
-  [QuestionCategory.HISTORY]: 'История',
-  [QuestionCategory.LAW]: 'Законодательство',
+const categoryTranslationKeys: Record<QuestionCategory, string> = {
+  [QuestionCategory.RUSSIAN_LANGUAGE]: 'exam.categories.russian',
+  [QuestionCategory.HISTORY]: 'exam.categories.history',
+  [QuestionCategory.LAW]: 'exam.categories.law',
+};
+
+const difficultyTranslationKeys: Record<QuestionDifficulty, string> = {
+  [QuestionDifficulty.EASY]: 'exam.difficulty.easy',
+  [QuestionDifficulty.MEDIUM]: 'exam.difficulty.medium',
+  [QuestionDifficulty.HARD]: 'exam.difficulty.hard',
 };
 
 const categoryColors: Record<QuestionCategory, { bg: string; text: string; border: string }> = {
@@ -46,6 +53,7 @@ export function QuestionCard({
   showExplanation = true,
   isLastQuestion = false,
 }: QuestionCardProps) {
+  const { t } = useTranslation();
   const [isAnimating, setIsAnimating] = useState(false);
   const [showExplanationPanel, setShowExplanationPanel] = useState(false);
 
@@ -136,7 +144,7 @@ export function QuestionCard({
         <span
           className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${colors.bg} ${colors.text} ${colors.border} border`}
         >
-          {categoryLabels[question.category]}
+          {t(categoryTranslationKeys[question.category])}
         </span>
         {question.difficulty && (
           <span
@@ -148,11 +156,7 @@ export function QuestionCard({
                 : 'text-green-600'
             }`}
           >
-            {question.difficulty === QuestionDifficulty.HARD
-              ? 'Сложный'
-              : question.difficulty === QuestionDifficulty.MEDIUM
-              ? 'Средний'
-              : 'Легкий'}
+            {t(difficultyTranslationKeys[question.difficulty])}
           </span>
         )}
       </div>
@@ -196,7 +200,7 @@ export function QuestionCard({
                   isCorrect ? 'text-green-800' : 'text-amber-800'
                 }`}
               >
-                {isCorrect ? 'Правильно!' : 'Неправильно'}
+                {isCorrect ? t('exam.question.correct') : t('exam.question.incorrect')}
               </p>
               <p
                 className={`text-sm leading-relaxed ${
@@ -216,7 +220,7 @@ export function QuestionCard({
           onClick={onNext}
           className="mt-2 w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
         >
-          {isLastQuestion ? 'Завершить тест' : 'Следующий вопрос'}
+          {isLastQuestion ? t('exam.question.finish') : t('exam.question.next')}
           <ChevronRight className="w-5 h-5" />
         </button>
       )}

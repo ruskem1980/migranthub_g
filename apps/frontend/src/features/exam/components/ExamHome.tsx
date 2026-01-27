@@ -140,7 +140,7 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
             <div className="text-xl font-bold text-gray-900">
               {stats.percentage}%
             </div>
-            <div className="text-xs text-gray-500">Успешность</div>
+            <div className="text-xs text-gray-500">{t('exam.stats.success')}</div>
           </div>
 
           <div className="bg-white rounded-xl p-3 border border-gray-200 text-center">
@@ -150,16 +150,14 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
             <div className="text-xl font-bold text-gray-900">
               {stats.streak}
             </div>
-            <div className="text-xs text-gray-500">
-              {stats.streak === 1 ? 'День' : 'Дней'}
-            </div>
+            <div className="text-xs text-gray-500">{t('exam.stats.streak')}</div>
           </div>
         </div>
 
         {/* Mode Selection */}
         <div className="mb-6">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-            Выберите режим
+            {t('exam.ui.selectMode')}
           </h2>
           <div className="grid grid-cols-3 gap-3">
             {examModes.map((modeConfig) => {
@@ -176,10 +174,10 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
                     <Icon className={`w-5 h-5 ${modeConfig.color}`} />
                   </div>
                   <h3 className="text-sm font-bold text-gray-900 text-center">
-                    {modeConfig.title}
+                    {t(modeConfig.titleKey)}
                   </h3>
                   <p className="text-[10px] text-gray-500 text-center mt-0.5 leading-tight">
-                    {modeConfig.description}
+                    {t(modeConfig.descriptionKey)}
                   </p>
                 </button>
               );
@@ -190,7 +188,7 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
         {/* Categories */}
         <div>
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-            Категории
+            {t('exam.ui.categories')}
           </h2>
           <div className="space-y-3">
             {categories.map((category) => (
@@ -208,11 +206,10 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
         {/* Info card */}
         <div className="mt-6 p-4 bg-emerald-50 rounded-2xl border-2 border-emerald-200">
           <h3 className="text-sm font-bold text-emerald-900 mb-2">
-            Совет для подготовки
+            {t('exam.ui.tip')}
           </h3>
           <p className="text-sm text-emerald-800">
-            Начните с режима &laquo;Обучение&raquo;, чтобы изучить материал с
-            подсказками. Затем закрепите знания в &laquo;Практике&raquo;.
+            {t('exam.ui.tipText')}
           </p>
         </div>
       </div>

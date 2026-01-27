@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { ExamResult, QuestionCategory } from '../types';
 import { successHaptic, errorHaptic } from '@/lib/haptics';
+import { useTranslation } from '@/lib/i18n';
 
 interface ResultsScreenProps {
   result: ExamResult;
@@ -22,10 +23,10 @@ interface ResultsScreenProps {
   onHome?: () => void;
 }
 
-const categoryLabels: Record<QuestionCategory, string> = {
-  [QuestionCategory.RUSSIAN_LANGUAGE]: 'Русский язык',
-  [QuestionCategory.HISTORY]: 'История',
-  [QuestionCategory.LAW]: 'Законодательство',
+const categoryTranslationKeys: Record<QuestionCategory, string> = {
+  [QuestionCategory.RUSSIAN_LANGUAGE]: 'exam.categories.russian',
+  [QuestionCategory.HISTORY]: 'exam.categories.history',
+  [QuestionCategory.LAW]: 'exam.categories.law',
 };
 
 const categoryColors: Record<QuestionCategory, { bg: string; text: string; bar: string }> = {
@@ -46,22 +47,26 @@ const categoryColors: Record<QuestionCategory, { bg: string; text: string; bar: 
   },
 };
 
-function formatTime(seconds: number): string {
+function formatTime(seconds: number, secLabel: string, minLabel: string): string {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
-  if (mins === 0) return `${secs} сек`;
-  return `${mins} мин ${secs} сек`;
+  if (mins === 0) return `${secs} ${secLabel}`;
+  return `${mins} ${minLabel} ${secs} ${secLabel}`;
 }
 
 // Circular progress component
 function CircularProgress({
   percentage,
   passed,
+  passedLabel,
+  notPassedLabel,
   size = 180,
   strokeWidth = 12,
 }: {
   percentage: number;
   passed: boolean;
+  passedLabel: string;
+  notPassedLabel: string;
   size?: number;
   strokeWidth?: number;
 }) {
@@ -104,7 +109,7 @@ function CircularProgress({
           {Math.round(percentage)}%
         </span>
         <span className="text-sm text-gray-500 mt-1">
-          {passed ? 'Сдано' : 'Не сдано'}
+          {passed ? passedLabel : notPassedLabel}
         </span>
       </div>
     </div>
@@ -112,6 +117,7 @@ function CircularProgress({
 }
 
 export function ResultsScreen({ result, onRetry, onHome }: ResultsScreenProps) {
+  const { t } = useTranslation();
   const router = useRouter();
 
   const passThreshold = 70;
@@ -158,12 +164,12 @@ export function ResultsScreen({ result, onRetry, onHome }: ResultsScreenProps) {
           )}
         </div>
         <h1 className="text-2xl font-bold text-white mb-1">
-          {isPassed ? 'Поздравляем!' : 'Не расстраивайтесь!'}
+          {isPassed ? t('exam.results.congratulations') : t('exam.results.dontWorry')}
         </h1>
         <p className="text-white/80 text-sm">
           {isPassed
-            ? 'Вы успешно прошли тест'
-            : 'Попробуйте ещё раз после повторения материала'}
+            ? t('exam.results.passedMessage')
+            : t('exam.results.failedMessage')}
         </p>
       </div>
 
@@ -172,7 +178,12 @@ export function ResultsScreen({ result, onRetry, onHome }: ResultsScreenProps) {
         {/* Score card */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-4">
           <div className="flex justify-center mb-6">
-            <CircularProgress percentage={result.percentage} passed={isPassed} />
+            <CircularProgress
+              percentage={result.percentage}
+              passed={isPassed}
+              passedLabel={t('exam.results.passed')}
+              notPassedLabel={t('exam.results.notPassed')}
+            />
           </div>
 
           {/* Stats grid */}
@@ -182,7 +193,7 @@ export function ResultsScreen({ result, onRetry, onHome }: ResultsScreenProps) {
                 <CheckCircle2 className="w-5 h-5 text-green-600" />
               </div>
               <p className="text-xl font-bold text-gray-900">{result.correctAnswers}</p>
-              <p className="text-xs text-gray-500">Верно</p>
+              <p className="text-xs text-gray-500">{t('exam.results.correct')}</p>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center w-10 h-10 mx-auto rounded-full bg-red-100 mb-2">
@@ -191,16 +202,16 @@ export function ResultsScreen({ result, onRetry, onHome }: ResultsScreenProps) {
               <p className="text-xl font-bold text-gray-900">
                 {result.totalQuestions - result.correctAnswers}
               </p>
-              <p className="text-xs text-gray-500">Неверно</p>
+              <p className="text-xs text-gray-500">{t('exam.results.incorrect')}</p>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center w-10 h-10 mx-auto rounded-full bg-blue-100 mb-2">
                 <Clock className="w-5 h-5 text-blue-600" />
               </div>
               <p className="text-xl font-bold text-gray-900">
-                {formatTime(result.timeSpentSeconds)}
+                {formatTime(result.timeSpentSeconds, t('exam.time.seconds'), t('exam.time.minutes'))}
               </p>
-              <p className="text-xs text-gray-500">Время</p>
+              <p className="text-xs text-gray-500">{t('exam.results.time')}</p>
             </div>
           </div>
         </div>
@@ -208,7 +219,7 @@ export function ResultsScreen({ result, onRetry, onHome }: ResultsScreenProps) {
         {/* Category breakdown */}
         {result.byCategory && result.byCategory.length > 0 && (
           <div className="bg-white rounded-2xl shadow-sm p-4 mb-4">
-            <h2 className="font-semibold text-gray-900 mb-3">По категориям</h2>
+            <h2 className="font-semibold text-gray-900 mb-3">{t('exam.results.byCategory')}</h2>
             <div className="space-y-3">
               {result.byCategory.map((cat) => {
                 const categoryKey = cat.category as QuestionCategory;
@@ -217,7 +228,7 @@ export function ResultsScreen({ result, onRetry, onHome }: ResultsScreenProps) {
                   <div key={cat.category}>
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm text-gray-700">
-                        {categoryLabels[categoryKey] || cat.category}
+                        {categoryTranslationKeys[categoryKey] ? t(categoryTranslationKeys[categoryKey]) : cat.category}
                       </span>
                       <span
                         className={`text-sm font-medium ${
@@ -251,7 +262,7 @@ export function ResultsScreen({ result, onRetry, onHome }: ResultsScreenProps) {
               <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-medium text-amber-800 mb-2">
-                  Рекомендуем повторить
+                  {t('exam.results.recommendReview')}
                 </h3>
                 <ul className="space-y-1">
                   {result.weakTopics.map((topic, index) => (
@@ -276,14 +287,14 @@ export function ResultsScreen({ result, onRetry, onHome }: ResultsScreenProps) {
             className="flex-1 py-3 px-4 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
           >
             <Home className="w-5 h-5" />
-            На главную
+            {t('exam.results.home')}
           </button>
           <button
             onClick={handleRetry}
             className="flex-1 py-3 px-4 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
           >
             <RotateCcw className="w-5 h-5" />
-            Повторить
+            {t('exam.results.retry')}
           </button>
         </div>
       </div>
