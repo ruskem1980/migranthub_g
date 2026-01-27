@@ -34,6 +34,10 @@ interface AppState {
   hasCompletedOnboarding: boolean;
   onboardingStep: number;
 
+  // Law Sync
+  lawSyncDate: string | null;
+  lawSyncSuccess: boolean;
+
   // Actions
   setTheme: (theme: Theme) => void;
   setOnline: (isOnline: boolean) => void;
@@ -50,6 +54,9 @@ interface AppState {
   setOnboardingCompleted: (completed: boolean) => void;
   setOnboardingStep: (step: number) => void;
 
+  // Law Sync actions
+  setLawSyncStatus: (date: string, success: boolean) => void;
+
   reset: () => void;
 }
 
@@ -58,10 +65,12 @@ const initialState = {
   isOnline: true,
   isAppReady: false,
   currentTab: 'home' as const,
-  notifications: [],
+  notifications: [] as Notification[],
   unreadCount: 0,
   hasCompletedOnboarding: false,
   onboardingStep: 0,
+  lawSyncDate: null as string | null,
+  lawSyncSuccess: false,
 };
 
 export const useAppStore = create<AppState>()(
@@ -118,6 +127,9 @@ export const useAppStore = create<AppState>()(
       setOnboardingStep: (onboardingStep) =>
         set({ onboardingStep }),
 
+      setLawSyncStatus: (lawSyncDate, lawSyncSuccess) =>
+        set({ lawSyncDate, lawSyncSuccess }),
+
       reset: () =>
         set(initialState),
     }),
@@ -130,6 +142,8 @@ export const useAppStore = create<AppState>()(
         onboardingStep: state.onboardingStep,
         notifications: state.notifications,
         unreadCount: state.unreadCount,
+        lawSyncDate: state.lawSyncDate,
+        lawSyncSuccess: state.lawSyncSuccess,
       }),
     }
   )

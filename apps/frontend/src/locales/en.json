@@ -786,6 +786,10 @@
       "banCheck": {
         "title": "Check",
         "subtitle": "MVD/FSSP"
+      },
+      "applications": {
+        "title": "My Applications",
+        "subtitle": "Request Status"
       }
     },
     "migrantMap": {
@@ -1196,7 +1200,11 @@
     "pending": "{count} changes pending sync",
     "synced": "Synced",
     "syncing": "Syncing...",
-    "syncNow": "Sync now"
+    "syncNow": "Sync now",
+    "lawSyncStatus": "Law sync status",
+    "lawSyncSuccess": "successful",
+    "lawSyncFailed": "failed",
+    "lawSyncNever": "never synced"
   },
   "poi": {
     "mvd": "MVD departments",

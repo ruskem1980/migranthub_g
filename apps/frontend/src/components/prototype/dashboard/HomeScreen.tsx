@@ -6,7 +6,7 @@ import { LegalizationWizard } from '../wizard/LegalizationWizard';
 import { BanChecker } from '@/features/services/components/BanChecker';
 import { useTranslation, LANGUAGES } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
-import { useProfileStore } from '@/lib/stores';
+import { useProfileStore, useAppStore } from '@/lib/stores';
 import {
   COUNTRIES,
   PRIORITY_COUNTRIES,
@@ -30,6 +30,7 @@ function getInitials(fullName: string): string {
 export function HomeScreen() {
   const { t, language, setLanguage: setAppLanguage } = useTranslation();
   const { profile, updateProfile, reset: resetProfile } = useProfileStore();
+  const { lawSyncDate, lawSyncSuccess } = useAppStore();
 
   const [showHistory, setShowHistory] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
@@ -308,6 +309,30 @@ export function HomeScreen() {
               <ChevronRight className="w-4 h-4 ml-1" />
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Law Sync Status */}
+      <div className="px-4 py-3 mt-2">
+        <div className="text-center text-xs text-gray-400">
+          {t('sync.lawSyncStatus')}:{' '}
+          {lawSyncDate ? (
+            <>
+              <span className="font-medium">
+                {new Date(lawSyncDate).toLocaleDateString('ru-RU', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })}
+              </span>
+              {' — '}
+              <span className={lawSyncSuccess ? 'text-green-600' : 'text-red-500'}>
+                {lawSyncSuccess ? t('sync.lawSyncSuccess') : t('sync.lawSyncFailed')}
+              </span>
+            </>
+          ) : (
+            <span className="text-gray-400">__/__/____ — {t('sync.lawSyncNever')}</span>
+          )}
         </div>
       </div>
 
@@ -821,18 +846,6 @@ export function HomeScreen() {
                 <p className="text-xs text-gray-600 text-center">{t('services.items.housing.subtitle')}</p>
               </button>
 
-              {/* Calculator */}
-              <button
-                onClick={() => window.location.href = '/calculator'}
-                className="bg-blue-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md"
-              >
-                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
-                  <Calculator className="w-7 h-7 text-blue-600" strokeWidth={2} />
-                </div>
-                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">{t('services.items.calculator.title')}</h3>
-                <p className="text-xs text-gray-600 text-center">{t('services.items.calculator.subtitle')}</p>
-              </button>
-
               {/* Medical/Insurance */}
               <button className="bg-pink-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md">
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
@@ -849,15 +862,6 @@ export function HomeScreen() {
                 </div>
                 <h3 className="text-sm font-bold text-gray-900 text-center mb-1">{t('services.items.map.title')}</h3>
                 <p className="text-xs text-gray-600 text-center">{t('services.items.map.subtitle')}</p>
-              </button>
-
-              {/* Ban Check */}
-              <button className="bg-yellow-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md">
-                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
-                  <Shield className="w-7 h-7 text-yellow-600" strokeWidth={2} />
-                </div>
-                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">{t('services.items.banCheck.title')}</h3>
-                <p className="text-xs text-gray-600 text-center">{t('services.items.banCheck.subtitle')}</p>
               </button>
             </div>
 

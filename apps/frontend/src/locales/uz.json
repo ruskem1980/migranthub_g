@@ -786,6 +786,10 @@
       "banCheck": {
         "title": "🛡️ Tekshirish",
         "subtitle": "IIV/FSSP"
+      },
+      "applications": {
+        "title": "📋 Mening arizalarim",
+        "subtitle": "Ariza holati"
       }
     },
     "migrantMap": {
@@ -1227,7 +1231,11 @@
     "pending": "{count} ta o'zgarish sinxronlanishni kutmoqda",
     "synced": "Sinxronlangan",
     "syncing": "Sinxronlanmoqda...",
-    "syncNow": "Sinxronlash"
+    "syncNow": "Sinxronlash",
+    "lawSyncStatus": "Qonunlar sinxronlash holati",
+    "lawSyncSuccess": "muvaffaqiyatli",
+    "lawSyncFailed": "amalga oshmadi",
+    "lawSyncNever": "hech qachon sinxronlanmagan"
   },
   "poi": {
     "mvd": "IIV bo'limlari",
