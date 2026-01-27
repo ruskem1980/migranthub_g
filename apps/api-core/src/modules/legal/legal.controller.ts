@@ -5,7 +5,8 @@ import {
   Param,
   Query,
   Body,
-  NotFoundException,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -13,13 +14,14 @@ import {
   ApiResponse,
   ApiParam,
   ApiQuery,
-  ApiBody,
 } from '@nestjs/swagger';
 import { Public } from '../auth/decorators/public.decorator';
 import { LegalService } from './legal.service';
 import {
   CategoryDto,
+  CategoryItemsDto,
   LawDto,
+  LawFilterDto,
   FormDto,
   FaqItemDto,
   PatentCalcRequestDto,
@@ -28,149 +30,123 @@ import {
   StayCalcResponseDto,
 } from './dto';
 
-@ApiTags('legal')
-@Controller({
-  path: 'legal',
-  version: '1',
-})
+@ApiTags('Legal')
+@Controller('legal')
 export class LegalController {
   constructor(private readonly legalService: LegalService) {}
 
+  // ==================== Categories ====================
+
   @Get('categories')
   @Public()
-  @ApiOperation({ summary: 'Получить категории законодательства' })
-  @ApiResponse({
-    status: 200,
-    description: 'Список категорий законодательства',
-    type: [CategoryDto],
-  })
+  @ApiOperation({ summary: 'Get all categories' })
+  @ApiResponse({ status: 200, type: [CategoryDto] })
   getCategories(): CategoryDto[] {
     return this.legalService.getCategories();
   }
 
+  @Get('categories/:id')
+  @Public()
+  @ApiOperation({ summary: 'Get category by ID' })
+  @ApiParam({ name: 'id', example: 'registration' })
+  @ApiResponse({ status: 200, type: CategoryDto })
+  @ApiResponse({ status: 404, description: 'Category not found' })
+  getCategoryById(@Param('id') id: string): CategoryDto {
+    return this.legalService.getCategoryById(id);
+  }
+
   @Get('categories/:id/items')
   @Public()
-  @ApiOperation({ summary: 'Получить законы по категории' })
-  @ApiParam({
-    name: 'id',
-    description: 'ID категории',
-    example: 'registration',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Список законов в категории',
-    type: [LawDto],
-  })
-  getCategoryItems(@Param('id') id: string): LawDto[] {
+  @ApiOperation({ summary: 'Get category items (laws, forms, faq)' })
+  @ApiParam({ name: 'id', example: 'registration' })
+  @ApiResponse({ status: 200, type: CategoryItemsDto })
+  @ApiResponse({ status: 404, description: 'Category not found' })
+  getCategoryItems(@Param('id') id: string): CategoryItemsDto {
     return this.legalService.getCategoryItems(id);
   }
 
+  // ==================== Laws ====================
+
   @Get('laws')
   @Public()
-  @ApiOperation({ summary: 'Получить все законы' })
-  @ApiQuery({
-    name: 'search',
-    required: false,
-    description: 'Поиск по названию или номеру закона',
-    example: '115-ФЗ',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Список законов',
-    type: [LawDto],
-  })
-  getLaws(@Query('search') search?: string): LawDto[] {
-    return this.legalService.getLaws(search);
+  @ApiOperation({ summary: 'Get all laws with optional filter' })
+  @ApiQuery({ name: 'categoryId', required: false })
+  @ApiQuery({ name: 'search', required: false })
+  @ApiResponse({ status: 200, type: [LawDto] })
+  getLaws(@Query() filter: LawFilterDto): LawDto[] {
+    return this.legalService.getLaws(filter);
   }
 
   @Get('laws/:id')
   @Public()
-  @ApiOperation({ summary: 'Получить закон по ID' })
-  @ApiParam({
-    name: 'id',
-    description: 'ID закона',
-    example: 'fz-115',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Информация о законе',
-    type: LawDto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Закон не найден',
-  })
+  @ApiOperation({ summary: 'Get law by ID' })
+  @ApiParam({ name: 'id', example: 'fz-115' })
+  @ApiResponse({ status: 200, type: LawDto })
+  @ApiResponse({ status: 404, description: 'Law not found' })
   getLawById(@Param('id') id: string): LawDto {
-    const law = this.legalService.getLawById(id);
-    if (!law) {
-      throw new NotFoundException(`Закон с ID "${id}" не найден`);
-    }
-    return law;
+    return this.legalService.getLawById(id);
   }
+
+  // ==================== Forms ====================
 
   @Get('forms')
   @Public()
-  @ApiOperation({ summary: 'Получить формы документов' })
-  @ApiQuery({
-    name: 'category',
-    required: false,
-    description: 'Фильтр по категории',
-    example: 'registration',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Список форм документов',
-    type: [FormDto],
-  })
-  getForms(@Query('category') category?: string): FormDto[] {
-    return this.legalService.getForms(category);
+  @ApiOperation({ summary: 'Get all forms' })
+  @ApiQuery({ name: 'categoryId', required: false })
+  @ApiResponse({ status: 200, type: [FormDto] })
+  getForms(@Query('categoryId') categoryId?: string): FormDto[] {
+    return this.legalService.getForms(categoryId);
   }
+
+  @Get('forms/:id')
+  @Public()
+  @ApiOperation({ summary: 'Get form by ID' })
+  @ApiParam({ name: 'id', example: 'form-registration' })
+  @ApiResponse({ status: 200, type: FormDto })
+  @ApiResponse({ status: 404, description: 'Form not found' })
+  getFormById(@Param('id') id: string): FormDto {
+    return this.legalService.getFormById(id);
+  }
+
+  // ==================== FAQ ====================
 
   @Get('faq')
   @Public()
-  @ApiOperation({ summary: 'Получить FAQ' })
-  @ApiQuery({
-    name: 'category',
-    required: false,
-    description: 'Фильтр по категории',
-    example: 'registration',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Список часто задаваемых вопросов',
-    type: [FaqItemDto],
-  })
-  getFaq(@Query('category') category?: string): FaqItemDto[] {
-    return this.legalService.getFaq(category);
+  @ApiOperation({ summary: 'Get FAQ items' })
+  @ApiQuery({ name: 'categoryId', required: false })
+  @ApiResponse({ status: 200, type: [FaqItemDto] })
+  getFaq(@Query('categoryId') categoryId?: string): FaqItemDto[] {
+    return this.legalService.getFaq(categoryId);
   }
 
-  @Post('calculators/patent-price')
+  // ==================== Calculators ====================
+
+  @Get('calculators/patent/regions')
   @Public()
-  @ApiOperation({ summary: 'Рассчитать стоимость патента' })
-  @ApiBody({ type: PatentCalcRequestDto })
-  @ApiResponse({
-    status: 200,
-    description: 'Результат расчёта стоимости патента',
-    type: PatentCalcResponseDto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Регион не найден',
-  })
-  calculatePatentPrice(@Body() dto: PatentCalcRequestDto): PatentCalcResponseDto {
-    return this.legalService.calculatePatentPrice(dto);
+  @ApiOperation({ summary: 'Get patent regions with prices' })
+  @ApiResponse({ status: 200 })
+  getPatentRegions() {
+    return this.legalService.getPatentRegions();
+  }
+
+  @Post('calculators/patent')
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Calculate patent price' })
+  @ApiResponse({ status: 200, type: PatentCalcResponseDto })
+  @ApiResponse({ status: 404, description: 'Region not found' })
+  calculatePatentPrice(
+    @Body() request: PatentCalcRequestDto,
+  ): PatentCalcResponseDto {
+    return this.legalService.calculatePatentPrice(request);
   }
 
   @Post('calculators/stay')
   @Public()
-  @ApiOperation({ summary: 'Рассчитать срок пребывания 90/180' })
-  @ApiBody({ type: StayCalcRequestDto })
-  @ApiResponse({
-    status: 200,
-    description: 'Результат расчёта срока пребывания',
-    type: StayCalcResponseDto,
-  })
-  calculateStay(@Body() dto: StayCalcRequestDto): StayCalcResponseDto {
-    return this.legalService.calculateStay(dto);
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Calculate 90/180 days stay period' })
+  @ApiResponse({ status: 200, type: StayCalcResponseDto })
+  calculateStay(@Body() request: StayCalcRequestDto): StayCalcResponseDto {
+    return this.legalService.calculateStay(request);
   }
 }
