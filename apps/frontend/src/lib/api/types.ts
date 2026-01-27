@@ -128,3 +128,12 @@ export interface FaqItemDto {
   answer: string;
   order: number;
 }
+
+export interface LegalMetadataDto {
+  lastUpdatedAt: string;
+  source: string;
+  version: string;
+  lawsCount: number;
+  formsCount: number;
+  faqCount: number;
+}

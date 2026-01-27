@@ -28,12 +28,23 @@ import {
   PatentCalcResponseDto,
   StayCalcRequestDto,
   StayCalcResponseDto,
+  LegalMetadataDto,
 } from './dto';
 
 @ApiTags('Legal')
 @Controller('legal')
 export class LegalController {
   constructor(private readonly legalService: LegalService) {}
+
+  // ==================== Metadata ====================
+
+  @Get('metadata')
+  @Public()
+  @ApiOperation({ summary: 'Get legal data metadata (last updated date, counts)' })
+  @ApiResponse({ status: 200, type: LegalMetadataDto })
+  getMetadata(): LegalMetadataDto {
+    return this.legalService.getMetadata();
+  }
 
   // ==================== Categories ====================
 

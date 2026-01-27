@@ -1548,6 +1548,7 @@
   },
   "reference": {
     "title": "Legal Reference",
+    "dataAsOf": "Data as of",
     "tabs": {
       "categories": "Categories",
       "laws": "Laws",

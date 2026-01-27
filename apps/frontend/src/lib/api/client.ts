@@ -19,6 +19,7 @@ import type {
   LawDto,
   FormDto,
   FaqItemDto,
+  LegalMetadataDto,
 } from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
@@ -296,6 +297,9 @@ export const healthApi = {
 
 // Legal API
 export const legalApi = {
+  getMetadata: () =>
+    apiClient.get<LegalMetadataDto>('/legal/metadata', { skipAuth: true }),
+
   getCategories: () =>
     apiClient.get<CategoryDto[]>('/legal/categories', { skipAuth: true }),
 

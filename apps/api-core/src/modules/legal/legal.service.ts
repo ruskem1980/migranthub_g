@@ -20,10 +20,29 @@ import {
   StayCalcRequestDto,
   StayCalcResponseDto,
   StayPeriodDto,
+  LegalMetadataDto,
 } from './dto';
+
+// Legal data metadata - update this when data changes
+const LEGAL_DATA_METADATA = {
+  lastUpdatedAt: '2025-01-28',
+  source: 'consultant.ru',
+  version: '1.0.0',
+};
 
 @Injectable()
 export class LegalService {
+  // ==================== Metadata ====================
+
+  getMetadata(): LegalMetadataDto {
+    return {
+      ...LEGAL_DATA_METADATA,
+      lawsCount: laws.length,
+      formsCount: forms.length,
+      faqCount: faqItems.length,
+    };
+  }
+
   // ==================== Categories ====================
 
   getCategories(): CategoryDto[] {

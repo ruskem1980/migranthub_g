@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, BookOpen, FileText, Download, HelpCircle, Search } from 'lucide-react';
+import { ArrowLeft, BookOpen, FileText, Download, HelpCircle, Search, Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { legalApi } from '@/lib/api/client';
-import type { CategoryDto, LawDto, FormDto, FaqItemDto } from '@/lib/api/types';
+import type { CategoryDto, LawDto, FormDto, FaqItemDto, LegalMetadataDto } from '@/lib/api/types';
 import { CategoryList, LawsList, FormsList, FaqAccordion } from '@/features/reference/components';
 
 type TabType = 'categories' | 'laws' | 'forms' | 'faq';
@@ -16,6 +16,15 @@ const tabs: { id: TabType; icon: React.ComponentType<{ className?: string }>; la
   { id: 'forms', icon: Download, labelKey: 'reference.tabs.forms' },
   { id: 'faq', icon: HelpCircle, labelKey: 'reference.tabs.faq' },
 ];
+
+function formatDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}
 
 export default function ReferencePage() {
   const router = useRouter();
@@ -29,6 +38,7 @@ export default function ReferencePage() {
   const [laws, setLaws] = useState<LawDto[]>([]);
   const [forms, setForms] = useState<FormDto[]>([]);
   const [faq, setFaq] = useState<FaqItemDto[]>([]);
+  const [metadata, setMetadata] = useState<LegalMetadataDto | null>(null);
 
   const [loading, setLoading] = useState({
     categories: true,
@@ -39,7 +49,17 @@ export default function ReferencePage() {
 
   useEffect(() => {
     loadCategories();
+    loadMetadata();
   }, []);
+
+  async function loadMetadata() {
+    try {
+      const data = await legalApi.getMetadata();
+      setMetadata(data);
+    } catch (error) {
+      console.error('Failed to load metadata:', error);
+    }
+  }
 
   useEffect(() => {
     if (activeTab === 'laws') {
@@ -121,7 +141,7 @@ export default function ReferencePage() {
             >
               <ArrowLeft className="w-5 h-5 text-gray-600" />
             </button>
-            <div>
+            <div className="flex-1">
               <h1 className="text-lg font-semibold text-gray-900">
                 {t('reference.title')}
               </h1>
@@ -130,6 +150,16 @@ export default function ReferencePage() {
               )}
             </div>
           </div>
+          {metadata && (
+            <div className="mt-2 flex items-center gap-1.5 text-xs text-gray-500">
+              <Info className="w-3.5 h-3.5" />
+              <span>
+                {t('reference.dataAsOf')} {formatDate(metadata.lastUpdatedAt)}
+              </span>
+              <span className="text-gray-300">•</span>
+              <span>{metadata.source}</span>
+            </div>
+          )}
         </div>
 
         {/* Tabs */}
