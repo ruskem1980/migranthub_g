@@ -1713,5 +1713,79 @@
       "lostDate": "Date of loss",
       "circumstances": "Loss circumstances"
     }
+  },
+  "exam": {
+    "title": "Exam Preparation",
+    "modes": {
+      "learning": {
+        "title": "Learning",
+        "description": "Study with hints"
+      },
+      "practice": {
+        "title": "Practice",
+        "description": "Train without timer"
+      },
+      "exam": {
+        "title": "Exam",
+        "description": "30 questions in 60 minutes"
+      }
+    },
+    "categories": {
+      "russian": "Russian Language",
+      "history": "History",
+      "law": "Legislation"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "stats": {
+      "questions": "Questions",
+      "success": "Success Rate",
+      "streak": "Day Streak"
+    },
+    "session": {
+      "pause": "Pause",
+      "resume": "Resume",
+      "exit": "Exit",
+      "exitConfirm": "Exit the test?",
+      "exitWarning": "Your progress will be lost. Are you sure?",
+      "cancel": "Cancel",
+      "error": "Error",
+      "tryAgain": "Try Again",
+      "testPaused": "Test paused. Press resume to continue."
+    },
+    "question": {
+      "correct": "Correct!",
+      "incorrect": "Incorrect",
+      "next": "Next Question",
+      "finish": "Finish Test"
+    },
+    "results": {
+      "congratulations": "Congratulations!",
+      "dontWorry": "Don't worry!",
+      "passed": "Passed",
+      "notPassed": "Not Passed",
+      "passedMessage": "You successfully passed the test",
+      "failedMessage": "Try again after reviewing the material",
+      "correct": "Correct",
+      "incorrect": "Incorrect",
+      "time": "Time",
+      "byCategory": "By Category",
+      "recommendReview": "Recommended to review",
+      "home": "Home",
+      "retry": "Retry"
+    },
+    "time": {
+      "seconds": "sec",
+      "minutes": "min"
+    },
+    "ui": {
+      "selectMode": "Select Mode",
+      "categories": "Categories",
+      "tip": "Preparation Tip",
+      "tipText": "Start with Learning mode to study the material with hints. Then reinforce your knowledge in Practice."
+    }
   }
 }

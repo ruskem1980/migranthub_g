@@ -1744,5 +1744,79 @@
       "lostDate": "Yo'qolgan sana",
       "circumstances": "Yo'qolish holatlari"
     }
+  },
+  "exam": {
+    "title": "Imtihonga tayyorgarlik",
+    "modes": {
+      "learning": {
+        "title": "O'qish",
+        "description": "Maslahatlar bilan o'rganing"
+      },
+      "practice": {
+        "title": "Mashq",
+        "description": "Taymersiz mashq qiling"
+      },
+      "exam": {
+        "title": "Imtihon",
+        "description": "60 daqiqada 30 ta savol"
+      }
+    },
+    "categories": {
+      "russian": "Rus tili",
+      "history": "Tarix",
+      "law": "Qonunchilik"
+    },
+    "difficulty": {
+      "easy": "Oson",
+      "medium": "O'rtacha",
+      "hard": "Qiyin"
+    },
+    "stats": {
+      "questions": "Savollar",
+      "success": "Muvaffaqiyat",
+      "streak": "Ketma-ket kunlar"
+    },
+    "session": {
+      "pause": "Pauza",
+      "resume": "Davom ettirish",
+      "exit": "Chiqish",
+      "exitConfirm": "Testdan chiqasizmi?",
+      "exitWarning": "Sizning taraqqiyotingiz yo'qoladi. Ishonchingiz komilmi?",
+      "cancel": "Bekor qilish",
+      "error": "Xato",
+      "tryAgain": "Qaytadan urinib ko'ring",
+      "testPaused": "Test to'xtatildi. Davom ettirish uchun bosing."
+    },
+    "question": {
+      "correct": "To'g'ri!",
+      "incorrect": "Noto'g'ri",
+      "next": "Keyingi savol",
+      "finish": "Testni tugatish"
+    },
+    "results": {
+      "congratulations": "Tabriklaymiz!",
+      "dontWorry": "Xafa bo'lmang!",
+      "passed": "O'tdingiz",
+      "notPassed": "O'tmadingiz",
+      "passedMessage": "Siz testni muvaffaqiyatli topshirdingiz",
+      "failedMessage": "Materialni takrorlashdan keyin qaytadan urinib ko'ring",
+      "correct": "To'g'ri",
+      "incorrect": "Noto'g'ri",
+      "time": "Vaqt",
+      "byCategory": "Kategoriyalar bo'yicha",
+      "recommendReview": "Takrorlash tavsiya etiladi",
+      "home": "Bosh sahifa",
+      "retry": "Qaytadan"
+    },
+    "time": {
+      "seconds": "sek",
+      "minutes": "daq"
+    },
+    "ui": {
+      "selectMode": "Rejimni tanlang",
+      "categories": "Kategoriyalar",
+      "tip": "Tayyorgarlik uchun maslahat",
+      "tipText": "Materialni maslahatlar bilan o'rganish uchun «O'qish» rejimidan boshlang. Keyin «Mashq»da bilimingizni mustahkamlang."
+    }
   }
 }
