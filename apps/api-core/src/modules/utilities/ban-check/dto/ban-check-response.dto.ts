@@ -15,11 +15,25 @@ export enum BanStatus {
 }
 
 /**
+ * Тип запрета на въезд
+ */
+export enum BanType {
+  /** Административный запрет (выдворение, нарушение миграционного законодательства) */
+  ADMINISTRATIVE = 'administrative',
+  /** Уголовный запрет (связанный с уголовным преследованием) */
+  CRIMINAL = 'criminal',
+  /** Санитарный запрет (карантин, эпидемиологические ограничения) */
+  SANITARY = 'sanitary',
+}
+
+/**
  * Источник данных для результата проверки
  */
 export enum BanCheckSource {
-  /** Результат получен от сервиса МВД */
+  /** Результат получен от сервиса МВД (HTTP API) */
   MVD = 'mvd',
+  /** Результат получен от сервиса ФМС (Playwright, sid=3000) */
+  FMS = 'fms',
   /** Результат получен из кэша */
   CACHE = 'cache',
   /** Fallback результат (mock или при недоступности сервиса) */
@@ -40,6 +54,13 @@ export class BanCheckResponseDto {
     example: BanCheckSource.MVD,
   })
   source!: BanCheckSource;
+
+  @ApiPropertyOptional({
+    enum: BanType,
+    description: 'Тип запрета на въезд (если обнаружен)',
+    example: BanType.ADMINISTRATIVE,
+  })
+  banType?: BanType;
 
   @ApiPropertyOptional({
     description: 'Причина запрета (если обнаружен)',

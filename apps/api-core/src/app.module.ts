@@ -19,13 +19,15 @@ import jwtConfig from './config/jwt.config';
 import redisConfig from './config/redis.config';
 import mvdConfig from './config/mvd.config';
 import patentCheckConfig from './config/patent-check.config';
+import innCheckConfig from './config/inn-check.config';
+import entryBanConfig from './config/entry-ban.config';
 
 @Module({
   imports: [
     // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, jwtConfig, redisConfig, mvdConfig, patentCheckConfig],
+      load: [appConfig, databaseConfig, jwtConfig, redisConfig, mvdConfig, patentCheckConfig, innCheckConfig, entryBanConfig],
       envFilePath: ['.env.local', '.env'],
     }),
 
