@@ -1,14 +1,42 @@
 'use client';
 
-import { type ReactNode, useEffect } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
+import { NextIntlClientProvider } from 'next-intl';
 import { QueryProvider } from '@/lib/providers/QueryProvider';
 import { useServiceWorker } from '@/lib/hooks/useServiceWorker';
 import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
 import { useDeepLinks } from '@/lib/hooks/useDeepLinks';
 import { NotificationProvider } from '@/lib/hooks/useNotifications';
-import { useTranslation } from '@/lib/i18n';
+import { useTranslation, useLanguageStore } from '@/lib/i18n';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useBackButton } from '@/hooks/useBackButton';
+import type { Locale } from '@/i18n';
+
+// Dynamic message loader for next-intl
+async function loadMessages(locale: Locale) {
+  return (await import(`@/locales/${locale}.json`)).default;
+}
+
+// Wrapper for NextIntlClientProvider with dynamic locale from Zustand
+function NextIntlWrapper({ children }: { children: ReactNode }) {
+  const language = useLanguageStore((state) => state.language);
+  const [messages, setMessages] = useState<Record<string, unknown> | null>(null);
+
+  useEffect(() => {
+    loadMessages(language as Locale).then(setMessages);
+  }, [language]);
+
+  // Show nothing until messages are loaded to prevent hydration mismatch
+  if (!messages) {
+    return null;
+  }
+
+  return (
+    <NextIntlClientProvider locale={language} messages={messages}>
+      {children}
+    </NextIntlClientProvider>
+  );
+}
 
 function AppInitializer({ children }: { children: ReactNode }) {
   // Register service worker
@@ -66,9 +94,11 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <ErrorBoundary>
       <QueryProvider>
-        <NotificationProvider>
-          <AppInitializer>{children}</AppInitializer>
-        </NotificationProvider>
+        <NextIntlWrapper>
+          <NotificationProvider>
+            <AppInitializer>{children}</AppInitializer>
+          </NotificationProvider>
+        </NextIntlWrapper>
       </QueryProvider>
     </ErrorBoundary>
   );

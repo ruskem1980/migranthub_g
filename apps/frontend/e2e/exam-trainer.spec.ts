@@ -212,9 +212,9 @@ test.describe('Exam Trainer (Тренажер по русскому)', () => {
       await page.waitForTimeout(1000);
     }
 
-    // Проверяем открылся ли тренажер
-    const questionVisible = await page.locator('text=Вопрос').isVisible().catch(() => false);
-    if (!questionVisible) {
+    // Проверяем открылся ли тренажер (начальный экран с выбором категории)
+    const trainerOpened = await page.locator('text=Тренажёр экзамена').isVisible().catch(() => false);
+    if (!trainerOpened) {
       console.log('❌ Тренажер не открылся - тест прерван');
       await page.screenshot({ path: 'e2e/screenshots/exam-func-01-not-opened.png' });
       return;
@@ -222,6 +222,14 @@ test.describe('Exam Trainer (Тренажер по русскому)', () => {
 
     console.log('✅ Тренажер открылся');
     await page.screenshot({ path: 'e2e/screenshots/exam-func-02-trainer-opened.png' });
+
+    // Нажимаем кнопку "Начать тест"
+    const startButton = page.locator('button').filter({ hasText: /начать тест/i }).first();
+    if (await startButton.count() > 0) {
+      await startButton.click();
+      await page.waitForTimeout(500);
+      console.log('✅ Нажали "Начать тест"');
+    }
 
     // Тест 2.1: Проверка вариантов ответа
     console.log('\n📍 Тест 2.1: Варианты ответа');
@@ -291,9 +299,9 @@ test.describe('Exam Trainer (Тренажер по русскому)', () => {
     console.log('='.repeat(60));
   });
 
-  test('3. Полный прогон теста (все 10 вопросов)', async ({ page }) => {
+  test('3. Полный прогон теста (категория "Русский язык" - 5 вопросов)', async ({ page }) => {
     console.log('\n' + '='.repeat(60));
-    console.log('🧪 ТЕСТ 3: Полный прогон (10 вопросов)');
+    console.log('🧪 ТЕСТ 3: Полный прогон (категория Русский язык)');
     console.log('='.repeat(60));
 
     await page.goto(`${BASE_URL}/services`);
@@ -312,20 +320,38 @@ test.describe('Exam Trainer (Тренажер по русскому)', () => {
       await page.waitForTimeout(1000);
     }
 
-    // Проходим все 10 вопросов
-    for (let i = 1; i <= 10; i++) {
-      console.log(`\n📍 Вопрос ${i}/10`);
+    // Выбираем категорию "Русский язык" (5 вопросов)
+    const russianCategory = page.locator('button').filter({ hasText: /русский язык/i }).first();
+    if (await russianCategory.count() > 0) {
+      await russianCategory.click();
+      console.log('✅ Выбрана категория "Русский язык"');
+      await page.waitForTimeout(300);
+    }
+
+    // Нажимаем "Начать тест"
+    const startButton = page.locator('button').filter({ hasText: /начать тест/i }).first();
+    if (await startButton.count() > 0) {
+      await startButton.click();
+      await page.waitForTimeout(500);
+      console.log('✅ Нажали "Начать тест"');
+    }
+
+    const QUESTION_COUNT = 5; // Русский язык - 5 вопросов
+
+    // Проходим все вопросы
+    for (let i = 1; i <= QUESTION_COUNT; i++) {
+      console.log(`\n📍 Вопрос ${i}/${QUESTION_COUNT}`);
 
       // Проверяем текущий вопрос
-      const questionIndicator = page.locator(`text=Вопрос ${i} из 10`);
+      const questionIndicator = page.locator(`text=Вопрос ${i} из ${QUESTION_COUNT}`);
       const isCurrentQuestion = await questionIndicator.isVisible().catch(() => false);
 
       if (!isCurrentQuestion) {
-        console.log(`   ⚠️ Индикатор "Вопрос ${i} из 10" не найден`);
+        console.log(`   ⚠️ Индикатор "Вопрос ${i} из ${QUESTION_COUNT}" не найден`);
       }
 
       // Выбираем первый вариант ответа
-      const answerButtons = page.locator('button[class*="rounded-xl"]').filter({ hasText: /^[A-D]|Москва|Президент|85|Белой/ });
+      const answerButtons = page.locator('button[class*="rounded-xl"]').filter({ hasText: /^[A-D]|Москва|Президент|85|Белой|на|в|к|у/ });
       const firstAnswer = answerButtons.first();
 
       if (await firstAnswer.count() > 0) {
@@ -361,7 +387,7 @@ test.describe('Exam Trainer (Тренажер по русскому)', () => {
     console.log('\n📍 Проверка экрана результатов');
     await page.waitForTimeout(500);
 
-    const resultsScreen = page.locator('text=Тест завершён, text=из 10');
+    const resultsScreen = page.locator('text=Тест завершён');
     const hasResults = await resultsScreen.first().isVisible().catch(() => false);
     logResult('Экран результатов', hasResults ? 'passed' : 'failed');
     await page.screenshot({ path: 'e2e/screenshots/exam-full-results.png' });
@@ -374,8 +400,9 @@ test.describe('Exam Trainer (Тренажер по русскому)', () => {
     if (hasRestart) {
       await restartButton.click();
       await page.waitForTimeout(500);
-      const backToQ1 = await page.locator('text=Вопрос 1 из 10').isVisible().catch(() => false);
-      logResult('Рестарт теста', backToQ1 ? 'passed' : 'failed');
+      // После рестарта показывается начальный экран с выбором категории
+      const backToStart = await page.locator('text=Начать тест').isVisible().catch(() => false);
+      logResult('Рестарт теста', backToStart ? 'passed' : 'failed');
     }
 
     console.log('\n' + '='.repeat(60));

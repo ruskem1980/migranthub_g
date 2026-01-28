@@ -1,201 +1,304 @@
 'use client';
 
 import { useState } from 'react';
-import { GraduationCap, X, ChevronRight, CheckCircle, XCircle, RotateCcw, Trophy, BookOpen, Clock, Target, Play } from 'lucide-react';
-
-interface Question {
-  id: number;
-  question: string;
-  options: string[];
-  correctIndex: number;
-  explanation?: string;
-  category: 'russian' | 'history';
-}
+import { GraduationCap, X, ChevronRight, CheckCircle, XCircle, RotateCcw, Trophy, BookOpen, Clock, Target, Play, Scale } from 'lucide-react';
+import {
+  useExamStore,
+  selectCurrentQuestion,
+  selectCurrentAnswer,
+  selectSessionProgress,
+  selectIsLastQuestion,
+} from '@/features/exam/stores/examStore';
+import {
+  QuestionCategory,
+  QuestionDifficulty,
+  ExamMode,
+  ExamResult,
+  Question,
+} from '@/features/exam/types';
 
 interface ExamTrainerProps {
   onClose: () => void;
 }
 
-type Category = 'all' | 'russian' | 'history';
+type CategoryFilter = 'all' | QuestionCategory;
 
 const SAMPLE_QUESTIONS: Question[] = [
   // История России
   {
-    id: 1,
+    id: 'history-1',
     question: 'Столица России:',
     options: ['Санкт-Петербург', 'Москва', 'Новосибирск', 'Казань'],
     correctIndex: 1,
     explanation: 'Москва — столица Российской Федерации с 1918 года.',
-    category: 'history',
+    category: QuestionCategory.HISTORY,
+    difficulty: QuestionDifficulty.EASY,
+    tags: ['география', 'столица'],
   },
   {
-    id: 2,
+    id: 'history-2',
     question: 'Как называется глава государства в России?',
     options: ['Премьер-министр', 'Канцлер', 'Президент', 'Король'],
     correctIndex: 2,
     explanation: 'Президент — высшее должностное лицо в России.',
-    category: 'history',
+    category: QuestionCategory.HISTORY,
+    difficulty: QuestionDifficulty.EASY,
+    tags: ['политика', 'власть'],
   },
   {
-    id: 3,
+    id: 'history-3',
     question: 'Сколько субъектов в Российской Федерации?',
     options: ['85', '89', '83', '91'],
     correctIndex: 0,
     explanation: 'В состав РФ входят 85 субъектов.',
-    category: 'history',
+    category: QuestionCategory.HISTORY,
+    difficulty: QuestionDifficulty.MEDIUM,
+    tags: ['политика', 'федерация'],
   },
   {
-    id: 4,
+    id: 'history-4',
     question: 'Государственный флаг России состоит из полос:',
     options: ['Красной, синей, белой', 'Белой, синей, красной', 'Синей, белой, красной', 'Красной, белой, синей'],
     correctIndex: 1,
     explanation: 'Флаг России — белая, синяя и красная горизонтальные полосы.',
-    category: 'history',
+    category: QuestionCategory.HISTORY,
+    difficulty: QuestionDifficulty.EASY,
+    tags: ['символика', 'флаг'],
   },
   {
-    id: 5,
+    id: 'history-5',
     question: 'В каком году была принята Конституция РФ?',
     options: ['1991', '1993', '1995', '2000'],
     correctIndex: 1,
     explanation: 'Конституция РФ была принята 12 декабря 1993 года.',
-    category: 'history',
+    category: QuestionCategory.HISTORY,
+    difficulty: QuestionDifficulty.MEDIUM,
+    tags: ['конституция', 'право'],
   },
   {
-    id: 8,
+    id: 'history-6',
     question: 'День России отмечается:',
     options: ['1 января', '9 мая', '12 июня', '4 ноября'],
     correctIndex: 2,
     explanation: 'День России — государственный праздник, отмечается 12 июня.',
-    category: 'history',
+    category: QuestionCategory.HISTORY,
+    difficulty: QuestionDifficulty.EASY,
+    tags: ['праздники'],
   },
   {
-    id: 9,
+    id: 'history-7',
     question: 'Какая река самая длинная в России?',
     options: ['Волга', 'Обь', 'Лена', 'Енисей'],
     correctIndex: 2,
     explanation: 'Лена — самая длинная река России (4400 км).',
-    category: 'history',
+    category: QuestionCategory.HISTORY,
+    difficulty: QuestionDifficulty.MEDIUM,
+    tags: ['география', 'реки'],
   },
   {
-    id: 10,
+    id: 'history-8',
     question: 'Кто написал "Войну и мир"?',
     options: ['Достоевский', 'Пушкин', 'Толстой', 'Чехов'],
     correctIndex: 2,
     explanation: 'Лев Толстой — автор романа "Война и мир".',
-    category: 'history',
+    category: QuestionCategory.HISTORY,
+    difficulty: QuestionDifficulty.EASY,
+    tags: ['культура', 'литература'],
   },
   // Русский язык
   {
-    id: 6,
+    id: 'russian-1',
     question: 'Выберите правильное продолжение: "Я живу _____ Москве."',
     options: ['на', 'в', 'к', 'у'],
     correctIndex: 1,
     explanation: '"В" используется с названиями городов: в Москве, в Петербурге.',
-    category: 'russian',
+    category: QuestionCategory.RUSSIAN_LANGUAGE,
+    difficulty: QuestionDifficulty.EASY,
+    tags: ['предлоги', 'грамматика'],
   },
   {
-    id: 7,
+    id: 'russian-2',
     question: 'Какой падеж отвечает на вопрос "Кого? Чего?"',
     options: ['Именительный', 'Родительный', 'Дательный', 'Винительный'],
     correctIndex: 1,
     explanation: 'Родительный падеж отвечает на вопросы "Кого? Чего?"',
-    category: 'russian',
+    category: QuestionCategory.RUSSIAN_LANGUAGE,
+    difficulty: QuestionDifficulty.MEDIUM,
+    tags: ['падежи', 'грамматика'],
   },
   {
-    id: 11,
+    id: 'russian-3',
     question: 'Выберите правильный вариант: "Мне нравится _____ музыка."',
     options: ['этот', 'эта', 'это', 'эти'],
     correctIndex: 1,
     explanation: '"Музыка" — женский род, поэтому "эта музыка".',
-    category: 'russian',
+    category: QuestionCategory.RUSSIAN_LANGUAGE,
+    difficulty: QuestionDifficulty.EASY,
+    tags: ['род', 'грамматика'],
   },
   {
-    id: 12,
+    id: 'russian-4',
     question: 'Какое слово написано правильно?',
     options: ['здраствуйте', 'здравствуйте', 'здраствуйти', 'здравствуйти'],
     correctIndex: 1,
     explanation: 'Правильно: "здравствуйте" — от слова "здравие".',
-    category: 'russian',
+    category: QuestionCategory.RUSSIAN_LANGUAGE,
+    difficulty: QuestionDifficulty.EASY,
+    tags: ['орфография'],
   },
   {
-    id: 13,
+    id: 'russian-5',
     question: 'Выберите правильное окончание: "Я иду _____ работу."',
     options: ['в', 'на', 'к', 'до'],
     correctIndex: 1,
     explanation: 'С существительным "работа" используется предлог "на": на работу.',
-    category: 'russian',
+    category: QuestionCategory.RUSSIAN_LANGUAGE,
+    difficulty: QuestionDifficulty.EASY,
+    tags: ['предлоги', 'грамматика'],
+  },
+  // Основы законодательства
+  {
+    id: 'law-1',
+    question: 'Какой документ необходим иностранному гражданину для легальной работы в России?',
+    options: ['Только паспорт', 'Патент или разрешение на работу', 'Водительские права', 'Диплом об образовании'],
+    correctIndex: 1,
+    explanation: 'Для работы иностранным гражданам необходим патент или разрешение на работу.',
+    category: QuestionCategory.LAW,
+    difficulty: QuestionDifficulty.EASY,
+    tags: ['трудовое право', 'миграция'],
+  },
+  {
+    id: 'law-2',
+    question: 'В течение какого времени иностранный гражданин должен встать на миграционный учёт?',
+    options: ['3 дня', '7 рабочих дней', '30 дней', '90 дней'],
+    correctIndex: 1,
+    explanation: 'Иностранный гражданин должен встать на миграционный учёт в течение 7 рабочих дней.',
+    category: QuestionCategory.LAW,
+    difficulty: QuestionDifficulty.MEDIUM,
+    tags: ['миграционный учёт', 'сроки'],
+  },
+  {
+    id: 'law-3',
+    question: 'Какое максимальное время пребывания в России по визе для большинства иностранцев?',
+    options: ['30 дней', '60 дней', '90 дней в течение 180 дней', '1 год'],
+    correctIndex: 2,
+    explanation: 'Стандартный срок пребывания — до 90 дней в течение каждого периода в 180 дней.',
+    category: QuestionCategory.LAW,
+    difficulty: QuestionDifficulty.MEDIUM,
+    tags: ['виза', 'сроки пребывания'],
+  },
+  {
+    id: 'law-4',
+    question: 'Что такое РВП?',
+    options: ['Разрешение на временное проживание', 'Регистрация временного пребывания', 'Российский вид на проживание', 'Разовый въездной пропуск'],
+    correctIndex: 0,
+    explanation: 'РВП — разрешение на временное проживание, выдаётся сроком на 3 года.',
+    category: QuestionCategory.LAW,
+    difficulty: QuestionDifficulty.EASY,
+    tags: ['РВП', 'документы'],
   },
 ];
 
 export function ExamTrainer({ onClose }: ExamTrainerProps) {
-  const [isStarted, setIsStarted] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category>('all');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [isAnswered, setIsAnswered] = useState(false);
-  const [score, setScore] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
+  // Локальный state для выбора категории (до начала теста)
+  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
+  // Локальный state для хранения результата (после завершения)
+  const [examResult, setExamResult] = useState<ExamResult | null>(null);
 
-  // Фильтруем вопросы по категории
-  const filteredQuestions = selectedCategory === 'all'
-    ? SAMPLE_QUESTIONS
-    : SAMPLE_QUESTIONS.filter(q => q.category === selectedCategory);
+  // Store state и actions
+  const currentSession = useExamStore((state) => state.currentSession);
+  const startSession = useExamStore((state) => state.startSession);
+  const answerQuestion = useExamStore((state) => state.answerQuestion);
+  const nextQuestion = useExamStore((state) => state.nextQuestion);
+  const finishSession = useExamStore((state) => state.finishSession);
+  const updateProgress = useExamStore((state) => state.updateProgress);
+  const reset = useExamStore((state) => state.reset);
 
-  const currentQuestion = filteredQuestions[currentIndex];
+  // Селекторы
+  const currentQuestion = useExamStore(selectCurrentQuestion);
+  const currentAnswer = useExamStore(selectCurrentAnswer);
+  const sessionProgress = useExamStore(selectSessionProgress);
+  const isLastQuestion = useExamStore(selectIsLastQuestion);
+
+  // Вычисляемые значения
+  const isStarted = currentSession !== null;
+  const isComplete = examResult !== null;
+  const isAnswered = currentAnswer !== null;
 
   const handleStart = () => {
-    setIsStarted(true);
-    setCurrentIndex(0);
-    setSelectedOption(null);
-    setIsAnswered(false);
-    setScore(0);
-    setIsComplete(false);
+    const questions = selectedCategory === 'all'
+      ? SAMPLE_QUESTIONS
+      : SAMPLE_QUESTIONS.filter((q) => q.category === selectedCategory);
+
+    const category = selectedCategory === 'all' ? undefined : selectedCategory;
+    startSession(ExamMode.PRACTICE, questions, category);
+    setExamResult(null);
   };
 
   const handleSelectOption = (index: number) => {
-    if (isAnswered) return;
-
-    setSelectedOption(index);
-    setIsAnswered(true);
-
-    if (index === currentQuestion.correctIndex) {
-      setScore(score + 1);
-    }
+    if (isAnswered || !currentQuestion) return;
+    answerQuestion(currentQuestion.id, index);
   };
 
   const handleNext = () => {
-    if (currentIndex < filteredQuestions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      setSelectedOption(null);
-      setIsAnswered(false);
+    if (isLastQuestion) {
+      const result = finishSession();
+      if (result) {
+        setExamResult(result);
+        updateProgress(result);
+      }
     } else {
-      setIsComplete(true);
+      nextQuestion();
     }
   };
 
   const handleRestart = () => {
-    setIsStarted(false);
-    setCurrentIndex(0);
-    setSelectedOption(null);
-    setIsAnswered(false);
-    setScore(0);
-    setIsComplete(false);
+    reset();
+    setExamResult(null);
   };
 
-  const getCategoryInfo = (cat: Category) => {
+  const getCategoryInfo = (cat: CategoryFilter) => {
     switch (cat) {
-      case 'russian':
-        return { label: 'Русский язык', count: SAMPLE_QUESTIONS.filter(q => q.category === 'russian').length };
-      case 'history':
-        return { label: 'История России', count: SAMPLE_QUESTIONS.filter(q => q.category === 'history').length };
+      case QuestionCategory.RUSSIAN_LANGUAGE:
+        return { label: 'Русский язык', count: SAMPLE_QUESTIONS.filter((q) => q.category === QuestionCategory.RUSSIAN_LANGUAGE).length };
+      case QuestionCategory.HISTORY:
+        return { label: 'История России', count: SAMPLE_QUESTIONS.filter((q) => q.category === QuestionCategory.HISTORY).length };
+      case QuestionCategory.LAW:
+        return { label: 'Основы законодательства', count: SAMPLE_QUESTIONS.filter((q) => q.category === QuestionCategory.LAW).length };
       default:
         return { label: 'Все вопросы', count: SAMPLE_QUESTIONS.length };
     }
   };
 
+  const getCategoryLabel = (category: QuestionCategory) => {
+    switch (category) {
+      case QuestionCategory.RUSSIAN_LANGUAGE:
+        return 'Русский язык';
+      case QuestionCategory.HISTORY:
+        return 'История';
+      case QuestionCategory.LAW:
+        return 'Законодательство';
+      default:
+        return category;
+    }
+  };
+
+  const getCategoryStyle = (category: QuestionCategory) => {
+    switch (category) {
+      case QuestionCategory.RUSSIAN_LANGUAGE:
+        return 'bg-blue-100 text-blue-700';
+      case QuestionCategory.HISTORY:
+        return 'bg-orange-100 text-orange-700';
+      case QuestionCategory.LAW:
+        return 'bg-purple-100 text-purple-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
+  };
+
   const getOptionStyle = (index: number) => {
-    if (!isAnswered) {
-      return selectedOption === index
+    if (!isAnswered || !currentQuestion) {
+      return currentAnswer?.selectedIndex === index
         ? 'border-blue-500 bg-blue-50'
         : 'border-gray-200 hover:border-gray-300';
     }
@@ -204,7 +307,7 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
       return 'border-green-500 bg-green-50';
     }
 
-    if (index === selectedOption) {
+    if (index === currentAnswer?.selectedIndex) {
       return 'border-red-500 bg-red-50';
     }
 
@@ -227,7 +330,7 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
             </div>
             <div>
               <h2 id="modal-title-exam-trainer" className="text-lg font-bold text-gray-900">Тренажёр экзамена</h2>
-              <p className="text-sm text-gray-500">Русский язык и история</p>
+              <p className="text-sm text-gray-500">Русский язык, история и право</p>
             </div>
           </div>
           <button
@@ -240,7 +343,7 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
 
         {/* Content */}
         <div className="flex-1 min-h-0 overflow-y-auto p-4">
-          {!isStarted ? (
+          {!isStarted && !isComplete ? (
             /* Начальный экран */
             <div className="py-4">
               {/* Иконка и описание */}
@@ -249,7 +352,7 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                   <BookOpen className="w-10 h-10 text-emerald-600" />
                 </div>
                 <p className="text-gray-600">
-                  Подготовьтесь к экзамену для получения патента или РВП. Проверьте свои знания русского языка и истории России.
+                  Подготовьтесь к экзамену для получения патента или РВП. Проверьте свои знания русского языка, истории России и основ законодательства.
                 </p>
               </div>
 
@@ -279,9 +382,10 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
               <div className="mb-6">
                 <p className="text-sm font-semibold text-gray-700 mb-3">Выберите категорию:</p>
                 <div className="space-y-2">
-                  {(['all', 'russian', 'history'] as Category[]).map((cat) => {
+                  {(['all', QuestionCategory.RUSSIAN_LANGUAGE, QuestionCategory.HISTORY, QuestionCategory.LAW] as CategoryFilter[]).map((cat) => {
                     const info = getCategoryInfo(cat);
                     const isSelected = selectedCategory === cat;
+                    const isLaw = cat === QuestionCategory.LAW;
                     return (
                       <button
                         key={cat}
@@ -292,9 +396,12 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
                       >
-                        <span className={`font-medium ${isSelected ? 'text-emerald-700' : 'text-gray-700'}`}>
-                          {info.label}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          {isLaw && <Scale className="w-4 h-4 text-purple-600" />}
+                          <span className={`font-medium ${isSelected ? 'text-emerald-700' : 'text-gray-700'}`}>
+                            {info.label}
+                          </span>
+                        </div>
                         <span className={`text-sm ${isSelected ? 'text-emerald-600' : 'text-gray-500'}`}>
                           {info.count} вопросов
                         </span>
@@ -313,18 +420,18 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                 Начать тест
               </button>
             </div>
-          ) : !isComplete ? (
+          ) : isStarted && !isComplete && currentQuestion && sessionProgress ? (
             <>
               {/* Progress */}
               <div className="mb-6">
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
-                  <span>Вопрос {currentIndex + 1} из {filteredQuestions.length}</span>
-                  <span>Баллов: {score}</span>
+                  <span>Вопрос {sessionProgress.current} из {sessionProgress.total}</span>
+                  <span>Баллов: {sessionProgress.correct}</span>
                 </div>
                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-emerald-500 transition-all"
-                    style={{ width: `${((currentIndex + 1) / filteredQuestions.length) * 100}%` }}
+                    style={{ width: `${(sessionProgress.current / sessionProgress.total) * 100}%` }}
                   />
                 </div>
               </div>
@@ -332,12 +439,8 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
               {/* Question */}
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    currentQuestion.category === 'russian'
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'bg-orange-100 text-orange-700'
-                  }`}>
-                    {currentQuestion.category === 'russian' ? 'Русский язык' : 'История'}
+                  <span className={`text-xs px-2 py-1 rounded-full ${getCategoryStyle(currentQuestion.category)}`}>
+                    {getCategoryLabel(currentQuestion.category)}
                   </span>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -355,13 +458,13 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         isAnswered && index === currentQuestion.correctIndex
                           ? 'bg-green-500 text-white'
-                          : isAnswered && index === selectedOption
+                          : isAnswered && index === currentAnswer?.selectedIndex
                           ? 'bg-red-500 text-white'
                           : 'bg-gray-100 text-gray-600'
                       }`}>
                         {isAnswered && index === currentQuestion.correctIndex ? (
                           <CheckCircle className="w-5 h-5" />
-                        ) : isAnswered && index === selectedOption ? (
+                        ) : isAnswered && index === currentAnswer?.selectedIndex ? (
                           <XCircle className="w-5 h-5" />
                         ) : (
                           String.fromCharCode(65 + index)
@@ -378,24 +481,24 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
               {/* Explanation */}
               {isAnswered && currentQuestion.explanation && (
                 <div className={`p-4 rounded-xl ${
-                  selectedOption === currentQuestion.correctIndex
+                  currentAnswer?.isCorrect
                     ? 'bg-green-50 border border-green-200'
                     : 'bg-blue-50 border border-blue-200'
                 }`}>
                   <p className={`text-sm ${
-                    selectedOption === currentQuestion.correctIndex
+                    currentAnswer?.isCorrect
                       ? 'text-green-800'
                       : 'text-blue-800'
                   }`}>
                     <strong>
-                      {selectedOption === currentQuestion.correctIndex ? 'Правильно! ' : 'Объяснение: '}
+                      {currentAnswer?.isCorrect ? 'Правильно! ' : 'Объяснение: '}
                     </strong>
                     {currentQuestion.explanation}
                   </p>
                 </div>
               )}
             </>
-          ) : (
+          ) : isComplete && examResult ? (
             <>
               {/* Results */}
               <div className="text-center py-8">
@@ -408,15 +511,15 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                 </h3>
 
                 <p className="text-4xl font-bold text-emerald-600 mb-2">
-                  {score} из {filteredQuestions.length}
+                  {examResult.correctAnswers} из {examResult.totalQuestions}
                 </p>
 
                 <p className="text-gray-500 mb-6">
-                  {score >= filteredQuestions.length * 0.7
-                    ? score === filteredQuestions.length
+                  {examResult.passed
+                    ? examResult.percentage === 100
                       ? 'Отлично! Все ответы правильные!'
                       : 'Хороший результат! Вы сдали тест.'
-                    : score >= filteredQuestions.length * 0.5
+                    : examResult.percentage >= 50
                     ? 'Неплохо, но для сдачи нужно 70%'
                     : 'Нужно больше практики. Для сдачи нужно 70%'}
                 </p>
@@ -425,17 +528,17 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                 <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mb-2">
                   <div
                     className={`h-full transition-all ${
-                      score >= filteredQuestions.length * 0.7
+                      examResult.passed
                         ? 'bg-emerald-500'
-                        : score >= filteredQuestions.length * 0.5
+                        : examResult.percentage >= 50
                         ? 'bg-yellow-500'
                         : 'bg-red-500'
                     }`}
-                    style={{ width: `${(score / filteredQuestions.length) * 100}%` }}
+                    style={{ width: `${examResult.percentage}%` }}
                   />
                 </div>
                 <p className="text-xs text-gray-500 mb-6">
-                  Проходной балл: 70% ({Math.ceil(filteredQuestions.length * 0.7)} из {filteredQuestions.length})
+                  Проходной балл: 70% ({Math.ceil(examResult.totalQuestions * 0.7)} из {examResult.totalQuestions})
                 </p>
 
                 {/* Actions */}
@@ -457,7 +560,7 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                 </div>
               </div>
             </>
-          )}
+          ) : null}
         </div>
 
         {/* Footer with next button */}
@@ -467,7 +570,7 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
               onClick={handleNext}
               className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold py-4 rounded-xl hover:bg-emerald-700 transition-colors"
             >
-              {currentIndex < filteredQuestions.length - 1 ? (
+              {!isLastQuestion ? (
                 <>
                   Следующий вопрос
                   <ChevronRight className="w-5 h-5" />
