@@ -18,13 +18,14 @@ import databaseConfig from './config/database.config';
 import jwtConfig from './config/jwt.config';
 import redisConfig from './config/redis.config';
 import mvdConfig from './config/mvd.config';
+import patentCheckConfig from './config/patent-check.config';
 
 @Module({
   imports: [
     // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, jwtConfig, redisConfig, mvdConfig],
+      load: [appConfig, databaseConfig, jwtConfig, redisConfig, mvdConfig, patentCheckConfig],
       envFilePath: ['.env.local', '.env'],
     }),
 
