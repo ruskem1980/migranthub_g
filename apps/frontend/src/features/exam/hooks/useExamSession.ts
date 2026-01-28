@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useEffect, useRef, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from '@/lib/i18n';
 import {
   useExamStore,
@@ -99,10 +100,10 @@ export function useExamSession(
   const storeUpdateProgress = useExamStore((state) => state.updateProgress);
   const storeReset = useExamStore((state) => state.reset);
 
-  // Selectors
+  // Selectors (useShallow prevents infinite loops from object returns)
   const currentQuestion = useExamStore(selectCurrentQuestion);
   const currentAnswer = useExamStore(selectCurrentAnswer);
-  const sessionProgress = useExamStore(selectSessionProgress);
+  const sessionProgress = useExamStore(useShallow(selectSessionProgress));
   const isLastQuestion = useExamStore(selectIsLastQuestion);
   const isFirstQuestion = useExamStore(selectIsFirstQuestion);
 
