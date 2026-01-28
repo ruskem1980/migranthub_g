@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ProfilingScreen } from './onboarding/ProfilingScreen';
 import { AuditScreen } from './onboarding/AuditScreen';
 import { RoadmapScreen } from './onboarding/RoadmapScreen';
@@ -8,9 +8,21 @@ import { DashboardLayout } from './DashboardLayout';
 
 type Screen = 'profiling' | 'audit' | 'roadmap' | 'dashboard';
 
+const ONBOARDING_COMPLETE_KEY = 'migranthub-onboarding-complete';
+
 export function AppPrototype() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('profiling');
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Check if onboarding was completed before
+  useEffect(() => {
+    const completed = localStorage.getItem(ONBOARDING_COMPLETE_KEY);
+    if (completed === 'true') {
+      setCurrentScreen('dashboard');
+    }
+    setIsHydrated(true);
+  }, []);
 
   const renderScreen = () => {
     switch (currentScreen) {
@@ -26,7 +38,10 @@ export function AppPrototype() {
       case 'roadmap':
         return <RoadmapScreen
           checkedItems={checkedItems}
-          onComplete={() => setCurrentScreen('dashboard')}
+          onComplete={() => {
+            localStorage.setItem(ONBOARDING_COMPLETE_KEY, 'true');
+            setCurrentScreen('dashboard');
+          }}
         />;
 
       case 'dashboard':
@@ -36,6 +51,15 @@ export function AppPrototype() {
         return <ProfilingScreen onNext={() => setCurrentScreen('audit')} />;
     }
   };
+
+  // Show nothing until hydrated to prevent flash of profiling screen
+  if (!isHydrated) {
+    return (
+      <div className="h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="relative">

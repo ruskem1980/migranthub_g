@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, Calculator, FileText, Briefcase, Home, MapPin, Languages, CreditCard, Wand2, Grid3x3, X, GraduationCap, Map } from 'lucide-react';
+import { Shield, FileText, Briefcase, Home, MapPin, Languages, CreditCard, Wand2, Grid3x3, X, GraduationCap, Map } from 'lucide-react';
 import { useState } from 'react';
 import { DocumentGenerator } from '../services/DocumentGenerator';
 import { useTranslation } from '@/lib/i18n';
@@ -18,7 +18,6 @@ export function ServicesScreen() {
   const coreServices = [
     { id: 'autofill', icon: Wand2, title: t('services.items.autofill.title'), subtitle: t('services.items.autofill.subtitle'), color: 'purple', special: true },
     { id: 'check', icon: Shield, title: t('services.items.check.title'), subtitle: t('services.items.check.subtitle'), color: 'red' },
-    { id: 'calculator', icon: Calculator, title: t('services.items.calculator.title'), subtitle: t('services.items.calculator.subtitle'), color: 'blue' },
     { id: 'payment', icon: CreditCard, title: t('services.items.payment.title'), subtitle: t('services.items.payment.subtitle'), color: 'green' },
     { id: 'map', icon: MapPin, title: t('services.items.map.title'), subtitle: t('services.items.map.subtitle'), color: 'pink', hasModal: true },
     { id: 'other', icon: Grid3x3, title: t('services.items.other.title'), subtitle: `6 ${t('services.items.other.subtitle')}`, color: 'gray' },
@@ -78,8 +77,6 @@ export function ServicesScreen() {
                     setShowDocGenerator(true);
                   } else if (service.id === 'other') {
                     setShowOtherServices(true);
-                  } else if (service.id === 'calculator') {
-                    window.location.href = '/calculator';
                   }
                 }}
                 className={`${colors.bg} border-2 ${service.special ? 'border-purple-400 ring-2 ring-purple-200' : service.id === 'other' ? 'border-gray-300 border-dashed' : 'border-gray-200'} rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md hover:shadow-xl relative`}
