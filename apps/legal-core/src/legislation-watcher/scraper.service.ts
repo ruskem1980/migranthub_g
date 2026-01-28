@@ -121,10 +121,10 @@ export class ScraperService {
       titleSelector: 'h1, .document-page__title, title',
       dateSelector: '.document-page__date, .date',
     },
-    // 115-ФЗ Об иностранных гражданах
+    // 115-ФЗ Об иностранных гражданах (О правовом положении иностранных граждан в РФ)
     {
       name: 'pravo.gov.ru - 115-ФЗ',
-      url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102084473',
+      url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102078147',
       contentSelector: '#docbody, .docbody, .document-body, body',
       titleSelector: 'title, h1, .doc-title',
       dateSelector: '.doc-date, .date',

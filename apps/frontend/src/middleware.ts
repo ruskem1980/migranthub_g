@@ -1,4 +1,3 @@
-import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { locales, defaultLocale, type Locale } from './i18n';
 
@@ -51,13 +50,6 @@ function getPreferredLocale(request: NextRequest): Locale {
   return defaultLocale;
 }
 
-// Create the base next-intl middleware
-const intlMiddleware = createMiddleware({
-  locales,
-  defaultLocale,
-  // Don't use locale prefix in URL - language is stored in localStorage/cookie
-  localePrefix: 'never',
-});
 
 /**
  * Enhanced middleware that:
@@ -72,15 +64,10 @@ export default function middleware(request: NextRequest): NextResponse {
   // Get the preferred locale
   const preferredLocale = getPreferredLocale(request);
 
-  // Create a modified request with the locale in a header that next-intl can use
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-next-intl-locale', preferredLocale);
-
-  // Run the intl middleware with our locale hint
-  const response = intlMiddleware(request);
+  // Create response that passes through
+  const response = NextResponse.next();
 
   // If no cookie is set, set it based on detected preference
-  // This helps sync the cookie for new users
   if (!request.cookies.get(LOCALE_COOKIE_NAME)?.value) {
     response.cookies.set(LOCALE_COOKIE_NAME, preferredLocale, {
       path: '/',
