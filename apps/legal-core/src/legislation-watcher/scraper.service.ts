@@ -18,9 +18,63 @@ export interface LegislationSource {
   dateSelector?: string;
 }
 
+export interface SearchConfig {
+  name: string;
+  searchUrl: string; // с {keyword} placeholder
+  resultSelector: string;
+  linkAttribute?: string; // default: 'href'
+  maxResults: number;
+  baseUrl?: string; // для относительных ссылок
+}
+
+export interface SearchResult {
+  title: string;
+  url: string;
+  source: string;
+}
+
 @Injectable()
 export class ScraperService {
   private readonly logger = new Logger(ScraperService.name);
+
+  // Ключевые слова для поиска законодательства
+  private readonly SEARCH_KEYWORDS = [
+    '109-ФЗ миграционный учет',
+    '115-ФЗ иностранные граждане',
+    '62-ФЗ гражданство',
+    '114-ФЗ въезд выезд',
+    'КоАП 18.8 нарушение миграционного',
+    'КоАП 18.9 принимающая сторона',
+    'КоАП 18.10 незаконная трудовая',
+    'патент иностранный работник',
+    'миграционный учет 2026',
+    'НК 227.1 НДФЛ патент',
+  ];
+
+  // Конфигурация поисковых страниц
+  private readonly searchSources: SearchConfig[] = [
+    {
+      name: 'base.garant.ru',
+      searchUrl: 'https://base.garant.ru/search/?q={keyword}',
+      resultSelector: 'a.search-result__link, .search-result-item a, .search-results a[href*="/"], a[href*="garant.ru"]',
+      maxResults: 5,
+      baseUrl: 'https://base.garant.ru',
+    },
+    {
+      name: 'consultant.ru',
+      searchUrl: 'https://www.consultant.ru/search/?q={keyword}',
+      resultSelector: '.search-result a, .document-link, a[href*="/document/"], .search-results__item a',
+      maxResults: 5,
+      baseUrl: 'https://www.consultant.ru',
+    },
+    {
+      name: 'pravo.gov.ru',
+      searchUrl: 'http://pravo.gov.ru/proxy/ips/?searchres=&bpas=cd00000&intelsearch={keyword}',
+      resultSelector: 'a[href*="doc="], a[href*="docbody"], .result-item a, table a[href*="proxy/ips"]',
+      maxResults: 5,
+      baseUrl: 'http://pravo.gov.ru',
+    },
+  ];
 
   // Real URLs for migration-related legislation
   private readonly sources: LegislationSource[] = [
@@ -146,13 +200,17 @@ export class ScraperService {
 
   async scrapeAllSources(): Promise<ScrapedLaw[]> {
     const results: ScrapedLaw[] = [];
+    const seenUrls = new Set<string>();
 
+    // 1. Сначала парсим прямые URL (существующая логика)
+    this.logger.log('=== Phase 1: Scraping direct URLs ===');
     for (const source of this.sources) {
       try {
         this.logger.log(`Scraping: ${source.name}`);
         const doc = await this.scrapeSource(source);
         if (doc) {
           results.push(doc);
+          seenUrls.add(this.normalizeUrl(doc.sourceUrl));
           this.logger.log(`Successfully scraped: ${source.name} (${doc.rawText.length} chars)`);
         }
         // Be polite to servers
@@ -162,8 +220,189 @@ export class ScraperService {
       }
     }
 
+    // 2. Затем ищем через поисковые страницы (новая логика)
+    this.logger.log('=== Phase 2: Scraping via search ===');
+    const searchResults = await this.scrapeViaSearch(seenUrls);
+    results.push(...searchResults);
+
     this.logger.log(`Total scraped documents: ${results.length}`);
     return results;
+  }
+
+  /**
+   * Поиск документов через поисковые страницы сайтов
+   */
+  async scrapeViaSearch(existingUrls: Set<string>): Promise<ScrapedLaw[]> {
+    const results: ScrapedLaw[] = [];
+    const seenUrls = new Set<string>(existingUrls);
+
+    for (const keyword of this.SEARCH_KEYWORDS) {
+      this.logger.log(`Searching for: "${keyword}"`);
+
+      for (const searchConfig of this.searchSources) {
+        try {
+          const searchResults = await this.searchSource(searchConfig, keyword);
+
+          for (const result of searchResults) {
+            const normalizedUrl = this.normalizeUrl(result.url);
+
+            // Дедупликация по URL
+            if (seenUrls.has(normalizedUrl)) {
+              this.logger.debug(`Skipping duplicate: ${result.url}`);
+              continue;
+            }
+
+            seenUrls.add(normalizedUrl);
+
+            // Парсим найденный документ
+            const doc = await this.scrapeDocumentDetails(result.url);
+            if (doc && doc.rawText.length > 100) {
+              results.push(doc);
+              this.logger.log(`Found via search: ${doc.title.substring(0, 50)}... (${doc.rawText.length} chars)`);
+            }
+
+            // Задержка между запросами документов
+            await this.delay(2000);
+          }
+
+          // Задержка между поисковыми запросами
+          await this.delay(3000);
+        } catch (error) {
+          this.logger.warn(`Search failed on ${searchConfig.name} for "${keyword}": ${error.message}`);
+        }
+      }
+    }
+
+    this.logger.log(`Found ${results.length} new documents via search`);
+    return results;
+  }
+
+  /**
+   * Поиск по одному источнику
+   */
+  private async searchSource(config: SearchConfig, keyword: string): Promise<SearchResult[]> {
+    const searchUrl = config.searchUrl.replace('{keyword}', encodeURIComponent(keyword));
+    this.logger.debug(`Searching: ${searchUrl}`);
+
+    try {
+      const html = await this.browserService.fetchPage(searchUrl, config.resultSelector);
+      const $ = cheerio.load(html);
+
+      return this.extractSearchResults($, config);
+    } catch (error) {
+      this.logger.warn(`Failed to search ${config.name}: ${error.message}`);
+      return [];
+    }
+  }
+
+  /**
+   * Извлечение ссылок из результатов поиска
+   */
+  private extractSearchResults($: cheerio.CheerioAPI, config: SearchConfig): SearchResult[] {
+    const results: SearchResult[] = [];
+    const selectors = config.resultSelector.split(', ');
+
+    for (const selector of selectors) {
+      $(selector).each((_, element) => {
+        if (results.length >= config.maxResults) return false;
+
+        const $el = $(element);
+        const href = $el.attr(config.linkAttribute || 'href');
+        const title = $el.text().trim() || $el.attr('title') || '';
+
+        if (!href || href === '#' || href.startsWith('javascript:')) {
+          return;
+        }
+
+        // Преобразуем относительные ссылки в абсолютные
+        let absoluteUrl = href;
+        if (href.startsWith('/')) {
+          absoluteUrl = (config.baseUrl || '') + href;
+        } else if (!href.startsWith('http')) {
+          absoluteUrl = (config.baseUrl || '') + '/' + href;
+        }
+
+        // Фильтруем нерелевантные ссылки
+        if (this.isRelevantUrl(absoluteUrl)) {
+          results.push({
+            title: title.substring(0, 200),
+            url: absoluteUrl,
+            source: config.name,
+          });
+        }
+      });
+
+      if (results.length >= config.maxResults) break;
+    }
+
+    this.logger.debug(`Extracted ${results.length} results from ${config.name}`);
+    return results;
+  }
+
+  /**
+   * Проверка релевантности URL
+   */
+  private isRelevantUrl(url: string): boolean {
+    // Исключаем служебные страницы
+    const excludePatterns = [
+      /\/search\?/,
+      /\/login/,
+      /\/register/,
+      /\/help/,
+      /\/about/,
+      /\/contacts?/,
+      /javascript:/,
+      /mailto:/,
+      /#$/,
+    ];
+
+    for (const pattern of excludePatterns) {
+      if (pattern.test(url)) {
+        return false;
+      }
+    }
+
+    // Включаем только ссылки на документы
+    const includePatterns = [
+      /garant\.ru.*\/\d+/,
+      /consultant\.ru.*\/document\//,
+      /pravo\.gov\.ru.*doc/,
+      /pravo\.gov\.ru.*nd=/,
+    ];
+
+    for (const pattern of includePatterns) {
+      if (pattern.test(url)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Нормализация URL для дедупликации
+   */
+  private normalizeUrl(url: string): string {
+    try {
+      const parsed = new URL(url);
+      // Убираем trailing slash и параметры сессии
+      let normalized = parsed.origin + parsed.pathname.replace(/\/$/, '');
+      // Сохраняем важные query параметры
+      const importantParams = ['nd', 'doc', 'documentId'];
+      const params = new URLSearchParams();
+      for (const param of importantParams) {
+        const value = parsed.searchParams.get(param);
+        if (value) {
+          params.set(param, value);
+        }
+      }
+      if (params.toString()) {
+        normalized += '?' + params.toString();
+      }
+      return normalized.toLowerCase();
+    } catch {
+      return url.toLowerCase();
+    }
   }
 
   private async scrapeSource(source: LegislationSource): Promise<ScrapedLaw | null> {
