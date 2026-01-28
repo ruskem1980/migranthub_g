@@ -20,6 +20,12 @@ import type {
   FormDto,
   FaqItemDto,
   LegalMetadataDto,
+  CheckPatentRequest,
+  PatentCheckResponse,
+  GetInnRequest,
+  InnCheckResponse,
+  CheckPermitRequest,
+  PermitStatusResponse,
 } from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
@@ -285,16 +291,30 @@ export const usersApi = {
 // Utilities API
 export const utilitiesApi = {
   checkBan: (params: BanCheckRequest) => {
-    const query = new URLSearchParams({
+    const queryParams: Record<string, string> = {
       lastName: params.lastName,
       firstName: params.firstName,
       birthDate: params.birthDate,
-    });
+    };
+    if (params.middleName) queryParams.middleName = params.middleName;
+    if (params.citizenship) queryParams.citizenship = params.citizenship;
+    if (params.source) queryParams.source = params.source;
+
+    const query = new URLSearchParams(queryParams);
     return apiClient.get<BanCheckResponse>(`/utilities/ban-check?${query}`);
   },
 
   getPatentRegions: () =>
     apiClient.get<PatentRegionsResponse>('/utilities/patent/regions', { skipAuth: true }),
+
+  checkPatent: (data: CheckPatentRequest) =>
+    apiClient.post<PatentCheckResponse>('/utilities/patent/check', data, { skipAuth: true }),
+
+  checkInn: (data: GetInnRequest) =>
+    apiClient.post<InnCheckResponse>('/utilities/inn-check', data),
+
+  checkPermitStatus: (data: CheckPermitRequest) =>
+    apiClient.post<PermitStatusResponse>('/utilities/permit-status', data),
 };
 
 // Health API

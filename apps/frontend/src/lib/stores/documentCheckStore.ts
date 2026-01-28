@@ -2,6 +2,14 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { utilitiesApi } from '@/lib/api/client';
+import { useProfileStore } from './profileStore';
+import type {
+  PatentCheckResponse,
+  BanCheckResponse,
+  InnCheckResponse,
+  PermitStatusResponse,
+} from '@/lib/api/types';
 
 export type CheckType = 'patent' | 'entryBan' | 'inn' | 'days90180' | 'rvpVnj';
 export type CheckStatus = 'idle' | 'loading' | 'success' | 'warning' | 'error';
@@ -12,6 +20,19 @@ export interface CheckResult {
   title: string;
   message: string;
   details?: string[];
+  rawData?: unknown;
+}
+
+interface CachedCheckResult {
+  result: CheckResult;
+  timestamp: string;
+}
+
+interface CachedResults {
+  patent?: CachedCheckResult;
+  entryBan?: CachedCheckResult;
+  inn?: CachedCheckResult;
+  rvpVnj?: CachedCheckResult;
 }
 
 interface ChecksState {
@@ -29,8 +50,8 @@ interface DocumentCheckState {
   currentCheckType: CheckType | null;
   checkResult: CheckResult | null;
   isModalOpen: boolean;
+  cachedResults: CachedResults;
 
-  // Actions
   runCheck: (type: CheckType) => Promise<void>;
   runAllChecks: () => Promise<void>;
   resetCheck: () => void;
@@ -55,67 +76,136 @@ const initialState = {
   currentCheckType: null as CheckType | null,
   checkResult: null as CheckResult | null,
   isModalOpen: false,
+  cachedResults: {} as CachedResults,
 };
 
-// Mock check results for demo purposes
-const getMockResult = (type: CheckType): CheckResult => {
-  const results: Record<CheckType, CheckResult> = {
-    patent: {
-      type: 'patent',
-      status: 'success',
-      title: 'Патент действителен',
-      message: 'Ваш патент на работу действителен до 15.06.2025',
-      details: [
-        'Регион: Москва',
-        'Профессия: Разнорабочий',
-        'Следующий платеж: 01.02.2025',
-      ],
-    },
-    entryBan: {
-      type: 'entryBan',
-      status: 'success',
-      title: 'Запретов не обнаружено',
-      message: 'В базах МВД, ФССП и ФМС запретов на въезд не найдено',
-      details: [
-        'База МВД: чисто',
-        'База ФССП: задолженностей нет',
-        'Миграционные нарушения: не обнаружены',
-      ],
-    },
-    inn: {
-      type: 'inn',
-      status: 'warning',
-      title: 'ИНН не найден',
-      message: 'ИНН по вашим данным не найден в базе ФНС',
-      details: [
-        'Рекомендуем подать заявление на получение ИНН',
-        'Это можно сделать в любой налоговой инспекции',
-      ],
-    },
-    days90180: {
-      type: 'days90180',
-      status: 'success',
-      title: 'Лимит пребывания в норме',
-      message: 'Использовано 45 из 90 дней в текущем периоде',
-      details: [
-        'Осталось дней: 45',
-        'Период заканчивается: 15.04.2025',
-        'Рекомендация: следите за датами въезда/выезда',
-      ],
-    },
-    rvpVnj: {
-      type: 'rvpVnj',
-      status: 'warning',
-      title: 'Заявление на рассмотрении',
-      message: 'Ваше заявление на РВП находится на рассмотрении',
-      details: [
-        'Дата подачи: 01.11.2024',
-        'Ожидаемый срок: до 4 месяцев',
-        'Статус: На рассмотрении в УВМ МВД',
-      ],
-    },
+// Helper: Check if online
+const isOnline = () => (typeof navigator !== 'undefined' ? navigator.onLine : true);
+
+// Helper: Parse profile name to firstName/lastName (Latin)
+const parseProfileName = (profile: { fullNameLatin?: string; fullName?: string }) => {
+  const name = profile.fullNameLatin || profile.fullName || '';
+  const parts = name.trim().split(/\s+/);
+  return {
+    lastName: parts[0] || '',
+    firstName: parts[1] || '',
+    middleName: parts.slice(2).join(' ') || undefined,
   };
-  return results[type];
+};
+
+// Transform API responses to CheckResult
+const transformPatentResult = (response: PatentCheckResponse): CheckResult => {
+  const isValid = response.isValid;
+  return {
+    type: 'patent',
+    status: isValid ? 'success' : response.status === 'not_found' ? 'warning' : 'error',
+    title: isValid
+      ? 'Патент действителен'
+      : response.status === 'not_found'
+        ? 'Патент не найден'
+        : response.status === 'expired'
+          ? 'Патент просрочен'
+          : 'Патент недействителен',
+    message:
+      response.message ||
+      (isValid
+        ? `Патент ${response.series} ${response.number} действителен`
+        : 'Проверьте данные патента'),
+    details: [
+      response.region && `Регион: ${response.region}`,
+      response.expirationDate &&
+        `Действителен до: ${new Date(response.expirationDate).toLocaleDateString('ru-RU')}`,
+      response.ownerName && `Владелец: ${response.ownerName}`,
+      `Проверено: ${new Date(response.checkedAt).toLocaleString('ru-RU')}`,
+    ].filter(Boolean) as string[],
+    rawData: response,
+  };
+};
+
+const transformBanResult = (response: BanCheckResponse): CheckResult => {
+  const hasBan = response.status === 'has_ban';
+  const failed = response.status === 'check_failed' || response.status === 'unknown';
+  return {
+    type: 'entryBan',
+    status: hasBan ? 'error' : failed ? 'warning' : 'success',
+    title: hasBan
+      ? 'Обнаружен запрет на въезд'
+      : failed
+        ? 'Не удалось проверить'
+        : 'Запретов не обнаружено',
+    message: hasBan
+      ? response.reason || 'Обнаружен запрет на въезд в РФ'
+      : failed
+        ? response.error || 'Попробуйте позже'
+        : 'В базах МВД запретов на въезд не найдено',
+    details: [
+      response.source && `Источник: ${response.source.toUpperCase()}`,
+      response.banType && `Тип: ${response.banType}`,
+      response.expiresAt && `До: ${new Date(response.expiresAt).toLocaleDateString('ru-RU')}`,
+      `Проверено: ${new Date(response.checkedAt).toLocaleString('ru-RU')}`,
+    ].filter(Boolean) as string[],
+    rawData: response,
+  };
+};
+
+const transformInnResult = (response: InnCheckResponse): CheckResult => {
+  return {
+    type: 'inn',
+    status: response.found ? 'success' : 'warning',
+    title: response.found ? 'ИНН найден' : 'ИНН не найден',
+    message: response.found
+      ? `Ваш ИНН: ${response.inn}`
+      : response.message || 'ИНН по вашим данным не найден в базе ФНС',
+    details: [
+      response.found && response.inn && `ИНН: ${response.inn}`,
+      !response.found && 'Рекомендуем подать заявление на получение ИНН',
+      !response.found && 'Это можно сделать в любой налоговой инспекции',
+      `Проверено: ${new Date(response.checkedAt).toLocaleString('ru-RU')}`,
+    ].filter(Boolean) as string[],
+    rawData: response,
+  };
+};
+
+const transformPermitResult = (response: PermitStatusResponse): CheckResult => {
+  const statusMap: Record<string, { status: CheckResult['status']; title: string }> = {
+    PENDING: { status: 'warning', title: 'Заявление на рассмотрении' },
+    APPROVED: { status: 'success', title: 'Заявление одобрено' },
+    REJECTED: { status: 'error', title: 'Заявление отклонено' },
+    READY_FOR_PICKUP: { status: 'success', title: 'Готово к получению' },
+    ADDITIONAL_DOCS_REQUIRED: { status: 'warning', title: 'Требуются документы' },
+    NOT_FOUND: { status: 'warning', title: 'Заявление не найдено' },
+    UNKNOWN: { status: 'warning', title: 'Статус неизвестен' },
+  };
+
+  const mapped = statusMap[response.status] || { status: 'warning', title: 'Статус неизвестен' };
+
+  return {
+    type: 'rvpVnj',
+    status: mapped.status,
+    title: mapped.title,
+    message: response.message,
+    details: [
+      response.estimatedDate &&
+        `Ожидаемая дата: ${new Date(response.estimatedDate).toLocaleDateString('ru-RU')}`,
+      `Проверено: ${new Date(response.checkedAt).toLocaleString('ru-RU')}`,
+    ].filter(Boolean) as string[],
+    rawData: response,
+  };
+};
+
+// Get cached result if offline
+const getCachedResult = (type: CheckType, cachedResults: CachedResults): CheckResult | null => {
+  const cached = cachedResults[type as keyof CachedResults];
+  if (cached) {
+    return {
+      ...cached.result,
+      details: [
+        ...(cached.result.details || []),
+        `Данные из кэша от ${new Date(cached.timestamp).toLocaleString('ru-RU')}`,
+      ],
+    };
+  }
+  return null;
 };
 
 export const useDocumentCheckStore = create<DocumentCheckState>()(
@@ -124,19 +214,174 @@ export const useDocumentCheckStore = create<DocumentCheckState>()(
       ...initialState,
 
       runCheck: async (type: CheckType) => {
+        // days90180 is handled as a link, not an API call
+        if (type === 'days90180') return;
+
+        const profile = useProfileStore.getState().profile;
+
         set({
           isLoading: true,
           currentCheckType: type,
           checks: { ...get().checks, [type]: 'loading' },
         });
 
-        try {
-          // Simulate API call
-          await new Promise((resolve) => setTimeout(resolve, 1500));
+        // Check offline - return cached result
+        if (!isOnline()) {
+          const cached = getCachedResult(type, get().cachedResults);
+          if (cached) {
+            set({
+              isLoading: false,
+              checkResult: cached,
+              isModalOpen: true,
+              checks: {
+                ...get().checks,
+                [type]:
+                  cached.status === 'error'
+                    ? 'error'
+                    : cached.status === 'warning'
+                      ? 'warning'
+                      : 'success',
+              },
+            });
+            return;
+          }
 
-          const result = getMockResult(type);
-          const checkStatus: CheckStatus = result.status === 'error' ? 'error' :
-            result.status === 'warning' ? 'warning' : 'success';
+          set({
+            isLoading: false,
+            checks: { ...get().checks, [type]: 'error' },
+            checkResult: {
+              type,
+              status: 'error',
+              title: 'Нет соединения',
+              message: 'Для проверки требуется подключение к интернету',
+            },
+            isModalOpen: true,
+          });
+          return;
+        }
+
+        try {
+          let result: CheckResult;
+
+          switch (type) {
+            case 'patent': {
+              // Need patent data from profile
+              if (!profile?.patentRegion) {
+                result = {
+                  type: 'patent',
+                  status: 'warning',
+                  title: 'Данные не заполнены',
+                  message: 'Заполните данные патента в профиле для проверки',
+                };
+                break;
+              }
+
+              // Extract series from region code (first 2 digits)
+              const series = profile.patentRegion.substring(0, 2);
+              // For demo, use a placeholder number - in real app this would come from profile
+              const response = await utilitiesApi.checkPatent({
+                series,
+                number: '12345678', // TODO: Add patent number to profile
+                lastName: parseProfileName(profile).lastName,
+                firstName: parseProfileName(profile).firstName,
+              });
+              result = transformPatentResult(response);
+              break;
+            }
+
+            case 'entryBan': {
+              if (!profile?.fullNameLatin || !profile?.birthDate) {
+                result = {
+                  type: 'entryBan',
+                  status: 'warning',
+                  title: 'Данные не заполнены',
+                  message: 'Заполните ФИО (латиницей) и дату рождения в профиле',
+                };
+                break;
+              }
+
+              const { lastName, firstName, middleName } = parseProfileName(profile);
+              const response = await utilitiesApi.checkBan({
+                lastName,
+                firstName,
+                middleName,
+                birthDate: profile.birthDate,
+                citizenship: profile.citizenship,
+              });
+              result = transformBanResult(response);
+              break;
+            }
+
+            case 'inn': {
+              if (!profile?.fullNameLatin || !profile?.birthDate || !profile?.passportNumber) {
+                result = {
+                  type: 'inn',
+                  status: 'warning',
+                  title: 'Данные не заполнены',
+                  message: 'Заполните ФИО, дату рождения и паспортные данные в профиле',
+                };
+                break;
+              }
+
+              const { lastName, firstName, middleName } = parseProfileName(profile);
+              const response = await utilitiesApi.checkInn({
+                lastName,
+                firstName,
+                middleName,
+                birthDate: profile.birthDate,
+                documentType: 'FOREIGN_PASSPORT',
+                documentSeries: profile.passportNumber.substring(0, 2),
+                documentNumber: profile.passportNumber.substring(2),
+                documentDate: profile.passportIssueDate || profile.birthDate,
+              });
+              result = transformInnResult(response);
+              break;
+            }
+
+            case 'rvpVnj': {
+              if (!profile?.fullNameLatin || !profile?.birthDate) {
+                result = {
+                  type: 'rvpVnj',
+                  status: 'warning',
+                  title: 'Данные не заполнены',
+                  message: 'Заполните ФИО и дату рождения в профиле',
+                };
+                break;
+              }
+
+              const { lastName, firstName, middleName } = parseProfileName(profile);
+              const response = await utilitiesApi.checkPermitStatus({
+                permitType: 'RVP', // TODO: Add permit type to profile
+                region: profile.patentRegion || '77',
+                applicationDate: new Date().toISOString().split('T')[0], // TODO: Add application date to profile
+                lastName,
+                firstName,
+                middleName,
+                birthDate: profile.birthDate,
+              });
+              result = transformPermitResult(response);
+              break;
+            }
+
+            default:
+              result = {
+                type,
+                status: 'error',
+                title: 'Неизвестный тип проверки',
+                message: 'Данный тип проверки не поддерживается',
+              };
+          }
+
+          const checkStatus: CheckStatus =
+            result.status === 'error' ? 'error' : result.status === 'warning' ? 'warning' : 'success';
+
+          // Cache successful result
+          const newCachedResults = { ...get().cachedResults };
+          // Cache result for patent, entryBan, inn, rvpVnj (days90180 excluded from this function at the start)
+          newCachedResults[type as keyof CachedResults] = {
+            result,
+            timestamp: new Date().toISOString(),
+          };
 
           set({
             isLoading: false,
@@ -144,9 +389,37 @@ export const useDocumentCheckStore = create<DocumentCheckState>()(
             isModalOpen: true,
             lastCheckDate: new Date().toISOString(),
             checks: { ...get().checks, [type]: checkStatus },
+            cachedResults: newCachedResults,
           });
         } catch (error) {
           console.error('Check error:', error);
+
+          // Try to use cached result on error
+          const cached = getCachedResult(type, get().cachedResults);
+          if (cached) {
+            set({
+              isLoading: false,
+              checkResult: {
+                ...cached,
+                details: [
+                  ...(cached.details || []),
+                  'Не удалось обновить данные, показаны результаты из кэша',
+                ],
+              },
+              isModalOpen: true,
+              checks: {
+                ...get().checks,
+                [type]:
+                  cached.status === 'error'
+                    ? 'error'
+                    : cached.status === 'warning'
+                      ? 'warning'
+                      : 'success',
+              },
+            });
+            return;
+          }
+
           set({
             isLoading: false,
             checks: { ...get().checks, [type]: 'error' },
@@ -154,7 +427,8 @@ export const useDocumentCheckStore = create<DocumentCheckState>()(
               type,
               status: 'error',
               title: 'Ошибка проверки',
-              message: 'Не удалось выполнить проверку. Попробуйте позже.',
+              message:
+                error instanceof Error ? error.message : 'Не удалось выполнить проверку. Попробуйте позже.',
             },
             isModalOpen: true,
           });
@@ -162,49 +436,49 @@ export const useDocumentCheckStore = create<DocumentCheckState>()(
       },
 
       runAllChecks: async () => {
-        const types: CheckType[] = ['patent', 'entryBan', 'inn', 'days90180', 'rvpVnj'];
+        const types: CheckType[] = ['patent', 'entryBan', 'inn', 'rvpVnj'];
+        // Note: days90180 excluded - it's a link to calculator page
 
         set({ isLoading: true });
 
         // Set all to loading
-        const loadingChecks = types.reduce(
-          (acc, type) => ({ ...acc, [type]: 'loading' as CheckStatus }),
-          {} as ChecksState
-        );
+        const loadingChecks = { ...initialChecks };
+        types.forEach((type) => {
+          loadingChecks[type] = 'loading';
+        });
         set({ checks: loadingChecks });
 
-        // Run all checks sequentially with small delays
+        // Run all checks in parallel
         const results: CheckResult[] = [];
-        for (const type of types) {
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          const result = getMockResult(type);
-          results.push(result);
+        const promises = types.map(async (type) => {
+          try {
+            await get().runCheck(type);
+            const result = get().checkResult;
+            if (result) results.push(result);
+          } catch {
+            // Error already handled in runCheck
+          }
+        });
 
-          const checkStatus: CheckStatus = result.status === 'error' ? 'error' :
-            result.status === 'warning' ? 'warning' : 'success';
-
-          set((state) => ({
-            checks: { ...state.checks, [type]: checkStatus },
-          }));
-        }
+        await Promise.allSettled(promises);
 
         // Show summary result
         const hasErrors = results.some((r) => r.status === 'error');
         const hasWarnings = results.some((r) => r.status === 'warning');
 
         const summaryResult: CheckResult = {
-          type: 'patent', // placeholder
+          type: 'patent', // placeholder for summary
           status: hasErrors ? 'error' : hasWarnings ? 'warning' : 'success',
           title: hasErrors
             ? 'Обнаружены проблемы'
             : hasWarnings
-            ? 'Требуется внимание'
-            : 'Все проверки пройдены',
+              ? 'Требуется внимание'
+              : 'Все проверки пройдены',
           message: hasErrors
             ? 'Некоторые проверки выявили проблемы. Проверьте детали.'
             : hasWarnings
-            ? 'Некоторые проверки требуют вашего внимания.'
-            : 'Все документы в порядке. Проблем не обнаружено.',
+              ? 'Некоторые проверки требуют вашего внимания.'
+              : 'Все документы в порядке. Проблем не обнаружено.',
           details: results.map((r) => `${getCheckLabel(r.type)}: ${r.title}`),
         };
 
@@ -245,12 +519,13 @@ export const useDocumentCheckStore = create<DocumentCheckState>()(
       partialize: (state) => ({
         checks: state.checks,
         lastCheckDate: state.lastCheckDate,
+        cachedResults: state.cachedResults,
       }),
     }
   )
 );
 
-// Helper function for check labels
+// Helper functions
 export function getCheckLabel(type: CheckType): string {
   const labels: Record<CheckType, string> = {
     patent: 'Патент',
@@ -262,14 +537,13 @@ export function getCheckLabel(type: CheckType): string {
   return labels[type];
 }
 
-// Helper function for check icons
 export function getCheckIcon(type: CheckType): string {
   const icons: Record<CheckType, string> = {
-    patent: '📋',
-    entryBan: '🚫',
-    inn: '🔢',
-    days90180: '📅',
-    rvpVnj: '📄',
+    patent: 'document',
+    entryBan: 'ban',
+    inn: 'number',
+    days90180: 'calendar',
+    rvpVnj: 'file',
   };
   return icons[type];
 }

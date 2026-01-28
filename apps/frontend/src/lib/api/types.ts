@@ -50,18 +50,106 @@ export interface UpdateUserRequest {
 }
 
 // Utilities Types
+
+// Ban Check Types
+export type BanType = 'administrative' | 'criminal' | 'sanitary';
+export type BanCheckSource = 'mvd' | 'fms' | 'cache' | 'fallback';
+
 export interface BanCheckRequest {
   lastName: string;
   firstName: string;
+  middleName?: string;
+  birthDate: string;
+  citizenship?: string;
+  source?: 'mvd' | 'fms';
+}
+
+export interface BanCheckResponse {
+  status: 'no_ban' | 'has_ban' | 'unknown' | 'check_failed';
+  source?: BanCheckSource;
+  banType?: BanType;
+  reason?: string;
+  expiresAt?: string;
+  checkedAt: string;
+  error?: string;
+}
+
+// Patent Check Types
+export type PatentStatus = 'valid' | 'invalid' | 'expired' | 'not_found' | 'error';
+
+export interface CheckPatentRequest {
+  series: string;
+  number: string;
+  lastName?: string;
+  firstName?: string;
+}
+
+export interface PatentCheckResponse {
+  status: PatentStatus;
+  isValid: boolean;
+  message?: string;
+  series: string;
+  number: string;
+  region?: string;
+  issueDate?: string;
+  expirationDate?: string;
+  ownerName?: string;
+  fromCache: boolean;
+  checkedAt: string;
+  source: 'mock' | 'real';
+}
+
+// INN Check Types
+export type ForeignDocumentType = 'FOREIGN_PASSPORT' | 'RVP' | 'VNJ';
+export type InnCheckSource = 'fns' | 'cache' | 'mock' | 'fallback';
+
+export interface GetInnRequest {
+  lastName: string;
+  firstName: string;
+  middleName?: string;
+  birthDate: string;
+  documentType: ForeignDocumentType;
+  documentSeries: string;
+  documentNumber: string;
+  documentDate: string;
+}
+
+export interface InnCheckResponse {
+  found: boolean;
+  inn?: string;
+  source: InnCheckSource;
+  checkedAt: string;
+  error?: string;
+  message?: string;
+}
+
+// Permit Status Types
+export type PermitType = 'RVP' | 'VNJ';
+export type PermitStatusEnum =
+  | 'PENDING'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'READY_FOR_PICKUP'
+  | 'ADDITIONAL_DOCS_REQUIRED'
+  | 'NOT_FOUND'
+  | 'UNKNOWN';
+
+export interface CheckPermitRequest {
+  permitType: PermitType;
+  region: string;
+  applicationDate: string;
+  applicationNumber?: string;
+  lastName: string;
+  firstName: string;
+  middleName?: string;
   birthDate: string;
 }
 
-export type BanStatus = 'no_ban' | 'ban_found' | 'check_failed';
-
-export interface BanCheckResponse {
-  status: BanStatus;
-  reason?: string;
-  expiresAt?: string;
+export interface PermitStatusResponse {
+  found: boolean;
+  status: PermitStatusEnum;
+  message: string;
+  estimatedDate?: string;
   checkedAt: string;
   error?: string;
 }
