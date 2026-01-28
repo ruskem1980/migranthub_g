@@ -6,6 +6,7 @@ import { DocumentGenerator } from '../services/DocumentGenerator';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useProfileStore } from '@/lib/stores';
+import { ExamTrainer } from '@/features/services';
 
 export function ServicesScreen() {
   const { t } = useTranslation();
@@ -13,6 +14,7 @@ export function ServicesScreen() {
   const [showMapModal, setShowMapModal] = useState(false);
   const [showDocGenerator, setShowDocGenerator] = useState(false);
   const [showOtherServices, setShowOtherServices] = useState(false);
+  const [showExamTrainer, setShowExamTrainer] = useState(false);
 
   // Core Services (Main Grid)
   const coreServices = [
@@ -182,6 +184,12 @@ export function ServicesScreen() {
                 return (
                   <button
                     key={index}
+                    onClick={() => {
+                      if (service.id === 'exam') {
+                        setShowOtherServices(false);
+                        setShowExamTrainer(true);
+                      }
+                    }}
                     className={`${colors.bg} border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md hover:shadow-xl`}
                   >
                     <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
@@ -223,6 +231,11 @@ export function ServicesScreen() {
           onSaveProfileData={updateProfile}
           profileData={profile || {}}
         />
+      )}
+
+      {/* Exam Trainer */}
+      {showExamTrainer && (
+        <ExamTrainer onClose={() => setShowExamTrainer(false)} />
       )}
     </div>
   );
