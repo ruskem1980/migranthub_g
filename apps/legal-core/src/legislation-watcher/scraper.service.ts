@@ -1,265 +1,203 @@
 import { Injectable, Logger } from '@nestjs/common';
-import axios, { AxiosInstance } from 'axios';
 import * as cheerio from 'cheerio';
+import { BrowserService } from './browser.service';
 
 export interface ScrapedLaw {
   title: string;
   sourceUrl: string;
   rawText: string;
   scrapedAt: Date;
+  lastModified?: Date;
 }
 
-export interface ScraperSource {
+export interface LegislationSource {
   name: string;
-  baseUrl: string;
-  searchPath: string;
-  keywords: string[];
-  selectors: {
-    title: string;
-    content: string;
-    link?: string;
-  };
+  url: string;
+  contentSelector: string;
+  titleSelector: string;
+  dateSelector?: string;
 }
-
-// Well-known document IDs for migration-related laws on base.garant.ru
-const GARANT_KNOWN_DOCUMENTS = [
-  { id: '184755', name: '115-ФЗ О правовом положении иностранных граждан' },
-  { id: '12148419', name: '109-ФЗ О миграционном учете иностранных граждан' },
-  { id: '12125267', name: 'КоАП РФ (Кодекс об административных правонарушениях)' },
-];
-
-// Well-known document paths for pravo.gov.ru IPS (Законодательство России)
-const PRAVO_KNOWN_SEARCHES = [
-  { query: '115-ФЗ', description: 'О правовом положении иностранных граждан' },
-  { query: '109-ФЗ', description: 'О миграционном учете' },
-  { query: 'миграционный учет', description: 'Документы по миграционному учету' },
-];
 
 @Injectable()
 export class ScraperService {
   private readonly logger = new Logger(ScraperService.name);
-  private readonly axiosInstance: AxiosInstance;
 
-  private readonly sources: ScraperSource[] = [
+  // Real URLs for migration-related legislation
+  private readonly sources: LegislationSource[] = [
+    // 109-ФЗ О миграционном учёте
     {
-      name: 'pravo.gov.ru',
-      baseUrl: 'http://pravo.gov.ru',
-      searchPath: '/proxy/ips/',
-      keywords: ['115-ФЗ', '109-ФЗ', 'миграционный учет'],
-      selectors: {
-        // pravo.gov.ru uses frames, search results are in searchlist frame
-        title: 'a.npa_title, .doctitle, span.sh1',
-        content: '.document-text, .docbody, #document_text',
-        link: 'a[href*="doc="], a[href*="docbody="]'
-      }
+      name: 'pravo.gov.ru - 109-ФЗ',
+      url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102108015',
+      contentSelector: '#docbody, .docbody, .document-body, body',
+      titleSelector: 'title, h1, .doc-title',
+      dateSelector: '.doc-date, .date',
     },
     {
-      name: 'base.garant.ru',
-      baseUrl: 'https://base.garant.ru',
-      searchPath: '/',
-      keywords: ['115-ФЗ', '109-ФЗ', 'КоАП 18.8'],
-      selectors: {
-        // Garant uses title tag and h1 for document title
-        title: 'h1.long, h1.short, h1, title',
-        content: '#doc_content, section.content, .breadcrumps + div',
-        link: 'a[href^="/"][href$="/"]'
-      }
-    }
+      name: 'consultant.ru - 109-ФЗ',
+      url: 'https://www.consultant.ru/document/cons_doc_LAW_61569/',
+      contentSelector: '.document-page__content, .doc-body, article, main',
+      titleSelector: 'h1, .document-page__title, title',
+      dateSelector: '.document-page__date, .date',
+    },
+    // 115-ФЗ Об иностранных гражданах
+    {
+      name: 'pravo.gov.ru - 115-ФЗ',
+      url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102084473',
+      contentSelector: '#docbody, .docbody, .document-body, body',
+      titleSelector: 'title, h1, .doc-title',
+      dateSelector: '.doc-date, .date',
+    },
+    {
+      name: 'consultant.ru - 115-ФЗ',
+      url: 'https://www.consultant.ru/document/cons_doc_LAW_37868/',
+      contentSelector: '.document-page__content, .doc-body, article, main',
+      titleSelector: 'h1, .document-page__title, title',
+      dateSelector: '.document-page__date, .date',
+    },
+    // Garant - изменения в законодательстве
+    {
+      name: 'garant.ru - Изменения в миграционном законодательстве',
+      url: 'https://www.garant.ru/products/ipo/prime/doc/412750335/',
+      contentSelector: '.doc-content, .article-content, article, main, .text',
+      titleSelector: 'h1, .doc-title, title',
+      dateSelector: '.doc-date, .date, .pub-date',
+    },
+    // КоАП статья 18.8 (нарушение правил въезда)
+    {
+      name: 'garant.ru - КоАП 18.8',
+      url: 'https://base.garant.ru/12125267/888134b28b1397ffae77a02372ed70be/',
+      contentSelector: '#doc_content, section.content, .doc-body, article',
+      titleSelector: 'h1.long, h1.short, h1, title',
+      dateSelector: '.doc-date',
+    },
+    // Normativ Kontur
+    {
+      name: 'normativ.kontur.ru - Миграционный учёт',
+      url: 'https://normativ.kontur.ru/document?moduleId=1&documentId=500958',
+      contentSelector: '.document-content, .doc-body, article, main, .content',
+      titleSelector: 'h1, .document-title, title',
+      dateSelector: '.document-date, .date',
+    },
   ];
 
-  constructor() {
-    this.axiosInstance = axios.create({
-      timeout: 30000,
-      maxRedirects: 5,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; MigrantHub-LegalBot/1.0; +https://migranthub.ru/bot)',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'ru-RU,ru;q=0.9,en;q=0.8',
-        'Accept-Encoding': 'gzip, deflate',
-        'Connection': 'keep-alive'
-      },
-      // Handle various response encodings
-      responseType: 'arraybuffer',
-      transformResponse: [(data) => {
-        // Try to decode as UTF-8 first, fall back to windows-1251
-        try {
-          const decoder = new TextDecoder('utf-8', { fatal: true });
-          return decoder.decode(data);
-        } catch {
-          try {
-            const decoder = new TextDecoder('windows-1251');
-            return decoder.decode(data);
-          } catch {
-            return data.toString();
-          }
-        }
-      }]
-    });
-  }
+  constructor(private readonly browserService: BrowserService) {}
 
   async scrapeAllSources(): Promise<ScrapedLaw[]> {
-    const allResults: ScrapedLaw[] = [];
-
-    // First, scrape known documents from Garant (more reliable)
-    try {
-      this.logger.log('Scraping known documents from base.garant.ru');
-      const garantResults = await this.scrapeKnownGarantDocuments();
-      allResults.push(...garantResults);
-      this.logger.log(`Scraped ${garantResults.length} documents from Garant`);
-    } catch (error) {
-      this.logger.error(`Failed to scrape Garant: ${error.message}`, error.stack);
-    }
-
-    // Then try pravo.gov.ru search
-    try {
-      this.logger.log('Searching documents on pravo.gov.ru');
-      const pravoResults = await this.scrapePravoGov();
-      allResults.push(...pravoResults);
-      this.logger.log(`Scraped ${pravoResults.length} documents from Pravo.gov.ru`);
-    } catch (error) {
-      this.logger.error(`Failed to scrape Pravo.gov.ru: ${error.message}`, error.stack);
-    }
-
-    return allResults;
-  }
-
-  /**
-   * Scrape known migration-related documents from base.garant.ru
-   * Uses direct document URLs which are more reliable than search
-   */
-  private async scrapeKnownGarantDocuments(): Promise<ScrapedLaw[]> {
     const results: ScrapedLaw[] = [];
-    const source = this.sources.find(s => s.name === 'base.garant.ru')!;
 
-    for (const doc of GARANT_KNOWN_DOCUMENTS) {
+    for (const source of this.sources) {
       try {
-        const url = `${source.baseUrl}/${doc.id}/`;
-        this.logger.debug(`Fetching Garant document: ${url}`);
-
-        const response = await this.axiosInstance.get(url);
-        const $ = cheerio.load(response.data);
-
-        // Extract title from multiple possible locations
-        let title = '';
-        const titleSelectors = ['h1.long', 'h1.short', 'h1', 'title'];
-        for (const selector of titleSelectors) {
-          const found = $(selector).first().text().trim();
-          if (found && found.length > 10) {
-            title = found.replace(/\s*\|\s*ГАРАНТ$/, '').trim();
-            break;
-          }
+        this.logger.log(`Scraping: ${source.name}`);
+        const doc = await this.scrapeSource(source);
+        if (doc) {
+          results.push(doc);
+          this.logger.log(`Successfully scraped: ${source.name} (${doc.rawText.length} chars)`);
         }
-
-        // Extract document structure/content
-        let content = '';
-        const contentEl = $('#doc_content');
-        if (contentEl.length) {
-          // Get all article/section links text
-          contentEl.find('li a').each((_, el) => {
-            const text = $(el).text().trim();
-            if (text) {
-              content += text + '\n';
-            }
-          });
-        }
-
-        // Fallback to meta description
-        if (!content) {
-          content = $('meta[name="description"]').attr('content') || '';
-        }
-
-        if (title) {
-          results.push({
-            title: title || doc.name,
-            sourceUrl: url,
-            rawText: content || `Документ: ${doc.name}`,
-            scrapedAt: new Date()
-          });
-        }
-
-        await this.delay(1500); // Be polite to servers
-      } catch (error) {
-        this.logger.warn(`Failed to fetch Garant document ${doc.id}: ${error.message}`);
-      }
-    }
-
-    return results;
-  }
-
-  /**
-   * Search and scrape documents from pravo.gov.ru IPS system
-   */
-  private async scrapePravoGov(): Promise<ScrapedLaw[]> {
-    const results: ScrapedLaw[] = [];
-    const source = this.sources.find(s => s.name === 'pravo.gov.ru')!;
-
-    for (const search of PRAVO_KNOWN_SEARCHES) {
-      try {
-        // pravo.gov.ru uses a specific search URL format
-        const searchUrl = `${source.baseUrl}${source.searchPath}?searchlist=&bpas=cd00000&intelsearch=${encodeURIComponent(search.query)}`;
-        this.logger.debug(`Searching Pravo.gov.ru: ${searchUrl}`);
-
-        const response = await this.axiosInstance.get(searchUrl);
-        const $ = cheerio.load(response.data);
-
-        // Extract search results - pravo.gov.ru returns a list with links
-        const documentLinks: { href: string; title: string }[] = [];
-
-        // Try various selectors for search results
-        $('a[href*="doc="], a[href*="docbody="], .doctitle a, table.menu_workspace a').each((_, el) => {
-          const href = $(el).attr('href');
-          const title = $(el).text().trim();
-          if (href && title && title.length > 5) {
-            documentLinks.push({ href, title });
-          }
-        });
-
-        // Process first few results
-        for (const link of documentLinks.slice(0, 5)) {
-          const fullUrl = link.href.startsWith('http')
-            ? link.href
-            : `${source.baseUrl}${source.searchPath}${link.href.replace(/^\?/, '')}`;
-
-          results.push({
-            title: link.title,
-            sourceUrl: fullUrl,
-            rawText: `${search.description}: ${link.title}`,
-            scrapedAt: new Date()
-          });
-        }
-
+        // Be polite to servers
         await this.delay(2000);
       } catch (error) {
-        this.logger.warn(`Failed to search Pravo.gov.ru for "${search.query}": ${error.message}`);
+        this.logger.error(`Failed to scrape ${source.name}: ${error.message}`);
       }
     }
 
+    this.logger.log(`Total scraped documents: ${results.length}`);
     return results;
+  }
+
+  private async scrapeSource(source: LegislationSource): Promise<ScrapedLaw | null> {
+    try {
+      const html = await this.browserService.fetchPage(source.url, source.contentSelector);
+      const $ = cheerio.load(html);
+
+      // Extract title from multiple possible selectors
+      let title = '';
+      for (const selector of source.titleSelector.split(', ')) {
+        const found = $(selector).first().text().trim();
+        if (found && found.length > 5) {
+          title = this.cleanTitle(found);
+          break;
+        }
+      }
+
+      // Extract content from multiple possible selectors
+      let content = '';
+      for (const selector of source.contentSelector.split(', ')) {
+        const found = $(selector).first().text().trim();
+        if (found && found.length > 100) {
+          content = found;
+          break;
+        }
+      }
+
+      // Fallback to body text
+      if (!content || content.length < 100) {
+        content = $('body').text().trim();
+      }
+
+      if (!content || content.length < 50) {
+        this.logger.warn(`No meaningful content found for ${source.name}`);
+        return null;
+      }
+
+      // Extract date if available
+      let lastModified: Date | undefined;
+      if (source.dateSelector) {
+        for (const selector of source.dateSelector.split(', ')) {
+          const dateText = $(selector).first().text().trim();
+          if (dateText) {
+            const parsed = this.parseRussianDate(dateText);
+            if (parsed) {
+              lastModified = parsed;
+              break;
+            }
+          }
+        }
+      }
+
+      return {
+        title: title || source.name,
+        sourceUrl: source.url,
+        rawText: this.cleanContent(content),
+        scrapedAt: new Date(),
+        lastModified,
+      };
+    } catch (error) {
+      this.logger.error(`Error scraping ${source.url}: ${error.message}`);
+      return null;
+    }
   }
 
   /**
    * Fetch detailed content for a specific document URL
-   * Can be used to get full text of a document after initial scraping
    */
   async scrapeDocumentDetails(documentUrl: string): Promise<ScrapedLaw | null> {
     try {
-      const response = await this.axiosInstance.get(documentUrl);
-      const $ = cheerio.load(response.data);
+      const html = await this.browserService.fetchPage(documentUrl);
+      const $ = cheerio.load(html);
 
       // Try multiple selectors for title
       let title = '';
-      const titleSelectors = ['h1.long', 'h1.short', 'h1', 'title', '.doctitle'];
+      const titleSelectors = ['h1.long', 'h1.short', 'h1', 'title', '.doctitle', '.document-title'];
       for (const selector of titleSelectors) {
         const found = $(selector).first().text().trim();
         if (found && found.length > 5) {
-          title = found.replace(/\s*\|\s*ГАРАНТ$/, '').trim();
+          title = this.cleanTitle(found);
           break;
         }
       }
 
       // Try multiple selectors for content
       let content = '';
-      const contentSelectors = ['#doc_content', 'section.content', '.docbody', '#document_text'];
+      const contentSelectors = [
+        '#doc_content',
+        '#docbody',
+        '.document-page__content',
+        'section.content',
+        '.docbody',
+        '#document_text',
+        'article',
+        'main',
+      ];
       for (const selector of contentSelectors) {
         const found = $(selector).text().trim();
         if (found && found.length > 50) {
@@ -268,9 +206,9 @@ export class ScraperService {
         }
       }
 
-      // Fallback to meta description
+      // Fallback to body
       if (!content) {
-        content = $('meta[name="description"]').attr('content') || '';
+        content = $('body').text().trim();
       }
 
       if (!title && !content) {
@@ -280,8 +218,8 @@ export class ScraperService {
       return {
         title: title || 'Untitled Document',
         sourceUrl: documentUrl,
-        rawText: content || 'Content not found',
-        scrapedAt: new Date()
+        rawText: this.cleanContent(content),
+        scrapedAt: new Date(),
       };
     } catch (error) {
       this.logger.warn(`Failed to scrape document ${documentUrl}: ${error.message}`);
@@ -290,23 +228,77 @@ export class ScraperService {
   }
 
   /**
-   * Get list of available sources for external reference
+   * Get list of available sources
    */
-  getSources(): ScraperSource[] {
+  getSources(): LegislationSource[] {
     return this.sources;
   }
 
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
+  /**
+   * Test connection to a URL
+   */
   async testConnection(url: string): Promise<boolean> {
     try {
-      const response = await this.axiosInstance.get(url);
-      return response.status === 200;
+      await this.browserService.fetchPage(url);
+      return true;
     } catch (error) {
       this.logger.error(`Connection test failed for ${url}: ${error.message}`);
       return false;
     }
+  }
+
+  private cleanTitle(text: string): string {
+    return text
+      .replace(/\s*\|\s*(ГАРАНТ|Консультант|КонсультантПлюс).*$/i, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .substring(0, 500);
+  }
+
+  private cleanContent(text: string): string {
+    return text
+      .replace(/\s+/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
+      .substring(0, 100000); // Limit content size
+  }
+
+  private parseRussianDate(text: string): Date | null {
+    // Patterns: "01.01.2024", "1 января 2024"
+    const patterns = [
+      /(\d{1,2})\.(\d{1,2})\.(\d{4})/,
+      /(\d{1,2})\s+(января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)\s+(\d{4})/i,
+    ];
+
+    const months: Record<string, number> = {
+      января: 0,
+      февраля: 1,
+      марта: 2,
+      апреля: 3,
+      мая: 4,
+      июня: 5,
+      июля: 6,
+      августа: 7,
+      сентября: 8,
+      октября: 9,
+      ноября: 10,
+      декабря: 11,
+    };
+
+    for (const pattern of patterns) {
+      const match = text.match(pattern);
+      if (match) {
+        if (match[2] in months) {
+          return new Date(parseInt(match[3]), months[match[2]], parseInt(match[1]));
+        } else {
+          return new Date(parseInt(match[3]), parseInt(match[2]) - 1, parseInt(match[1]));
+        }
+      }
+    }
+    return null;
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
