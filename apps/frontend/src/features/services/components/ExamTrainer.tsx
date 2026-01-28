@@ -1,20 +1,22 @@
 'use client';
 
-import { useState } from 'react';
-import { GraduationCap, X, ChevronRight, CheckCircle, XCircle, RotateCcw, Trophy, BookOpen, Clock, Target, Play, Scale } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslations } from 'next-intl';
+import { GraduationCap, X, ChevronRight, ChevronLeft, CheckCircle, XCircle, RotateCcw, Trophy, BookOpen, Clock, Target, Play, Scale, Loader2, AlertCircle, WifiOff, Pause, PlayCircle, Flame, Award, Zap, Brain, Timer, ChevronDown } from 'lucide-react';
+import { useLanguageStore, LANGUAGES, type Language } from '@/lib/i18n';
+import { useExamStore } from '@/features/exam/stores/examStore';
+import type { Question, Answer, ExamProgress } from '@/features/exam/types';
 import {
-  useExamStore,
-  selectCurrentQuestion,
-  selectCurrentAnswer,
-  selectSessionProgress,
-  selectIsLastQuestion,
-} from '@/features/exam/stores/examStore';
+  useCategories,
+  useQuestions,
+  useSubmitExam,
+  useExamCacheStatus,
+} from '@/features/exam/hooks/useExamApi';
 import {
   QuestionCategory,
   QuestionDifficulty,
   ExamMode,
   ExamResult,
-  Question,
 } from '@/features/exam/types';
 
 interface ExamTrainerProps {
@@ -23,264 +25,423 @@ interface ExamTrainerProps {
 
 type CategoryFilter = 'all' | QuestionCategory;
 
-const SAMPLE_QUESTIONS: Question[] = [
-  // История России
-  {
-    id: 'history-1',
-    question: 'Столица России:',
-    options: ['Санкт-Петербург', 'Москва', 'Новосибирск', 'Казань'],
-    correctIndex: 1,
-    explanation: 'Москва — столица Российской Федерации с 1918 года.',
-    category: QuestionCategory.HISTORY,
-    difficulty: QuestionDifficulty.EASY,
-    tags: ['география', 'столица'],
+// Локальное состояние сессии (не zustand)
+interface LocalSession {
+  questions: Question[];
+  answers: Answer[];
+  currentQuestionIndex: number;
+  mode: ExamMode;
+  category?: QuestionCategory;
+  isPaused: boolean;
+}
+
+// Маппинг категорий для UI
+const CATEGORY_UI_MAP: Record<QuestionCategory | 'all', { icon?: typeof Scale; translationKey: string }> = {
+  all: { translationKey: 'all' },
+  [QuestionCategory.RUSSIAN_LANGUAGE]: { translationKey: 'russian_language' },
+  [QuestionCategory.HISTORY]: { translationKey: 'history' },
+  [QuestionCategory.LAW]: { icon: Scale, translationKey: 'law' },
+};
+
+const DEFAULT_QUESTIONS_COUNT = 20;
+const EXAM_TIME_LIMIT_SECONDS = 30 * 60; // 30 минут для режима экзамена
+
+// Маппинг режимов для UI
+const MODE_UI_MAP: Record<ExamMode, { icon: typeof Play; hasTimer: boolean; showExplanation: boolean; translationKey: string }> = {
+  [ExamMode.PRACTICE]: {
+    icon: BookOpen,
+    hasTimer: false,
+    showExplanation: true,
+    translationKey: 'practice',
   },
-  {
-    id: 'history-2',
-    question: 'Как называется глава государства в России?',
-    options: ['Премьер-министр', 'Канцлер', 'Президент', 'Король'],
-    correctIndex: 2,
-    explanation: 'Президент — высшее должностное лицо в России.',
-    category: QuestionCategory.HISTORY,
-    difficulty: QuestionDifficulty.EASY,
-    tags: ['политика', 'власть'],
+  [ExamMode.EXAM]: {
+    icon: Timer,
+    hasTimer: true,
+    showExplanation: false,
+    translationKey: 'exam',
   },
-  {
-    id: 'history-3',
-    question: 'Сколько субъектов в Российской Федерации?',
-    options: ['85', '89', '83', '91'],
-    correctIndex: 0,
-    explanation: 'В состав РФ входят 85 субъектов.',
-    category: QuestionCategory.HISTORY,
-    difficulty: QuestionDifficulty.MEDIUM,
-    tags: ['политика', 'федерация'],
+  [ExamMode.LEARNING]: {
+    icon: Brain,
+    hasTimer: false,
+    showExplanation: true,
+    translationKey: 'learning',
   },
-  {
-    id: 'history-4',
-    question: 'Государственный флаг России состоит из полос:',
-    options: ['Красной, синей, белой', 'Белой, синей, красной', 'Синей, белой, красной', 'Красной, белой, синей'],
-    correctIndex: 1,
-    explanation: 'Флаг России — белая, синяя и красная горизонтальные полосы.',
-    category: QuestionCategory.HISTORY,
-    difficulty: QuestionDifficulty.EASY,
-    tags: ['символика', 'флаг'],
+  [ExamMode.MARATHON]: {
+    icon: Zap,
+    hasTimer: false,
+    showExplanation: true,
+    translationKey: 'marathon',
   },
-  {
-    id: 'history-5',
-    question: 'В каком году была принята Конституция РФ?',
-    options: ['1991', '1993', '1995', '2000'],
-    correctIndex: 1,
-    explanation: 'Конституция РФ была принята 12 декабря 1993 года.',
-    category: QuestionCategory.HISTORY,
-    difficulty: QuestionDifficulty.MEDIUM,
-    tags: ['конституция', 'право'],
-  },
-  {
-    id: 'history-6',
-    question: 'День России отмечается:',
-    options: ['1 января', '9 мая', '12 июня', '4 ноября'],
-    correctIndex: 2,
-    explanation: 'День России — государственный праздник, отмечается 12 июня.',
-    category: QuestionCategory.HISTORY,
-    difficulty: QuestionDifficulty.EASY,
-    tags: ['праздники'],
-  },
-  {
-    id: 'history-7',
-    question: 'Какая река самая длинная в России?',
-    options: ['Волга', 'Обь', 'Лена', 'Енисей'],
-    correctIndex: 2,
-    explanation: 'Лена — самая длинная река России (4400 км).',
-    category: QuestionCategory.HISTORY,
-    difficulty: QuestionDifficulty.MEDIUM,
-    tags: ['география', 'реки'],
-  },
-  {
-    id: 'history-8',
-    question: 'Кто написал "Войну и мир"?',
-    options: ['Достоевский', 'Пушкин', 'Толстой', 'Чехов'],
-    correctIndex: 2,
-    explanation: 'Лев Толстой — автор романа "Война и мир".',
-    category: QuestionCategory.HISTORY,
-    difficulty: QuestionDifficulty.EASY,
-    tags: ['культура', 'литература'],
-  },
-  // Русский язык
-  {
-    id: 'russian-1',
-    question: 'Выберите правильное продолжение: "Я живу _____ Москве."',
-    options: ['на', 'в', 'к', 'у'],
-    correctIndex: 1,
-    explanation: '"В" используется с названиями городов: в Москве, в Петербурге.',
-    category: QuestionCategory.RUSSIAN_LANGUAGE,
-    difficulty: QuestionDifficulty.EASY,
-    tags: ['предлоги', 'грамматика'],
-  },
-  {
-    id: 'russian-2',
-    question: 'Какой падеж отвечает на вопрос "Кого? Чего?"',
-    options: ['Именительный', 'Родительный', 'Дательный', 'Винительный'],
-    correctIndex: 1,
-    explanation: 'Родительный падеж отвечает на вопросы "Кого? Чего?"',
-    category: QuestionCategory.RUSSIAN_LANGUAGE,
-    difficulty: QuestionDifficulty.MEDIUM,
-    tags: ['падежи', 'грамматика'],
-  },
-  {
-    id: 'russian-3',
-    question: 'Выберите правильный вариант: "Мне нравится _____ музыка."',
-    options: ['этот', 'эта', 'это', 'эти'],
-    correctIndex: 1,
-    explanation: '"Музыка" — женский род, поэтому "эта музыка".',
-    category: QuestionCategory.RUSSIAN_LANGUAGE,
-    difficulty: QuestionDifficulty.EASY,
-    tags: ['род', 'грамматика'],
-  },
-  {
-    id: 'russian-4',
-    question: 'Какое слово написано правильно?',
-    options: ['здраствуйте', 'здравствуйте', 'здраствуйти', 'здравствуйти'],
-    correctIndex: 1,
-    explanation: 'Правильно: "здравствуйте" — от слова "здравие".',
-    category: QuestionCategory.RUSSIAN_LANGUAGE,
-    difficulty: QuestionDifficulty.EASY,
-    tags: ['орфография'],
-  },
-  {
-    id: 'russian-5',
-    question: 'Выберите правильное окончание: "Я иду _____ работу."',
-    options: ['в', 'на', 'к', 'до'],
-    correctIndex: 1,
-    explanation: 'С существительным "работа" используется предлог "на": на работу.',
-    category: QuestionCategory.RUSSIAN_LANGUAGE,
-    difficulty: QuestionDifficulty.EASY,
-    tags: ['предлоги', 'грамматика'],
-  },
-  // Основы законодательства
-  {
-    id: 'law-1',
-    question: 'Какой документ необходим иностранному гражданину для легальной работы в России?',
-    options: ['Только паспорт', 'Патент или разрешение на работу', 'Водительские права', 'Диплом об образовании'],
-    correctIndex: 1,
-    explanation: 'Для работы иностранным гражданам необходим патент или разрешение на работу.',
-    category: QuestionCategory.LAW,
-    difficulty: QuestionDifficulty.EASY,
-    tags: ['трудовое право', 'миграция'],
-  },
-  {
-    id: 'law-2',
-    question: 'В течение какого времени иностранный гражданин должен встать на миграционный учёт?',
-    options: ['3 дня', '7 рабочих дней', '30 дней', '90 дней'],
-    correctIndex: 1,
-    explanation: 'Иностранный гражданин должен встать на миграционный учёт в течение 7 рабочих дней.',
-    category: QuestionCategory.LAW,
-    difficulty: QuestionDifficulty.MEDIUM,
-    tags: ['миграционный учёт', 'сроки'],
-  },
-  {
-    id: 'law-3',
-    question: 'Какое максимальное время пребывания в России по визе для большинства иностранцев?',
-    options: ['30 дней', '60 дней', '90 дней в течение 180 дней', '1 год'],
-    correctIndex: 2,
-    explanation: 'Стандартный срок пребывания — до 90 дней в течение каждого периода в 180 дней.',
-    category: QuestionCategory.LAW,
-    difficulty: QuestionDifficulty.MEDIUM,
-    tags: ['виза', 'сроки пребывания'],
-  },
-  {
-    id: 'law-4',
-    question: 'Что такое РВП?',
-    options: ['Разрешение на временное проживание', 'Регистрация временного пребывания', 'Российский вид на проживание', 'Разовый въездной пропуск'],
-    correctIndex: 0,
-    explanation: 'РВП — разрешение на временное проживание, выдаётся сроком на 3 года.',
-    category: QuestionCategory.LAW,
-    difficulty: QuestionDifficulty.EASY,
-    tags: ['РВП', 'документы'],
-  },
-];
+};
+
+// Маппинг сложности для UI
+const DIFFICULTY_UI_MAP: Record<QuestionDifficulty, { color: string; translationKey: string }> = {
+  [QuestionDifficulty.EASY]: { color: 'bg-green-100 text-green-700 border-green-300', translationKey: 'easy' },
+  [QuestionDifficulty.MEDIUM]: { color: 'bg-yellow-100 text-yellow-700 border-yellow-300', translationKey: 'medium' },
+  [QuestionDifficulty.HARD]: { color: 'bg-red-100 text-red-700 border-red-300', translationKey: 'hard' },
+};
+
+// Маппинг достижений для UI
+const ACHIEVEMENTS_UI_MAP: Record<string, { icon: typeof Trophy; translationKey: string }> = {
+  first_test: { icon: Award, translationKey: 'firstTest' },
+  perfect_score: { icon: Trophy, translationKey: 'perfectScore' },
+  week_streak: { icon: Flame, translationKey: 'weekStreak' },
+  hundred_questions: { icon: Target, translationKey: 'hundredQuestions' },
+};
+
+// Получаем прогресс из store один раз при монтировании (без подписки)
+function getInitialProgress(): ExamProgress {
+  try {
+    const state = useExamStore.getState();
+    return state.progress;
+  } catch {
+    return {
+      totalAnswered: 0,
+      correctAnswers: 0,
+      streak: 0,
+      lastActivityDate: null,
+      byCategory: {
+        [QuestionCategory.RUSSIAN_LANGUAGE]: { answered: 0, correct: 0 },
+        [QuestionCategory.HISTORY]: { answered: 0, correct: 0 },
+        [QuestionCategory.LAW]: { answered: 0, correct: 0 },
+      },
+      achievements: [],
+    };
+  }
+}
 
 export function ExamTrainer({ onClose }: ExamTrainerProps) {
+  // Переводы
+  const t = useTranslations('examTrainer');
+
+  // Язык интерфейса (глобальный store)
+  const selectedLanguage = useLanguageStore((state) => state.language);
+  const setLanguage = useLanguageStore((state) => state.setLanguage);
+  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
+
   // Локальный state для выбора категории (до начала теста)
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
+  // Локальный state для выбора режима
+  const [selectedMode, setSelectedMode] = useState<ExamMode>(ExamMode.PRACTICE);
+  // Локальный state для выбора сложности
+  const [selectedDifficulty, setSelectedDifficulty] = useState<QuestionDifficulty | undefined>(undefined);
   // Локальный state для хранения результата (после завершения)
   const [examResult, setExamResult] = useState<ExamResult | null>(null);
+  // State для отслеживания начала теста (чтобы триггерить загрузку вопросов)
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
+  // Время начала сессии для расчета timeSpentSeconds
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
+  // Оставшееся время для режима экзамена (в секундах)
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+  // Ref для интервала таймера
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Store state и actions
-  const currentSession = useExamStore((state) => state.currentSession);
-  const startSession = useExamStore((state) => state.startSession);
-  const answerQuestion = useExamStore((state) => state.answerQuestion);
-  const nextQuestion = useExamStore((state) => state.nextQuestion);
-  const finishSession = useExamStore((state) => state.finishSession);
-  const updateProgress = useExamStore((state) => state.updateProgress);
-  const reset = useExamStore((state) => state.reset);
+  // ЛОКАЛЬНАЯ сессия (вместо zustand)
+  const [localSession, setLocalSession] = useState<LocalSession | null>(null);
 
-  // Селекторы
-  const currentQuestion = useExamStore(selectCurrentQuestion);
-  const currentAnswer = useExamStore(selectCurrentAnswer);
-  const sessionProgress = useExamStore(selectSessionProgress);
-  const isLastQuestion = useExamStore(selectIsLastQuestion);
+  // Прогресс - читаем один раз при монтировании
+  const [progress] = useState<ExamProgress>(() => getInitialProgress());
+
+  // API хуки
+  const {
+    data: categories,
+    isLoading: isCategoriesLoading,
+    error: categoriesError
+  } = useCategories();
+
+  const categoryForQuery = selectedCategory === 'all' ? undefined : selectedCategory;
+  const {
+    data: questions,
+    isLoading: isQuestionsLoading,
+    error: questionsError,
+    refetch: refetchQuestions,
+  } = useQuestions(categoryForQuery, DEFAULT_QUESTIONS_COUNT, undefined, isLoadingQuestions);
+
+  const submitExamMutation = useSubmitExam();
+  const { data: cacheStatus } = useExamCacheStatus();
+
+  // Вычисляемые значения из локальной сессии
+  const currentQuestion: Question | null = localSession
+    ? localSession.questions[localSession.currentQuestionIndex] ?? null
+    : null;
+
+  const currentAnswer: Answer | null = localSession && currentQuestion
+    ? localSession.answers.find((a: Answer) => a.questionId === currentQuestion.id) ?? null
+    : null;
+
+  const sessionProgress = localSession
+    ? {
+        current: localSession.currentQuestionIndex + 1,
+        total: localSession.questions.length,
+        answered: localSession.answers.length,
+        correct: localSession.answers.filter((a: Answer) => a.isCorrect).length,
+        percentage: localSession.questions.length > 0
+          ? Math.round((localSession.answers.length / localSession.questions.length) * 100)
+          : 0,
+      }
+    : null;
+
+  const isLastQuestion = localSession
+    ? localSession.currentQuestionIndex >= localSession.questions.length - 1
+    : false;
+
+  const isFirstQuestion = localSession
+    ? localSession.currentQuestionIndex <= 0
+    : true;
 
   // Вычисляемые значения
-  const isStarted = currentSession !== null;
+  const isStarted = localSession !== null;
   const isComplete = examResult !== null;
   const isAnswered = currentAnswer !== null;
+  const hasOfflineCache = cacheStatus?.hasCache ?? false;
+  const isPaused = localSession?.isPaused ?? false;
+  const isExamMode = localSession?.mode === ExamMode.EXAM;
+  const showExplanationDuringTest = localSession?.mode !== ExamMode.EXAM;
+
+  // Эффект для старта сессии когда вопросы загружены
+  useEffect(() => {
+    if (isLoadingQuestions && questions && questions.length > 0) {
+      const category = selectedCategory === 'all' ? undefined : selectedCategory;
+
+      // Создаём локальную сессию
+      setLocalSession({
+        questions,
+        answers: [],
+        currentQuestionIndex: 0,
+        mode: selectedMode,
+        category,
+        isPaused: false,
+      });
+
+      setSessionStartTime(Date.now());
+      setIsLoadingQuestions(false);
+
+      // Инициализируем таймер для режима экзамена
+      if (selectedMode === ExamMode.EXAM) {
+        setTimeRemaining(EXAM_TIME_LIMIT_SECONDS);
+      }
+    }
+  }, [isLoadingQuestions, questions, selectedCategory, selectedMode]);
+
+  // Эффект для таймера в режиме экзамена
+  useEffect(() => {
+    if (isExamMode && isStarted && !isComplete && !isPaused && timeRemaining !== null) {
+      timerIntervalRef.current = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev === null || prev <= 1) {
+            if (timerIntervalRef.current) {
+              clearInterval(timerIntervalRef.current);
+            }
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => {
+        if (timerIntervalRef.current) {
+          clearInterval(timerIntervalRef.current);
+        }
+      };
+    }
+  }, [isExamMode, isStarted, isComplete, isPaused, timeRemaining !== null]);
+
+  // Очистка таймера при размонтировании
+  useEffect(() => {
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // Форматирование времени
+  const formatTime = useCallback((seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }, []);
 
   const handleStart = () => {
-    const questions = selectedCategory === 'all'
-      ? SAMPLE_QUESTIONS
-      : SAMPLE_QUESTIONS.filter((q) => q.category === selectedCategory);
-
-    const category = selectedCategory === 'all' ? undefined : selectedCategory;
-    startSession(ExamMode.PRACTICE, questions, category);
     setExamResult(null);
+    setIsLoadingQuestions(true);
+    refetchQuestions();
   };
 
   const handleSelectOption = (index: number) => {
-    if (isAnswered || !currentQuestion) return;
-    answerQuestion(currentQuestion.id, index);
+    if (isAnswered || !currentQuestion || !localSession) return;
+
+    const isCorrect = currentQuestion.correctIndex === index;
+
+    const newAnswer: Answer = {
+      questionId: currentQuestion.id,
+      selectedIndex: index,
+      isCorrect,
+      answeredAt: new Date().toISOString(),
+    };
+
+    setLocalSession({
+      ...localSession,
+      answers: [...localSession.answers, newAnswer],
+    });
   };
 
-  const handleNext = () => {
-    if (isLastQuestion) {
-      const result = finishSession();
-      if (result) {
-        setExamResult(result);
-        updateProgress(result);
+  const calculateResult = useCallback((): ExamResult | null => {
+    if (!localSession) return null;
+
+    const totalQuestions = localSession.questions.length;
+    const correctAnswers = localSession.answers.filter((a) => a.isCorrect).length;
+    const percentage = totalQuestions > 0
+      ? Math.round((correctAnswers / totalQuestions) * 100)
+      : 0;
+    const passed = percentage >= 70;
+
+    // Результаты по категориям
+    const categoryStats: Record<string, { total: number; correct: number }> = {};
+
+    localSession.questions.forEach((question) => {
+      const category = question.category;
+      if (!categoryStats[category]) {
+        categoryStats[category] = { total: 0, correct: 0 };
       }
-    } else {
-      nextQuestion();
+      categoryStats[category].total++;
+
+      const answer = localSession.answers.find((a) => a.questionId === question.id);
+      if (answer?.isCorrect) {
+        categoryStats[category].correct++;
+      }
+    });
+
+    const byCategory = Object.entries(categoryStats).map(
+      ([category, stats]) => ({
+        category,
+        total: stats.total,
+        correct: stats.correct,
+        percentage: stats.total > 0
+          ? Math.round((stats.correct / stats.total) * 100)
+          : 0,
+      })
+    );
+
+    const weakTopics = byCategory
+      .filter((cat) => cat.percentage < 70)
+      .map((cat) => cat.category);
+
+    const timeSpentSeconds = sessionStartTime
+      ? Math.round((Date.now() - sessionStartTime) / 1000)
+      : 0;
+
+    return {
+      totalQuestions,
+      correctAnswers,
+      percentage,
+      passed,
+      byCategory,
+      weakTopics,
+      timeSpentSeconds,
+    };
+  }, [localSession, sessionStartTime]);
+
+  const handleFinishExam = useCallback(() => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
     }
+
+    const result = calculateResult();
+    if (result && localSession) {
+      setExamResult(result);
+
+      // Обновляем прогресс в zustand store
+      try {
+        useExamStore.getState().updateProgress(result);
+      } catch (e) {
+        console.warn('Failed to update progress in store:', e);
+      }
+
+      // Отправляем результаты на сервер
+      submitExamMutation.mutate({
+        answers: localSession.answers,
+        mode: localSession.mode,
+        timeSpentSeconds: result.timeSpentSeconds,
+      });
+    }
+  }, [calculateResult, localSession, submitExamMutation]);
+
+  // Эффект для автозавершения при истечении времени
+  useEffect(() => {
+    if (timeRemaining === 0 && isStarted && !isComplete) {
+      handleFinishExam();
+    }
+  }, [timeRemaining, isStarted, isComplete, handleFinishExam]);
+
+  const handleNext = () => {
+    if (!localSession) return;
+
+    if (isLastQuestion) {
+      handleFinishExam();
+    } else {
+      setLocalSession({
+        ...localSession,
+        currentQuestionIndex: localSession.currentQuestionIndex + 1,
+      });
+    }
+  };
+
+  const handlePrev = () => {
+    if (!localSession || isFirstQuestion) return;
+
+    setLocalSession({
+      ...localSession,
+      currentQuestionIndex: localSession.currentQuestionIndex - 1,
+    });
+  };
+
+  const handleTogglePause = () => {
+    if (!localSession) return;
+
+    setLocalSession({
+      ...localSession,
+      isPaused: !localSession.isPaused,
+    });
   };
 
   const handleRestart = () => {
-    reset();
+    setLocalSession(null);
     setExamResult(null);
+    setSessionStartTime(null);
+    setTimeRemaining(null);
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+    }
   };
 
-  const getCategoryInfo = (cat: CategoryFilter) => {
-    switch (cat) {
-      case QuestionCategory.RUSSIAN_LANGUAGE:
-        return { label: 'Русский язык', count: SAMPLE_QUESTIONS.filter((q) => q.category === QuestionCategory.RUSSIAN_LANGUAGE).length };
-      case QuestionCategory.HISTORY:
-        return { label: 'История России', count: SAMPLE_QUESTIONS.filter((q) => q.category === QuestionCategory.HISTORY).length };
-      case QuestionCategory.LAW:
-        return { label: 'Основы законодательства', count: SAMPLE_QUESTIONS.filter((q) => q.category === QuestionCategory.LAW).length };
-      default:
-        return { label: 'Все вопросы', count: SAMPLE_QUESTIONS.length };
+  const getCategoryInfo = (cat: CategoryFilter): { translationKey: string; count: number | string } => {
+    const uiInfo = CATEGORY_UI_MAP[cat];
+
+    if (categories && categories.length > 0) {
+      if (cat === 'all') {
+        const totalQuestions = categories.reduce((sum, c) => sum + c.totalQuestions, 0);
+        return { translationKey: uiInfo.translationKey, count: totalQuestions };
+      }
+
+      const categoryIdMap: Record<QuestionCategory, string> = {
+        [QuestionCategory.RUSSIAN_LANGUAGE]: 'russian_language',
+        [QuestionCategory.HISTORY]: 'history',
+        [QuestionCategory.LAW]: 'law',
+      };
+
+      const apiCategory = categories.find(c => c.id === categoryIdMap[cat]);
+      if (apiCategory) {
+        return { translationKey: uiInfo.translationKey, count: apiCategory.totalQuestions };
+      }
     }
+
+    return { translationKey: uiInfo.translationKey, count: isCategoriesLoading ? '...' : DEFAULT_QUESTIONS_COUNT };
   };
 
   const getCategoryLabel = (category: QuestionCategory) => {
-    switch (category) {
-      case QuestionCategory.RUSSIAN_LANGUAGE:
-        return 'Русский язык';
-      case QuestionCategory.HISTORY:
-        return 'История';
-      case QuestionCategory.LAW:
-        return 'Законодательство';
-      default:
-        return category;
-    }
+    const translationKey = CATEGORY_UI_MAP[category].translationKey;
+    return t(`categories.${translationKey}`);
   };
 
   const getCategoryStyle = (category: QuestionCategory) => {
@@ -329,16 +490,61 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
               <GraduationCap className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
-              <h2 id="modal-title-exam-trainer" className="text-lg font-bold text-gray-900">Тренажёр экзамена</h2>
-              <p className="text-sm text-gray-500">Русский язык, история и право</p>
+              <h2 id="modal-title-exam-trainer" className="text-lg font-bold text-gray-900">{t('header.title')}</h2>
+              <p className="text-sm text-gray-500">{t('header.subtitle')}</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full"
-          >
-            <X className="w-6 h-6 text-gray-600" />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Селектор языка */}
+            <div className="relative">
+              <button
+                onClick={() => setIsLanguageMenuOpen(!isLanguageMenuOpen)}
+                className="flex items-center gap-1 px-2 py-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Select language"
+              >
+                <span className="text-xl">{LANGUAGES.find(l => l.code === selectedLanguage)?.flag}</span>
+                <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isLanguageMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Выпадающее меню языков */}
+              {isLanguageMenuOpen && (
+                <>
+                  {/* Overlay для закрытия меню */}
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setIsLanguageMenuOpen(false)}
+                  />
+                  <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-20 min-w-[140px]">
+                    {LANGUAGES.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          setLanguage(lang.code);
+                          setIsLanguageMenuOpen(false);
+                        }}
+                        className={`w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 transition-colors ${
+                          selectedLanguage === lang.code ? 'bg-emerald-50' : ''
+                        }`}
+                      >
+                        <span className="text-xl">{lang.flag}</span>
+                        <span className={`text-sm ${selectedLanguage === lang.code ? 'font-medium text-emerald-700' : 'text-gray-700'}`}>
+                          {lang.nativeName}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Кнопка закрытия */}
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-full"
+            >
+              <X className="w-6 h-6 text-gray-600" />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
@@ -352,9 +558,52 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                   <BookOpen className="w-10 h-10 text-emerald-600" />
                 </div>
                 <p className="text-gray-600">
-                  Подготовьтесь к экзамену для получения патента или РВП. Проверьте свои знания русского языка, истории России и основ законодательства.
+                  {t('intro.description')}
                 </p>
               </div>
+
+              {/* Прогресс пользователя */}
+              {(progress.streak > 0 || progress.achievements.length > 0) && (
+                <div className="mb-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                        <Flame className="w-5 h-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-amber-600">{t('progress.streak')}</p>
+                        <p className="font-bold text-amber-700">{t('progress.streakDays', { count: progress.streak })}</p>
+                      </div>
+                    </div>
+                    {progress.achievements.length > 0 && (
+                      <div className="flex -space-x-2">
+                        {progress.achievements.slice(0, 3).map((achievement: string) => {
+                          const achievementInfo = ACHIEVEMENTS_UI_MAP[achievement];
+                          if (!achievementInfo) return null;
+                          const AchievementIcon = achievementInfo.icon;
+                          return (
+                            <div
+                              key={achievement}
+                              className="w-8 h-8 bg-white rounded-full flex items-center justify-center border-2 border-amber-200"
+                              title={t(`achievements.${achievementInfo.translationKey}`)}
+                            >
+                              <AchievementIcon className="w-4 h-4 text-amber-600" />
+                            </div>
+                          );
+                        })}
+                        {progress.achievements.length > 3 && (
+                          <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center border-2 border-amber-200 text-xs font-bold text-amber-700">
+                            +{progress.achievements.length - 3}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-3 text-xs text-amber-600">
+                    {t('progress.total', { count: progress.totalAnswered })} • {t('progress.correct', { count: progress.correctAnswers, percent: progress.totalAnswered > 0 ? Math.round((progress.correctAnswers / progress.totalAnswered) * 100) : 0 })}
+                  </div>
+                </div>
+              )}
 
               {/* Информация о тесте */}
               <div className="grid grid-cols-2 gap-3 mb-6">
@@ -363,8 +612,8 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                     <Target className="w-5 h-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Проходной балл</p>
-                    <p className="font-bold text-gray-900">70%</p>
+                    <p className="text-xs text-gray-500">{t('info.passingScore')}</p>
+                    <p className="font-bold text-gray-900">{t('info.passingScoreValue')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
@@ -372,15 +621,83 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                     <Clock className="w-5 h-5 text-orange-600" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Время</p>
-                    <p className="font-bold text-gray-900">~5 мин</p>
+                    <p className="text-xs text-gray-500">{t('info.time')}</p>
+                    <p className="font-bold text-gray-900">{selectedMode === ExamMode.EXAM ? t('info.timeExam') : t('info.timeRegular')}</p>
                   </div>
+                </div>
+              </div>
+
+              {/* Выбор режима */}
+              <div className="mb-6">
+                <p className="text-sm font-semibold text-gray-700 mb-3">{t('modes.selectLabel')}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {([ExamMode.PRACTICE, ExamMode.EXAM, ExamMode.LEARNING] as ExamMode[]).map((mode) => {
+                    const modeInfo = MODE_UI_MAP[mode];
+                    const isSelected = selectedMode === mode;
+                    const ModeIcon = modeInfo.icon;
+                    return (
+                      <button
+                        key={mode}
+                        onClick={() => setSelectedMode(mode)}
+                        className={`flex flex-col items-center p-3 rounded-xl border-2 transition-all ${
+                          isSelected
+                            ? 'border-emerald-500 bg-emerald-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <ModeIcon className={`w-5 h-5 mb-1 ${isSelected ? 'text-emerald-600' : 'text-gray-500'}`} />
+                        <span className={`text-sm font-medium ${isSelected ? 'text-emerald-700' : 'text-gray-700'}`}>
+                          {t(`modes.${modeInfo.translationKey}.label`)}
+                        </span>
+                        {modeInfo.hasTimer && (
+                          <span className="text-xs text-orange-500 mt-1">⏱ {t('info.timeExam')}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  {t(`modes.${MODE_UI_MAP[selectedMode].translationKey}.description`)}
+                </p>
+              </div>
+
+              {/* Выбор сложности */}
+              <div className="mb-6">
+                <p className="text-sm font-semibold text-gray-700 mb-3">{t('difficulty.selectLabel')}</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setSelectedDifficulty(undefined)}
+                    className={`flex-1 py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                      selectedDifficulty === undefined
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    {t('difficulty.all')}
+                  </button>
+                  {([QuestionDifficulty.EASY, QuestionDifficulty.MEDIUM, QuestionDifficulty.HARD] as QuestionDifficulty[]).map((diff) => {
+                    const diffInfo = DIFFICULTY_UI_MAP[diff];
+                    const isSelected = selectedDifficulty === diff;
+                    return (
+                      <button
+                        key={diff}
+                        onClick={() => setSelectedDifficulty(diff)}
+                        className={`flex-1 py-2 px-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                          isSelected
+                            ? diffInfo.color
+                            : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                        }`}
+                      >
+                        {t(`difficulty.${diffInfo.translationKey}`)}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Выбор категории */}
               <div className="mb-6">
-                <p className="text-sm font-semibold text-gray-700 mb-3">Выберите категорию:</p>
+                <p className="text-sm font-semibold text-gray-700 mb-3">{t('categories.selectLabel')}</p>
                 <div className="space-y-2">
                   {(['all', QuestionCategory.RUSSIAN_LANGUAGE, QuestionCategory.HISTORY, QuestionCategory.LAW] as CategoryFilter[]).map((cat) => {
                     const info = getCategoryInfo(cat);
@@ -399,11 +716,11 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                         <div className="flex items-center gap-2">
                           {isLaw && <Scale className="w-4 h-4 text-purple-600" />}
                           <span className={`font-medium ${isSelected ? 'text-emerald-700' : 'text-gray-700'}`}>
-                            {info.label}
+                            {t(`categories.${info.translationKey}`)}
                           </span>
                         </div>
                         <span className={`text-sm ${isSelected ? 'text-emerald-600' : 'text-gray-500'}`}>
-                          {info.count} вопросов
+                          {t('categories.questionsCount', { count: info.count })}
                         </span>
                       </button>
                     );
@@ -411,22 +728,87 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                 </div>
               </div>
 
+              {/* Индикатор офлайн режима */}
+              {hasOfflineCache && (
+                <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-xl mb-4">
+                  <WifiOff className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm text-blue-700">
+                    {t('errors.offline', { count: cacheStatus?.questionsCount || 0 })}
+                  </span>
+                </div>
+              )}
+
+              {/* Ошибка загрузки */}
+              {(categoriesError || questionsError) && (
+                <div className="flex items-center gap-2 p-3 bg-red-50 rounded-xl mb-4">
+                  <AlertCircle className="w-4 h-4 text-red-600" />
+                  <span className="text-sm text-red-700">
+                    {hasOfflineCache
+                      ? t('errors.offlineMode')
+                      : t('errors.loadError')}
+                  </span>
+                </div>
+              )}
+
               {/* Кнопка начать */}
               <button
                 onClick={handleStart}
-                className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold py-4 rounded-xl hover:bg-emerald-700 transition-colors"
+                disabled={isLoadingQuestions || isQuestionsLoading}
+                className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold py-4 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Play className="w-5 h-5" />
-                Начать тест
+                {isLoadingQuestions || isQuestionsLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    {t('buttons.loading')}
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-5 h-5" />
+                    {t('buttons.start')}
+                  </>
+                )}
               </button>
             </div>
           ) : isStarted && !isComplete && currentQuestion && sessionProgress ? (
             <>
+              {/* Пауза overlay */}
+              {isPaused && (
+                <div className="absolute inset-0 bg-white/95 z-10 flex flex-col items-center justify-center">
+                  <Pause className="w-16 h-16 text-gray-400 mb-4" />
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{t('test.paused')}</h3>
+                  <p className="text-gray-500 mb-6">{t('test.timerStopped')}</p>
+                  <button
+                    onClick={handleTogglePause}
+                    className="flex items-center gap-2 bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-emerald-700 transition-colors"
+                  >
+                    <PlayCircle className="w-5 h-5" />
+                    {t('buttons.continue')}
+                  </button>
+                </div>
+              )}
+
               {/* Progress */}
               <div className="mb-6">
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
-                  <span>Вопрос {sessionProgress.current} из {sessionProgress.total}</span>
-                  <span>Баллов: {sessionProgress.correct}</span>
+                  <span>{t('test.questionOf', { current: sessionProgress.current, total: sessionProgress.total })}</span>
+                  <div className="flex items-center gap-3">
+                    {isExamMode && timeRemaining !== null && (
+                      <span className={`flex items-center gap-1 font-medium ${timeRemaining < 300 ? 'text-red-500' : 'text-gray-600'}`}>
+                        <Timer className="w-4 h-4" />
+                        {formatTime(timeRemaining)}
+                      </span>
+                    )}
+                    <span>{t('test.points', { count: sessionProgress.correct })}</span>
+                    {isExamMode && (
+                      <button
+                        onClick={handleTogglePause}
+                        className="p-1 hover:bg-gray-100 rounded"
+                        title={t('test.pause')}
+                      >
+                        <Pause className="w-4 h-4 text-gray-500" />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                   <div
@@ -448,7 +830,7 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                 </h3>
 
                 <div className="space-y-3">
-                  {currentQuestion.options.map((option, index) => (
+                  {currentQuestion.options.map((option: string, index: number) => (
                     <button
                       key={index}
                       onClick={() => handleSelectOption(index)}
@@ -478,8 +860,8 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                 </div>
               </div>
 
-              {/* Explanation */}
-              {isAnswered && currentQuestion.explanation && (
+              {/* Explanation - показываем только в режимах Practice и Learning */}
+              {isAnswered && currentQuestion.explanation && showExplanationDuringTest && (
                 <div className={`p-4 rounded-xl ${
                   currentAnswer?.isCorrect
                     ? 'bg-green-50 border border-green-200'
@@ -491,9 +873,18 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                       : 'text-blue-800'
                   }`}>
                     <strong>
-                      {currentAnswer?.isCorrect ? 'Правильно! ' : 'Объяснение: '}
+                      {currentAnswer?.isCorrect ? `${t('hints.correct')} ` : `${t('hints.explanation')} `}
                     </strong>
                     {currentQuestion.explanation}
+                  </p>
+                </div>
+              )}
+
+              {/* В режиме Learning показываем подсказку до ответа */}
+              {localSession?.mode === ExamMode.LEARNING && !isAnswered && currentQuestion.explanation && (
+                <div className="p-4 rounded-xl bg-amber-50 border border-amber-200">
+                  <p className="text-sm text-amber-800">
+                    {t('hints.hint')}
                   </p>
                 </div>
               )}
@@ -507,21 +898,21 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                 </div>
 
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  Тест завершён!
+                  {t('results.completed')}
                 </h3>
 
                 <p className="text-4xl font-bold text-emerald-600 mb-2">
-                  {examResult.correctAnswers} из {examResult.totalQuestions}
+                  {examResult.correctAnswers} / {examResult.totalQuestions}
                 </p>
 
                 <p className="text-gray-500 mb-6">
                   {examResult.passed
                     ? examResult.percentage === 100
-                      ? 'Отлично! Все ответы правильные!'
-                      : 'Хороший результат! Вы сдали тест.'
+                      ? t('results.excellent')
+                      : t('results.passed')
                     : examResult.percentage >= 50
-                    ? 'Неплохо, но для сдачи нужно 70%'
-                    : 'Нужно больше практики. Для сдачи нужно 70%'}
+                    ? t('results.almostPassed')
+                    : t('results.needPractice')}
                 </p>
 
                 {/* Progress bar */}
@@ -538,7 +929,7 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                   />
                 </div>
                 <p className="text-xs text-gray-500 mb-6">
-                  Проходной балл: 70% ({Math.ceil(examResult.totalQuestions * 0.7)} из {examResult.totalQuestions})
+                  {t('results.passingThreshold', { required: Math.ceil(examResult.totalQuestions * 0.7), total: examResult.totalQuestions })}
                 </p>
 
                 {/* Actions */}
@@ -548,14 +939,14 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
                     className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold py-4 rounded-xl hover:bg-emerald-700 transition-colors"
                   >
                     <RotateCcw className="w-5 h-5" />
-                    Пройти ещё раз
+                    {t('buttons.restart')}
                   </button>
 
                   <button
                     onClick={onClose}
                     className="w-full py-3 text-gray-600 font-medium hover:text-gray-800"
                   >
-                    Закрыть
+                    {t('buttons.close')}
                   </button>
                 </div>
               </div>
@@ -563,22 +954,62 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
           ) : null}
         </div>
 
-        {/* Footer with next button */}
-        {isStarted && !isComplete && isAnswered && (
+        {/* Footer with navigation buttons */}
+        {isStarted && !isComplete && (
           <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-white">
-            <button
-              onClick={handleNext}
-              className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold py-4 rounded-xl hover:bg-emerald-700 transition-colors"
-            >
-              {!isLastQuestion ? (
-                <>
-                  Следующий вопрос
-                  <ChevronRight className="w-5 h-5" />
-                </>
-              ) : (
-                'Завершить тест'
+            <div className="flex gap-3">
+              {/* Кнопка назад */}
+              {!isFirstQuestion && (
+                <button
+                  onClick={handlePrev}
+                  className="flex items-center justify-center gap-1 px-4 py-4 border-2 border-gray-200 rounded-xl text-gray-600 font-medium hover:border-gray-300 transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                  {t('buttons.prev')}
+                </button>
               )}
-            </button>
+
+              {/* Кнопка вперёд/завершить */}
+              <button
+                onClick={handleNext}
+                disabled={!isAnswered}
+                className={`flex-1 flex items-center justify-center gap-2 font-semibold py-4 rounded-xl transition-colors ${
+                  isAnswered
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                }`}
+              >
+                {!isLastQuestion ? (
+                  <>
+                    {t('buttons.next')}
+                    <ChevronRight className="w-5 h-5" />
+                  </>
+                ) : (
+                  t('buttons.finish')
+                )}
+              </button>
+            </div>
+
+            {/* Дополнительные кнопки */}
+            <div className="flex items-center justify-between mt-2">
+              {/* Выход в главное меню */}
+              <button
+                onClick={handleRestart}
+                className="py-2 px-3 text-sm text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+              >
+                {t('buttons.exitToMenu')}
+              </button>
+
+              {/* Досрочное завершение в режиме экзамена */}
+              {isExamMode && (
+                <button
+                  onClick={handleFinishExam}
+                  className="py-2 px-3 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  {t('buttons.finishEarly')}
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
