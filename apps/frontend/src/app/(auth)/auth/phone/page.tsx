@@ -72,7 +72,7 @@ export default function PhonePage() {
       if (tg.initDataUnsafe?.user) {
         // User is already authenticated via Telegram
         sessionStorage.setItem('telegram_user', JSON.stringify(tg.initDataUnsafe.user));
-        router.push('/services');
+        router.push('/profile');
         return;
       }
     }

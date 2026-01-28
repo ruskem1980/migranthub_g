@@ -33,8 +33,8 @@ export default function ProfilePage() {
         updateProfile(data);
       }
 
-      // Navigate back
-      router.push('/services');
+      // Navigate to dashboard
+      router.push('/dashboard');
     } catch (error) {
       console.error('Error saving profile:', error);
     } finally {

@@ -37,64 +37,25 @@ export interface SearchResult {
 export class ScraperService {
   private readonly logger = new Logger(ScraperService.name);
 
-  // Ключевые слова для поиска законодательства
+  // Ключевые слова для поиска (только consultant.ru - Google/Yandex блокируют)
+  // Основные законы добавлены напрямую в sources с pravo.gov.ru
   private readonly SEARCH_KEYWORDS = [
-    // Общие запросы
-    '109-ФЗ миграционный учет',
-    '115-ФЗ иностранные граждане',
-    '62-ФЗ гражданство',
-    '114-ФЗ въезд выезд',
-    'КоАП 18.8 нарушение миграционного',
-    'КоАП 18.9 принимающая сторона',
-    'КоАП 18.10 незаконная трудовая',
-    'патент иностранный работник',
+    // Только запросы для consultant.ru (работает без блокировки)
     'миграционный учет 2026',
-    'НК 227.1 НДФЛ патент',
-    // Поиск на pravo.gov.ru через Google/Yandex
-    'site:pravo.gov.ru 109-ФЗ миграционный учет',
-    'site:pravo.gov.ru 115-ФЗ иностранные граждане',
-    'site:pravo.gov.ru 62-ФЗ гражданство',
-    'site:pravo.gov.ru 114-ФЗ выезд въезд',
-    'site:pravo.gov.ru КоАП 18.8',
-    'site:pravo.gov.ru КоАП 18.9',
-    'site:pravo.gov.ru КоАП 18.10',
-    'site:pravo.gov.ru КоАП 18.15',
-    'site:pravo.gov.ru НК РФ 227.1',
-    'site:pravo.gov.ru трудовой кодекс иностранные работники',
+    'патент иностранный работник 2026',
   ];
 
-  // Конфигурация поисковых страниц
+  // Конфигурация поисковых страниц (только consultant.ru - остальные блокируют)
   private readonly searchSources: SearchConfig[] = [
-    // Google поиск (приоритетный для site:pravo.gov.ru запросов)
-    {
-      name: 'google',
-      searchUrl: 'https://www.google.com/search?q={keyword}&num=10',
-      resultSelector: 'a[href*="pravo.gov.ru"], div.g a[href*="pravo.gov.ru"], a[data-ved][href*="pravo.gov.ru"]',
-      maxResults: 5,
-      baseUrl: '',
-    },
-    // Yandex поиск (резервный для site:pravo.gov.ru запросов)
-    {
-      name: 'yandex',
-      searchUrl: 'https://yandex.ru/search/?text={keyword}',
-      resultSelector: 'a[href*="pravo.gov.ru"], .organic__url[href*="pravo.gov.ru"], .OrganicTitle-Link[href*="pravo.gov.ru"]',
-      maxResults: 5,
-      baseUrl: '',
-    },
-    {
-      name: 'base.garant.ru',
-      searchUrl: 'https://base.garant.ru/search/?q={keyword}',
-      resultSelector: 'a.search-result__link, .search-result-item a, .search-results a[href*="/"], a[href*="garant.ru"]',
-      maxResults: 5,
-      baseUrl: 'https://base.garant.ru',
-    },
+    // Только consultant.ru - работает без CAPTCHA
     {
       name: 'consultant.ru',
       searchUrl: 'https://www.consultant.ru/search/?q={keyword}',
       resultSelector: '.search-result a, .document-link, a[href*="/document/"], .search-results__item a',
-      maxResults: 5,
+      maxResults: 3,
       baseUrl: 'https://www.consultant.ru',
     },
+    // pravo.gov.ru поиск оставляем как резервный
     {
       name: 'pravo.gov.ru',
       searchUrl: 'http://pravo.gov.ru/proxy/ips/?searchres=&bpas=cd00000&intelsearch={keyword}',
@@ -301,15 +262,8 @@ export class ScraperService {
     for (const keyword of this.SEARCH_KEYWORDS) {
       this.logger.log(`Searching for: "${keyword}"`);
 
-      // Определяем, это запрос с site:pravo.gov.ru
-      const isSiteSearchQuery = keyword.includes('site:pravo.gov.ru');
-
-      // Для site:pravo.gov.ru запросов используем только Google и Yandex
-      const sourcesToUse = isSiteSearchQuery
-        ? this.searchSources.filter((s) => s.name === 'google' || s.name === 'yandex')
-        : this.searchSources;
-
-      for (const searchConfig of sourcesToUse) {
+      // Используем все доступные источники поиска (consultant.ru, pravo.gov.ru)
+      for (const searchConfig of this.searchSources) {
         try {
           const searchResults = await this.searchSource(searchConfig, keyword);
 
@@ -349,10 +303,8 @@ export class ScraperService {
             await this.delay(2000);
           }
 
-          // Увеличенная задержка для Google и Yandex (5-10 секунд)
-          const isSearchEngine = searchConfig.name === 'google' || searchConfig.name === 'yandex';
-          const delayMs = isSearchEngine ? this.getRandomDelay(5000, 10000) : 3000;
-          await this.delay(delayMs);
+          // Задержка между поисковыми запросами
+          await this.delay(3000);
         } catch (error) {
           this.logger.warn(`Search failed on ${searchConfig.name} for "${keyword}": ${error.message}`);
         }
@@ -383,13 +335,6 @@ export class ScraperService {
       }
     }
     return null;
-  }
-
-  /**
-   * Случайная задержка в заданном диапазоне
-   */
-  private getRandomDelay(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   /**

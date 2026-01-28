@@ -31,7 +31,7 @@ export class BrowserService implements OnModuleDestroy {
 
       await page.goto(url, {
         waitUntil: 'networkidle',
-        timeout: 30000,
+        timeout: 60000, // 60 секунд для больших документов (КоАП, НК РФ)
       });
 
       if (waitSelector) {

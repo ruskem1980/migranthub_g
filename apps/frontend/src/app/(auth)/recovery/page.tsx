@@ -92,7 +92,7 @@ export default function RecoveryPage() {
 
     try {
       await recoverAccess(fullCode);
-      router.push('/services');
+      router.push('/dashboard');
     } catch (err) {
       console.error('Recovery error:', err);
       setError(t('recovery.error.invalid'));
