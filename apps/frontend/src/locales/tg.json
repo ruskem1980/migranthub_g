@@ -1173,9 +1173,10 @@
     "syncing": "Ҳамоҳангсозӣ...",
     "syncNow": "Ҳамоҳанг кардан",
     "lawSyncStatus": "Ҳолати ҳамоҳангсозии қонунҳо",
-    "lawSyncSuccess": "бомуваффақият",
+    "lawSyncSuccess": "навсозӣ шуд",
     "lawSyncFailed": "иҷро нашуд",
-    "lawSyncNever": "ҳеҷ гоҳ ҳамоҳанг нашудааст"
+    "lawSyncNever": "ҳеҷ гоҳ ҳамоҳанг нашудааст",
+    "lawSyncNoChanges": "тағйирот нест"
   },
   "poi": {
     "mvd": "Шӯъбаҳои ВКД",

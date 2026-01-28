@@ -1202,9 +1202,10 @@
     "syncing": "Syncing...",
     "syncNow": "Sync now",
     "lawSyncStatus": "Law sync status",
-    "lawSyncSuccess": "successful",
+    "lawSyncSuccess": "updated",
     "lawSyncFailed": "failed",
-    "lawSyncNever": "never synced"
+    "lawSyncNever": "never synced",
+    "lawSyncNoChanges": "no changes"
   },
   "poi": {
     "mvd": "MVD departments",

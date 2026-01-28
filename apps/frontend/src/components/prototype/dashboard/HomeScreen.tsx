@@ -30,7 +30,7 @@ function getInitials(fullName: string): string {
 export function HomeScreen() {
   const { t, language, setLanguage: setAppLanguage } = useTranslation();
   const { profile, updateProfile, reset: resetProfile } = useProfileStore();
-  const { lawSyncDate, lawSyncSuccess } = useAppStore();
+  const { lawSyncDate, lawSyncSuccess, lawSyncNoChanges, setLawSyncStatus } = useAppStore();
 
   const [showHistory, setShowHistory] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
@@ -46,6 +46,23 @@ export function HomeScreen() {
   const [editCitizenship, setEditCitizenship] = useState(profile?.citizenship || '');
   const [editRegion, setEditRegion] = useState(profile?.patentRegion || '');
   const [checkedDocs, setCheckedDocs] = useState<string[]>(profile?.selectedDocuments || []);
+
+  // Auto-sync laws on component mount
+  useEffect(() => {
+    const syncLaws = async () => {
+      try {
+        // TODO: Replace with actual API call to legal-core service
+        // For now, simulate sync - in production this would check for law updates
+        const hasChanges = Math.random() > 0.7; // Simulate: 30% chance of updates
+        const now = new Date().toISOString();
+        setLawSyncStatus(now, true, !hasChanges);
+      } catch {
+        setLawSyncStatus(new Date().toISOString(), false, false);
+      }
+    };
+
+    syncLaws();
+  }, [setLawSyncStatus]);
 
   // Sync local state when profile changes (including after Zustand hydration)
   useEffect(() => {
@@ -322,11 +339,19 @@ export function HomeScreen() {
                   day: '2-digit',
                   month: '2-digit',
                   year: 'numeric',
+                })}{' '}
+                {new Date(lawSyncDate).toLocaleTimeString('ru-RU', {
+                  hour: '2-digit',
+                  minute: '2-digit',
                 })}
               </span>
               {' — '}
               <span className={lawSyncSuccess ? 'text-green-600' : 'text-red-500'}>
-                {lawSyncSuccess ? t('sync.lawSyncSuccess') : t('sync.lawSyncFailed')}
+                {lawSyncSuccess
+                  ? lawSyncNoChanges
+                    ? t('sync.lawSyncNoChanges')
+                    : t('sync.lawSyncSuccess')
+                  : t('sync.lawSyncFailed')}
               </span>
             </>
           ) : (

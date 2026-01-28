@@ -1233,9 +1233,10 @@
     "syncing": "Sinxronlanmoqda...",
     "syncNow": "Sinxronlash",
     "lawSyncStatus": "Qonunlar sinxronlash holati",
-    "lawSyncSuccess": "muvaffaqiyatli",
+    "lawSyncSuccess": "yangilandi",
     "lawSyncFailed": "amalga oshmadi",
-    "lawSyncNever": "hech qachon sinxronlanmagan"
+    "lawSyncNever": "hech qachon sinxronlanmagan",
+    "lawSyncNoChanges": "o'zgarishlar yo'q"
   },
   "poi": {
     "mvd": "IIV bo'limlari",

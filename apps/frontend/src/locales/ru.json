@@ -1233,9 +1233,10 @@
     "syncing": "Синхронизация...",
     "syncNow": "Синхронизировать",
     "lawSyncStatus": "Статус синхронизации законов",
-    "lawSyncSuccess": "успешно",
+    "lawSyncSuccess": "обновлено",
     "lawSyncFailed": "не удалось",
-    "lawSyncNever": "не выполнялась"
+    "lawSyncNever": "не выполнялась",
+    "lawSyncNoChanges": "изменений нет"
   },
   "poi": {
     "mvd": "Отделения МВД",

@@ -37,6 +37,7 @@ interface AppState {
   // Law Sync
   lawSyncDate: string | null;
   lawSyncSuccess: boolean;
+  lawSyncNoChanges: boolean;
 
   // Actions
   setTheme: (theme: Theme) => void;
@@ -55,7 +56,7 @@ interface AppState {
   setOnboardingStep: (step: number) => void;
 
   // Law Sync actions
-  setLawSyncStatus: (date: string, success: boolean) => void;
+  setLawSyncStatus: (date: string, success: boolean, noChanges?: boolean) => void;
 
   reset: () => void;
 }
@@ -71,6 +72,7 @@ const initialState = {
   onboardingStep: 0,
   lawSyncDate: null as string | null,
   lawSyncSuccess: false,
+  lawSyncNoChanges: false,
 };
 
 export const useAppStore = create<AppState>()(
@@ -127,8 +129,8 @@ export const useAppStore = create<AppState>()(
       setOnboardingStep: (onboardingStep) =>
         set({ onboardingStep }),
 
-      setLawSyncStatus: (lawSyncDate, lawSyncSuccess) =>
-        set({ lawSyncDate, lawSyncSuccess }),
+      setLawSyncStatus: (lawSyncDate, lawSyncSuccess, lawSyncNoChanges = false) =>
+        set({ lawSyncDate, lawSyncSuccess, lawSyncNoChanges }),
 
       reset: () =>
         set(initialState),
@@ -144,6 +146,7 @@ export const useAppStore = create<AppState>()(
         unreadCount: state.unreadCount,
         lawSyncDate: state.lawSyncDate,
         lawSyncSuccess: state.lawSyncSuccess,
+        lawSyncNoChanges: state.lawSyncNoChanges,
       }),
     }
   )
