@@ -91,7 +91,7 @@ export class AlertingService implements OnModuleInit {
           contentType: 'application/json',
           timestamp: Date.now(),
           messageId: `${event.lawId}-${Date.now()}`
-        }
+        } as Record<string, unknown>
       );
 
       this.logger.log(`Legislation update event sent for law: ${event.lawId} (${event.title})`);
