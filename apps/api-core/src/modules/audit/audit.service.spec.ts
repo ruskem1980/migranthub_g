@@ -169,10 +169,7 @@ describe('AuditService', () => {
 
       await service.log(mockAuditData);
 
-      expect(loggerSpy).toHaveBeenCalledWith(
-        'Failed to save audit log',
-        expect.any(Error),
-      );
+      expect(loggerSpy).toHaveBeenCalledWith('Failed to save audit log', expect.any(Error));
     });
 
     it('should handle request body with null', async () => {

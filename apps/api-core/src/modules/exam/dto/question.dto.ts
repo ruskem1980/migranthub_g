@@ -24,7 +24,10 @@ export class QuestionDto {
   @ApiProperty({ enum: QuestionDifficulty, description: 'Difficulty level' })
   difficulty!: QuestionDifficulty;
 
-  @ApiProperty({ description: 'Question text', example: 'Какой документ подтверждает право на работу?' })
+  @ApiProperty({
+    description: 'Question text',
+    example: 'Какой документ подтверждает право на работу?',
+  })
   question!: string;
 
   @ApiPropertyOptional({ description: 'Image URL for the question' })

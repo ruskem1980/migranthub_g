@@ -2,10 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { PatentCheckService } from './patent-check.service';
 import { CacheService } from '../../cache/cache.service';
-import {
-  BrowserService,
-  CaptchaSolverService,
-} from '../../../common/services';
+import { BrowserService, CaptchaSolverService } from '../../../common/services';
 import { CheckPatentDto, PatentStatus } from './dto';
 
 describe('PatentCheckService', () => {

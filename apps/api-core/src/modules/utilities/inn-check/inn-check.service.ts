@@ -2,16 +2,8 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Page, BrowserContext } from 'playwright';
 import { CacheService } from '../../cache/cache.service';
-import {
-  BrowserService,
-  CaptchaSolverService,
-} from '../../../common/services';
-import {
-  GetInnDto,
-  InnResultDto,
-  InnCheckSource,
-  ForeignDocumentType,
-} from './dto';
+import { BrowserService, CaptchaSolverService } from '../../../common/services';
+import { GetInnDto, InnResultDto, InnCheckSource, ForeignDocumentType } from './dto';
 
 /**
  * Состояние circuit breaker
@@ -76,14 +68,8 @@ export class InnCheckService implements OnModuleInit {
     );
     this.enabled = this.configService.get<boolean>('innCheck.enabled', false);
     this.timeout = this.configService.get<number>('innCheck.timeout', 30000);
-    this.retryAttempts = this.configService.get<number>(
-      'innCheck.retryAttempts',
-      3,
-    );
-    this.retryDelay = this.configService.get<number>(
-      'innCheck.retryDelay',
-      2000,
-    );
+    this.retryAttempts = this.configService.get<number>('innCheck.retryAttempts', 3);
+    this.retryDelay = this.configService.get<number>('innCheck.retryDelay', 2000);
     this.cacheTtl = this.configService.get<number>(
       'innCheck.cacheTtl',
       30 * 24 * 60 * 60 * 1000, // 30 дней
@@ -99,9 +85,7 @@ export class InnCheckService implements OnModuleInit {
   }
 
   onModuleInit(): void {
-    this.logger.log(
-      `InnCheckService initialized: enabled=${this.enabled}, url=${this.serviceUrl}`,
-    );
+    this.logger.log(`InnCheckService initialized: enabled=${this.enabled}, url=${this.serviceUrl}`);
   }
 
   /**
@@ -120,9 +104,7 @@ export class InnCheckService implements OnModuleInit {
     // Пробуем получить из кэша
     const cached = await this.cacheService.get<InnResultDto>(cacheKey);
     if (cached) {
-      this.logger.debug(
-        `Cache HIT for ${dto.lastName} ${dto.documentSeries}${dto.documentNumber}`,
-      );
+      this.logger.debug(`Cache HIT for ${dto.lastName} ${dto.documentSeries}${dto.documentNumber}`);
       return {
         ...cached,
         source: InnCheckSource.CACHE,
@@ -189,9 +171,7 @@ export class InnCheckService implements OnModuleInit {
 
     try {
       // Открываем страницу сервиса
-      const result = await this.browserService.getInteractivePage(
-        this.serviceUrl,
-      );
+      const result = await this.browserService.getInteractivePage(this.serviceUrl);
       page = result.page;
       context = result.context;
 
@@ -252,9 +232,7 @@ export class InnCheckService implements OnModuleInit {
     }
 
     // Если не нашли специфичную опцию, форма может работать и без нее
-    this.logger.debug(
-      'Foreign citizen selector not found, proceeding with default form',
-    );
+    this.logger.debug('Foreign citizen selector not found, proceeding with default form');
   }
 
   /**
@@ -281,11 +259,7 @@ export class InnCheckService implements OnModuleInit {
     if (dto.middleName) {
       await this.fillField(
         page,
-        [
-          'input[name="otch"]',
-          '#otch',
-          'input[placeholder*="Отчество"]',
-        ],
+        ['input[name="otch"]', '#otch', 'input[placeholder*="Отчество"]'],
         dto.middleName.toUpperCase(),
       );
     } else {
@@ -318,23 +292,14 @@ export class InnCheckService implements OnModuleInit {
     // Серия документа
     await this.fillField(
       page,
-      [
-        'input[name="docser"]',
-        '#docser',
-        'input[name="docno"]',
-        'input[placeholder*="Серия"]',
-      ],
+      ['input[name="docser"]', '#docser', 'input[name="docno"]', 'input[placeholder*="Серия"]'],
       dto.documentSeries,
     );
 
     // Номер документа
     await this.fillField(
       page,
-      [
-        'input[name="docnum"]',
-        '#docnum',
-        'input[placeholder*="Номер"]',
-      ],
+      ['input[name="docnum"]', '#docnum', 'input[placeholder*="Номер"]'],
       dto.documentNumber,
     );
 
@@ -342,11 +307,7 @@ export class InnCheckService implements OnModuleInit {
     const docDateFormatted = this.formatDateToDDMMYYYY(dto.documentDate);
     await this.fillField(
       page,
-      [
-        'input[name="docdt"]',
-        '#docdt',
-        'input[placeholder*="дата выдачи"]',
-      ],
+      ['input[name="docdt"]', '#docdt', 'input[placeholder*="дата выдачи"]'],
       docDateFormatted,
     );
   }
@@ -354,11 +315,7 @@ export class InnCheckService implements OnModuleInit {
   /**
    * Вспомогательный метод для заполнения поля
    */
-  private async fillField(
-    page: Page,
-    selectors: string[],
-    value: string,
-  ): Promise<void> {
+  private async fillField(page: Page, selectors: string[], value: string): Promise<void> {
     for (const selector of selectors) {
       try {
         const element = await page.$(selector);
@@ -371,23 +328,14 @@ export class InnCheckService implements OnModuleInit {
         // Продолжаем пробовать другие селекторы
       }
     }
-    this.logger.warn(
-      `Could not find field with selectors: ${selectors.join(', ')}`,
-    );
+    this.logger.warn(`Could not find field with selectors: ${selectors.join(', ')}`);
   }
 
   /**
    * Выбор типа документа в выпадающем списке
    */
-  private async selectDocumentType(
-    page: Page,
-    documentCode: string,
-  ): Promise<void> {
-    const selectSelectors = [
-      'select[name="doctype"]',
-      '#doctype',
-      'select[name="doc"]',
-    ];
+  private async selectDocumentType(page: Page, documentCode: string): Promise<void> {
+    const selectSelectors = ['select[name="doctype"]', '#doctype', 'select[name="doc"]'];
 
     for (const selector of selectSelectors) {
       try {
@@ -562,13 +510,7 @@ export class InnCheckService implements OnModuleInit {
     }
 
     // Проверяем ошибки валидации
-    const errorIndicators = [
-      'ошибка',
-      'неверн',
-      'некорректн',
-      'error',
-      'invalid',
-    ];
+    const errorIndicators = ['ошибка', 'неверн', 'некорректн', 'error', 'invalid'];
 
     for (const indicator of errorIndicators) {
       if (normalizedHtml.includes(indicator)) {
@@ -700,9 +642,7 @@ export class InnCheckService implements OnModuleInit {
       this.logger.warn('Circuit breaker opened after failed probe request');
     } else if (this.failureCount >= this.circuitBreakerThreshold) {
       this.circuitState = CircuitState.OPEN;
-      this.logger.warn(
-        `Circuit breaker opened after ${this.failureCount} failures`,
-      );
+      this.logger.warn(`Circuit breaker opened after ${this.failureCount} failures`);
     }
   }
 

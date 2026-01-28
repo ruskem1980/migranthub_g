@@ -39,18 +39,9 @@ export class CaptchaSolverService implements OnModuleInit {
   private readonly pollingInterval: number;
 
   constructor(private readonly configService: ConfigService) {
-    this.enabled = this.configService.get<boolean>(
-      'patentCheck.captcha.enabled',
-      false,
-    );
-    this.apiKey = this.configService.get<string>(
-      'patentCheck.captcha.apiKey',
-      '',
-    );
-    this.timeout = this.configService.get<number>(
-      'patentCheck.captcha.timeout',
-      120000,
-    );
+    this.enabled = this.configService.get<boolean>('patentCheck.captcha.enabled', false);
+    this.apiKey = this.configService.get<string>('patentCheck.captcha.apiKey', '');
+    this.timeout = this.configService.get<number>('patentCheck.captcha.timeout', 120000);
     this.pollingInterval = this.configService.get<number>(
       'patentCheck.captcha.pollingInterval',
       5000,
@@ -111,8 +102,7 @@ export class CaptchaSolverService implements OnModuleInit {
         error: 'Timeout or invalid response from captcha service',
       };
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       this.logger.error(`Failed to solve image captcha: ${errorMessage}`);
       return {
         success: false,
@@ -124,10 +114,7 @@ export class CaptchaSolverService implements OnModuleInit {
   /**
    * Решение reCAPTCHA v2
    */
-  async solveRecaptchaV2(
-    siteKey: string,
-    pageUrl: string,
-  ): Promise<CaptchaSolution> {
+  async solveRecaptchaV2(siteKey: string, pageUrl: string): Promise<CaptchaSolution> {
     if (!this.isEnabled()) {
       return {
         success: false,
@@ -159,8 +146,7 @@ export class CaptchaSolverService implements OnModuleInit {
         error: 'Timeout or invalid response from captcha service',
       };
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       this.logger.error(`Failed to solve reCAPTCHA v2: ${errorMessage}`);
       return {
         success: false,
@@ -212,8 +198,7 @@ export class CaptchaSolverService implements OnModuleInit {
         error: 'Timeout or invalid response from captcha service',
       };
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       this.logger.error(`Failed to solve reCAPTCHA v3: ${errorMessage}`);
       return {
         success: false,
@@ -234,8 +219,7 @@ export class CaptchaSolverService implements OnModuleInit {
       const balance = await this.solver!.balance();
       return balance;
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       this.logger.error(`Failed to get 2Captcha balance: ${errorMessage}`);
       return null;
     }

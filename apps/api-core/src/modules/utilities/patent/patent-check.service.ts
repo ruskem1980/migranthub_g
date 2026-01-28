@@ -57,22 +57,10 @@ export class PatentCheckService implements OnModuleInit {
       'patentCheck.serviceUrl',
       'https://services.fms.gov.ru/info-service.htm?sid=2000',
     );
-    this.enabled = this.configService.get<boolean>(
-      'patentCheck.enabled',
-      false,
-    );
-    this.timeout = this.configService.get<number>(
-      'patentCheck.timeout',
-      30000,
-    );
-    this.retryAttempts = this.configService.get<number>(
-      'patentCheck.retryAttempts',
-      3,
-    );
-    this.retryDelay = this.configService.get<number>(
-      'patentCheck.retryDelay',
-      2000,
-    );
+    this.enabled = this.configService.get<boolean>('patentCheck.enabled', false);
+    this.timeout = this.configService.get<number>('patentCheck.timeout', 30000);
+    this.retryAttempts = this.configService.get<number>('patentCheck.retryAttempts', 3);
+    this.retryDelay = this.configService.get<number>('patentCheck.retryDelay', 2000);
     this.cacheTtl = this.configService.get<number>(
       'patentCheck.cacheTtl',
       6 * 60 * 60 * 1000, // 6 часов
@@ -146,9 +134,7 @@ export class PatentCheckService implements OnModuleInit {
         return result;
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
-        this.logger.warn(
-          `Attempt ${attempt} failed: ${lastError.message}`,
-        );
+        this.logger.warn(`Attempt ${attempt} failed: ${lastError.message}`);
 
         if (attempt < this.retryAttempts) {
           const delay = this.calculateBackoff(attempt);
@@ -433,7 +419,10 @@ export class PatentCheckService implements OnModuleInit {
     const patterns =
       type === 'issue'
         ? [/дата выдачи[:\s]*(\d{2}\.\d{2}\.\d{4})/i, /выдан[:\s]*(\d{2}\.\d{2}\.\d{4})/i]
-        : [/действителен до[:\s]*(\d{2}\.\d{2}\.\d{4})/i, /срок действия[:\s]*до[:\s]*(\d{2}\.\d{2}\.\d{4})/i];
+        : [
+            /действителен до[:\s]*(\d{2}\.\d{2}\.\d{4})/i,
+            /срок действия[:\s]*до[:\s]*(\d{2}\.\d{2}\.\d{4})/i,
+          ];
 
     for (const pattern of patterns) {
       const match = html.match(pattern);
@@ -584,9 +573,7 @@ export class PatentCheckService implements OnModuleInit {
       this.logger.warn('Circuit breaker opened after failed probe request');
     } else if (this.failureCount >= this.circuitBreakerThreshold) {
       this.circuitState = CircuitState.OPEN;
-      this.logger.warn(
-        `Circuit breaker opened after ${this.failureCount} failures`,
-      );
+      this.logger.warn(`Circuit breaker opened after ${this.failureCount} failures`);
     }
   }
 

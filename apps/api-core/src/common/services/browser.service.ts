@@ -18,10 +18,7 @@ export class BrowserService implements OnModuleDestroy {
   private readonly selectorTimeout: number;
 
   constructor(private readonly configService: ConfigService) {
-    this.headless = this.configService.get<boolean>(
-      'patentCheck.browser.headless',
-      true,
-    );
+    this.headless = this.configService.get<boolean>('patentCheck.browser.headless', true);
     this.navigationTimeout = this.configService.get<number>(
       'patentCheck.browser.navigationTimeout',
       30000,
@@ -97,11 +94,9 @@ export class BrowserService implements OnModuleDestroy {
       });
 
       if (waitSelector) {
-        await page
-          .waitForSelector(waitSelector, { timeout: this.selectorTimeout })
-          .catch(() => {
-            this.logger.warn(`Selector ${waitSelector} not found on ${url}`);
-          });
+        await page.waitForSelector(waitSelector, { timeout: this.selectorTimeout }).catch(() => {
+          this.logger.warn(`Selector ${waitSelector} not found on ${url}`);
+        });
       }
 
       // Дополнительная пауза для JS рендеринга
@@ -109,8 +104,7 @@ export class BrowserService implements OnModuleDestroy {
 
       return await page.content();
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       this.logger.error(`Failed to fetch ${url}: ${errorMessage}`);
       throw error;
     } finally {
@@ -122,9 +116,7 @@ export class BrowserService implements OnModuleDestroy {
   /**
    * Получение страницы с возможностью взаимодействия (возвращает page и context)
    */
-  async getInteractivePage(
-    url: string,
-  ): Promise<{ page: Page; context: BrowserContext }> {
+  async getInteractivePage(url: string): Promise<{ page: Page; context: BrowserContext }> {
     const context = await this.createContext();
     const page = await this.createPage(context);
 
@@ -154,10 +146,7 @@ export class BrowserService implements OnModuleDestroy {
   /**
    * Получение скриншота элемента по селектору
    */
-  async getElementScreenshot(
-    page: Page,
-    selector: string,
-  ): Promise<Buffer | null> {
+  async getElementScreenshot(page: Page, selector: string): Promise<Buffer | null> {
     try {
       const element = await page.waitForSelector(selector, {
         timeout: this.selectorTimeout,
@@ -180,8 +169,7 @@ export class BrowserService implements OnModuleDestroy {
       await page.close();
       await context.close();
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       this.logger.warn(`Error closing page/context: ${errorMessage}`);
     }
   }

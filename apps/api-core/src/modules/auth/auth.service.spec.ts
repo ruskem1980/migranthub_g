@@ -80,7 +80,9 @@ describe('AuthService', () => {
 
     // Default mocks
     signingService.generateSigningKey.mockReturnValue(mockSigningKey);
-    jwtService.signAsync.mockResolvedValueOnce(mockAccessToken).mockResolvedValueOnce(mockRefreshToken);
+    jwtService.signAsync
+      .mockResolvedValueOnce(mockAccessToken)
+      .mockResolvedValueOnce(mockRefreshToken);
     configService.get.mockImplementation((key: string) => {
       const config: Record<string, string> = {
         'jwt.secret': 'test-secret',
@@ -224,7 +226,9 @@ describe('AuthService', () => {
 
     beforeEach(() => {
       jwtService.signAsync.mockReset();
-      jwtService.signAsync.mockResolvedValueOnce('new-access-token').mockResolvedValueOnce('new-refresh-token');
+      jwtService.signAsync
+        .mockResolvedValueOnce('new-access-token')
+        .mockResolvedValueOnce('new-refresh-token');
     });
 
     it('should refresh valid token', async () => {
@@ -250,9 +254,7 @@ describe('AuthService', () => {
         throw new Error('jwt expired');
       });
 
-      await expect(service.refreshToken('expired-token')).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(service.refreshToken('expired-token')).rejects.toThrow(UnauthorizedException);
     });
 
     it('should reject invalid token type', async () => {
@@ -262,9 +264,7 @@ describe('AuthService', () => {
         type: 'access', // Wrong type
       });
 
-      await expect(service.refreshToken(validRefreshToken)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(service.refreshToken(validRefreshToken)).rejects.toThrow(UnauthorizedException);
     });
 
     it('should reject token for non-existent user', async () => {
@@ -275,9 +275,7 @@ describe('AuthService', () => {
       });
       userRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.refreshToken(validRefreshToken)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(service.refreshToken(validRefreshToken)).rejects.toThrow(UnauthorizedException);
     });
 
     it('should reject token with invalid hash', async () => {
@@ -291,9 +289,7 @@ describe('AuthService', () => {
         refreshTokenHash: 'different-hash',
       } as User);
 
-      await expect(service.refreshToken(validRefreshToken)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(service.refreshToken(validRefreshToken)).rejects.toThrow(UnauthorizedException);
     });
 
     it('should generate new signing key on refresh', async () => {

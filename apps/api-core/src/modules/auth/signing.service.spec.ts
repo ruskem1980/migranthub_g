@@ -64,25 +64,13 @@ describe('SigningService', () => {
       const path = '/api/users/profile';
       const body = '{"name":"test"}';
 
-      const signature = service.computeSignature(
-        timestamp,
-        method,
-        path,
-        body,
-        mockSigningKey,
-      );
+      const signature = service.computeSignature(timestamp, method, path, body, mockSigningKey);
 
       // Verify it's a valid base64 string
       expect(() => Buffer.from(signature, 'base64')).not.toThrow();
 
       // Verify it produces consistent results
-      const signature2 = service.computeSignature(
-        timestamp,
-        method,
-        path,
-        body,
-        mockSigningKey,
-      );
+      const signature2 = service.computeSignature(timestamp, method, path, body, mockSigningKey);
       expect(signature).toBe(signature2);
     });
 
@@ -233,7 +221,8 @@ describe('SigningService', () => {
     it('should reject invalid signature', async () => {
       userRepository.findOne.mockResolvedValue(mockUser as User);
       const request = createMockRequest();
-      (request.headers as Record<string, string>)['x-signature'] = Buffer.from('invalid').toString('base64');
+      (request.headers as Record<string, string>)['x-signature'] =
+        Buffer.from('invalid').toString('base64');
 
       await expect(service.verifySignature(request, mockUser.id!)).rejects.toThrow(
         'Invalid signature',

@@ -6,10 +6,7 @@ describe('AuthController (e2e)', () => {
   const generateDeviceId = () =>
     `${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`;
 
-  const authPayload = (
-    deviceId: string,
-    platform: 'ios' | 'android' | 'web' = 'ios',
-  ) => ({
+  const authPayload = (deviceId: string, platform: 'ios' | 'android' | 'web' = 'ios') => ({
     deviceId,
     platform,
     appVersion: '1.0.0',
@@ -119,10 +116,7 @@ describe('AuthController (e2e)', () => {
     });
 
     it('should reject missing refresh token', async () => {
-      await request(getTestApp().getHttpServer())
-        .post('/api/v1/auth/refresh')
-        .send({})
-        .expect(400);
+      await request(getTestApp().getHttpServer()).post('/api/v1/auth/refresh').send({}).expect(400);
     });
 
     it('should invalidate old refresh token after refresh', async () => {

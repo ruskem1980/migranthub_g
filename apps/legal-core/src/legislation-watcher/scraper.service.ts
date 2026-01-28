@@ -39,6 +39,7 @@ export class ScraperService {
 
   // Ключевые слова для поиска законодательства
   private readonly SEARCH_KEYWORDS = [
+    // Общие запросы
     '109-ФЗ миграционный учет',
     '115-ФЗ иностранные граждане',
     '62-ФЗ гражданство',
@@ -49,10 +50,37 @@ export class ScraperService {
     'патент иностранный работник',
     'миграционный учет 2026',
     'НК 227.1 НДФЛ патент',
+    // Поиск на pravo.gov.ru через Google/Yandex
+    'site:pravo.gov.ru 109-ФЗ миграционный учет',
+    'site:pravo.gov.ru 115-ФЗ иностранные граждане',
+    'site:pravo.gov.ru 62-ФЗ гражданство',
+    'site:pravo.gov.ru 114-ФЗ выезд въезд',
+    'site:pravo.gov.ru КоАП 18.8',
+    'site:pravo.gov.ru КоАП 18.9',
+    'site:pravo.gov.ru КоАП 18.10',
+    'site:pravo.gov.ru КоАП 18.15',
+    'site:pravo.gov.ru НК РФ 227.1',
+    'site:pravo.gov.ru трудовой кодекс иностранные работники',
   ];
 
   // Конфигурация поисковых страниц
   private readonly searchSources: SearchConfig[] = [
+    // Google поиск (приоритетный для site:pravo.gov.ru запросов)
+    {
+      name: 'google',
+      searchUrl: 'https://www.google.com/search?q={keyword}&num=10',
+      resultSelector: 'a[href*="pravo.gov.ru"], div.g a[href*="pravo.gov.ru"], a[data-ved][href*="pravo.gov.ru"]',
+      maxResults: 5,
+      baseUrl: '',
+    },
+    // Yandex поиск (резервный для site:pravo.gov.ru запросов)
+    {
+      name: 'yandex',
+      searchUrl: 'https://yandex.ru/search/?text={keyword}',
+      resultSelector: 'a[href*="pravo.gov.ru"], .organic__url[href*="pravo.gov.ru"], .OrganicTitle-Link[href*="pravo.gov.ru"]',
+      maxResults: 5,
+      baseUrl: '',
+    },
     {
       name: 'base.garant.ru',
       searchUrl: 'https://base.garant.ru/search/?q={keyword}',
@@ -97,6 +125,38 @@ export class ScraperService {
     {
       name: 'pravo.gov.ru - 115-ФЗ',
       url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102084473',
+      contentSelector: '#docbody, .docbody, .document-body, body',
+      titleSelector: 'title, h1, .doc-title',
+      dateSelector: '.doc-date, .date',
+    },
+    // 62-ФЗ О гражданстве Российской Федерации
+    {
+      name: 'pravo.gov.ru - 62-ФЗ О гражданстве',
+      url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102076357',
+      contentSelector: '#docbody, .docbody, .document-body, body',
+      titleSelector: 'title, h1, .doc-title',
+      dateSelector: '.doc-date, .date',
+    },
+    // 114-ФЗ О порядке выезда из РФ и въезда в РФ
+    {
+      name: 'pravo.gov.ru - 114-ФЗ О въезде и выезде',
+      url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102043016',
+      contentSelector: '#docbody, .docbody, .document-body, body',
+      titleSelector: 'title, h1, .doc-title',
+      dateSelector: '.doc-date, .date',
+    },
+    // КоАП РФ (полный текст)
+    {
+      name: 'pravo.gov.ru - КоАП РФ',
+      url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102074277',
+      contentSelector: '#docbody, .docbody, .document-body, body',
+      titleSelector: 'title, h1, .doc-title',
+      dateSelector: '.doc-date, .date',
+    },
+    // НК РФ часть 2 (включает статью 227.1 о патентном НДФЛ)
+    {
+      name: 'pravo.gov.ru - НК РФ часть 2',
+      url: 'http://pravo.gov.ru/proxy/ips/?docbody=&nd=102067058',
       contentSelector: '#docbody, .docbody, .document-body, body',
       titleSelector: 'title, h1, .doc-title',
       dateSelector: '.doc-date, .date',
@@ -235,11 +295,21 @@ export class ScraperService {
   async scrapeViaSearch(existingUrls: Set<string>): Promise<ScrapedLaw[]> {
     const results: ScrapedLaw[] = [];
     const seenUrls = new Set<string>(existingUrls);
+    // Отслеживаем найденные документы с pravo.gov.ru для приоритизации
+    const pravoGovDocs = new Set<string>();
 
     for (const keyword of this.SEARCH_KEYWORDS) {
       this.logger.log(`Searching for: "${keyword}"`);
 
-      for (const searchConfig of this.searchSources) {
+      // Определяем, это запрос с site:pravo.gov.ru
+      const isSiteSearchQuery = keyword.includes('site:pravo.gov.ru');
+
+      // Для site:pravo.gov.ru запросов используем только Google и Yandex
+      const sourcesToUse = isSiteSearchQuery
+        ? this.searchSources.filter((s) => s.name === 'google' || s.name === 'yandex')
+        : this.searchSources;
+
+      for (const searchConfig of sourcesToUse) {
         try {
           const searchResults = await this.searchSource(searchConfig, keyword);
 
@@ -252,6 +322,15 @@ export class ScraperService {
               continue;
             }
 
+            // Приоритизация: если уже есть документ с pravo.gov.ru, не дублируем из других источников
+            const isPravoGov = result.url.includes('pravo.gov.ru');
+            const docKey = this.extractDocumentKey(result.url);
+
+            if (!isPravoGov && docKey && pravoGovDocs.has(docKey)) {
+              this.logger.debug(`Skipping non-pravo.gov.ru duplicate: ${result.url}`);
+              continue;
+            }
+
             seenUrls.add(normalizedUrl);
 
             // Парсим найденный документ
@@ -259,14 +338,21 @@ export class ScraperService {
             if (doc && doc.rawText.length > 100) {
               results.push(doc);
               this.logger.log(`Found via search: ${doc.title.substring(0, 50)}... (${doc.rawText.length} chars)`);
+
+              // Запоминаем документы с pravo.gov.ru
+              if (isPravoGov && docKey) {
+                pravoGovDocs.add(docKey);
+              }
             }
 
             // Задержка между запросами документов
             await this.delay(2000);
           }
 
-          // Задержка между поисковыми запросами
-          await this.delay(3000);
+          // Увеличенная задержка для Google и Yandex (5-10 секунд)
+          const isSearchEngine = searchConfig.name === 'google' || searchConfig.name === 'yandex';
+          const delayMs = isSearchEngine ? this.getRandomDelay(5000, 10000) : 3000;
+          await this.delay(delayMs);
         } catch (error) {
           this.logger.warn(`Search failed on ${searchConfig.name} for "${keyword}": ${error.message}`);
         }
@@ -275,6 +361,35 @@ export class ScraperService {
 
     this.logger.log(`Found ${results.length} new documents via search`);
     return results;
+  }
+
+  /**
+   * Извлечение ключа документа для дедупликации между источниками
+   * Например: "109-ФЗ", "115-ФЗ", "62-ФЗ" и т.д.
+   */
+  private extractDocumentKey(url: string): string | null {
+    // Паттерны для извлечения номеров законов из URL
+    const patterns = [
+      /(\d+-ФЗ)/i,
+      /nd=(\d+)/,
+      /cons_doc_LAW_(\d+)/,
+      /\/(\d{5,})\//,
+    ];
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) {
+        return match[1];
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Случайная задержка в заданном диапазоне
+   */
+  private getRandomDelay(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   /**
@@ -300,6 +415,7 @@ export class ScraperService {
    */
   private extractSearchResults($: cheerio.CheerioAPI, config: SearchConfig): SearchResult[] {
     const results: SearchResult[] = [];
+    const seenUrls = new Set<string>();
     const selectors = config.resultSelector.split(', ');
 
     for (const selector of selectors) {
@@ -307,12 +423,15 @@ export class ScraperService {
         if (results.length >= config.maxResults) return false;
 
         const $el = $(element);
-        const href = $el.attr(config.linkAttribute || 'href');
+        let href = $el.attr(config.linkAttribute || 'href');
         const title = $el.text().trim() || $el.attr('title') || '';
 
         if (!href || href === '#' || href.startsWith('javascript:')) {
           return;
         }
+
+        // Извлекаем реальные URL из Google/Yandex redirect ссылок
+        href = this.extractRealUrl(href, config.name);
 
         // Преобразуем относительные ссылки в абсолютные
         let absoluteUrl = href;
@@ -322,8 +441,15 @@ export class ScraperService {
           absoluteUrl = (config.baseUrl || '') + '/' + href;
         }
 
+        // Дедупликация внутри результатов поиска
+        const normalizedUrl = this.normalizeUrl(absoluteUrl);
+        if (seenUrls.has(normalizedUrl)) {
+          return;
+        }
+
         // Фильтруем нерелевантные ссылки
         if (this.isRelevantUrl(absoluteUrl)) {
+          seenUrls.add(normalizedUrl);
           results.push({
             title: title.substring(0, 200),
             url: absoluteUrl,
@@ -337,6 +463,44 @@ export class ScraperService {
 
     this.logger.debug(`Extracted ${results.length} results from ${config.name}`);
     return results;
+  }
+
+  /**
+   * Извлечение реального URL из redirect-обёрток поисковиков
+   */
+  private extractRealUrl(href: string, sourceName: string): string {
+    try {
+      // Google часто оборачивает ссылки в /url?q=... или /url?url=...
+      if (sourceName === 'google') {
+        // Паттерн: /url?q=https://pravo.gov.ru/...&sa=...
+        const googleUrlMatch = href.match(/\/url\?(?:q|url)=([^&]+)/);
+        if (googleUrlMatch) {
+          return decodeURIComponent(googleUrlMatch[1]);
+        }
+        // Прямая ссылка с data-ved атрибутом
+        if (href.includes('pravo.gov.ru')) {
+          return href;
+        }
+      }
+
+      // Yandex может использовать redirect через /redir или //yandex.ru/clck/...
+      if (sourceName === 'yandex') {
+        // Паттерн: //yandex.ru/clck/jsredir?...&url=https%3A%2F%2Fpravo.gov.ru...
+        const yandexUrlMatch = href.match(/[?&]url=([^&]+)/);
+        if (yandexUrlMatch) {
+          return decodeURIComponent(yandexUrlMatch[1]);
+        }
+        // Прямая ссылка на pravo.gov.ru
+        if (href.includes('pravo.gov.ru')) {
+          return href;
+        }
+      }
+
+      return href;
+    } catch (error) {
+      this.logger.debug(`Failed to extract real URL from ${href}: ${error.message}`);
+      return href;
+    }
   }
 
   /**
@@ -354,6 +518,9 @@ export class ScraperService {
       /javascript:/,
       /mailto:/,
       /#$/,
+      /google\.com/,
+      /yandex\.ru(?!.*pravo\.gov\.ru)/,
+      /webcache\.googleusercontent\.com/,
     ];
 
     for (const pattern of excludePatterns) {
@@ -366,8 +533,12 @@ export class ScraperService {
     const includePatterns = [
       /garant\.ru.*\/\d+/,
       /consultant\.ru.*\/document\//,
-      /pravo\.gov\.ru.*doc/,
+      // Расширенные паттерны для pravo.gov.ru
+      /pravo\.gov\.ru.*proxy\/ips/,
       /pravo\.gov\.ru.*nd=/,
+      /pravo\.gov\.ru.*doc/,
+      /pravo\.gov\.ru.*docbody/,
+      /pravo\.gov\.ru.*Document/,
     ];
 
     for (const pattern of includePatterns) {

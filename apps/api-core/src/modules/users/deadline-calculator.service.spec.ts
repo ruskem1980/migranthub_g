@@ -144,7 +144,9 @@ describe('DeadlineCalculatorService', () => {
         });
 
         expect(result.patentPayment).toBeDefined();
-        expect(result.patentPayment!.description).toContain('Рекомендуемый срок оформления патента');
+        expect(result.patentPayment!.description).toContain(
+          'Рекомендуемый срок оформления патента',
+        );
       });
 
       it('should not show patent for non-work purposes', () => {

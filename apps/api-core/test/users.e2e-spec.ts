@@ -6,10 +6,7 @@ describe('UsersController (e2e)', () => {
   const generateDeviceId = () =>
     `${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`;
 
-  const authPayload = (
-    deviceId: string,
-    platform: 'ios' | 'android' | 'web' = 'ios',
-  ) => ({
+  const authPayload = (deviceId: string, platform: 'ios' | 'android' | 'web' = 'ios') => ({
     deviceId,
     platform,
     appVersion: '1.0.0',
@@ -42,9 +39,7 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should reject request without auth', async () => {
-      await request(getTestApp().getHttpServer())
-        .get('/api/v1/users/me')
-        .expect(401);
+      await request(getTestApp().getHttpServer()).get('/api/v1/users/me').expect(401);
     });
 
     it('should reject request with invalid token', async () => {

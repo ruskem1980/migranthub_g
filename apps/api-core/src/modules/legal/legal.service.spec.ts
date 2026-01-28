@@ -63,9 +63,7 @@ describe('LegalService', () => {
     });
 
     it('should throw NotFoundException for invalid id', () => {
-      expect(() => service.getCategoryById('non-existent-id')).toThrow(
-        NotFoundException,
-      );
+      expect(() => service.getCategoryById('non-existent-id')).toThrow(NotFoundException);
     });
 
     it('should return different categories for different ids', () => {
@@ -90,9 +88,7 @@ describe('LegalService', () => {
     });
 
     it('should throw NotFoundException for invalid category', () => {
-      expect(() => service.getCategoryItems('non-existent')).toThrow(
-        NotFoundException,
-      );
+      expect(() => service.getCategoryItems('non-existent')).toThrow(NotFoundException);
     });
 
     it('should return faq sorted by order', () => {
@@ -101,9 +97,7 @@ describe('LegalService', () => {
 
       if (faqItems.length > 1) {
         for (let i = 1; i < faqItems.length; i++) {
-          expect(faqItems[i].order).toBeGreaterThanOrEqual(
-            faqItems[i - 1].order,
-          );
+          expect(faqItems[i].order).toBeGreaterThanOrEqual(faqItems[i - 1].order);
         }
       }
     });
@@ -182,9 +176,7 @@ describe('LegalService', () => {
     });
 
     it('should throw NotFoundException for invalid id', () => {
-      expect(() => service.getLawById('non-existent-id')).toThrow(
-        NotFoundException,
-      );
+      expect(() => service.getLawById('non-existent-id')).toThrow(NotFoundException);
     });
   });
 
@@ -217,9 +209,7 @@ describe('LegalService', () => {
     });
 
     it('should throw NotFoundException for invalid id', () => {
-      expect(() => service.getFormById('non-existent-id')).toThrow(
-        NotFoundException,
-      );
+      expect(() => service.getFormById('non-existent-id')).toThrow(NotFoundException);
     });
   });
 

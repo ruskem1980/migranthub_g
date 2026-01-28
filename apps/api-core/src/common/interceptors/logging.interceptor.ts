@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Request, Response } from 'express';
@@ -86,9 +80,7 @@ export class LoggingInterceptor implements NestInterceptor {
   /**
    * Удаляем чувствительные данные из тела запроса перед сохранением
    */
-  private sanitizeRequestBody(
-    body: unknown,
-  ): Record<string, unknown> | null {
+  private sanitizeRequestBody(body: unknown): Record<string, unknown> | null {
     if (!body || typeof body !== 'object') {
       return null;
     }

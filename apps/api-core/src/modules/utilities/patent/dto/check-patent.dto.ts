@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsString,
-  IsNotEmpty,
-  Length,
-  Matches,
-  IsOptional,
-} from 'class-validator';
+import { IsString, IsNotEmpty, Length, Matches, IsOptional } from 'class-validator';
 
 /**
  * DTO для запроса проверки действительности патента

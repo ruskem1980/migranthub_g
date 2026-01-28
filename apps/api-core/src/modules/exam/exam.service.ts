@@ -87,10 +87,7 @@ export class ExamService {
   /**
    * Submit exam answers and calculate results
    */
-  async submitExam(
-    deviceId: string,
-    dto: SubmitExamDto,
-  ): Promise<ExamResultDto> {
+  async submitExam(deviceId: string, dto: SubmitExamDto): Promise<ExamResultDto> {
     this.logger.log(
       `Submitting exam for device: ${deviceId}, mode: ${dto.mode}, answers: ${dto.answers.length}`,
     );
@@ -117,14 +114,10 @@ export class ExamService {
 
     // 2. Считаем правильные ответы
     const correctAnswers = answersWithResults.filter((a) => a.isCorrect).length;
-    const percentage =
-      totalQuestions > 0
-        ? Math.round((correctAnswers / totalQuestions) * 100)
-        : 0;
+    const percentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
 
     // 3. Группируем по категориям
-    const categoryResults: Record<string, { total: number; correct: number }> =
-      {};
+    const categoryResults: Record<string, { total: number; correct: number }> = {};
 
     for (const answer of answersWithResults) {
       if (!answer.category) continue;
@@ -144,17 +137,12 @@ export class ExamService {
         category,
         total: data.total,
         correct: data.correct,
-        percentage:
-          data.total > 0
-            ? Math.round((data.correct / data.total) * 100)
-            : 0,
+        percentage: data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0,
       }),
     );
 
     // 5. Определяем слабые темы (< 70%)
-    const weakTopics = byCategory
-      .filter((cat) => cat.percentage < 70)
-      .map((cat) => cat.category);
+    const weakTopics = byCategory.filter((cat) => cat.percentage < 70).map((cat) => cat.category);
 
     // 6. Обновляем прогресс пользователя
     await this.updateProgress(deviceId, dto, correctAnswers, byCategory);
@@ -313,9 +301,7 @@ export class ExamService {
 
     // Обновляем статистику для режима exam
     const percentage =
-      dto.answers.length > 0
-        ? Math.round((correctAnswers / dto.answers.length) * 100)
-        : 0;
+      dto.answers.length > 0 ? Math.round((correctAnswers / dto.answers.length) * 100) : 0;
 
     if (dto.mode === 'exam') {
       progress.testsCompleted += 1;

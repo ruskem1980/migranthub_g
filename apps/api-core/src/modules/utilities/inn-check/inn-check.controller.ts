@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Post,
-  Get,
-  Body,
-  HttpCode,
-  HttpStatus,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Get, Body, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -75,8 +67,7 @@ export class InnCheckController {
   @Get('status')
   @ApiOperation({
     summary: 'Get INN check service status',
-    description:
-      'Returns current status of the INN check service including circuit breaker state.',
+    description: 'Returns current status of the INN check service including circuit breaker state.',
   })
   @ApiResponse({
     status: 200,

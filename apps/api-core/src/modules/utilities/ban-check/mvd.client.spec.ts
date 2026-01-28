@@ -142,7 +142,9 @@ describe('MvdClient', () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         text: () =>
-          Promise.resolve('Запрет на въезд в Российскую Федерацию. Причина: нарушение сроков пребывания'),
+          Promise.resolve(
+            'Запрет на въезд в Российскую Федерацию. Причина: нарушение сроков пребывания',
+          ),
       });
 
       const promise = client.checkBan(mockQuery);
@@ -155,8 +157,7 @@ describe('MvdClient', () => {
     it('should detect no-ban indicators', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        text: () =>
-          Promise.resolve('Оснований не въезд не имеется. Проверка завершена.'),
+        text: () => Promise.resolve('Оснований не въезд не имеется. Проверка завершена.'),
       });
 
       const promise = client.checkBan(mockQuery);
@@ -227,8 +228,7 @@ describe('MvdClient', () => {
     it('should return no ban for ambiguous response', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        text: () =>
-          Promise.resolve('Некорректные данные. Повторите запрос позже.'),
+        text: () => Promise.resolve('Некорректные данные. Повторите запрос позже.'),
       });
 
       const promise = client.checkBan(mockQuery);
@@ -289,9 +289,7 @@ describe('MvdClient', () => {
       expect(state.state).toBe('OPEN');
 
       // Next request should fail immediately
-      await expect(client.checkBan(mockQuery)).rejects.toThrow(
-        'circuit open',
-      );
+      await expect(client.checkBan(mockQuery)).rejects.toThrow('circuit open');
     });
 
     it('should transition to half-open after reset time', async () => {

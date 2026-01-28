@@ -1,12 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  categories,
-  laws,
-  forms,
-  faqItems,
-  patentRegions,
-  BASE_NDFL,
-} from './data';
+import { categories, laws, forms, faqItems, patentRegions, BASE_NDFL } from './data';
 import {
   CategoryDto,
   CategoryItemsDto,
@@ -63,9 +56,7 @@ export class LegalService {
     return {
       laws: laws.filter((l) => l.categoryId === categoryId),
       forms: forms.filter((f) => f.categoryId === categoryId),
-      faq: faqItems
-        .filter((f) => f.categoryId === categoryId)
-        .sort((a, b) => a.order - b.order),
+      faq: faqItems.filter((f) => f.categoryId === categoryId).sort((a, b) => a.order - b.order),
     };
   }
 
@@ -134,9 +125,7 @@ export class LegalService {
     const region = patentRegions.find((r) => r.code === request.regionCode);
 
     if (!region) {
-      throw new NotFoundException(
-        `Region with code ${request.regionCode} not found`,
-      );
+      throw new NotFoundException(`Region with code ${request.regionCode} not found`);
     }
 
     const totalPrice = region.monthlyCost * request.months;

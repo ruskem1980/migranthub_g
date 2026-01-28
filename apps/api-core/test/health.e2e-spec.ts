@@ -13,9 +13,7 @@ describe('HealthController (e2e)', () => {
       expect(response.body).toHaveProperty('version');
 
       // Verify timestamp is valid ISO date
-      expect(new Date(response.body.timestamp).toISOString()).toBe(
-        response.body.timestamp,
-      );
+      expect(new Date(response.body.timestamp).toISOString()).toBe(response.body.timestamp);
     });
 
     it('should return valid version', async () => {
@@ -28,9 +26,7 @@ describe('HealthController (e2e)', () => {
 
     it('should be accessible without authentication', async () => {
       // No auth header, should still work
-      await request(getTestApp().getHttpServer())
-        .get('/api/v1/health')
-        .expect(200);
+      await request(getTestApp().getHttpServer()).get('/api/v1/health').expect(200);
     });
   });
 });

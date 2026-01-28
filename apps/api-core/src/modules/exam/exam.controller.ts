@@ -8,12 +8,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser, CurrentUserPayload } from '../auth/decorators';
 import { Public } from '../auth/decorators/public.decorator';
@@ -88,9 +83,7 @@ export class ExamController {
     type: ExamProgressDto,
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getProgress(
-    @CurrentUser() user: CurrentUserPayload,
-  ): Promise<ExamProgressDto> {
+  async getProgress(@CurrentUser() user: CurrentUserPayload): Promise<ExamProgressDto> {
     return this.examService.getProgress(user.deviceId);
   }
 
@@ -104,9 +97,7 @@ export class ExamController {
     type: ExamStatisticsDto,
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getStatistics(
-    @CurrentUser() user: CurrentUserPayload,
-  ): Promise<ExamStatisticsDto> {
+  async getStatistics(@CurrentUser() user: CurrentUserPayload): Promise<ExamStatisticsDto> {
     return this.examService.getStatistics(user.deviceId);
   }
 }

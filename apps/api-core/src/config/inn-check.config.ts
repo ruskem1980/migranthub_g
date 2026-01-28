@@ -2,8 +2,7 @@ import { registerAs } from '@nestjs/config';
 
 export default registerAs('innCheck', () => ({
   // URL сервиса ФНС для получения ИНН
-  serviceUrl:
-    process.env.INN_CHECK_SERVICE_URL || 'https://service.nalog.ru/inn.do',
+  serviceUrl: process.env.INN_CHECK_SERVICE_URL || 'https://service.nalog.ru/inn.do',
 
   // Включение реальных запросов (false = только mock)
   enabled: process.env.INN_CHECK_ENABLED === 'true',
@@ -18,10 +17,7 @@ export default registerAs('innCheck', () => ({
   retryDelay: parseInt(process.env.INN_CHECK_RETRY_DELAY || '2000', 10),
 
   // Circuit breaker: порог ошибок для открытия
-  circuitBreakerThreshold: parseInt(
-    process.env.INN_CHECK_CIRCUIT_BREAKER_THRESHOLD || '5',
-    10,
-  ),
+  circuitBreakerThreshold: parseInt(process.env.INN_CHECK_CIRCUIT_BREAKER_THRESHOLD || '5', 10),
 
   // Circuit breaker: время восстановления в миллисекундах
   circuitBreakerResetTime: parseInt(
@@ -30,10 +26,7 @@ export default registerAs('innCheck', () => ({
   ),
 
   // TTL кэша результатов в миллисекундах (30 дней - ИНН не меняется)
-  cacheTtl: parseInt(
-    process.env.INN_CHECK_CACHE_TTL || String(30 * 24 * 60 * 60 * 1000),
-    10,
-  ),
+  cacheTtl: parseInt(process.env.INN_CHECK_CACHE_TTL || String(30 * 24 * 60 * 60 * 1000), 10),
 
   // 2Captcha API настройки (используем общие с patent-check)
   captcha: {
@@ -42,24 +35,15 @@ export default registerAs('innCheck', () => ({
     // Таймаут решения капчи в миллисекундах
     timeout: parseInt(process.env.TWO_CAPTCHA_TIMEOUT || '120000', 10),
     // Интервал проверки результата
-    pollingInterval: parseInt(
-      process.env.TWO_CAPTCHA_POLLING_INTERVAL || '5000',
-      10,
-    ),
+    pollingInterval: parseInt(process.env.TWO_CAPTCHA_POLLING_INTERVAL || '5000', 10),
   },
 
   // Настройки браузера (Playwright)
   browser: {
     headless: process.env.BROWSER_HEADLESS !== 'false',
     // Таймаут навигации
-    navigationTimeout: parseInt(
-      process.env.BROWSER_NAVIGATION_TIMEOUT || '30000',
-      10,
-    ),
+    navigationTimeout: parseInt(process.env.BROWSER_NAVIGATION_TIMEOUT || '30000', 10),
     // Таймаут ожидания селектора
-    selectorTimeout: parseInt(
-      process.env.BROWSER_SELECTOR_TIMEOUT || '10000',
-      10,
-    ),
+    selectorTimeout: parseInt(process.env.BROWSER_SELECTOR_TIMEOUT || '10000', 10),
   },
 }));

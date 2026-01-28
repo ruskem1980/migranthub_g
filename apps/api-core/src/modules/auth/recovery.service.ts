@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  Logger,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -53,7 +48,9 @@ export class RecoveryService {
     if (user.recoveryBlockedUntil && new Date() < user.recoveryBlockedUntil) {
       const remainingMs = user.recoveryBlockedUntil.getTime() - Date.now();
       const remainingMinutes = Math.ceil(remainingMs / 60000);
-      this.logger.warn(`Recovery blocked for user ${user.id}, ${remainingMinutes} minutes remaining`);
+      this.logger.warn(
+        `Recovery blocked for user ${user.id}, ${remainingMinutes} minutes remaining`,
+      );
       throw new ForbiddenException(
         `Too many failed attempts. Try again in ${remainingMinutes} minutes.`,
       );
@@ -95,9 +92,7 @@ export class RecoveryService {
           `Invalid recovery code. ${remainingAttempts} attempt(s) remaining.`,
         );
       } else {
-        throw new ForbiddenException(
-          `Too many failed attempts. Try again in 15 minutes.`,
-        );
+        throw new ForbiddenException(`Too many failed attempts. Try again in 15 minutes.`);
       }
     }
 
@@ -156,9 +151,7 @@ export class RecoveryService {
   /**
    * Generate JWT tokens
    */
-  private async generateTokens(
-    user: User,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  private async generateTokens(user: User): Promise<{ accessToken: string; refreshToken: string }> {
     const accessPayload: JwtPayload = {
       sub: user.id,
       did: user.deviceId,

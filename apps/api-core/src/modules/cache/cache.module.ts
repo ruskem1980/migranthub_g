@@ -35,9 +35,7 @@ import { CacheService } from './cache.service';
               connectTimeout: 5000,
               reconnectStrategy: (retries) => {
                 if (retries > 3) {
-                  logger.warn(
-                    'Не удалось подключиться к Redis после 3 попыток',
-                  );
+                  logger.warn('Не удалось подключиться к Redis после 3 попыток');
                   return false; // Прекращаем попытки
                 }
                 return Math.min(retries * 500, 3000); // Экспоненциальная задержка

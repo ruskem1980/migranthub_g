@@ -81,9 +81,7 @@ describe('UsersService', () => {
     it('should throw NotFoundException for missing user', async () => {
       usersRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.getProfile('non-existent-id')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.getProfile('non-existent-id')).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -327,9 +325,7 @@ describe('UsersService', () => {
     it('should throw NotFoundException if user not found', async () => {
       usersRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.deleteAccount('non-existent-id')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.deleteAccount('non-existent-id')).rejects.toThrow(NotFoundException);
     });
   });
 });

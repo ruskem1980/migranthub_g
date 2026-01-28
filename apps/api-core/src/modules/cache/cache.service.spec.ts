@@ -92,21 +92,13 @@ describe('CacheService', () => {
     it('should store value with TTL', async () => {
       await service.set('test-key', { data: 'value' }, 5000);
 
-      expect(cacheManager.set).toHaveBeenCalledWith(
-        'test-key',
-        { data: 'value' },
-        5000,
-      );
+      expect(cacheManager.set).toHaveBeenCalledWith('test-key', { data: 'value' }, 5000);
     });
 
     it('should store value without TTL', async () => {
       await service.set('test-key', 'value');
 
-      expect(cacheManager.set).toHaveBeenCalledWith(
-        'test-key',
-        'value',
-        undefined,
-      );
+      expect(cacheManager.set).toHaveBeenCalledWith('test-key', 'value', undefined);
     });
 
     it('should not throw on Redis error', async () => {
@@ -169,11 +161,7 @@ describe('CacheService', () => {
 
       expect(result).toBe('computed-value');
       expect(fn).toHaveBeenCalled();
-      expect(cacheManager.set).toHaveBeenCalledWith(
-        'test-key',
-        'computed-value',
-        5000,
-      );
+      expect(cacheManager.set).toHaveBeenCalledWith('test-key', 'computed-value', 5000);
     });
 
     it('should call function when cache unavailable', async () => {

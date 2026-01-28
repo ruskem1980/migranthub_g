@@ -126,5 +126,4 @@ export const ApiForbiddenResponse = () =>
 export const ApiNotFoundResponse = () =>
   ApiErrorResponse(404, 'Not Found - Resource does not exist');
 
-export const ApiInternalServerErrorResponse = () =>
-  ApiErrorResponse(500, 'Internal Server Error');
+export const ApiInternalServerErrorResponse = () => ApiErrorResponse(500, 'Internal Server Error');

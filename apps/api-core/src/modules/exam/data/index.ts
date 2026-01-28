@@ -1,7 +1,4 @@
-import {
-  QuestionDto,
-  QuestionCategory,
-} from '../dto/question.dto';
+import { QuestionDto, QuestionCategory } from '../dto/question.dto';
 import { russianLanguageQuestions } from './russian-language.data';
 import { historyQuestions } from './history.data';
 import { lawQuestions } from './law.data';
@@ -42,11 +39,7 @@ const historyWithIds: QuestionDto[] = historyQuestions;
 /**
  * Объединённая база всех вопросов (300 вопросов)
  */
-export const allQuestions: QuestionDto[] = [
-  ...russianWithIds,
-  ...historyWithIds,
-  ...lawWithIds,
-];
+export const allQuestions: QuestionDto[] = [...russianWithIds, ...historyWithIds, ...lawWithIds];
 
 /**
  * Вопросы, сгруппированные по категориям

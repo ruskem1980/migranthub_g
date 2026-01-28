@@ -69,9 +69,7 @@ export class SigningService {
 
     // Проверяем наличие обязательных заголовков
     if (!signature || !timestamp) {
-      this.logger.warn(
-        `Отсутствуют заголовки подписи для пользователя ${userId}`,
-      );
+      this.logger.warn(`Отсутствуют заголовки подписи для пользователя ${userId}`);
       throw new UnauthorizedException('Missing signature headers');
     }
 
@@ -85,18 +83,14 @@ export class SigningService {
     const age = now - requestTime;
 
     if (age > this.MAX_TIMESTAMP_AGE_MS) {
-      this.logger.warn(
-        `Истёкший timestamp для пользователя ${userId}: возраст ${age}ms`,
-      );
+      this.logger.warn(`Истёкший timestamp для пользователя ${userId}: возраст ${age}ms`);
       throw new UnauthorizedException('Request timestamp expired');
     }
 
     // Защита от replay-атак с будущим timestamp (с небольшим допуском на рассинхрон)
     if (requestTime > now + 60000) {
       // 1 минута допуска
-      this.logger.warn(
-        `Timestamp из будущего для пользователя ${userId}: ${requestTime} > ${now}`,
-      );
+      this.logger.warn(`Timestamp из будущего для пользователя ${userId}: ${requestTime} > ${now}`);
       throw new UnauthorizedException('Invalid timestamp');
     }
 
@@ -115,17 +109,9 @@ export class SigningService {
     const method = request.method;
     const path = request.originalUrl || request.url;
     const body =
-      request.body && Object.keys(request.body).length > 0
-        ? JSON.stringify(request.body)
-        : '';
+      request.body && Object.keys(request.body).length > 0 ? JSON.stringify(request.body) : '';
 
-    const expectedSignature = this.computeSignature(
-      timestamp,
-      method,
-      path,
-      body,
-      user.signingKey,
-    );
+    const expectedSignature = this.computeSignature(timestamp, method, path, body, user.signingKey);
 
     // Безопасное сравнение для предотвращения timing атак
     const signatureBuffer = Buffer.from(signature, 'base64');

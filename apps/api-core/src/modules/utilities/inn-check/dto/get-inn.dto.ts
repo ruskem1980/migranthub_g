@@ -1,12 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsString,
-  IsDateString,
-  IsOptional,
-  IsEnum,
-  Length,
-  IsNotEmpty,
-} from 'class-validator';
+import { IsString, IsDateString, IsOptional, IsEnum, Length, IsNotEmpty } from 'class-validator';
 
 export enum ForeignDocumentType {
   FOREIGN_PASSPORT = 'FOREIGN_PASSPORT', // Паспорт иностранного гражданина (код 10)

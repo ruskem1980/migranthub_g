@@ -1,20 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Param,
-  Query,
-  Body,
-  HttpCode,
-  HttpStatus,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Param, Query, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { Public } from '../auth/decorators/public.decorator';
 import { LegalService } from './legal.service';
 import {
@@ -146,9 +131,7 @@ export class LegalController {
   @ApiOperation({ summary: 'Calculate patent price' })
   @ApiResponse({ status: 200, type: PatentCalcResponseDto })
   @ApiResponse({ status: 404, description: 'Region not found' })
-  calculatePatentPrice(
-    @Body() request: PatentCalcRequestDto,
-  ): PatentCalcResponseDto {
+  calculatePatentPrice(@Body() request: PatentCalcRequestDto): PatentCalcResponseDto {
     return this.legalService.calculatePatentPrice(request);
   }
 

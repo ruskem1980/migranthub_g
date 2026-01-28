@@ -26,8 +26,7 @@ export class AuthResponseDto {
   isNewUser!: boolean;
 
   @ApiProperty({
-    description:
-      'Secret key for request signing (HMAC-SHA256). Store securely on device.',
+    description: 'Secret key for request signing (HMAC-SHA256). Store securely on device.',
     example: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6',
   })
   signingKey!: string;

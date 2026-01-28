@@ -87,7 +87,8 @@ export class PatentController {
   @Public()
   @ApiOperation({
     summary: 'Get patent check service status',
-    description: 'Returns current status of the patent check service including circuit breaker state.',
+    description:
+      'Returns current status of the patent check service including circuit breaker state.',
   })
   @ApiResponse({
     status: 200,

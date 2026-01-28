@@ -34,8 +34,7 @@ export class AuthController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @ApiOperation({
     summary: 'Authenticate device',
-    description:
-      'Register a new device or authenticate an existing one. Returns JWT tokens.',
+    description: 'Register a new device or authenticate an existing one. Returns JWT tokens.',
   })
   @ApiResponse({
     status: 200,
@@ -90,9 +89,7 @@ export class AuthController {
   @ApiForbiddenResponse({
     description: 'Too many failed attempts. Account temporarily locked.',
   })
-  async verifyRecovery(
-    @Body() dto: VerifyRecoveryDto,
-  ): Promise<RecoveryResponseDto> {
+  async verifyRecovery(@Body() dto: VerifyRecoveryDto): Promise<RecoveryResponseDto> {
     return this.recoveryService.verifyRecoveryCode(dto);
   }
 }

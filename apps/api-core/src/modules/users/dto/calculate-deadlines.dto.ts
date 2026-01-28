@@ -1,10 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsDateString,
-  IsOptional,
-  IsEnum,
-} from 'class-validator';
+import { IsNotEmpty, IsDateString, IsOptional, IsEnum } from 'class-validator';
 import { Expose } from 'class-transformer';
 import { VisitPurpose } from './complete-onboarding.dto';
 

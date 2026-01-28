@@ -56,10 +56,7 @@ export class MvdClient implements OnModuleInit {
     this.timeout = this.configService.get<number>('mvd.timeout', 10000);
     this.retryAttempts = this.configService.get<number>('mvd.retryAttempts', 3);
     this.retryDelay = this.configService.get<number>('mvd.retryDelay', 1000);
-    this.circuitBreakerThreshold = this.configService.get<number>(
-      'mvd.circuitBreakerThreshold',
-      5,
-    );
+    this.circuitBreakerThreshold = this.configService.get<number>('mvd.circuitBreakerThreshold', 5);
     this.circuitBreakerResetTime = this.configService.get<number>(
       'mvd.circuitBreakerResetTime',
       60000,
@@ -67,9 +64,7 @@ export class MvdClient implements OnModuleInit {
   }
 
   onModuleInit(): void {
-    this.logger.log(
-      `MvdClient инициализирован: enabled=${this.enabled}, url=${this.apiUrl}`,
-    );
+    this.logger.log(`MvdClient инициализирован: enabled=${this.enabled}, url=${this.apiUrl}`);
   }
 
   /**
@@ -93,17 +88,13 @@ export class MvdClient implements OnModuleInit {
 
     for (let attempt = 1; attempt <= this.retryAttempts; attempt++) {
       try {
-        this.logger.debug(
-          `Попытка ${attempt}/${this.retryAttempts} запроса к МВД`,
-        );
+        this.logger.debug(`Попытка ${attempt}/${this.retryAttempts} запроса к МВД`);
         const result = await this.executeRequest(query);
         this.onSuccess();
         return result;
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
-        this.logger.warn(
-          `Попытка ${attempt} не удалась: ${lastError.message}`,
-        );
+        this.logger.warn(`Попытка ${attempt} не удалась: ${lastError.message}`);
 
         if (attempt < this.retryAttempts) {
           const delay = this.calculateBackoff(attempt);
@@ -211,9 +202,7 @@ export class MvdClient implements OnModuleInit {
 
     // Если не удалось определить - считаем что запрета нет
     // (консервативный подход - лучше не блокировать пользователя)
-    this.logger.warn(
-      'Не удалось точно определить статус, предполагаем отсутствие запрета',
-    );
+    this.logger.warn('Не удалось точно определить статус, предполагаем отсутствие запрета');
     return { hasBan: false };
   }
 
@@ -222,11 +211,7 @@ export class MvdClient implements OnModuleInit {
    */
   private extractReason(html: string): string | undefined {
     // Паттерны для извлечения причины
-    const patterns = [
-      /причина[:\s]*([^<]+)/i,
-      /основание[:\s]*([^<]+)/i,
-      /статья[:\s]*([^<]+)/i,
-    ];
+    const patterns = [/причина[:\s]*([^<]+)/i, /основание[:\s]*([^<]+)/i, /статья[:\s]*([^<]+)/i];
 
     for (const pattern of patterns) {
       const match = html.match(pattern);
@@ -316,9 +301,7 @@ export class MvdClient implements OnModuleInit {
       this.logger.warn('Circuit breaker открыт после неудачного пробного запроса');
     } else if (this.failureCount >= this.circuitBreakerThreshold) {
       this.circuitState = CircuitState.OPEN;
-      this.logger.warn(
-        `Circuit breaker открыт после ${this.failureCount} ошибок`,
-      );
+      this.logger.warn(`Circuit breaker открыт после ${this.failureCount} ошибок`);
     }
   }
 
