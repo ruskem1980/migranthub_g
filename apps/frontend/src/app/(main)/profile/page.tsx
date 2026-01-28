@@ -34,7 +34,7 @@ export default function ProfilePage() {
       }
 
       // Navigate back
-      router.push('/prototype');
+      router.push('/services');
     } catch (error) {
       console.error('Error saving profile:', error);
     } finally {

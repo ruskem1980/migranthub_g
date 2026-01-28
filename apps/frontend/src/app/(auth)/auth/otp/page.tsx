@@ -145,8 +145,8 @@ export default function OtpPage() {
         };
         setUser(mockUser);
 
-        // Navigate to prototype
-        router.push('/prototype');
+        // Navigate to services
+        router.push('/services');
         return;
       }
 
