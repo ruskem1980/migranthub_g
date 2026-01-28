@@ -70,6 +70,68 @@ export class ScraperService {
       titleSelector: 'h1.long, h1.short, h1, title',
       dateSelector: '.doc-date',
     },
+    // КоАП статья 18.9 (нарушения принимающей стороной)
+    {
+      name: 'garant.ru - КоАП 18.9',
+      url: 'https://base.garant.ru/12125267/32e4c7439b4ab21f48e43701fa2c4584/',
+      contentSelector: '#doc_content, section.content, .doc-body, article',
+      titleSelector: 'h1.long, h1.short, h1, title',
+      dateSelector: '.doc-date',
+    },
+    // КоАП статья 18.10 (незаконная трудовая деятельность)
+    {
+      name: 'garant.ru - КоАП 18.10',
+      url: 'https://base.garant.ru/12125267/238e3b09bb6c5a55c0c5c683e9448bb4/',
+      contentSelector: '#doc_content, section.content, .doc-body, article',
+      titleSelector: 'h1.long, h1.short, h1, title',
+      dateSelector: '.doc-date',
+    },
+    // КоАП статья 18.15 (незаконное привлечение к труду)
+    {
+      name: 'garant.ru - КоАП 18.15',
+      url: 'https://base.garant.ru/12125267/0f2583f24a8a34c7ebf9ab3c7d3b9d69/',
+      contentSelector: '#doc_content, section.content, .doc-body, article',
+      titleSelector: 'h1.long, h1.short, h1, title',
+      dateSelector: '.doc-date',
+    },
+    // 62-ФЗ О гражданстве Российской Федерации
+    {
+      name: 'consultant.ru - 62-ФЗ О гражданстве',
+      url: 'https://www.consultant.ru/document/cons_doc_LAW_36927/',
+      contentSelector: '.document-page__content, .doc-body, article, main',
+      titleSelector: 'h1, .document-page__title, title',
+      dateSelector: '.document-page__date, .date',
+    },
+    {
+      name: 'garant.ru - 62-ФЗ О гражданстве',
+      url: 'https://base.garant.ru/185698/',
+      contentSelector: '#doc_content, section.content, .doc-body, article',
+      titleSelector: 'h1.long, h1.short, h1, title',
+      dateSelector: '.doc-date',
+    },
+    // 114-ФЗ О порядке выезда из РФ и въезда в РФ
+    {
+      name: 'consultant.ru - 114-ФЗ О въезде и выезде',
+      url: 'https://www.consultant.ru/document/cons_doc_LAW_11376/',
+      contentSelector: '.document-page__content, .doc-body, article, main',
+      titleSelector: 'h1, .document-page__title, title',
+      dateSelector: '.document-page__date, .date',
+    },
+    {
+      name: 'garant.ru - 114-ФЗ О въезде и выезде',
+      url: 'https://base.garant.ru/10135803/',
+      contentSelector: '#doc_content, section.content, .doc-body, article',
+      titleSelector: 'h1.long, h1.short, h1, title',
+      dateSelector: '.doc-date',
+    },
+    // НК РФ статья 227.1 (патентный НДФЛ для иностранных работников)
+    {
+      name: 'garant.ru - НК РФ 227.1 патентный НДФЛ',
+      url: 'https://base.garant.ru/10900200/3e22f1919bcadf030444e656a1e71053/',
+      contentSelector: '#doc_content, section.content, .doc-body, article',
+      titleSelector: 'h1.long, h1.short, h1, title',
+      dateSelector: '.doc-date',
+    },
     // Normativ Kontur
     {
       name: 'normativ.kontur.ru - Миграционный учёт',
