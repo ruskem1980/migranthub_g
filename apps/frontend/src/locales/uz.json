@@ -1841,5 +1841,101 @@
       "allCategories": "Barcha kategoriyalar",
       "startButton": "Testni boshlash"
     }
+  },
+  "examTrainer": {
+    "header": {
+      "title": "Imtihon trenajyori",
+      "subtitle": "Rus tili, tarix va huquq"
+    },
+    "intro": {
+      "description": "Patent yoki yashash ruxsatnomasi olish uchun imtihonga tayyorlaning. Rus tili, Rossiya tarixi va qonunchilik asoslari bo'yicha bilimlaringizni tekshiring."
+    },
+    "modes": {
+      "selectLabel": "Test rejimi:",
+      "practice": {
+        "label": "Mashq",
+        "description": "Vaqt cheklovisiz, har bir javobdan keyin tushuntirish"
+      },
+      "exam": {
+        "label": "Imtihon",
+        "description": "30 daqiqalik taymer, tushuntirishlar faqat oxirida"
+      },
+      "learning": {
+        "label": "O'rganish",
+        "description": "Maslahatlar va batafsil tushuntirishlar bilan"
+      }
+    },
+    "difficulty": {
+      "selectLabel": "Qiyinlik darajasi:",
+      "all": "Barchasi",
+      "easy": "Oson",
+      "medium": "O'rtacha",
+      "hard": "Qiyin"
+    },
+    "categories": {
+      "selectLabel": "Kategoriyani tanlang:",
+      "all": "Barcha savollar",
+      "russian_language": "Rus tili",
+      "history": "Rossiya tarixi",
+      "law": "Qonunchilik asoslari",
+      "questionsCount": "{count} ta savol"
+    },
+    "info": {
+      "passingScore": "O'tish bali",
+      "passingScoreValue": "70%",
+      "time": "Vaqt",
+      "timeExam": "30 daq",
+      "timeRegular": "~5 daq"
+    },
+    "progress": {
+      "streak": "Ketma-ket kunlar",
+      "streakDay": "{count} kun",
+      "streakDays": "{count} kun",
+      "total": "Jami: {count} ta savol",
+      "correct": "{count} ta to'g'ri ({percent}%)"
+    },
+    "achievements": {
+      "firstTest": "Birinchi test",
+      "perfectScore": "100% natija",
+      "weekStreak": "7 kun ketma-ket",
+      "hundredQuestions": "100 ta savol"
+    },
+    "buttons": {
+      "start": "Testni boshlash",
+      "loading": "Savollar yuklanmoqda...",
+      "next": "Keyingi savol",
+      "prev": "Orqaga",
+      "finish": "Testni yakunlash",
+      "finishEarly": "Muddatidan oldin tugatish",
+      "restart": "Qaytadan urinib ko'rish",
+      "close": "Yopish",
+      "exitToMenu": "← Menyuga chiqish",
+      "continue": "Davom etish"
+    },
+    "test": {
+      "questionOf": "{total} tadan {current}-savol",
+      "points": "Ball: {count}",
+      "pause": "Pauza",
+      "paused": "Test to'xtatildi",
+      "timerStopped": "Taymer to'xtatildi"
+    },
+    "results": {
+      "completed": "Test yakunlandi!",
+      "excellent": "A'lo! Barcha javoblar to'g'ri!",
+      "passed": "Yaxshi natija! Siz testdan o'tdingiz.",
+      "almostPassed": "Yomon emas, lekin o'tish uchun 70% kerak",
+      "needPractice": "Ko'proq mashq qilish kerak. O'tish uchun 70% kerak",
+      "passingThreshold": "O'tish bali: 70% ({total} tadan {required} ta)"
+    },
+    "errors": {
+      "offline": "{count} ta savol oflayn rejimda mavjud",
+      "loadError": "Yuklash xatosi. Internet ulanishini tekshiring.",
+      "offlineMode": "Ulanish yo'q. Oflayn rejim ishlatilmoqda."
+    },
+    "hints": {
+      "correct": "To'g'ri!",
+      "explanation": "Tushuntirish:",
+      "hint": "💡 Maslahat: Ushbu mavzu bilan bog'liq asosiy tushunchalar haqida o'ylang."
+    }
   }
 }

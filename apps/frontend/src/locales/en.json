@@ -1811,5 +1811,101 @@
       "allCategories": "All Categories",
       "startButton": "Start Test"
     }
+  },
+  "examTrainer": {
+    "header": {
+      "title": "Exam Trainer",
+      "subtitle": "Russian Language, History & Law"
+    },
+    "intro": {
+      "description": "Prepare for the exam to obtain a work patent or residence permit. Test your knowledge of Russian language, Russian history, and legal fundamentals."
+    },
+    "modes": {
+      "selectLabel": "Test mode:",
+      "practice": {
+        "label": "Practice",
+        "description": "No timer, explanations after each answer"
+      },
+      "exam": {
+        "label": "Exam",
+        "description": "30-minute timer, explanations only at the end"
+      },
+      "learning": {
+        "label": "Learning",
+        "description": "With hints and detailed explanations"
+      }
+    },
+    "difficulty": {
+      "selectLabel": "Difficulty:",
+      "all": "All",
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "categories": {
+      "selectLabel": "Select category:",
+      "all": "All questions",
+      "russian_language": "Russian Language",
+      "history": "Russian History",
+      "law": "Legal Fundamentals",
+      "questionsCount": "{count} questions"
+    },
+    "info": {
+      "passingScore": "Passing score",
+      "passingScoreValue": "70%",
+      "time": "Time",
+      "timeExam": "30 min",
+      "timeRegular": "~5 min"
+    },
+    "progress": {
+      "streak": "Day streak",
+      "streakDay": "{count} day",
+      "streakDays": "{count} days",
+      "total": "Total: {count} questions",
+      "correct": "{count} correct ({percent}%)"
+    },
+    "achievements": {
+      "firstTest": "First test",
+      "perfectScore": "Perfect score",
+      "weekStreak": "7-day streak",
+      "hundredQuestions": "100 questions"
+    },
+    "buttons": {
+      "start": "Start test",
+      "loading": "Loading questions...",
+      "next": "Next question",
+      "prev": "Back",
+      "finish": "Finish test",
+      "finishEarly": "Finish early",
+      "restart": "Try again",
+      "close": "Close",
+      "exitToMenu": "← Exit to menu",
+      "continue": "Continue"
+    },
+    "test": {
+      "questionOf": "Question {current} of {total}",
+      "points": "Points: {count}",
+      "pause": "Pause",
+      "paused": "Test paused",
+      "timerStopped": "Timer stopped"
+    },
+    "results": {
+      "completed": "Test completed!",
+      "excellent": "Excellent! All answers correct!",
+      "passed": "Good result! You passed the test.",
+      "almostPassed": "Not bad, but you need 70% to pass",
+      "needPractice": "More practice needed. You need 70% to pass",
+      "passingThreshold": "Passing score: 70% ({required} of {total})"
+    },
+    "errors": {
+      "offline": "{count} questions available offline",
+      "loadError": "Loading error. Check your internet connection.",
+      "offlineMode": "No connection. Using offline mode."
+    },
+    "hints": {
+      "correct": "Correct!",
+      "explanation": "Explanation:",
+      "hint": "💡 Hint: Think about the key concepts related to this topic."
+    }
   }
 }
