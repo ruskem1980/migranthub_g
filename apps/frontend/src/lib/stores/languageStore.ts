@@ -6,6 +6,18 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 // 5 supported languages
 export type Language = 'ru' | 'en' | 'uz' | 'tg' | 'ky';
 
+const LOCALE_COOKIE_NAME = 'NEXT_LOCALE';
+const COOKIE_MAX_AGE = 365 * 24 * 60 * 60; // 1 year in seconds
+
+/**
+ * Sets NEXT_LOCALE cookie for SSR locale detection
+ */
+function setLocaleCookie(language: Language): void {
+  if (typeof document !== 'undefined') {
+    document.cookie = `${LOCALE_COOKIE_NAME}=${language}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
+  }
+}
+
 export interface LanguageInfo {
   code: Language;
   name: string;
@@ -40,7 +52,10 @@ export const useLanguageStore = create<LanguageState>()(
       language: 'ru',
       _hasHydrated: false,
 
-      setLanguage: (language) => set({ language }),
+      setLanguage: (language) => {
+        setLocaleCookie(language);
+        set({ language });
+      },
 
       setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),
@@ -51,7 +66,11 @@ export const useLanguageStore = create<LanguageState>()(
         language: state.language,
       }),
       onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true);
+        if (state) {
+          state.setHasHydrated(true);
+          // Sync cookie with localStorage on hydration
+          setLocaleCookie(state.language);
+        }
       },
     }
   )

@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { GraduationCap, X, ChevronRight, ChevronLeft, CheckCircle, XCircle, RotateCcw, Trophy, BookOpen, Clock, Target, Play, Scale, Loader2, AlertCircle, WifiOff, Pause, PlayCircle, Flame, Award, Zap, Brain, Timer, ChevronDown } from 'lucide-react';
-import { useLanguageStore, LANGUAGES, type Language } from '@/lib/i18n';
+import { LANGUAGES } from '@/lib/i18n';
+import { useLanguagePreference } from '@/hooks/useLanguagePreference';
 import { useExamStore } from '@/features/exam/stores/examStore';
 import type { Question, Answer, ExamProgress } from '@/features/exam/types';
 import {
@@ -114,9 +115,8 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
   // Переводы
   const t = useTranslations('examTrainer');
 
-  // Язык интерфейса (глобальный store)
-  const selectedLanguage = useLanguageStore((state) => state.language);
-  const setLanguage = useLanguageStore((state) => state.setLanguage);
+  // Язык интерфейса (с персистентностью в localStorage и cookie)
+  const { language: selectedLanguage, setLanguage } = useLanguagePreference();
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
 
   // Локальный state для выбора категории (до начала теста)
@@ -994,7 +994,7 @@ export function ExamTrainer({ onClose }: ExamTrainerProps) {
             <div className="flex items-center justify-between mt-2">
               {/* Выход в главное меню */}
               <button
-                onClick={handleRestart}
+                onClick={onClose}
                 className="py-2 px-3 text-sm text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
               >
                 {t('buttons.exitToMenu')}
