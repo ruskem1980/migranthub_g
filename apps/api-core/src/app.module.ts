@@ -21,6 +21,7 @@ import mvdConfig from './config/mvd.config';
 import patentCheckConfig from './config/patent-check.config';
 import innCheckConfig from './config/inn-check.config';
 import entryBanConfig from './config/entry-ban.config';
+import permitStatusConfig from './config/permit-status.config';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import entryBanConfig from './config/entry-ban.config';
         patentCheckConfig,
         innCheckConfig,
         entryBanConfig,
+        permitStatusConfig,
       ],
       envFilePath: ['.env.local', '.env'],
     }),

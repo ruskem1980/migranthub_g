@@ -1,4 +1,4 @@
-import { IsEnum, IsString, IsDateString, IsOptional } from 'class-validator';
+import { IsEnum, IsString, IsDateString, IsOptional, IsNotEmpty, Length } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum PermitType {
@@ -9,35 +9,64 @@ export enum PermitType {
 export class CheckPermitDto {
   @ApiProperty({ enum: PermitType, description: 'Тип разрешения: RVP или VNJ' })
   @IsEnum(PermitType)
-  permitType: PermitType;
+  permitType!: PermitType;
 
-  @ApiProperty({ description: 'Код региона подачи заявления (например, "77" для Москвы)' })
+  @ApiProperty({
+    description: 'Код региона подачи заявления (например, "77" для Москвы)',
+    example: '77',
+  })
   @IsString()
-  region: string;
+  @IsNotEmpty()
+  @Length(1, 10)
+  region!: string;
 
-  @ApiProperty({ description: 'Дата подачи заявления в формате YYYY-MM-DD' })
+  @ApiProperty({
+    description: 'Дата подачи заявления в формате YYYY-MM-DD',
+    example: '2024-01-15',
+  })
   @IsDateString()
-  applicationDate: string;
+  applicationDate!: string;
 
-  @ApiPropertyOptional({ description: 'Номер заявления (если известен)' })
+  @ApiPropertyOptional({
+    description: 'Номер заявления (если известен)',
+    example: '123456789',
+  })
   @IsString()
   @IsOptional()
+  @Length(1, 50)
   applicationNumber?: string;
 
-  @ApiProperty({ description: 'Фамилия заявителя (латиница)' })
+  @ApiProperty({
+    description: 'Фамилия заявителя (латиница)',
+    example: 'IVANOV',
+  })
   @IsString()
-  lastName: string;
+  @IsNotEmpty()
+  @Length(1, 100)
+  lastName!: string;
 
-  @ApiProperty({ description: 'Имя заявителя (латиница)' })
+  @ApiProperty({
+    description: 'Имя заявителя (латиница)',
+    example: 'IVAN',
+  })
   @IsString()
-  firstName: string;
+  @IsNotEmpty()
+  @Length(1, 100)
+  firstName!: string;
 
-  @ApiPropertyOptional({ description: 'Отчество заявителя (латиница)' })
+  @ApiPropertyOptional({
+    description: 'Отчество заявителя (латиница)',
+    example: 'PETROVICH',
+  })
   @IsString()
   @IsOptional()
+  @Length(1, 100)
   middleName?: string;
 
-  @ApiProperty({ description: 'Дата рождения в формате YYYY-MM-DD' })
+  @ApiProperty({
+    description: 'Дата рождения в формате YYYY-MM-DD',
+    example: '1990-01-15',
+  })
   @IsDateString()
-  birthDate: string;
+  birthDate!: string;
 }

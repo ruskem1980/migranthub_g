@@ -11,21 +11,37 @@ export enum PermitStatusEnum {
 }
 
 export class PermitStatusResponseDto {
-  @ApiProperty({ description: 'Найдено ли заявление' })
-  found: boolean;
+  @ApiProperty({ description: 'Найдено ли заявление', example: true })
+  found!: boolean;
 
-  @ApiProperty({ enum: PermitStatusEnum, description: 'Статус заявления' })
-  status: PermitStatusEnum;
+  @ApiProperty({
+    enum: PermitStatusEnum,
+    description: 'Статус заявления',
+    example: PermitStatusEnum.PENDING,
+  })
+  status!: PermitStatusEnum;
 
-  @ApiProperty({ description: 'Текст ответа со страницы' })
-  message: string;
+  @ApiProperty({
+    description: 'Текст ответа со страницы',
+    example: 'Ваше заявление находится на рассмотрении',
+  })
+  message!: string;
 
-  @ApiPropertyOptional({ description: 'Примерная дата готовности (если указана)' })
+  @ApiPropertyOptional({
+    description: 'Примерная дата готовности (если указана)',
+    example: '2024-03-15',
+  })
   estimatedDate?: string;
 
-  @ApiProperty({ description: 'Дата и время проверки' })
-  checkedAt: string;
+  @ApiProperty({
+    description: 'Дата и время проверки',
+    example: '2024-01-29T12:00:00.000Z',
+  })
+  checkedAt!: string;
 
-  @ApiPropertyOptional({ description: 'Сообщение об ошибке (если есть)' })
+  @ApiPropertyOptional({
+    description: 'Сообщение об ошибке (если есть)',
+    example: 'Сервис временно недоступен',
+  })
   error?: string;
 }

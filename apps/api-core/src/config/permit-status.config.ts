@@ -3,13 +3,11 @@ import { registerAs } from '@nestjs/config';
 export default registerAs('permitStatus', () => ({
   // URL сервиса ФМС для проверки РВП (sid=2060)
   serviceUrlRvp:
-    process.env.PERMIT_STATUS_RVP_URL ||
-    'https://services.fms.gov.ru/info-service.htm?sid=2060',
+    process.env.PERMIT_STATUS_RVP_URL || 'https://services.fms.gov.ru/info-service.htm?sid=2060',
 
   // URL сервиса ФМС для проверки ВНЖ (sid=2070)
   serviceUrlVnj:
-    process.env.PERMIT_STATUS_VNJ_URL ||
-    'https://services.fms.gov.ru/info-service.htm?sid=2070',
+    process.env.PERMIT_STATUS_VNJ_URL || 'https://services.fms.gov.ru/info-service.htm?sid=2070',
 
   // Включение реальных запросов (false = только mock)
   enabled: process.env.PERMIT_STATUS_ENABLED === 'true',
