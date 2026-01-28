@@ -8,10 +8,7 @@ import { PatentService } from './patent/patent.service';
 import { PatentCheckService } from './patent/patent-check.service';
 import { InnCheckController } from './inn-check/inn-check.controller';
 import { InnCheckService } from './inn-check/inn-check.service';
-import {
-  BrowserService,
-  CaptchaSolverService,
-} from '../../common/services';
+import { BrowserService, CaptchaSolverService } from '../../common/services';
 
 @Module({
   controllers: [BanCheckController, PatentController, InnCheckController],

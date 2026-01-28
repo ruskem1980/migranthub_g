@@ -1,12 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsString,
-  IsDateString,
-  Length,
-  IsNotEmpty,
-  IsOptional,
-  IsEnum,
-} from 'class-validator';
+import { IsString, IsDateString, Length, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
 
 /**
  * Источник для проверки запрета на въезд

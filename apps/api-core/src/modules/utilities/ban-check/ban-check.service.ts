@@ -108,9 +108,7 @@ export class BanCheckService {
       // Кэшируем успешный результат
       await this.saveToCache(cacheKey, response, this.mvdCacheTtl);
 
-      this.logger.log(
-        `Результат проверки МВД: ${response.status} для ${query.lastName}`,
-      );
+      this.logger.log(`Результат проверки МВД: ${response.status} для ${query.lastName}`);
       return response;
     } catch (error) {
       this.logger.error(
@@ -165,9 +163,7 @@ export class BanCheckService {
       // Кэшируем успешный результат
       await this.saveToCache(cacheKey, response, this.fmsCacheTtl);
 
-      this.logger.log(
-        `Результат проверки ФМС: ${response.status} для ${query.lastName}`,
-      );
+      this.logger.log(`Результат проверки ФМС: ${response.status} для ${query.lastName}`);
       return response;
     } catch (error) {
       this.logger.error(
@@ -216,9 +212,7 @@ export class BanCheckService {
   /**
    * Получение результата из кэша
    */
-  private async getFromCache(
-    key: string,
-  ): Promise<BanCheckResponseDto | null> {
+  private async getFromCache(key: string): Promise<BanCheckResponseDto | null> {
     try {
       return await this.cacheService.get<BanCheckResponseDto>(key);
     } catch (error) {

@@ -3,17 +3,27 @@ import { ConfigService } from '@nestjs/config';
 import { BanCheckService } from './ban-check.service';
 import { CacheService } from '../../cache/cache.service';
 import { MvdClient } from './mvd.client';
-import { BanStatus, BanCheckSource } from './dto';
+import { FmsClient } from './fms.client';
+import { BanStatus, BanCheckSource, BanCheckSourceRequest, BanType } from './dto';
 
 describe('BanCheckService', () => {
   let service: BanCheckService;
   let cacheService: jest.Mocked<CacheService>;
   let mvdClient: jest.Mocked<MvdClient>;
+  let fmsClient: jest.Mocked<FmsClient>;
 
   const mockQuery = {
     lastName: 'Иванов',
     firstName: 'Иван',
     birthDate: '1990-01-01',
+  };
+
+  const mockFmsQuery = {
+    lastName: 'IVANOV',
+    firstName: 'IVAN',
+    birthDate: '1990-01-01',
+    citizenship: 'UZB',
+    source: BanCheckSourceRequest.FMS,
   };
 
   const mockCachedResponse = {
@@ -23,6 +33,10 @@ describe('BanCheckService', () => {
   };
 
   const mockMvdResult = {
+    hasBan: false,
+  };
+
+  const mockFmsResult = {
     hasBan: false,
   };
 
@@ -50,12 +64,20 @@ describe('BanCheckService', () => {
             checkBan: jest.fn(),
           },
         },
+        {
+          provide: FmsClient,
+          useValue: {
+            isEnabled: jest.fn(),
+            checkBan: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<BanCheckService>(BanCheckService);
     cacheService = module.get(CacheService);
     mvdClient = module.get(MvdClient);
+    fmsClient = module.get(FmsClient);
   });
 
   afterEach(() => {
@@ -193,6 +215,102 @@ describe('BanCheckService', () => {
       const result = await service.checkBan(mockQuery);
 
       expect(result.status).toBe(BanStatus.NO_BAN);
+    });
+  });
+
+  describe('checkBan with FMS source', () => {
+    it('should throw BadRequestException if FMS source without citizenship', async () => {
+      const queryWithoutCitizenship = {
+        lastName: 'IVANOV',
+        firstName: 'IVAN',
+        birthDate: '1990-01-01',
+        source: BanCheckSourceRequest.FMS,
+      };
+
+      await expect(service.checkBan(queryWithoutCitizenship)).rejects.toThrow(
+        'Citizenship is required for FMS source',
+      );
+    });
+
+    it('should call FmsClient when source is FMS', async () => {
+      cacheService.get.mockResolvedValue(null);
+      fmsClient.isEnabled.mockReturnValue(true);
+      fmsClient.checkBan.mockResolvedValue(mockFmsResult);
+
+      const result = await service.checkBan(mockFmsQuery);
+
+      expect(fmsClient.checkBan).toHaveBeenCalledWith(mockFmsQuery);
+      expect(result.status).toBe(BanStatus.NO_BAN);
+      expect(result.source).toBe(BanCheckSource.FMS);
+    });
+
+    it('should return cached result for FMS', async () => {
+      const cachedFmsResponse = {
+        status: BanStatus.NO_BAN,
+        source: BanCheckSource.FMS,
+        checkedAt: '2024-01-15T10:00:00.000Z',
+      };
+      cacheService.get.mockResolvedValue(cachedFmsResponse);
+
+      const result = await service.checkBan(mockFmsQuery);
+
+      expect(cacheService.get).toHaveBeenCalled();
+      expect(result.status).toBe(BanStatus.NO_BAN);
+      expect(result.source).toBe(BanCheckSource.CACHE);
+      expect(fmsClient.checkBan).not.toHaveBeenCalled();
+    });
+
+    it('should return UNKNOWN when FMS is disabled', async () => {
+      cacheService.get.mockResolvedValue(null);
+      fmsClient.isEnabled.mockReturnValue(false);
+
+      const result = await service.checkBan(mockFmsQuery);
+
+      expect(result.status).toBe(BanStatus.UNKNOWN);
+      expect(result.source).toBe(BanCheckSource.FALLBACK);
+      expect(fmsClient.checkBan).not.toHaveBeenCalled();
+    });
+
+    it('should return UNKNOWN on FmsClient error', async () => {
+      cacheService.get.mockResolvedValue(null);
+      fmsClient.isEnabled.mockReturnValue(true);
+      fmsClient.checkBan.mockRejectedValue(new Error('FMS service unavailable'));
+
+      const result = await service.checkBan(mockFmsQuery);
+
+      expect(result.status).toBe(BanStatus.UNKNOWN);
+      expect(result.source).toBe(BanCheckSource.FALLBACK);
+      expect(result.error).toBeDefined();
+    });
+
+    it('should return HAS_BAN with banType when FmsClient returns ban', async () => {
+      cacheService.get.mockResolvedValue(null);
+      fmsClient.isEnabled.mockReturnValue(true);
+      fmsClient.checkBan.mockResolvedValue({
+        hasBan: true,
+        banType: BanType.ADMINISTRATIVE,
+        reason: 'Административное выдворение',
+        expiresAt: '2025-12-31',
+      });
+
+      const result = await service.checkBan(mockFmsQuery);
+
+      expect(result.status).toBe(BanStatus.HAS_BAN);
+      expect(result.banType).toBe(BanType.ADMINISTRATIVE);
+      expect(result.reason).toBe('Административное выдворение');
+      expect(result.expiresAt).toBe('2025-12-31');
+    });
+
+    it('should use MVD by default when source not specified', async () => {
+      cacheService.get.mockResolvedValue(null);
+      mvdClient.isEnabled.mockReturnValue(true);
+      mvdClient.checkBan.mockResolvedValue(mockMvdResult);
+
+      const result = await service.checkBan(mockQuery);
+
+      expect(mvdClient.checkBan).toHaveBeenCalled();
+      expect(fmsClient.checkBan).not.toHaveBeenCalled();
+      expect(result.source).toBe(BanCheckSource.MVD);
     });
   });
 });

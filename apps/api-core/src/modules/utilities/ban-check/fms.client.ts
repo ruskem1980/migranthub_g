@@ -62,10 +62,7 @@ export class FmsClient implements OnModuleInit {
     );
     this.enabled = this.configService.get<boolean>('entryBan.enabled', false);
     this.timeout = this.configService.get<number>('entryBan.timeout', 30000);
-    this.retryAttempts = this.configService.get<number>(
-      'entryBan.retryAttempts',
-      3,
-    );
+    this.retryAttempts = this.configService.get<number>('entryBan.retryAttempts', 3);
     this.retryDelay = this.configService.get<number>('entryBan.retryDelay', 2000);
     this.circuitBreakerThreshold = this.configService.get<number>(
       'entryBan.circuitBreakerThreshold',
@@ -78,9 +75,7 @@ export class FmsClient implements OnModuleInit {
   }
 
   onModuleInit(): void {
-    this.logger.log(
-      `FmsClient initialized: enabled=${this.enabled}, url=${this.serviceUrl}`,
-    );
+    this.logger.log(`FmsClient initialized: enabled=${this.enabled}, url=${this.serviceUrl}`);
   }
 
   /**
@@ -216,9 +211,7 @@ export class FmsClient implements OnModuleInit {
     }
 
     // Альтернативный вариант - input для гражданства
-    const citizenshipInput = await page.$(
-      'input[name="gra"], input[name="citizenship"], #gra',
-    );
+    const citizenshipInput = await page.$('input[name="gra"], input[name="citizenship"], #gra');
     if (citizenshipInput && query.citizenship) {
       await citizenshipInput.fill(query.citizenship);
     }
@@ -303,15 +296,15 @@ export class FmsClient implements OnModuleInit {
   private parseResult(html: string): FmsCheckResult {
     const normalizedHtml = html.toLowerCase();
 
-    // Индикаторы наличия запрета
+    // Индикаторы наличия запрета (порядок важен - более специфичные паттерны первыми)
     const banIndicators = [
-      { pattern: 'въезд не разрешен', type: BanType.ADMINISTRATIVE },
-      { pattern: 'запрет на въезд', type: BanType.ADMINISTRATIVE },
+      { pattern: 'уголовн', type: BanType.CRIMINAL },
+      { pattern: 'санитарн', type: BanType.SANITARY },
       { pattern: 'нежелательность пребывания', type: BanType.SANITARY },
       { pattern: 'административное выдворение', type: BanType.ADMINISTRATIVE },
       { pattern: 'депортация', type: BanType.ADMINISTRATIVE },
-      { pattern: 'уголовное', type: BanType.CRIMINAL },
-      { pattern: 'санитарн', type: BanType.SANITARY },
+      { pattern: 'въезд не разрешен', type: BanType.ADMINISTRATIVE },
+      { pattern: 'запрет на въезд', type: BanType.ADMINISTRATIVE },
     ];
 
     // Индикаторы отсутствия запрета
@@ -347,9 +340,7 @@ export class FmsClient implements OnModuleInit {
     }
 
     // Если не удалось определить - считаем что запрета нет
-    this.logger.warn(
-      'Could not determine entry ban status, assuming no ban',
-    );
+    this.logger.warn('Could not determine entry ban status, assuming no ban');
     return { hasBan: false };
   }
 
@@ -450,9 +441,7 @@ export class FmsClient implements OnModuleInit {
       this.logger.warn('Circuit breaker opened after failed probe request');
     } else if (this.failureCount >= this.circuitBreakerThreshold) {
       this.circuitState = CircuitState.OPEN;
-      this.logger.warn(
-        `Circuit breaker opened after ${this.failureCount} failures`,
-      );
+      this.logger.warn(`Circuit breaker opened after ${this.failureCount} failures`);
     }
   }
 

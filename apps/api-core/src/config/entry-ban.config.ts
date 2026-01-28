@@ -19,10 +19,7 @@ export default registerAs('entryBan', () => ({
   retryDelay: parseInt(process.env.ENTRY_BAN_FMS_RETRY_DELAY || '2000', 10),
 
   // Circuit breaker: порог ошибок для открытия
-  circuitBreakerThreshold: parseInt(
-    process.env.ENTRY_BAN_FMS_CIRCUIT_BREAKER_THRESHOLD || '5',
-    10,
-  ),
+  circuitBreakerThreshold: parseInt(process.env.ENTRY_BAN_FMS_CIRCUIT_BREAKER_THRESHOLD || '5', 10),
 
   // Circuit breaker: время восстановления в миллисекундах
   circuitBreakerResetTime: parseInt(
@@ -31,23 +28,14 @@ export default registerAs('entryBan', () => ({
   ),
 
   // TTL кэша результатов в миллисекундах (24 часа)
-  cacheTtl: parseInt(
-    process.env.ENTRY_BAN_FMS_CACHE_TTL || String(24 * 60 * 60 * 1000),
-    10,
-  ),
+  cacheTtl: parseInt(process.env.ENTRY_BAN_FMS_CACHE_TTL || String(24 * 60 * 60 * 1000), 10),
 
   // Настройки браузера (Playwright)
   browser: {
     headless: process.env.BROWSER_HEADLESS !== 'false',
     // Таймаут навигации
-    navigationTimeout: parseInt(
-      process.env.BROWSER_NAVIGATION_TIMEOUT || '30000',
-      10,
-    ),
+    navigationTimeout: parseInt(process.env.BROWSER_NAVIGATION_TIMEOUT || '30000', 10),
     // Таймаут ожидания селектора
-    selectorTimeout: parseInt(
-      process.env.BROWSER_SELECTOR_TIMEOUT || '10000',
-      10,
-    ),
+    selectorTimeout: parseInt(process.env.BROWSER_SELECTOR_TIMEOUT || '10000', 10),
   },
 }));

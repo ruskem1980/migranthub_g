@@ -27,7 +27,16 @@ import entryBanConfig from './config/entry-ban.config';
     // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, jwtConfig, redisConfig, mvdConfig, patentCheckConfig, innCheckConfig, entryBanConfig],
+      load: [
+        appConfig,
+        databaseConfig,
+        jwtConfig,
+        redisConfig,
+        mvdConfig,
+        patentCheckConfig,
+        innCheckConfig,
+        entryBanConfig,
+      ],
       envFilePath: ['.env.local', '.env'],
     }),
 
