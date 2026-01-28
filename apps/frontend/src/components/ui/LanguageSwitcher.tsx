@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Globe, Check, ChevronDown } from 'lucide-react';
 import { useTranslation, Language, LANGUAGES } from '@/lib/i18n';
 
@@ -12,8 +12,37 @@ interface LanguageSwitcherProps {
 export function LanguageSwitcher({ variant = 'dropdown', className = '' }: LanguageSwitcherProps) {
   const { language, setLanguage, getLanguageInfo } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const currentLang = getLanguageInfo(language);
+
+  // Avoid hydration mismatch - render placeholder until client-side mounted
+  if (!isMounted) {
+    if (variant === 'compact') {
+      return (
+        <div className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 ${className}`}>
+          <span className="text-lg">🌐</span>
+          <span className="text-sm font-medium">...</span>
+          <ChevronDown className="w-4 h-4" />
+        </div>
+      );
+    }
+    if (variant === 'list') {
+      return <div className={`grid grid-cols-2 gap-2 h-[200px] ${className}`} />;
+    }
+    return (
+      <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 bg-white ${className}`}>
+        <Globe className="w-5 h-5 text-gray-600" />
+        <span className="text-lg">🌐</span>
+        <span className="font-medium">...</span>
+        <ChevronDown className="w-4 h-4 text-gray-400" />
+      </div>
+    );
+  }
 
   const handleSelect = (code: Language) => {
     setLanguage(code);

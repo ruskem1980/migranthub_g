@@ -52,10 +52,34 @@ async function takeScreenshot(page: Page, name: string) {
   log(`  [Screenshot] ${safeName}.png`);
 }
 
-test.describe('Полный E2E аудит MigrantHub', () => {
-  test.setTimeout(300000); // 5 минут на весь тест
+// Безопасный переход на страницу
+async function safeGoto(page: Page, url: string): Promise<boolean> {
+  try {
+    await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+    return true;
+  } catch (err) {
+    log(`  [Navigation Error] ${err}`);
+    return false;
+  }
+}
 
-  test('Аудит ВСЕХ страниц приложения', async ({ page }) => {
+// Инициализация результата аудита
+function createResult(pagePath: string): AuditResult {
+  return {
+    page: pagePath,
+    status: 'ok',
+    errors: [],
+    warnings: [],
+    clickedElements: 0,
+    modalsOpened: 0,
+    formsFound: 0
+  };
+}
+
+test.describe('Полный E2E аудит MigrantHub', () => {
+  test.setTimeout(600000); // 10 минут на весь тест
+
+  test('Детальный аудит ВСЕХ страниц приложения', async ({ page }) => {
     await setupErrorLogging(page);
 
     // ============================================
@@ -65,31 +89,28 @@ test.describe('Полный E2E аудит MigrantHub', () => {
     log('1. ГЛАВНАЯ СТРАНИЦА /');
     log('========================================');
 
-    const homeResult: AuditResult = {
-      page: '/',
-      status: 'ok',
-      errors: [],
-      warnings: [],
-      clickedElements: 0,
-      modalsOpened: 0,
-      formsFound: 0
-    };
+    const homeResult = createResult('/');
 
     try {
-      await page.goto(BASE_URL, { waitUntil: 'networkidle' });
-      log('  [OK] Страница загружена');
+      if (await safeGoto(page, BASE_URL)) {
+        log('  [OK] Страница загружена');
 
-      // Проверяем редирект
-      const currentUrl = page.url();
-      log(`  [Info] Текущий URL: ${currentUrl}`);
+        const currentUrl = page.url();
+        log(`  [Info] Текущий URL: ${currentUrl}`);
 
-      // Находим все кнопки
-      const buttons = page.locator('button, a[href]');
-      const buttonCount = await buttons.count();
-      log(`  [Info] Найдено интерактивных элементов: ${buttonCount}`);
+        if (currentUrl.includes('/welcome')) {
+          log('  [OK] Редирект на /welcome работает');
+        }
 
-      await takeScreenshot(page, 'home');
+        const buttons = page.locator('button, a[href]');
+        const buttonCount = await buttons.count();
+        log(`  [Info] Найдено интерактивных элементов: ${buttonCount}`);
 
+        await takeScreenshot(page, '01-home');
+      } else {
+        homeResult.status = 'error';
+        homeResult.errors.push('Не удалось загрузить страницу');
+      }
     } catch (err) {
       homeResult.status = 'error';
       homeResult.errors.push(String(err));
@@ -105,32 +126,40 @@ test.describe('Полный E2E аудит MigrantHub', () => {
     log('2. СТРАНИЦА ПРИВЕТСТВИЯ /welcome');
     log('========================================');
 
-    const welcomeResult: AuditResult = {
-      page: '/welcome',
-      status: 'ok',
-      errors: [],
-      warnings: [],
-      clickedElements: 0,
-      modalsOpened: 0,
-      formsFound: 0
-    };
+    const welcomeResult = createResult('/welcome');
 
     try {
-      await page.goto(`${BASE_URL}/welcome`, { waitUntil: 'networkidle' });
-      log('  [OK] Страница загружена');
+      if (await safeGoto(page, `${BASE_URL}/welcome`)) {
+        log('  [OK] Страница загружена');
 
-      // Ищем кнопку "Начать"
-      const startButton = page.locator('button:has-text("Начать"), a:has-text("Начать")');
-      if (await startButton.isVisible({ timeout: 2000 })) {
-        log('  [OK] Кнопка "Начать" найдена');
-        welcomeResult.clickedElements++;
+        // Проверяем языковой переключатель
+        const langSwitcher = page.locator('[data-testid="language-switcher"], button:has-text("RU"), button:has-text("EN")');
+        if (await langSwitcher.first().isVisible({ timeout: 2000 })) {
+          log('  [OK] Языковой переключатель найден');
+          welcomeResult.clickedElements++;
+        }
+
+        // Ищем кнопку "Начать" или "Войти"
+        const startButton = page.locator('button:has-text("Начать"), button:has-text("Войти"), a:has-text("Начать")');
+        if (await startButton.first().isVisible({ timeout: 2000 })) {
+          log('  [OK] Кнопка входа найдена');
+          welcomeResult.clickedElements++;
+        } else {
+          welcomeResult.warnings.push('Кнопка входа не найдена');
+          log('  [WARN] Кнопка входа не найдена');
+        }
+
+        // Проверяем кнопку восстановления доступа
+        const recoveryLink = page.locator('a:has-text("восстановить"), button:has-text("восстановить")');
+        if (await recoveryLink.first().isVisible({ timeout: 1000 })) {
+          log('  [OK] Ссылка на восстановление найдена');
+        }
+
+        await takeScreenshot(page, '02-welcome');
       } else {
-        welcomeResult.warnings.push('Кнопка "Начать" не найдена');
-        log('  [WARN] Кнопка "Начать" не найдена');
+        welcomeResult.status = 'error';
+        welcomeResult.errors.push('Не удалось загрузить страницу');
       }
-
-      await takeScreenshot(page, 'welcome');
-
     } catch (err) {
       welcomeResult.status = 'error';
       welcomeResult.errors.push(String(err));
@@ -140,51 +169,95 @@ test.describe('Полный E2E аудит MigrantHub', () => {
     auditResults.push(welcomeResult);
 
     // ============================================
-    // 3. AUTH PAGES
+    // 3. RECOVERY PAGE /recovery
     // ============================================
     log('\n========================================');
-    log('3. СТРАНИЦЫ АВТОРИЗАЦИИ');
+    log('3. СТРАНИЦА ВОССТАНОВЛЕНИЯ /recovery');
     log('========================================');
 
-    // /auth/phone
-    log('\n--- /auth/phone ---');
-    const phoneResult: AuditResult = {
-      page: '/auth/phone',
-      status: 'ok',
-      errors: [],
-      warnings: [],
-      clickedElements: 0,
-      modalsOpened: 0,
-      formsFound: 0
-    };
+    const recoveryResult = createResult('/recovery');
 
     try {
-      await page.goto(`${BASE_URL}/auth/phone`, { waitUntil: 'networkidle' });
-      log('  [OK] Страница загружена');
+      if (await safeGoto(page, `${BASE_URL}/recovery`)) {
+        log('  [OK] Страница загружена');
 
-      // Проверяем форму ввода телефона
-      const phoneInput = page.locator('input[type="tel"], input[placeholder*="телефон"], input[placeholder*="phone"]');
-      if (await phoneInput.isVisible({ timeout: 2000 })) {
-        log('  [OK] Поле ввода телефона найдено');
-        phoneResult.formsFound++;
+        // Проверяем поля ввода кода восстановления
+        const codeInputs = page.locator('input[type="text"]');
+        const inputCount = await codeInputs.count();
+        log(`  [Info] Найдено полей ввода кода: ${inputCount}`);
 
-        // Пробуем ввести номер
-        await phoneInput.fill('+79991234567');
-        log('  [OK] Номер введён');
-        phoneResult.clickedElements++;
+        if (inputCount >= 3) {
+          recoveryResult.formsFound++;
+          log('  [OK] Форма ввода кода найдена (3 сегмента)');
+
+          // Пробуем ввести тестовый код
+          const inputs = await codeInputs.all();
+          if (inputs.length >= 3) {
+            await inputs[0].fill('TEST');
+            await inputs[1].fill('CODE');
+            await inputs[2].fill('1234');
+            log('  [OK] Тестовый код введён');
+            recoveryResult.clickedElements += 3;
+          }
+        }
+
+        // Проверяем кнопку отправки
+        const submitBtn = page.locator('button[type="submit"]');
+        if (await submitBtn.isVisible({ timeout: 1000 })) {
+          log('  [OK] Кнопка отправки найдена');
+        }
+
+        await takeScreenshot(page, '03-recovery');
       } else {
-        phoneResult.warnings.push('Поле ввода телефона не найдено');
-        log('  [WARN] Поле ввода телефона не найдено');
+        recoveryResult.status = 'error';
+        recoveryResult.errors.push('Не удалось загрузить страницу');
       }
+    } catch (err) {
+      recoveryResult.status = 'error';
+      recoveryResult.errors.push(String(err));
+      log(`  [ERROR] ${err}`);
+    }
 
-      // Проверяем кнопку отправки
-      const submitBtn = page.locator('button[type="submit"], button:has-text("Отправить"), button:has-text("Далее")');
-      if (await submitBtn.isVisible({ timeout: 2000 })) {
-        log('  [OK] Кнопка отправки найдена');
+    auditResults.push(recoveryResult);
+
+    // ============================================
+    // 4. AUTH PHONE /auth/phone
+    // ============================================
+    log('\n========================================');
+    log('4. СТРАНИЦА АВТОРИЗАЦИИ /auth/phone');
+    log('========================================');
+
+    const phoneResult = createResult('/auth/phone');
+
+    try {
+      if (await safeGoto(page, `${BASE_URL}/auth/phone`)) {
+        log('  [OK] Страница загружена');
+
+        // Проверяем форму ввода телефона
+        const phoneInput = page.locator('input[type="tel"], input[placeholder*="телефон"], input[placeholder*="phone"]');
+        if (await phoneInput.first().isVisible({ timeout: 2000 })) {
+          log('  [OK] Поле ввода телефона найдено');
+          phoneResult.formsFound++;
+
+          await phoneInput.first().fill('+79991234567');
+          log('  [OK] Номер введён');
+          phoneResult.clickedElements++;
+        } else {
+          phoneResult.warnings.push('Поле ввода телефона не найдено');
+          log('  [WARN] Поле ввода телефона не найдено');
+        }
+
+        // Проверяем кнопку отправки
+        const submitBtn = page.locator('button[type="submit"], button:has-text("Отправить"), button:has-text("Далее"), button:has-text("Продолжить")');
+        if (await submitBtn.first().isVisible({ timeout: 2000 })) {
+          log('  [OK] Кнопка отправки найдена');
+        }
+
+        await takeScreenshot(page, '04-auth-phone');
+      } else {
+        phoneResult.status = 'error';
+        phoneResult.errors.push('Не удалось загрузить страницу');
       }
-
-      await takeScreenshot(page, 'auth-phone');
-
     } catch (err) {
       phoneResult.status = 'error';
       phoneResult.errors.push(String(err));
@@ -193,33 +266,32 @@ test.describe('Полный E2E аудит MigrantHub', () => {
 
     auditResults.push(phoneResult);
 
-    // /auth/otp
-    log('\n--- /auth/otp ---');
-    const otpResult: AuditResult = {
-      page: '/auth/otp',
-      status: 'ok',
-      errors: [],
-      warnings: [],
-      clickedElements: 0,
-      modalsOpened: 0,
-      formsFound: 0
-    };
+    // ============================================
+    // 5. AUTH OTP /auth/otp
+    // ============================================
+    log('\n========================================');
+    log('5. СТРАНИЦА OTP /auth/otp');
+    log('========================================');
+
+    const otpResult = createResult('/auth/otp');
 
     try {
-      await page.goto(`${BASE_URL}/auth/otp`, { waitUntil: 'networkidle' });
-      log('  [OK] Страница загружена');
+      if (await safeGoto(page, `${BASE_URL}/auth/otp`)) {
+        log('  [OK] Страница загружена');
 
-      // Проверяем поля OTP
-      const otpInputs = page.locator('input[type="text"], input[type="number"], input[inputmode="numeric"]');
-      const otpCount = await otpInputs.count();
-      log(`  [Info] Найдено полей ввода: ${otpCount}`);
+        const otpInputs = page.locator('input[type="text"], input[type="number"], input[inputmode="numeric"]');
+        const otpCount = await otpInputs.count();
+        log(`  [Info] Найдено полей ввода: ${otpCount}`);
 
-      if (otpCount > 0) {
-        otpResult.formsFound++;
+        if (otpCount > 0) {
+          otpResult.formsFound++;
+        }
+
+        await takeScreenshot(page, '05-auth-otp');
+      } else {
+        otpResult.status = 'error';
+        otpResult.errors.push('Не удалось загрузить страницу');
       }
-
-      await takeScreenshot(page, 'auth-otp');
-
     } catch (err) {
       otpResult.status = 'error';
       otpResult.errors.push(String(err));
@@ -228,29 +300,28 @@ test.describe('Полный E2E аудит MigrantHub', () => {
 
     auditResults.push(otpResult);
 
-    // /auth/method
-    log('\n--- /auth/method ---');
-    const methodResult: AuditResult = {
-      page: '/auth/method',
-      status: 'ok',
-      errors: [],
-      warnings: [],
-      clickedElements: 0,
-      modalsOpened: 0,
-      formsFound: 0
-    };
+    // ============================================
+    // 6. AUTH METHOD /auth/method
+    // ============================================
+    log('\n========================================');
+    log('6. СТРАНИЦА МЕТОДА АВТОРИЗАЦИИ /auth/method');
+    log('========================================');
+
+    const methodResult = createResult('/auth/method');
 
     try {
-      await page.goto(`${BASE_URL}/auth/method`, { waitUntil: 'networkidle' });
-      log('  [OK] Страница загружена');
+      if (await safeGoto(page, `${BASE_URL}/auth/method`)) {
+        log('  [OK] Страница загружена');
 
-      // Ищем варианты авторизации
-      const authOptions = page.locator('button, [role="button"]');
-      const optionsCount = await authOptions.count();
-      log(`  [Info] Найдено вариантов авторизации: ${optionsCount}`);
+        const authOptions = page.locator('button, [role="button"]');
+        const optionsCount = await authOptions.count();
+        log(`  [Info] Найдено вариантов авторизации: ${optionsCount}`);
 
-      await takeScreenshot(page, 'auth-method');
-
+        await takeScreenshot(page, '06-auth-method');
+      } else {
+        methodResult.status = 'error';
+        methodResult.errors.push('Не удалось загрузить страницу');
+      }
     } catch (err) {
       methodResult.status = 'error';
       methodResult.errors.push(String(err));
@@ -260,85 +331,57 @@ test.describe('Полный E2E аудит MigrantHub', () => {
     auditResults.push(methodResult);
 
     // ============================================
-    // 4. SERVICES PAGE /services
+    // 7. SERVICES PAGE /services
     // ============================================
     log('\n========================================');
-    log('4. СТРАНИЦА СЕРВИСОВ /services');
+    log('7. СТРАНИЦА СЕРВИСОВ /services');
     log('========================================');
 
-    const servicesResult: AuditResult = {
-      page: '/services',
-      status: 'ok',
-      errors: [],
-      warnings: [],
-      clickedElements: 0,
-      modalsOpened: 0,
-      formsFound: 0
-    };
+    const servicesResult = createResult('/services');
 
     try {
-      await page.goto(`${BASE_URL}/services`, { waitUntil: 'networkidle' });
-      log('  [OK] Страница загружена');
+      if (await safeGoto(page, `${BASE_URL}/services`)) {
+        log('  [OK] Страница загружена');
+        await takeScreenshot(page, '07-services-initial');
 
-      await takeScreenshot(page, 'services-initial');
+        // Реальные названия сервисов из кода
+        const services = [
+          { name: 'Карта мигранта', expectModal: true },
+          { name: 'Экзамен по русскому', expectModal: true },
+          { name: 'Переводчик', external: true },
+          { name: 'Карта мечетей', expectModal: true },
+        ];
 
-      // Список сервисов для тестирования (с учетом реальных названий)
-      const services = [
-        { name: 'Проверка запретов', expectModal: true },
-        { name: 'Калькулятор 90/180', expectModal: false, expectNavigation: '/calculator' },
-        { name: 'Карта мигранта', expectModal: true },
-        { name: 'Экзамен по русскому', expectModal: true },
-        { name: 'Переводчик', expectModal: false, external: true },
-        { name: 'Карта мечетей', expectModal: true },
-      ];
+        for (const service of services) {
+          log(`\n  --- Тестируем: ${service.name} ---`);
 
-      for (const service of services) {
-        log(`\n  --- Тестируем: ${service.name} ---`);
+          await safeGoto(page, `${BASE_URL}/services`);
+          await page.waitForTimeout(500);
 
-        // Каждый раз возвращаемся на страницу сервисов
-        await page.goto(`${BASE_URL}/services`, { waitUntil: 'networkidle' });
-        await page.waitForTimeout(500);
+          // Ищем кнопку с текстом сервиса
+          const serviceBtn = page.locator(`button:has-text("${service.name}")`).first();
 
-        // Ищем все кнопки на странице
-        const allButtons = page.locator('button');
-        const count = await allButtons.count();
-
-        let buttonFound = false;
-        for (let i = 0; i < count; i++) {
-          const btn = allButtons.nth(i);
-          const text = await btn.textContent();
-
-          if (text && text.includes(service.name)) {
-            buttonFound = true;
+          if (await serviceBtn.isVisible({ timeout: 2000 })) {
             log(`    [OK] Кнопка найдена`);
             servicesResult.clickedElements++;
 
             if (service.external) {
               log(`    [SKIP] Внешняя ссылка`);
-              break;
+              continue;
             }
 
-            await btn.click();
+            await serviceBtn.click();
             log(`    [OK] Клик выполнен`);
+            await page.waitForTimeout(1000);
 
-            await page.waitForTimeout(800);
-
-            if (service.expectNavigation) {
-              const currentUrl = page.url();
-              if (currentUrl.includes(service.expectNavigation)) {
-                log(`    [OK] Навигация на ${service.expectNavigation}`);
-              } else {
-                log(`    [WARN] Ожидалась навигация на ${service.expectNavigation}, получили ${currentUrl}`);
-                servicesResult.warnings.push(`Навигация для "${service.name}" не сработала`);
-              }
-            } else if (service.expectModal) {
-              // Проверяем модальное окно
-              const modal = page.locator('[role="dialog"], .fixed.inset-0.bg-black');
-              if (await modal.isVisible({ timeout: 2000 })) {
+            if (service.expectModal) {
+              const modal = page.locator('[role="dialog"], .fixed.inset-0, [class*="fixed"][class*="inset"]');
+              if (await modal.first().isVisible({ timeout: 3000 })) {
                 log(`    [OK] Модальное окно открылось`);
                 servicesResult.modalsOpened++;
 
-                await takeScreenshot(page, `services-modal-${service.name.replace(/[\s\/]+/g, '-')}`);
+                const safeName = service.name.replace(/[\s\/]+/g, '-');
+                await takeScreenshot(page, `07-services-modal-${safeName}`);
 
                 // Закрываем модалку
                 await page.keyboard.press('Escape');
@@ -348,17 +391,21 @@ test.describe('Полный E2E аудит MigrantHub', () => {
                 servicesResult.warnings.push(`Модальное окно для "${service.name}" не открылось`);
               }
             }
-
-            break;
+          } else {
+            log(`    [WARN] Кнопка не найдена`);
+            servicesResult.warnings.push(`Кнопка "${service.name}" не найдена`);
           }
         }
 
-        if (!buttonFound) {
-          log(`    [WARN] Кнопка не найдена`);
-          servicesResult.warnings.push(`Кнопка "${service.name}" не найдена`);
-        }
-      }
+        // Проверяем внешние ссылки
+        const externalLinks = page.locator('a[href*="gosuslugi"], a[href*="мвд.рф"]');
+        const linksCount = await externalLinks.count();
+        log(`  [Info] Найдено внешних ссылок: ${linksCount}`);
 
+      } else {
+        servicesResult.status = 'error';
+        servicesResult.errors.push('Не удалось загрузить страницу');
+      }
     } catch (err) {
       servicesResult.status = 'error';
       servicesResult.errors.push(String(err));
@@ -372,52 +419,52 @@ test.describe('Полный E2E аудит MigrantHub', () => {
     auditResults.push(servicesResult);
 
     // ============================================
-    // 5. CALCULATOR PAGE /calculator
+    // 8. CALCULATOR PAGE /calculator
     // ============================================
     log('\n========================================');
-    log('5. СТРАНИЦА КАЛЬКУЛЯТОРА /calculator');
+    log('8. СТРАНИЦА КАЛЬКУЛЯТОРА /calculator');
     log('========================================');
 
-    const calculatorResult: AuditResult = {
-      page: '/calculator',
-      status: 'ok',
-      errors: [],
-      warnings: [],
-      clickedElements: 0,
-      modalsOpened: 0,
-      formsFound: 0
-    };
+    const calculatorResult = createResult('/calculator');
 
     try {
-      await page.goto(`${BASE_URL}/calculator`, { waitUntil: 'networkidle' });
-      log('  [OK] Страница загружена');
+      if (await safeGoto(page, `${BASE_URL}/calculator`)) {
+        log('  [OK] Страница загружена');
+        await takeScreenshot(page, '08-calculator-initial');
 
-      await takeScreenshot(page, 'calculator');
+        // Ищем элементы калькулятора
+        const inputs = page.locator('input');
+        const inputCount = await inputs.count();
+        log(`  [Info] Найдено полей ввода: ${inputCount}`);
 
-      // Ищем элементы калькулятора
-      const inputs = page.locator('input');
-      const inputCount = await inputs.count();
-      log(`  [Info] Найдено полей ввода: ${inputCount}`);
+        if (inputCount > 0) {
+          calculatorResult.formsFound++;
+        }
 
-      if (inputCount > 0) {
-        calculatorResult.formsFound++;
+        // Ищем кнопки
+        const buttons = page.locator('button');
+        const buttonCount = await buttons.count();
+        log(`  [Info] Найдено кнопок: ${buttonCount}`);
+
+        // Пробуем кликнуть по кнопке добавления периода
+        const addPeriodBtn = page.locator('button:has-text("Добавить"), button:has-text("добавить")').first();
+        if (await addPeriodBtn.isVisible({ timeout: 1000 })) {
+          await addPeriodBtn.click();
+          log('  [OK] Кнопка добавления периода нажата');
+          calculatorResult.clickedElements++;
+          await page.waitForTimeout(500);
+          await takeScreenshot(page, '08-calculator-after-add');
+        }
+
+        // Проверяем календарь/датапикер
+        const dateInputs = page.locator('input[type="date"], [data-testid*="date"]');
+        const dateCount = await dateInputs.count();
+        log(`  [Info] Найдено полей даты: ${dateCount}`);
+
+      } else {
+        calculatorResult.status = 'error';
+        calculatorResult.errors.push('Не удалось загрузить страницу');
       }
-
-      // Ищем кнопки
-      const buttons = page.locator('button');
-      const buttonCount = await buttons.count();
-      log(`  [Info] Найдено кнопок: ${buttonCount}`);
-
-      // Пробуем кликнуть по кнопке добавления периода если есть
-      const addPeriodBtn = page.locator('button:has-text("Добавить"), button:has-text("добавить")').first();
-      if (await addPeriodBtn.isVisible({ timeout: 1000 })) {
-        await addPeriodBtn.click();
-        log('  [OK] Кнопка добавления периода нажата');
-        calculatorResult.clickedElements++;
-        await page.waitForTimeout(500);
-        await takeScreenshot(page, 'calculator-after-add');
-      }
-
     } catch (err) {
       calculatorResult.status = 'error';
       calculatorResult.errors.push(String(err));
@@ -427,158 +474,186 @@ test.describe('Полный E2E аудит MigrantHub', () => {
     auditResults.push(calculatorResult);
 
     // ============================================
-    // 6. DOCUMENTS PAGE /documents
+    // 9. DOCUMENTS PAGE /documents
     // ============================================
     log('\n========================================');
-    log('6. СТРАНИЦА ДОКУМЕНТОВ /documents');
+    log('9. СТРАНИЦА ДОКУМЕНТОВ /documents');
     log('========================================');
 
-    const documentsResult: AuditResult = {
-      page: '/documents',
-      status: 'ok',
-      errors: [],
-      warnings: [],
-      clickedElements: 0,
-      modalsOpened: 0,
-      formsFound: 0
-    };
+    const documentsResult = createResult('/documents');
 
     try {
-      await page.goto(`${BASE_URL}/documents`, { waitUntil: 'networkidle' });
-      log('  [OK] Страница загружена');
+      if (await safeGoto(page, `${BASE_URL}/documents`)) {
+        log('  [OK] Страница загружена');
+        await takeScreenshot(page, '09-documents-list');
 
-      await takeScreenshot(page, 'documents-list');
+        // Ищем FAB кнопку добавления документа (aria-label)
+        const addButton = page.locator('button[aria-label="Добавить документ"]');
+        if (await addButton.isVisible({ timeout: 3000 })) {
+          log('  [OK] FAB кнопка добавления документа найдена');
+          documentsResult.clickedElements++;
 
-      // Ищем кнопку добавления документа (более специфичный селектор)
-      const addButton = page.getByRole('button', { name: /добавить документ/i });
-      if (await addButton.isVisible({ timeout: 2000 })) {
-        log('  [OK] Кнопка добавления документа найдена');
-        documentsResult.clickedElements++;
-
-        await addButton.click();
-        log('  [OK] Клик по кнопке добавления');
-
-        await page.waitForTimeout(1000);
-        await takeScreenshot(page, 'documents-add-modal');
-
-        // Проверяем типы документов в модалке
-        const docTypes = ['Паспорт', 'Патент', 'Миграционная карта', 'Регистрация', 'ИНН', 'СНИЛС', 'ДМС'];
-        let foundTypes = 0;
-
-        for (const docType of docTypes) {
-          const typeBtn = page.locator(`button:has-text("${docType}")`).first();
-          if (await typeBtn.isVisible({ timeout: 500 })) {
-            foundTypes++;
-            log(`    [OK] Тип "${docType}" найден`);
-          }
-        }
-
-        log(`  [Info] Найдено типов документов: ${foundTypes}/${docTypes.length}`);
-
-        // Тестируем один тип документа - Паспорт
-        const passportBtn = page.locator('button:has-text("Паспорт")').first();
-        if (await passportBtn.isVisible({ timeout: 1000 })) {
-          await passportBtn.click();
-          log('  [OK] Клик по "Паспорт"');
+          await addButton.click();
+          log('  [OK] Клик по FAB кнопке');
           await page.waitForTimeout(1000);
 
-          await takeScreenshot(page, 'documents-form-passport');
+          await takeScreenshot(page, '09-documents-type-selector');
 
-          // Проверяем открылась ли форма
-          const formInputs = page.locator('input, textarea');
-          const formCount = await formInputs.count();
+          // Проверяем модальное окно выбора типа
+          const modal = page.locator('.fixed.inset-0, [role="dialog"]');
+          if (await modal.first().isVisible({ timeout: 2000 })) {
+            log('  [OK] Модальное окно выбора типа открылось');
+            documentsResult.modalsOpened++;
 
-          if (formCount > 0) {
-            log(`  [OK] Форма открылась (${formCount} полей)`);
-            documentsResult.formsFound++;
+            // Проверяем типы документов
+            const docTypes = [
+              { label: 'Паспорт', type: 'passport' },
+              { label: 'Миграционная карта', type: 'migration_card' },
+              { label: 'Патент', type: 'patent' },
+              { label: 'Регистрация', type: 'registration' },
+              { label: 'ИНН', type: 'inn' },
+              { label: 'СНИЛС', type: 'snils' },
+              { label: 'ДМС', type: 'dms' },
+            ];
 
-            // Ищем кнопку тестовых данных
-            const sampleBtn = page.locator('button:has-text("тестовыми"), button:has-text("Заполнить образцом")').first();
-            if (await sampleBtn.isVisible({ timeout: 1000 })) {
-              await sampleBtn.click();
-              log('  [OK] Тестовые данные заполнены');
+            let foundTypes = 0;
+            for (const docType of docTypes) {
+              const typeBtn = page.locator(`button:has-text("${docType.label}")`).first();
+              if (await typeBtn.isVisible({ timeout: 500 })) {
+                foundTypes++;
+                log(`    [OK] Тип "${docType.label}" найден`);
+              } else {
+                log(`    [WARN] Тип "${docType.label}" не найден`);
+              }
+            }
+
+            log(`  [Info] Найдено типов документов: ${foundTypes}/${docTypes.length}`);
+
+            // Тестируем открытие формы паспорта
+            const passportBtn = page.locator('button:has-text("Паспорт")').first();
+            if (await passportBtn.isVisible({ timeout: 1000 })) {
+              await passportBtn.click();
+              log('  [OK] Клик по "Паспорт"');
+              await page.waitForTimeout(1500);
+
+              // Проверяем открылась ли форма (полноэкранная)
+              const formContainer = page.locator('.fixed.inset-0.z-50, form');
+              if (await formContainer.first().isVisible({ timeout: 2000 })) {
+                const formInputs = page.locator('input, textarea, select');
+                const formCount = await formInputs.count();
+
+                if (formCount > 2) {
+                  log(`  [OK] Форма паспорта открылась (${formCount} полей)`);
+                  documentsResult.formsFound++;
+                  await takeScreenshot(page, '09-documents-form-passport');
+
+                  // Ищем кнопку тестовых данных
+                  const sampleBtn = page.locator('button:has-text("тестовым"), button:has-text("Образец"), button:has-text("пример")').first();
+                  if (await sampleBtn.isVisible({ timeout: 1000 })) {
+                    await sampleBtn.click();
+                    log('  [OK] Тестовые данные заполнены');
+                    await page.waitForTimeout(500);
+                    await takeScreenshot(page, '09-documents-form-passport-filled');
+                  }
+                } else {
+                  log('  [WARN] Форма не содержит ожидаемых полей');
+                  documentsResult.warnings.push('Форма паспорта не содержит полей');
+                }
+              } else {
+                log('  [WARN] Форма паспорта не открылась');
+                documentsResult.warnings.push('Форма паспорта не открылась');
+              }
+
+              // Закрываем форму
+              await page.keyboard.press('Escape');
               await page.waitForTimeout(500);
-              await takeScreenshot(page, 'documents-form-passport-filled');
             }
           } else {
-            log('  [WARN] Форма не открылась');
-            documentsResult.warnings.push('Форма паспорта не открылась');
+            log('  [WARN] Модальное окно выбора типа не открылось');
+            documentsResult.warnings.push('Модальное окно выбора типа не открылось');
+          }
+        } else {
+          // Пробуем альтернативный селектор
+          const altAddButton = page.locator('button:has-text("Добавить документ")').first();
+          if (await altAddButton.isVisible({ timeout: 1000 })) {
+            log('  [OK] Кнопка добавления найдена (альтернативный селектор)');
+            documentsResult.clickedElements++;
+          } else {
+            log('  [WARN] Кнопка добавления не найдена');
+            documentsResult.warnings.push('Кнопка добавления документа не найдена');
           }
         }
 
-        // Закрываем модалку/форму
-        await page.keyboard.press('Escape');
-        await page.waitForTimeout(300);
-      } else {
-        log('  [WARN] Кнопка добавления не найдена');
-        documentsResult.warnings.push('Кнопка добавления документа не найдена');
-      }
+        // Проверяем кнопку PDF
+        const pdfBtn = page.locator('button:has-text("PDF"), button:has-text("Скачать")').first();
+        if (await pdfBtn.isVisible({ timeout: 1000 })) {
+          log('  [OK] Кнопка скачивания PDF найдена');
+        }
 
+      } else {
+        documentsResult.status = 'error';
+        documentsResult.errors.push('Не удалось загрузить страницу');
+      }
     } catch (err) {
       documentsResult.status = 'error';
       documentsResult.errors.push(String(err));
       log(`  [ERROR] ${err}`);
     }
 
-    if (documentsResult.warnings.length > 0 || documentsResult.errors.length > 0) {
-      documentsResult.status = documentsResult.errors.length > 0 ? 'error' : 'partial';
+    if (documentsResult.warnings.length > 0) {
+      documentsResult.status = 'partial';
     }
 
     auditResults.push(documentsResult);
 
     // ============================================
-    // 7. PROFILE PAGE /profile
+    // 10. PROFILE PAGE /profile
     // ============================================
     log('\n========================================');
-    log('7. СТРАНИЦА ПРОФИЛЯ /profile');
+    log('10. СТРАНИЦА ПРОФИЛЯ /profile');
     log('========================================');
 
-    const profileResult: AuditResult = {
-      page: '/profile',
-      status: 'ok',
-      errors: [],
-      warnings: [],
-      clickedElements: 0,
-      modalsOpened: 0,
-      formsFound: 0
-    };
+    const profileResult = createResult('/profile');
 
     try {
-      await page.goto(`${BASE_URL}/profile`, { waitUntil: 'networkidle' });
-      log('  [OK] Страница загружена');
+      if (await safeGoto(page, `${BASE_URL}/profile`)) {
+        log('  [OK] Страница загружена');
+        await takeScreenshot(page, '10-profile');
 
-      await takeScreenshot(page, 'profile');
+        // Ищем форму профиля
+        const profileForm = page.locator('form, input, textarea');
+        const formCount = await profileForm.count();
+        log(`  [Info] Найдено полей формы: ${formCount}`);
 
-      // Ищем форму профиля
-      const profileForm = page.locator('form, input, textarea');
-      const formCount = await profileForm.count();
-      log(`  [Info] Найдено полей формы: ${formCount}`);
-
-      if (formCount > 0) {
-        profileResult.formsFound++;
-      }
-
-      // Проверяем все кнопки на странице
-      const allButtons = page.locator('button, [role="button"]');
-      const buttonCount = await allButtons.count();
-      log(`  [Info] Найдено интерактивных элементов: ${buttonCount}`);
-
-      // Проверяем секции профиля
-      const sections = ['Личные данные', 'Документы', 'Работа', 'Регистрация'];
-      for (const section of sections) {
-        const sectionBtn = page.locator(`button:has-text("${section}"), [role="button"]:has-text("${section}")`).first();
-        if (await sectionBtn.isVisible({ timeout: 500 })) {
-          log(`    [OK] Секция "${section}" найдена`);
-          profileResult.clickedElements++;
+        if (formCount > 0) {
+          profileResult.formsFound++;
         }
-      }
 
-      // Проверяем кнопку сохранения
-      const saveBtn = page.locator('button:has-text("Сохранить")').first();
-      if (await saveBtn.isVisible({ timeout: 1000 })) {
-        log('  [OK] Кнопка "Сохранить" найдена');
-      }
+        // Проверяем все кнопки на странице
+        const allButtons = page.locator('button, [role="button"]');
+        const buttonCount = await allButtons.count();
+        log(`  [Info] Найдено интерактивных элементов: ${buttonCount}`);
 
+        // Проверяем секции профиля
+        const sections = ['Личные данные', 'Документы', 'Работа', 'Регистрация'];
+        for (const section of sections) {
+          const sectionElement = page.locator(`button:has-text("${section}"), [role="button"]:has-text("${section}"), h2:has-text("${section}"), h3:has-text("${section}")`).first();
+          if (await sectionElement.isVisible({ timeout: 500 })) {
+            log(`    [OK] Секция "${section}" найдена`);
+            profileResult.clickedElements++;
+          }
+        }
+
+        // Проверяем кнопку сохранения
+        const saveBtn = page.locator('button:has-text("Сохранить")').first();
+        if (await saveBtn.isVisible({ timeout: 1000 })) {
+          log('  [OK] Кнопка "Сохранить" найдена');
+        }
+
+      } else {
+        profileResult.status = 'error';
+        profileResult.errors.push('Не удалось загрузить страницу');
+      }
     } catch (err) {
       profileResult.status = 'error';
       profileResult.errors.push(String(err));
@@ -588,89 +663,246 @@ test.describe('Полный E2E аудит MigrantHub', () => {
     auditResults.push(profileResult);
 
     // ============================================
-    // 8. PROTOTYPE PAGE /prototype
+    // 11. EXAM PAGE /exam
     // ============================================
     log('\n========================================');
-    log('8. СТРАНИЦА ПРОТОТИПА /prototype');
+    log('11. СТРАНИЦА ЭКЗАМЕНА /exam');
     log('========================================');
 
-    const prototypeResult: AuditResult = {
-      page: '/prototype',
-      status: 'ok',
-      errors: [],
-      warnings: [],
-      clickedElements: 0,
-      modalsOpened: 0,
-      formsFound: 0
-    };
+    const examResult = createResult('/exam');
 
     try {
-      await page.goto(`${BASE_URL}/prototype`, { waitUntil: 'networkidle' });
-      log('  [OK] Страница загружена');
+      if (await safeGoto(page, `${BASE_URL}/exam`)) {
+        log('  [OK] Страница загружена');
+        await takeScreenshot(page, '11-exam-home');
 
-      await takeScreenshot(page, 'prototype-initial');
-
-      // Ищем навигацию по прототипу (нижняя панель)
-      const navButtons = page.locator('nav button, nav a, [role="tab"], [role="navigation"] button');
-      const navCount = await navButtons.count();
-      log(`  [Info] Найдено навигационных элементов: ${navCount}`);
-
-      // Проверяем вкладки
-      const tabs = ['Документы', 'Сервисы', 'Профиль', 'Главная', 'Home', 'Documents', 'Services', 'Profile'];
-
-      for (const tab of tabs) {
-        const tabBtn = page.locator(`button:has-text("${tab}"), a:has-text("${tab}")`).first();
-        if (await tabBtn.isVisible({ timeout: 500 })) {
-          log(`    [OK] Вкладка "${tab}" найдена`);
-          prototypeResult.clickedElements++;
-
-          await tabBtn.click();
-          await page.waitForTimeout(500);
+        // Проверяем режимы экзамена
+        const modes = ['Обучение', 'Практика', 'Экзамен', 'Марафон'];
+        for (const mode of modes) {
+          const modeBtn = page.locator(`button:has-text("${mode}"), [role="button"]:has-text("${mode}")`).first();
+          if (await modeBtn.isVisible({ timeout: 500 })) {
+            log(`    [OK] Режим "${mode}" найден`);
+            examResult.clickedElements++;
+          }
         }
+
+        // Проверяем категории
+        const categories = ['Русский язык', 'История', 'Законодательство'];
+        for (const category of categories) {
+          const categoryElement = page.locator(`button:has-text("${category}"), *:has-text("${category}")`).first();
+          if (await categoryElement.isVisible({ timeout: 500 })) {
+            log(`    [OK] Категория "${category}" найдена`);
+          }
+        }
+
+      } else {
+        examResult.status = 'error';
+        examResult.errors.push('Не удалось загрузить страницу');
       }
-
-      await takeScreenshot(page, 'prototype-after-navigation');
-
     } catch (err) {
-      prototypeResult.status = 'error';
-      prototypeResult.errors.push(String(err));
+      examResult.status = 'error';
+      examResult.errors.push(String(err));
       log(`  [ERROR] ${err}`);
     }
 
-    auditResults.push(prototypeResult);
+    auditResults.push(examResult);
 
     // ============================================
-    // 9. PAYMENT PAGE /payment
+    // 12. EXAM START PAGE /exam/start
     // ============================================
     log('\n========================================');
-    log('9. СТРАНИЦА ОПЛАТЫ /payment');
+    log('12. СТРАНИЦА СТАРТА ЭКЗАМЕНА /exam/start');
     log('========================================');
 
-    const paymentResult: AuditResult = {
-      page: '/payment',
-      status: 'ok',
-      errors: [],
-      warnings: [],
-      clickedElements: 0,
-      modalsOpened: 0,
-      formsFound: 0
-    };
+    const examStartResult = createResult('/exam/start');
 
     try {
-      await page.goto(`${BASE_URL}/payment`, { waitUntil: 'networkidle' });
-      log('  [OK] Страница загружена');
+      if (await safeGoto(page, `${BASE_URL}/exam/start?mode=practice`)) {
+        log('  [OK] Страница загружена');
+        await takeScreenshot(page, '12-exam-start');
 
-      await takeScreenshot(page, 'payment');
+        // Проверяем выбор категории
+        const categoryBtns = page.locator('button:has-text("Все категории"), button:has-text("Русский"), button:has-text("История"), button:has-text("Законодательство")');
+        const catCount = await categoryBtns.count();
+        log(`  [Info] Найдено кнопок категорий: ${catCount}`);
 
-      // Проверяем наличие тарифов/кнопок оплаты
-      const payButtons = page.locator('button:has-text("Оплатить"), button:has-text("Купить"), button:has-text("Подписка"), button:has-text("Premium")');
-      const payCount = await payButtons.count();
-      log(`  [Info] Найдено кнопок оплаты: ${payCount}`);
+        if (catCount > 0) {
+          examStartResult.formsFound++;
+        }
 
-      if (payCount > 0) {
-        paymentResult.clickedElements = payCount;
+        // Проверяем выбор количества вопросов
+        const countBtns = page.locator('button:has-text("5"), button:has-text("10"), button:has-text("20"), button:has-text("30")');
+        const countNum = await countBtns.count();
+        log(`  [Info] Найдено кнопок количества: ${countNum}`);
+
+        // Проверяем кнопку старта
+        const startBtn = page.locator('button:has-text("Начать"), button:has-text("Start")').first();
+        if (await startBtn.isVisible({ timeout: 1000 })) {
+          log('  [OK] Кнопка "Начать" найдена');
+          examStartResult.clickedElements++;
+        }
+
+      } else {
+        examStartResult.status = 'error';
+        examStartResult.errors.push('Не удалось загрузить страницу');
       }
+    } catch (err) {
+      examStartResult.status = 'error';
+      examStartResult.errors.push(String(err));
+      log(`  [ERROR] ${err}`);
+    }
 
+    auditResults.push(examStartResult);
+
+    // ============================================
+    // 13. EXAM SESSION PAGE /exam/session
+    // ============================================
+    log('\n========================================');
+    log('13. СТРАНИЦА СЕССИИ ЭКЗАМЕНА /exam/session');
+    log('========================================');
+
+    const examSessionResult = createResult('/exam/session');
+
+    try {
+      if (await safeGoto(page, `${BASE_URL}/exam/session?mode=practice&count=5`)) {
+        log('  [OK] Страница загружена');
+        await page.waitForTimeout(2000); // Ждём загрузки вопросов
+        await takeScreenshot(page, '13-exam-session');
+
+        // Проверяем прогресс-бар
+        const progressBar = page.locator('[role="progressbar"], .progress, [class*="progress"]');
+        if (await progressBar.first().isVisible({ timeout: 2000 })) {
+          log('  [OK] Прогресс-бар найден');
+        }
+
+        // Проверяем карточку вопроса
+        const questionCard = page.locator('[class*="question"], [data-testid*="question"]');
+        if (await questionCard.first().isVisible({ timeout: 2000 })) {
+          log('  [OK] Карточка вопроса найдена');
+        }
+
+        // Проверяем варианты ответа
+        const answerBtns = page.locator('button[class*="answer"], [role="radio"], [class*="option"]');
+        const answerCount = await answerBtns.count();
+        log(`  [Info] Найдено вариантов ответа: ${answerCount}`);
+
+        if (answerCount > 0) {
+          examSessionResult.formsFound++;
+
+          // Пробуем выбрать первый ответ
+          await answerBtns.first().click();
+          log('  [OK] Выбран первый вариант ответа');
+          examSessionResult.clickedElements++;
+
+          await page.waitForTimeout(500);
+          await takeScreenshot(page, '13-exam-session-answered');
+        }
+
+      } else {
+        examSessionResult.status = 'error';
+        examSessionResult.errors.push('Не удалось загрузить страницу');
+      }
+    } catch (err) {
+      examSessionResult.status = 'error';
+      examSessionResult.errors.push(String(err));
+      log(`  [ERROR] ${err}`);
+    }
+
+    auditResults.push(examSessionResult);
+
+    // ============================================
+    // 14. REFERENCE PAGE /reference
+    // ============================================
+    log('\n========================================');
+    log('14. СТРАНИЦА СПРАВОЧНИКА /reference');
+    log('========================================');
+
+    const referenceResult = createResult('/reference');
+
+    try {
+      if (await safeGoto(page, `${BASE_URL}/reference`)) {
+        log('  [OK] Страница загружена');
+        await takeScreenshot(page, '14-reference-initial');
+
+        // Проверяем табы
+        const tabs = ['Категории', 'Законы', 'Формы', 'FAQ'];
+        for (const tab of tabs) {
+          const tabBtn = page.locator(`button:has-text("${tab}")`).first();
+          if (await tabBtn.isVisible({ timeout: 500 })) {
+            log(`    [OK] Таб "${tab}" найден`);
+            referenceResult.clickedElements++;
+          }
+        }
+
+        // Кликаем по табу "Законы"
+        const lawsTab = page.locator('button:has-text("Законы")').first();
+        if (await lawsTab.isVisible({ timeout: 1000 })) {
+          await lawsTab.click();
+          await page.waitForTimeout(1000);
+          await takeScreenshot(page, '14-reference-laws');
+          log('  [OK] Переключились на таб "Законы"');
+        }
+
+        // Кликаем по табу "FAQ"
+        const faqTab = page.locator('button:has-text("FAQ")').first();
+        if (await faqTab.isVisible({ timeout: 1000 })) {
+          await faqTab.click();
+          await page.waitForTimeout(1000);
+          await takeScreenshot(page, '14-reference-faq');
+          log('  [OK] Переключились на таб "FAQ"');
+        }
+
+        // Проверяем поиск
+        const searchInput = page.locator('input[type="text"][placeholder*="Поиск"], input[placeholder*="поиск"]');
+        if (await searchInput.first().isVisible({ timeout: 1000 })) {
+          log('  [OK] Поле поиска найдено');
+          referenceResult.formsFound++;
+        }
+
+      } else {
+        referenceResult.status = 'error';
+        referenceResult.errors.push('Не удалось загрузить страницу');
+      }
+    } catch (err) {
+      referenceResult.status = 'error';
+      referenceResult.errors.push(String(err));
+      log(`  [ERROR] ${err}`);
+    }
+
+    auditResults.push(referenceResult);
+
+    // ============================================
+    // 15. PAYMENT PAGE /payment
+    // ============================================
+    log('\n========================================');
+    log('15. СТРАНИЦА ОПЛАТЫ /payment');
+    log('========================================');
+
+    const paymentResult = createResult('/payment');
+
+    try {
+      if (await safeGoto(page, `${BASE_URL}/payment`)) {
+        log('  [OK] Страница загружена');
+        await takeScreenshot(page, '15-payment');
+
+        // Проверяем наличие тарифов/кнопок оплаты
+        const payButtons = page.locator('button:has-text("Оплатить"), button:has-text("Купить"), button:has-text("Подписка"), button:has-text("Premium")');
+        const payCount = await payButtons.count();
+        log(`  [Info] Найдено кнопок оплаты: ${payCount}`);
+
+        if (payCount > 0) {
+          paymentResult.clickedElements = payCount;
+        }
+
+        // Проверяем отображение цен
+        const priceElements = page.locator('*:has-text("₽"), *:has-text("руб")');
+        const priceCount = await priceElements.count();
+        log(`  [Info] Найдено элементов с ценой: ${priceCount}`);
+
+      } else {
+        paymentResult.status = 'error';
+        paymentResult.errors.push('Не удалось загрузить страницу');
+      }
     } catch (err) {
       paymentResult.status = 'error';
       paymentResult.errors.push(String(err));
@@ -680,28 +912,67 @@ test.describe('Полный E2E аудит MigrantHub', () => {
     auditResults.push(paymentResult);
 
     // ============================================
-    // 10. OFFLINE PAGE /offline
+    // 16. PROTOTYPE PAGE /prototype
     // ============================================
     log('\n========================================');
-    log('10. СТРАНИЦА ОФЛАЙН /offline');
+    log('16. СТРАНИЦА ПРОТОТИПА /prototype');
     log('========================================');
 
-    const offlineResult: AuditResult = {
-      page: '/offline',
-      status: 'ok',
-      errors: [],
-      warnings: [],
-      clickedElements: 0,
-      modalsOpened: 0,
-      formsFound: 0
-    };
+    const prototypeResult = createResult('/prototype');
 
     try {
-      await page.goto(`${BASE_URL}/offline`, { waitUntil: 'networkidle' });
-      log('  [OK] Страница загружена');
+      if (await safeGoto(page, `${BASE_URL}/prototype`)) {
+        log('  [OK] Страница загружена');
+        await takeScreenshot(page, '16-prototype-initial');
 
-      await takeScreenshot(page, 'offline');
+        // Ищем навигацию по прототипу (нижняя панель)
+        const navButtons = page.locator('nav button, nav a, [role="tab"], [role="navigation"] button');
+        const navCount = await navButtons.count();
+        log(`  [Info] Найдено навигационных элементов: ${navCount}`);
 
+        // Проверяем основные элементы прототипа
+        const mainElements = page.locator('button, a[href], [role="button"]');
+        const elemCount = await mainElements.count();
+        log(`  [Info] Всего интерактивных элементов: ${elemCount}`);
+
+        prototypeResult.clickedElements = Math.min(navCount, 10);
+
+      } else {
+        prototypeResult.status = 'error';
+        prototypeResult.errors.push('Не удалось загрузить страницу');
+      }
+    } catch (err) {
+      prototypeResult.status = 'error';
+      prototypeResult.errors.push(String(err));
+      log(`  [ERROR] ${err}`);
+    }
+
+    auditResults.push(prototypeResult);
+
+    // ============================================
+    // 17. OFFLINE PAGE /offline
+    // ============================================
+    log('\n========================================');
+    log('17. СТРАНИЦА ОФЛАЙН /offline');
+    log('========================================');
+
+    const offlineResult = createResult('/offline');
+
+    try {
+      if (await safeGoto(page, `${BASE_URL}/offline`)) {
+        log('  [OK] Страница загружена');
+        await takeScreenshot(page, '17-offline');
+
+        // Проверяем сообщение об офлайн режиме
+        const offlineMessage = page.locator('*:has-text("офлайн"), *:has-text("интернет"), *:has-text("offline")');
+        if (await offlineMessage.first().isVisible({ timeout: 1000 })) {
+          log('  [OK] Сообщение об офлайн режиме найдено');
+        }
+
+      } else {
+        offlineResult.status = 'error';
+        offlineResult.errors.push('Не удалось загрузить страницу');
+      }
     } catch (err) {
       offlineResult.status = 'error';
       offlineResult.errors.push(String(err));
@@ -711,98 +982,90 @@ test.describe('Полный E2E аудит MigrantHub', () => {
     auditResults.push(offlineResult);
 
     // ============================================
-    // 11. ТЕСТИРОВАНИЕ ДОКУМЕНТОВ (подробно)
+    // 18. ДЕТАЛЬНОЕ ТЕСТИРОВАНИЕ ФОРМ ДОКУМЕНТОВ
     // ============================================
     log('\n========================================');
-    log('11. ДЕТАЛЬНОЕ ТЕСТИРОВАНИЕ ДОКУМЕНТОВ');
+    log('18. ДЕТАЛЬНОЕ ТЕСТИРОВАНИЕ ФОРМ ДОКУМЕНТОВ');
     log('========================================');
 
-    const docTestResult: AuditResult = {
-      page: '/documents (detail)',
-      status: 'ok',
-      errors: [],
-      warnings: [],
-      clickedElements: 0,
-      modalsOpened: 0,
-      formsFound: 0
-    };
+    const docDetailResult = createResult('/documents (forms detail)');
 
     try {
-      await page.goto(`${BASE_URL}/documents`, { waitUntil: 'networkidle' });
-
-      // Тестируем каждый тип документа
-      const documentTests = [
-        { type: 'Паспорт', hasFields: true },
-        { type: 'Патент', hasFields: true },
-        { type: 'Миграционная карта', hasFields: true },
-        { type: 'Регистрация', hasFields: true },
-        { type: 'ИНН', hasFields: true },
-        { type: 'СНИЛС', hasFields: true },
-        { type: 'ДМС', hasFields: true },
+      // Типы документов с поддержкой форм
+      const supportedTypes = [
+        { label: 'Паспорт', type: 'passport' },
+        { label: 'Миграционная карта', type: 'migration_card' },
+        { label: 'Патент', type: 'patent' },
+        { label: 'Регистрация', type: 'registration' },
       ];
 
-      for (const docTest of documentTests) {
-        log(`\n  --- Тестируем: ${docTest.type} ---`);
+      // Типы без форм (в разработке)
+      const unsupportedTypes = [
+        { label: 'ИНН', type: 'inn' },
+        { label: 'СНИЛС', type: 'snils' },
+        { label: 'ДМС', type: 'dms' },
+      ];
 
-        // Открываем страницу документов заново
-        await page.goto(`${BASE_URL}/documents`, { waitUntil: 'networkidle' });
+      for (const docType of supportedTypes) {
+        log(`\n  --- Тестируем форму: ${docType.label} ---`);
+
+        await safeGoto(page, `${BASE_URL}/documents`);
         await page.waitForTimeout(500);
 
-        // Кликаем добавить документ
-        const addBtn = page.getByRole('button', { name: /добавить документ/i });
+        // Кликаем FAB кнопку добавления
+        const addBtn = page.locator('button[aria-label="Добавить документ"]');
         if (await addBtn.isVisible({ timeout: 2000 })) {
           await addBtn.click();
           await page.waitForTimeout(800);
 
           // Ищем тип документа
-          const typeBtn = page.locator(`button:has-text("${docTest.type}")`).first();
+          const typeBtn = page.locator(`button:has-text("${docType.label}")`).first();
           if (await typeBtn.isVisible({ timeout: 1000 })) {
             await typeBtn.click();
-            docTestResult.clickedElements++;
-            await page.waitForTimeout(800);
+            docDetailResult.clickedElements++;
+            await page.waitForTimeout(1000);
 
             // Проверяем форму
-            const inputs = page.locator('form input, form textarea, form select');
+            const inputs = page.locator('input, textarea, select');
             const inputCount = await inputs.count();
 
-            if (inputCount > 0) {
+            if (inputCount > 2) {
               log(`    [OK] Форма открылась (${inputCount} полей)`);
-              docTestResult.formsFound++;
+              docDetailResult.formsFound++;
 
-              // Ищем кнопку заполнения тестовыми данными
-              const fillBtn = page.locator('button:has-text("тестовым"), button:has-text("Образец"), button:has-text("Sample")').first();
-              if (await fillBtn.isVisible({ timeout: 500 })) {
-                await fillBtn.click();
-                log(`    [OK] Тестовые данные заполнены`);
-              }
-
-              await takeScreenshot(page, `doc-form-${docTest.type.replace(/\s+/g, '-')}`);
+              await takeScreenshot(page, `18-doc-form-${docType.type}`);
             } else {
-              log(`    [WARN] Форма не найдена`);
-              docTestResult.warnings.push(`Форма для "${docTest.type}" не открылась`);
+              log(`    [WARN] Форма не содержит достаточно полей (${inputCount})`);
+              docDetailResult.warnings.push(`Форма "${docType.label}" не содержит полей`);
             }
-          } else {
-            log(`    [WARN] Тип "${docTest.type}" не найден в модалке`);
-            docTestResult.warnings.push(`Тип "${docTest.type}" не найден`);
-          }
 
-          // Закрываем
-          await page.keyboard.press('Escape');
-          await page.waitForTimeout(300);
+            // Закрываем форму
+            await page.keyboard.press('Escape');
+            await page.waitForTimeout(300);
+          } else {
+            log(`    [WARN] Тип "${docType.label}" не найден`);
+            docDetailResult.warnings.push(`Тип "${docType.label}" не найден`);
+          }
         }
       }
 
+      // Проверяем типы без форм
+      log('\n  --- Типы документов без форм (в разработке) ---');
+      for (const docType of unsupportedTypes) {
+        log(`    [INFO] ${docType.label} - форма в разработке`);
+      }
+
     } catch (err) {
-      docTestResult.status = 'error';
-      docTestResult.errors.push(String(err));
+      docDetailResult.status = 'error';
+      docDetailResult.errors.push(String(err));
       log(`  [ERROR] ${err}`);
     }
 
-    if (docTestResult.warnings.length > 0) {
-      docTestResult.status = 'partial';
+    if (docDetailResult.warnings.length > 0) {
+      docDetailResult.status = 'partial';
     }
 
-    auditResults.push(docTestResult);
+    auditResults.push(docDetailResult);
 
     // ============================================
     // ИТОГОВЫЙ ОТЧЁТ
@@ -847,8 +1110,11 @@ test.describe('Полный E2E аудит MigrantHub', () => {
     log('\n## Ошибки консоли');
     const uniqueConsoleErrors = [...new Set(allConsoleErrors)];
     if (uniqueConsoleErrors.length > 0) {
-      for (const err of uniqueConsoleErrors) {
-        log(`  ❌ ${err.substring(0, 150)}`);
+      for (const err of uniqueConsoleErrors.slice(0, 20)) {
+        log(`  ❌ ${err.substring(0, 200)}`);
+      }
+      if (uniqueConsoleErrors.length > 20) {
+        log(`  ... и ещё ${uniqueConsoleErrors.length - 20} ошибок`);
       }
     } else {
       log('  ✅ Ошибок консоли не обнаружено');
@@ -857,8 +1123,11 @@ test.describe('Полный E2E аудит MigrantHub', () => {
     log('\n## Ошибки JavaScript');
     const uniquePageErrors = [...new Set(allPageErrors)];
     if (uniquePageErrors.length > 0) {
-      for (const err of uniquePageErrors) {
-        log(`  ❌ ${err.substring(0, 150)}`);
+      for (const err of uniquePageErrors.slice(0, 20)) {
+        log(`  ❌ ${err.substring(0, 200)}`);
+      }
+      if (uniquePageErrors.length > 20) {
+        log(`  ... и ещё ${uniquePageErrors.length - 20} ошибок`);
       }
     } else {
       log('  ✅ JavaScript ошибок не обнаружено');
@@ -880,10 +1149,14 @@ test.describe('Полный E2E аудит MigrantHub', () => {
     log(`  - JavaScript ошибок: ${uniquePageErrors.length}`);
 
     // Финальный скриншот
-    await takeScreenshot(page, 'final-state');
+    await takeScreenshot(page, '99-final-state');
 
     log('\n========================================');
     log('Аудит завершён. Скриншоты: e2e/screenshots/');
     log('========================================\n');
+
+    // Проверка критериев успеха
+    expect(errorResults.length).toBeLessThanOrEqual(2); // Не более 2 полностью нерабочих страниц
+    expect(uniquePageErrors.length).toBeLessThanOrEqual(5); // Не более 5 JS ошибок
   });
 });

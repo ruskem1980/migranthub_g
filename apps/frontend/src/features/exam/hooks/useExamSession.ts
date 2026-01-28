@@ -188,11 +188,19 @@ export function useExamSession(
       category?: QuestionCategory,
       questionCount?: number
     ) => {
+      // Always reset first to ensure clean state
+      storeReset();
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      setTimeSpent(0);
+      startTimeRef.current = null;
+
       const count = questionCount ?? DEFAULT_QUESTION_COUNT[mode];
       setNoQuestionsError(false);
       setPendingStart({ mode, category, count });
     },
-    []
+    [storeReset]
   );
 
   // Answer question

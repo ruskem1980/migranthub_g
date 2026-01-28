@@ -56,12 +56,9 @@ export function ExamSessionView({ mode, category, questionCount }: ExamSessionVi
 
   // Start session on mount
   useEffect(() => {
-    // Always start a new session when component mounts with parameters
-    // Cancel any existing session first
+    // Start a new session when component mounts
+    // startSession handles cleanup of any existing session internally
     if (!result) {
-      if (isActive) {
-        cancelSession();
-      }
       startSession(sessionMode, sessionCategory, sessionCount);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -139,6 +136,15 @@ export function ExamSessionView({ mode, category, questionCount }: ExamSessionVi
       </div>
     );
   }
+
+  // Debug output
+  console.log('ExamSession render:', {
+    isLoading,
+    error,
+    currentQuestion: currentQuestion?.id,
+    isActive,
+    totalQuestions,
+  });
 
   // Show loading
   if (isLoading || !currentQuestion) {

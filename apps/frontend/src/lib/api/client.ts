@@ -138,7 +138,14 @@ class ApiClient {
 
       // Handle empty responses
       const text = await response.text();
-      return text ? JSON.parse(text) : ({} as T);
+      if (!text) return {} as T;
+
+      const json = JSON.parse(text);
+      // Backend wraps responses in {data: ..., meta: ...}, extract data
+      if (json && typeof json === 'object' && 'data' in json && 'meta' in json) {
+        return json.data as T;
+      }
+      return json as T;
     } catch (error) {
       clearTimeout(timeoutId);
 
