@@ -1303,7 +1303,41 @@
     "paymentReminder": "Төлөм эскертүүсү",
     "paymentReminderDesc": "Патент төлөмүн унутпаңыз",
     "documentReady": "Документ даяр",
-    "documentReadyDesc": "Документиңиз жүктөп алууга даяр"
+    "documentReadyDesc": "Документиңиз жүктөп алууга даяр",
+    "pushNotifications": {
+      "settings": {
+        "title": "Пуш-эскертмелер",
+        "subtitle": "Эскертме жөндөөлөрү",
+        "enableAll": "Эскертмелерди күйгүзүү",
+        "disableAll": "Баарын өчүрүү",
+        "permissionRequired": "Уруксат керек",
+        "permissionDenied": "Тутум жөндөөлөрүндө эскертмелер өчүрүлгөн",
+        "openSettings": "Жөндөөлөрдү ачуу",
+        "connected": "Туташкан",
+        "disconnected": "Ажыратылган"
+      },
+      "types": {
+        "documentExpiry": {
+          "title": "Документ мөөнөтү",
+          "description": "Мөөнөтү бүтүп бараткан документтер жөнүндө эскертүүлөр"
+        },
+        "patentPayment": {
+          "title": "Патент төлөмү",
+          "description": "Патент төлөмү жөнүндө эскертүүлөр"
+        },
+        "news": {
+          "title": "Жаңылыктар жана жаңыртуулар",
+          "description": "Маанилүү жаңылыктар жана колдонмо жаңыртуулары"
+        }
+      },
+      "messages": {
+        "documentExpiryTitle": "Документ мөөнөтү бүтүп баратат",
+        "documentExpiryBody": "{document} {days} күндөн кийин бүтөт",
+        "patentPaymentTitle": "Патент төлөмү эскертүүсү",
+        "patentPaymentBody": "Патент төлөмүн унутпаңыз",
+        "newsTitle": "Маанилүү жаңыртуу"
+      }
+    }
   },
   "errors": {
     "network": "Интернет байланышы жок",

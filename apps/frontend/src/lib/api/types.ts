@@ -382,3 +382,42 @@ export interface OcrProcessResponse {
   confidence?: number;
   error?: string;
 }
+
+// Push Notification Types
+export type NotificationType = 'document_expiry' | 'patent_payment' | 'news' | 'system';
+export type DevicePlatform = 'ios' | 'android' | 'web';
+
+export interface NotificationPreferences {
+  document_expiry: boolean;
+  patent_payment: boolean;
+  news: boolean;
+}
+
+export interface RegisterTokenRequest {
+  token: string;
+  platform: DevicePlatform;
+}
+
+export interface RegisterTokenResponse {
+  success: boolean;
+  message?: string;
+}
+
+export interface UnregisterTokenResponse {
+  success: boolean;
+  message?: string;
+}
+
+export interface GetPreferencesResponse {
+  preferences: NotificationPreferences;
+  enabled: boolean;
+}
+
+export interface UpdatePreferencesRequest {
+  preferences: Partial<NotificationPreferences>;
+}
+
+export interface UpdatePreferencesResponse {
+  preferences: NotificationPreferences;
+  success: boolean;
+}

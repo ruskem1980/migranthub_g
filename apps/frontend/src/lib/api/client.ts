@@ -39,6 +39,12 @@ import type {
   PaymentStatusResponse,
   PaymentHistoryResponse,
   OcrProcessResponse,
+  DevicePlatform,
+  NotificationPreferences,
+  RegisterTokenResponse,
+  UnregisterTokenResponse,
+  GetPreferencesResponse,
+  UpdatePreferencesResponse,
 } from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
@@ -596,6 +602,41 @@ export const backupApi = {
     }
     return json as BackupInfo;
   },
+};
+
+// Notifications API
+export const notificationsApi = {
+  /**
+   * Register FCM token for push notifications
+   */
+  registerToken: (token: string, platform: DevicePlatform) =>
+    apiClient.post<RegisterTokenResponse>(
+      '/notifications/register',
+      { token, platform },
+      { offlineAction: 'Регистрация push-уведомлений' }
+    ),
+
+  /**
+   * Unregister FCM token (disable push notifications)
+   */
+  unregisterToken: () =>
+    apiClient.delete<UnregisterTokenResponse>('/notifications/unregister'),
+
+  /**
+   * Get notification preferences
+   */
+  getPreferences: () =>
+    apiClient.get<GetPreferencesResponse>('/notifications/preferences'),
+
+  /**
+   * Update notification preferences
+   */
+  updatePreferences: (preferences: Partial<NotificationPreferences>) =>
+    apiClient.patch<UpdatePreferencesResponse>(
+      '/notifications/preferences',
+      { preferences },
+      { offlineAction: 'Обновление настроек уведомлений' }
+    ),
 };
 
 export { API_BASE_URL };

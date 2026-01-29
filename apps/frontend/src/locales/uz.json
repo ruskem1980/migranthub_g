@@ -1303,7 +1303,41 @@
     "paymentReminder": "To'lov eslatmasi",
     "paymentReminderDesc": "Patentni to'lashni unutmang",
     "documentReady": "Hujjat tayyor",
-    "documentReadyDesc": "Hujjatingiz yuklab olishga tayyor"
+    "documentReadyDesc": "Hujjatingiz yuklab olishga tayyor",
+    "pushNotifications": {
+      "settings": {
+        "title": "Push-bildirishnomalar",
+        "subtitle": "Bildirishnoma sozlamalari",
+        "enableAll": "Bildirishnomalarni yoqish",
+        "disableAll": "Hammasini o'chirish",
+        "permissionRequired": "Ruxsat kerak",
+        "permissionDenied": "Tizim sozlamalarida bildirishnomalar o'chirilgan",
+        "openSettings": "Sozlamalarni ochish",
+        "connected": "Ulangan",
+        "disconnected": "Uzilgan"
+      },
+      "types": {
+        "documentExpiry": {
+          "title": "Hujjat muddati",
+          "description": "Muddati tugayotgan hujjatlar haqida eslatmalar"
+        },
+        "patentPayment": {
+          "title": "Patent to'lovi",
+          "description": "Patent to'lovi haqida eslatmalar"
+        },
+        "news": {
+          "title": "Yangiliklar va yangilanishlar",
+          "description": "Muhim yangiliklar va ilova yangilanishlari"
+        }
+      },
+      "messages": {
+        "documentExpiryTitle": "Hujjat muddati tugayapti",
+        "documentExpiryBody": "{document} {days} kundan keyin tugaydi",
+        "patentPaymentTitle": "Patent to'lovi eslatmasi",
+        "patentPaymentBody": "Patentni to'lashni unutmang",
+        "newsTitle": "Muhim yangilanish"
+      }
+    }
   },
   "errors": {
     "network": "Internet aloqasi yo'q",

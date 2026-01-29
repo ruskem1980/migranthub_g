@@ -1355,7 +1355,41 @@
     "paymentReminder": "Напоминание об оплате",
     "paymentReminderDesc": "Не забудьте оплатить патент",
     "documentReady": "Документ готов",
-    "documentReadyDesc": "Ваш документ готов к скачиванию"
+    "documentReadyDesc": "Ваш документ готов к скачиванию",
+    "pushNotifications": {
+      "settings": {
+        "title": "Push-уведомления",
+        "subtitle": "Настройки уведомлений",
+        "enableAll": "Включить уведомления",
+        "disableAll": "Отключить все",
+        "permissionRequired": "Требуется разрешение",
+        "permissionDenied": "Уведомления отключены в настройках системы",
+        "openSettings": "Открыть настройки",
+        "connected": "Подключено",
+        "disconnected": "Отключено"
+      },
+      "types": {
+        "documentExpiry": {
+          "title": "Истечение документов",
+          "description": "Напоминания об истекающих документах"
+        },
+        "patentPayment": {
+          "title": "Оплата патента",
+          "description": "Напоминания о предстоящей оплате патента"
+        },
+        "news": {
+          "title": "Новости и обновления",
+          "description": "Важные новости и обновления приложения"
+        }
+      },
+      "messages": {
+        "documentExpiryTitle": "Документ скоро истекает",
+        "documentExpiryBody": "{document} истекает через {days} дней",
+        "patentPaymentTitle": "Напоминание об оплате патента",
+        "patentPaymentBody": "Не забудьте оплатить патент",
+        "newsTitle": "Важное обновление"
+      }
+    }
   },
   "errors": {
     "network": "Нет подключения к интернету",

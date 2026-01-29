@@ -1243,7 +1243,41 @@
     "paymentReminder": "Ёдоварии пардохт",
     "paymentReminderDesc": "Пардохти патентро фаромӯш накунед",
     "documentReady": "Ҳуҷҷат тайёр аст",
-    "documentReadyDesc": "Ҳуҷҷати шумо барои боргирӣ тайёр аст"
+    "documentReadyDesc": "Ҳуҷҷати шумо барои боргирӣ тайёр аст",
+    "pushNotifications": {
+      "settings": {
+        "title": "Огоҳиҳои пуш",
+        "subtitle": "Танзимоти огоҳиҳо",
+        "enableAll": "Огоҳиҳоро фаъол кунед",
+        "disableAll": "Ҳамаро хомӯш кунед",
+        "permissionRequired": "Иҷозат лозим аст",
+        "permissionDenied": "Огоҳиҳо дар танзимоти система хомӯш шудаанд",
+        "openSettings": "Кушодани танзимот",
+        "connected": "Пайваст",
+        "disconnected": "Ҷудо"
+      },
+      "types": {
+        "documentExpiry": {
+          "title": "Мӯҳлати ҳуҷҷатҳо",
+          "description": "Ёдоварӣ дар бораи ҳуҷҷатҳои ба охир мерасанда"
+        },
+        "patentPayment": {
+          "title": "Пардохти патент",
+          "description": "Ёдоварӣ дар бораи пардохти патент"
+        },
+        "news": {
+          "title": "Хабарҳо ва навигарӣ",
+          "description": "Хабарҳои муҳим ва навигарии барнома"
+        }
+      },
+      "messages": {
+        "documentExpiryTitle": "Ҳуҷҷат ба наздикӣ тамом мешавад",
+        "documentExpiryBody": "{document} пас аз {days} рӯз тамом мешавад",
+        "patentPaymentTitle": "Ёдоварии пардохти патент",
+        "patentPaymentBody": "Пардохти патентро фаромӯш накунед",
+        "newsTitle": "Навигарии муҳим"
+      }
+    }
   },
   "errors": {
     "network": "Пайвасти интернет нест",

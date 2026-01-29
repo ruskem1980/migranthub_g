@@ -1355,7 +1355,41 @@
     "paymentReminder": "Payment reminder",
     "paymentReminderDesc": "Don't forget to pay for the patent",
     "documentReady": "Document ready",
-    "documentReadyDesc": "Your document is ready for download"
+    "documentReadyDesc": "Your document is ready for download",
+    "pushNotifications": {
+      "settings": {
+        "title": "Push notifications",
+        "subtitle": "Manage notification settings",
+        "enableAll": "Enable notifications",
+        "disableAll": "Disable all",
+        "permissionRequired": "Permission required",
+        "permissionDenied": "Notifications are disabled in system settings",
+        "openSettings": "Open settings",
+        "connected": "Connected",
+        "disconnected": "Disconnected"
+      },
+      "types": {
+        "documentExpiry": {
+          "title": "Document expiry",
+          "description": "Reminders about expiring documents"
+        },
+        "patentPayment": {
+          "title": "Patent payment",
+          "description": "Reminders about upcoming patent payments"
+        },
+        "news": {
+          "title": "News and updates",
+          "description": "Important news and app updates"
+        }
+      },
+      "messages": {
+        "documentExpiryTitle": "Document expiring soon",
+        "documentExpiryBody": "{document} expires in {days} days",
+        "patentPaymentTitle": "Patent payment reminder",
+        "patentPaymentBody": "Don't forget to pay for your patent",
+        "newsTitle": "Important update"
+      }
+    }
   },
   "errors": {
     "network": "No internet connection",
