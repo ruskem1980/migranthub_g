@@ -4,11 +4,17 @@ import { useState, useCallback } from 'react';
 import { Camera, CheckCircle2, AlertTriangle, XCircle, Share2, Info, Lock, X, Download, Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { DocumentScanner, type OcrDocumentData } from '@/components/documents/DocumentScanner';
 
 type InstructionModal = {
   isOpen: boolean;
   title: string;
   content: string;
+};
+
+type ScannerState = {
+  isOpen: boolean;
+  documentType?: string;
 };
 
 export function DocumentsScreen() {
@@ -17,6 +23,9 @@ export function DocumentsScreen() {
     isOpen: false,
     title: '',
     content: '',
+  });
+  const [scannerState, setScannerState] = useState<ScannerState>({
+    isOpen: false,
   });
 
   const handleShare = useCallback(async (docTitle: string) => {
@@ -68,6 +77,32 @@ export function DocumentsScreen() {
   const closeModal = useCallback(() => {
     setInstructionModal(prev => ({ ...prev, isOpen: false }));
   }, []);
+
+  const openScanner = useCallback((documentType?: string) => {
+    setScannerState({
+      isOpen: true,
+      documentType,
+    });
+  }, []);
+
+  const closeScanner = useCallback(() => {
+    setScannerState({
+      isOpen: false,
+    });
+  }, []);
+
+  const handleScanComplete = useCallback((data: OcrDocumentData, imageUri: string) => {
+    // Save scanned data to document storage
+    console.log('Scanned document data:', data, 'Image URI length:', imageUri.length);
+
+    // Close scanner after successful scan
+    closeScanner();
+
+    // Here you would typically:
+    // 1. Save the image to local storage
+    // 2. Update the document with OCR data
+    // 3. Show a success toast
+  }, [closeScanner]);
 
   const documents = [
     // УРОВЕНЬ 1: ОСНОВА
@@ -282,6 +317,7 @@ export function DocumentsScreen() {
                     </button>
                   ) : (
                     <button
+                      onClick={() => openScanner(doc.key)}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors active:scale-98 shadow-lg flex items-center justify-center gap-2"
                     >
                       <Camera className="w-5 h-5" />
@@ -327,6 +363,7 @@ export function DocumentsScreen() {
 
       {/* Floating Action Button */}
       <button
+        onClick={() => openScanner()}
         className="fixed bottom-24 right-6 w-16 h-16 bg-blue-600 text-white rounded-full shadow-2xl hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center z-40"
         aria-label={t('documents.scanOcr')}
       >
@@ -368,6 +405,15 @@ export function DocumentsScreen() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Document Scanner */}
+      {scannerState.isOpen && (
+        <DocumentScanner
+          documentType={scannerState.documentType}
+          onScanComplete={handleScanComplete}
+          onCancel={closeScanner}
+        />
       )}
     </div>
   );
