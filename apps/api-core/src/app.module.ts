@@ -10,10 +10,12 @@ import { UsersModule } from './modules/users/users.module';
 import { UtilitiesModule } from './modules/utilities/utilities.module';
 import { LegalModule } from './modules/legal/legal.module';
 import { ExamModule } from './modules/exam/exam.module';
+import { TrainerModule } from './modules/trainer/trainer.module';
 import { CacheModule } from './modules/cache/cache.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { SentryModule } from './common/sentry';
 import appConfig from './config/app.config';
+import openaiConfig from './config/openai.config';
 import databaseConfig from './config/database.config';
 import jwtConfig from './config/jwt.config';
 import redisConfig from './config/redis.config';
@@ -38,6 +40,7 @@ import permitStatusConfig from './config/permit-status.config';
         innCheckConfig,
         entryBanConfig,
         permitStatusConfig,
+        openaiConfig,
       ],
       envFilePath: ['.env.local', '.env'],
     }),
@@ -102,6 +105,7 @@ import permitStatusConfig from './config/permit-status.config';
     UtilitiesModule,
     LegalModule,
     ExamModule,
+    TrainerModule,
   ],
   providers: [
     {

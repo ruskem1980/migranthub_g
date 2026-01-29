@@ -539,11 +539,11 @@ export function getCheckLabel(type: CheckType): string {
 
 export function getCheckIcon(type: CheckType): string {
   const icons: Record<CheckType, string> = {
-    patent: 'document',
-    entryBan: 'ban',
-    inn: 'number',
-    days90180: 'calendar',
-    rvpVnj: 'file',
+    patent: '📄',
+    entryBan: '🚫',
+    inn: '🔢',
+    days90180: '📅',
+    rvpVnj: '📋',
   };
   return icons[type];
 }
