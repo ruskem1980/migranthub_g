@@ -12,6 +12,20 @@ export enum PatentStatus {
 }
 
 /**
+ * Источник данных для результата проверки патента
+ */
+export enum PatentCheckSource {
+  /** Результат получен от сервиса ФМС (Playwright) */
+  FMS = 'fms',
+  /** Результат получен из кэша */
+  CACHE = 'cache',
+  /** Mock данные (сервис отключен) */
+  MOCK = 'mock',
+  /** Fallback результат (при недоступности сервиса) */
+  FALLBACK = 'fallback',
+}
+
+/**
  * DTO результата проверки патента
  */
 export class PatentCheckResultDto {
@@ -88,10 +102,11 @@ export class PatentCheckResultDto {
   checkedAt!: string;
 
   @ApiProperty({
-    description: 'Источник данных (mock или real)',
-    example: 'real',
+    enum: PatentCheckSource,
+    description: 'Источник данных',
+    example: PatentCheckSource.FMS,
   })
-  source!: 'mock' | 'real';
+  source!: PatentCheckSource;
 }
 
 /**

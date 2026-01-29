@@ -10,6 +10,18 @@ export enum PermitStatusEnum {
   UNKNOWN = 'UNKNOWN', // Не удалось определить
 }
 
+/**
+ * Источник данных для результата проверки статуса РВП/ВНЖ
+ */
+export enum PermitStatusSource {
+  /** Результат получен от сервиса ФМС (Playwright) */
+  FMS = 'fms',
+  /** Результат получен из кэша */
+  CACHE = 'cache',
+  /** Fallback результат (при недоступности сервиса) */
+  FALLBACK = 'fallback',
+}
+
 export class PermitStatusResponseDto {
   @ApiProperty({ description: 'Найдено ли заявление', example: true })
   found!: boolean;
@@ -44,4 +56,11 @@ export class PermitStatusResponseDto {
     example: 'Сервис временно недоступен',
   })
   error?: string;
+
+  @ApiPropertyOptional({
+    enum: PermitStatusSource,
+    description: 'Источник данных результата',
+    example: PermitStatusSource.FMS,
+  })
+  source?: PermitStatusSource;
 }

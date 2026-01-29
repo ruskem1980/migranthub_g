@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Page, BrowserContext } from 'playwright';
 import { CacheService } from '../../cache/cache.service';
 import { BrowserService, CaptchaSolverService } from '../../../common/services';
-import { CheckPatentDto, PatentCheckResultDto, PatentStatus } from './dto';
+import { CheckPatentDto, PatentCheckResultDto, PatentStatus, PatentCheckSource } from './dto';
 
 /**
  * Состояние circuit breaker
@@ -101,6 +101,7 @@ export class PatentCheckService implements OnModuleInit {
       return {
         ...cached,
         fromCache: true,
+        source: PatentCheckSource.CACHE,
         checkedAt: new Date().toISOString(),
       };
     }
@@ -341,7 +342,7 @@ export class PatentCheckService implements OnModuleInit {
           ownerName: this.extractOwnerName(html),
           fromCache: false,
           checkedAt: now,
-          source: 'real',
+          source: PatentCheckSource.FMS,
         };
       }
     }
