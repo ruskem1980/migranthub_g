@@ -26,6 +26,8 @@ import type {
   InnCheckResponse,
   CheckPermitRequest,
   PermitStatusResponse,
+  CheckFsspRequest,
+  FsspCheckResponse,
   ChatHistoryMessage,
   AssistantChatResponse,
   AssistantSearchResponse,
@@ -324,6 +326,9 @@ export const utilitiesApi = {
 
   checkPermitStatus: (data: CheckPermitRequest) =>
     apiClient.post<PermitStatusResponse>('/utilities/permit-status', data),
+
+  checkFssp: (data: CheckFsspRequest) =>
+    apiClient.post<FsspCheckResponse>('/utilities/fssp-check', data),
 };
 
 // Health API

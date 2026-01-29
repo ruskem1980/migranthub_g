@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, MapPin, Wand2, GraduationCap, ClipboardCheck, Hash, Calculator, FileCheck, CalendarDays, MessageSquare, LucideIcon, HelpCircle, Scale, Route, CreditCard } from 'lucide-react';
+import { Shield, MapPin, Wand2, GraduationCap, ClipboardCheck, Hash, Calculator, FileCheck, CalendarDays, MessageSquare, LucideIcon, HelpCircle, Scale, Route, CreditCard, Gavel } from 'lucide-react';
 import { useState } from 'react';
 import { DocumentGenerator } from '../services/DocumentGenerator';
 import { PermitStatusModal } from '../services/PermitStatusModal';
@@ -10,6 +10,7 @@ import { PatentCheckModal } from '../services/PatentCheckModal';
 import { PatentPaymentModal } from '../services/PatentPaymentModal';
 import { FAQModal } from '../services/FAQModal';
 import { RightsModal } from '../services/RightsModal';
+import { FsspCheckModal } from '../services/FsspCheckModal';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useProfileStore } from '@/lib/stores';
@@ -32,6 +33,7 @@ export function ServicesScreen() {
   const [showRoadmap, setShowRoadmap] = useState(false);
   const [showFAQ, setShowFAQ] = useState(false);
   const [showRights, setShowRights] = useState(false);
+  const [showFsspCheck, setShowFsspCheck] = useState(false);
   const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: '', visible: false });
 
   // Document Services
@@ -45,6 +47,7 @@ export function ServicesScreen() {
     { id: 'permitStatus', icon: ClipboardCheck, title: t('services.items.permitStatus.title'), subtitle: t('services.items.permitStatus.subtitle'), color: 'blue' },
     { id: 'innCheck', icon: Hash, title: 'INN Check', subtitle: 'Find your tax ID', color: 'indigo' },
     { id: 'patentCheck', icon: FileCheck, title: language === 'ru' ? 'Проверка патента' : 'Patent Check', subtitle: language === 'ru' ? 'Действительность патента' : 'Check validity', color: 'cyan' },
+    { id: 'fsspCheck', icon: Gavel, title: t('services.items.fsspCheck.title'), subtitle: t('services.items.fsspCheck.subtitle'), color: 'purple' },
   ];
 
   // Calculator Services
@@ -99,6 +102,9 @@ export function ServicesScreen() {
         break;
       case 'patentCheck':
         setShowPatentCheck(true);
+        break;
+      case 'fsspCheck':
+        setShowFsspCheck(true);
         break;
       case 'patentCalc':
         setShowPatentCalculator(true);

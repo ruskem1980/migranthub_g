@@ -165,6 +165,37 @@ export interface PatentRegionsResponse {
   updatedAt: string;
 }
 
+// FSSP Check Types
+export type FsspCheckSource = 'fssp' | 'cache' | 'mock' | 'fallback';
+
+export interface FsspDebt {
+  id: string;
+  type: string;
+  amount: number;
+  department: string;
+  documentNumber?: string;
+  documentDate?: string;
+}
+
+export interface CheckFsspRequest {
+  lastName: string;
+  firstName: string;
+  middleName?: string;
+  birthDate: string;
+  regionCode: string;
+}
+
+export interface FsspCheckResponse {
+  found: boolean;
+  hasDebt: boolean;
+  totalAmount?: number;
+  debts?: FsspDebt[];
+  source: FsspCheckSource;
+  checkedAt: string;
+  error?: string;
+  message?: string;
+}
+
 // API Error
 export interface ApiError {
   message: string;

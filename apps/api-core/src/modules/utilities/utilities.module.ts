@@ -11,6 +11,9 @@ import { InnCheckService } from './inn-check/inn-check.service';
 import { PermitStatusCheckController } from './permit-status-check/permit-status-check.controller';
 import { PermitStatusCheckService } from './permit-status-check/permit-status-check.service';
 import { FmsPermitClient } from './permit-status-check/fms-permit.client';
+import { FsspCheckController } from './fssp-check/fssp-check.controller';
+import { FsspCheckService } from './fssp-check/fssp-check.service';
+import { FsspClient } from './fssp-check/fssp.client';
 import { BrowserService, CaptchaSolverService } from '../../common/services';
 
 @Module({
@@ -19,6 +22,7 @@ import { BrowserService, CaptchaSolverService } from '../../common/services';
     PatentController,
     InnCheckController,
     PermitStatusCheckController,
+    FsspCheckController,
   ],
   providers: [
     BanCheckService,
@@ -29,6 +33,8 @@ import { BrowserService, CaptchaSolverService } from '../../common/services';
     InnCheckService,
     PermitStatusCheckService,
     FmsPermitClient,
+    FsspCheckService,
+    FsspClient,
     BrowserService,
     CaptchaSolverService,
   ],
@@ -38,6 +44,7 @@ import { BrowserService, CaptchaSolverService } from '../../common/services';
     PatentCheckService,
     InnCheckService,
     PermitStatusCheckService,
+    FsspCheckService,
   ],
 })
 export class UtilitiesModule {}

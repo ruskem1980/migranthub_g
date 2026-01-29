@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Loader2, Send, ArrowLeft, CheckCircle, AlertCircle, XCircle, Clock, Star, Trophy, Shield, Calculator, Hash, AlertTriangle, Scale, Phone, MessageCircle, X, User, Building, Search, ChevronDown, FileText, MapPin, Briefcase, Heart, Flag, Home, CreditCard, Bot, BookOpen } from 'lucide-react';
+import { SpeakButton } from '@/components/ui/SpeakButton';
 import { useTrainerStore, getDifficultyStars, type Scenario, type Message } from '@/lib/stores/trainerStore';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useToast } from '@/hooks/useToast';
@@ -373,9 +374,17 @@ function KnowledgeBaseSection() {
               </button>
               {expandedId === item.id && (
                 <div className="px-4 pb-3 pt-0">
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {language === 'ru' ? item.answer.ru : item.answer.en}
-                  </p>
+                  <div className="flex items-start gap-2">
+                    <p className="text-sm text-gray-600 leading-relaxed flex-1">
+                      {language === 'ru' ? item.answer.ru : item.answer.en}
+                    </p>
+                    <SpeakButton
+                      text={language === 'ru' ? item.answer.ru : item.answer.en}
+                      size="sm"
+                      variant="ghost"
+                      className="flex-shrink-0 mt-0.5"
+                    />
+                  </div>
                   {item.legalReference && (
                     <p className="mt-2 text-xs text-blue-600">
                       {item.legalReference}

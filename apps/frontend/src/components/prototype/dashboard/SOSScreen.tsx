@@ -4,6 +4,7 @@ import { AlertTriangle, Phone, FileX, MapPin, X, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { SpeakButton } from '@/components/ui/SpeakButton';
 
 // Strict bureaucratic priority order (0 = highest priority)
 const PRIORITY_ORDER = ['passport', 'mig_card', 'green_card', 'education', 'registration', 'patent', 'receipts', 'contract', 'insurance', 'inn', 'family'] as const;
@@ -198,7 +199,22 @@ export function SOSScreen() {
 
             {policeReason && (
               <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl mb-4">
-                <h4 className="font-bold text-blue-900 mb-2">⚖️ {t('sos.detained.rightsAndAlgorithm')}:</h4>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-bold text-blue-900">⚖️ {t('sos.detained.rightsAndAlgorithm')}:</h4>
+                  <SpeakButton
+                    text={
+                      policeReason === 'sos.policeReasons.documentCheck'
+                        ? `${t('sos.detained.whatToDo')}: ${t('sos.detained.showDocumentsCalmly')}. ${t('sos.detained.rightToRecord')}. ${t('sos.detained.demandProtocol')}. ${t('sos.detained.whatNotToDo')}: ${t('sos.detained.dontBeRude')}. ${t('sos.detained.noBribery')}.`
+                        : policeReason === 'sos.policeReasons.noDocuments'
+                        ? `${t('sos.rights.title')}: ${t('sos.detained.rightToTranslator')}. ${t('sos.detained.rightToCall')}. ${t('sos.detained.rightNotToSign')}. ${t('sos.detained.important')}: ${t('sos.detained.demandStatement')}.`
+                        : `${t('sos.detained.immediately')}: ${t('sos.detained.demandConsulate')}. ${t('sos.detained.dontSignWithoutTranslator')}. ${t('sos.detained.recordOfficerInfo')}.`
+                    }
+                    size="md"
+                    variant="default"
+                    showLabel
+                    label={t('common.listen') || 'Listen'}
+                  />
+                </div>
                 <div className="text-sm text-blue-800 space-y-2">
                   {policeReason === 'sos.policeReasons.documentCheck' && (
                     <>
@@ -395,9 +411,16 @@ export function SOSScreen() {
 
                           {/* Step Content */}
                           <div className="flex-1 bg-white border-2 border-orange-200 rounded-xl p-4 shadow-sm">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="text-xl">{doc.icon}</span>
-                              <h5 className="font-bold text-gray-900">{t(doc.translationKey)}</h5>
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xl">{doc.icon}</span>
+                                <h5 className="font-bold text-gray-900">{t(doc.translationKey)}</h5>
+                              </div>
+                              <SpeakButton
+                                text={`${t(doc.translationKey)}. ${t(instructionKey)}`}
+                                size="sm"
+                                variant="ghost"
+                              />
                             </div>
                             <p className="text-sm text-gray-700 leading-relaxed">
                               {t(instructionKey)}

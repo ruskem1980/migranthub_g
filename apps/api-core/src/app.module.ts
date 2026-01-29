@@ -27,6 +27,7 @@ import patentCheckConfig from './config/patent-check.config';
 import innCheckConfig from './config/inn-check.config';
 import entryBanConfig from './config/entry-ban.config';
 import permitStatusConfig from './config/permit-status.config';
+import fsspConfig from './config/fssp.config';
 import yookassaConfig from './config/yookassa.config';
 
 @Module({
@@ -44,6 +45,7 @@ import yookassaConfig from './config/yookassa.config';
         innCheckConfig,
         entryBanConfig,
         permitStatusConfig,
+        fsspConfig,
         openaiConfig,
         yookassaConfig,
       ],
