@@ -806,6 +806,14 @@
         "title": "Passport Check",
         "subtitle": "RF passport validity"
       },
+      "workPermitCheck": {
+        "title": "Work Permit Check",
+        "subtitle": "Work permit validity"
+      },
+      "gibddCheck": {
+        "title": "Traffic Fines",
+        "subtitle": "Check GIBDD fines"
+      },
       "payment": {
         "title": "Patent payment",
         "subtitle": "Quick payment"
@@ -2208,5 +2216,26 @@
     "backupDate": "Created: {date}",
     "noBackups": "No saved backups",
     "encryption": "AES-256 encryption"
+  },
+  "pushNotifications": {
+    "title": "Push Notifications",
+    "subtitle": "Get important reminders about documents and payments",
+    "enabled": "Enabled",
+    "notSupported": "Push notifications are only available in the mobile app",
+    "permissionRequired": "Enable push notifications",
+    "permissionDescription": "Receive timely reminders about document expiration, patent payments, and important news",
+    "enableButton": "Enable notifications",
+    "types": {
+      "documentExpiry": "Document expiration",
+      "documentExpiryDesc": "Reminders about expiring documents",
+      "patentPayment": "Patent payment",
+      "patentPaymentDesc": "Reminders about upcoming patent payments",
+      "news": "News and updates",
+      "newsDesc": "Important news and app updates"
+    },
+    "status": {
+      "connected": "Notifications are active",
+      "pending": "Connecting to notification service..."
+    }
   }
 }

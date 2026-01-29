@@ -30,6 +30,8 @@ import type {
   FsspCheckResponse,
   CheckPassportValidityRequest,
   PassportValidityResponse,
+  CheckGibddFinesRequest,
+  GibddFinesResponse,
   ChatHistoryMessage,
   AssistantChatResponse,
   AssistantSearchResponse,
@@ -340,6 +342,9 @@ export const utilitiesApi = {
 
   checkPassportValidity: (data: CheckPassportValidityRequest) =>
     apiClient.post<PassportValidityResponse>('/utilities/passport-validity', data),
+
+  checkGibddFines: (data: CheckGibddFinesRequest) =>
+    apiClient.post<GibddFinesResponse>('/utilities/gibdd-fines', data),
 };
 
 // Health API

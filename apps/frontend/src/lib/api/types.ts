@@ -216,6 +216,68 @@ export interface FsspCheckResponse {
   message?: string;
 }
 
+// Work Permit Check Types
+export type WorkPermitStatus = 'VALID' | 'INVALID' | 'EXPIRED' | 'NOT_FOUND' | 'UNKNOWN';
+export type WorkPermitSource = 'mvd' | 'cache' | 'fallback';
+
+export interface CheckWorkPermitRequest {
+  series: string;
+  number: string;
+  lastName?: string;
+  firstName?: string;
+}
+
+export interface WorkPermitCheckResponse {
+  status: WorkPermitStatus;
+  isValid: boolean;
+  series: string;
+  number: string;
+  source: WorkPermitSource;
+  checkedAt: string;
+  region?: string;
+  employer?: string;
+  issueDate?: string;
+  expirationDate?: string;
+  message?: string;
+  error?: string;
+}
+
+// GIBDD Fines Check Types
+export type GibddCheckType = 'sts' | 'license';
+export type GibddCheckSource = 'gibdd' | 'cache' | 'fallback';
+
+export interface GibddFine {
+  date?: string;
+  article?: string;
+  description?: string;
+  amount?: number;
+  discountAmount?: number;
+  discountDeadline?: string;
+  uin?: string;
+  paymentUrl?: string;
+  location?: string;
+  department?: string;
+}
+
+export interface CheckGibddFinesRequest {
+  checkType: GibddCheckType;
+  regNumber?: string;
+  stsNumber?: string;
+  licenseNumber?: string;
+  issueDate?: string;
+}
+
+export interface GibddFinesResponse {
+  hasFines: boolean;
+  totalAmount?: number;
+  finesCount?: number;
+  fines?: GibddFine[];
+  source: GibddCheckSource;
+  checkedAt: string;
+  error?: string;
+  message?: string;
+}
+
 // API Error
 export interface ApiError {
   message: string;

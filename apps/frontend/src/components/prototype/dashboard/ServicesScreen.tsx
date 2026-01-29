@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, MapPin, Wand2, GraduationCap, ClipboardCheck, Hash, Calculator, FileCheck, CalendarDays, MessageSquare, LucideIcon, HelpCircle, Scale, Route, CreditCard, Gavel } from 'lucide-react';
+import { Shield, MapPin, Wand2, GraduationCap, ClipboardCheck, Hash, Calculator, FileCheck, CalendarDays, MessageSquare, LucideIcon, HelpCircle, Scale, Route, CreditCard, Gavel, Briefcase, Car } from 'lucide-react';
 import { useState } from 'react';
 import { DocumentGenerator } from '../services/DocumentGenerator';
 import { PermitStatusModal } from '../services/PermitStatusModal';
@@ -12,6 +12,8 @@ import { FAQModal } from '../services/FAQModal';
 import { RightsModal } from '../services/RightsModal';
 import { FsspCheckModal } from '../services/FsspCheckModal';
 import { PassportValidityModal } from '../services/PassportValidityModal';
+import { WorkPermitCheckModal } from '../services/WorkPermitCheckModal';
+import { GibddCheckModal } from '../services/GibddCheckModal';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useProfileStore } from '@/lib/stores';
@@ -36,6 +38,8 @@ export function ServicesScreen() {
   const [showRights, setShowRights] = useState(false);
   const [showFsspCheck, setShowFsspCheck] = useState(false);
   const [showPassportValidity, setShowPassportValidity] = useState(false);
+  const [showWorkPermitCheck, setShowWorkPermitCheck] = useState(false);
+  const [showGibddCheck, setShowGibddCheck] = useState(false);
   const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: '', visible: false });
 
   // Document Services
@@ -51,6 +55,8 @@ export function ServicesScreen() {
     { id: 'patentCheck', icon: FileCheck, title: language === 'ru' ? 'Проверка патента' : 'Patent Check', subtitle: language === 'ru' ? 'Действительность патента' : 'Check validity', color: 'cyan' },
     { id: 'fsspCheck', icon: Gavel, title: t('services.items.fsspCheck.title'), subtitle: t('services.items.fsspCheck.subtitle'), color: 'purple' },
     { id: 'passportValidity', icon: Shield, title: t('services.items.passportValidity.title'), subtitle: t('services.items.passportValidity.subtitle'), color: 'red' },
+    { id: 'workPermitCheck', icon: Briefcase, title: t('services.items.workPermitCheck.title'), subtitle: t('services.items.workPermitCheck.subtitle'), color: 'teal' },
+    { id: 'gibddCheck', icon: Car, title: t('services.items.gibddCheck.title'), subtitle: t('services.items.gibddCheck.subtitle'), color: 'orange' },
   ];
 
   // Calculator Services
@@ -140,6 +146,12 @@ export function ServicesScreen() {
         break;
       case 'rights':
         setShowRights(true);
+        break;
+      case 'workPermitCheck':
+        setShowWorkPermitCheck(true);
+        break;
+      case 'gibddCheck':
+        setShowGibddCheck(true);
         break;
       default:
         break;
@@ -355,6 +367,16 @@ export function ServicesScreen() {
       {/* Passport Validity Modal */}
       {showPassportValidity && (
         <PassportValidityModal onClose={() => setShowPassportValidity(false)} />
+      )}
+
+      {/* Work Permit Check Modal */}
+      {showWorkPermitCheck && (
+        <WorkPermitCheckModal onClose={() => setShowWorkPermitCheck(false)} />
+      )}
+
+      {/* GIBDD Check Modal */}
+      {showGibddCheck && (
+        <GibddCheckModal onClose={() => setShowGibddCheck(false)} />
       )}
 
       {/* Toast Notification */}

@@ -801,6 +801,14 @@
         "title": "Pasport tekshiruvi",
         "subtitle": "RF pasporti haqiqiyligi"
       },
+      "workPermitCheck": {
+        "title": "RNR tekshiruvi",
+        "subtitle": "Ish ruxsatnomasi"
+      },
+      "gibddCheck": {
+        "title": "Yo'l harakati jarimasi",
+        "subtitle": "GIBDD jarimalarini tekshirish"
+      },
       "payment": {
         "title": "Patent to'lovi",
         "subtitle": "Tezkor to'lov"
@@ -2159,5 +2167,26 @@
     "backupDate": "Yaratilgan: {date}",
     "noBackups": "Saqlangan zaxiralar yo'q",
     "encryption": "AES-256 shifrlash"
+  },
+  "pushNotifications": {
+    "title": "Push-xabarnomalar",
+    "subtitle": "Hujjatlar va to'lovlar haqida muhim eslatmalar oling",
+    "enabled": "Yoqilgan",
+    "notSupported": "Push-xabarnomalar faqat mobil ilovada mavjud",
+    "permissionRequired": "Push-xabarnomalarni yoqish",
+    "permissionDescription": "Hujjatlar muddati, patent to'lovi va muhim yangiliklar haqida o'z vaqtida eslatmalar oling",
+    "enableButton": "Xabarnomalarni yoqish",
+    "types": {
+      "documentExpiry": "Hujjat muddati",
+      "documentExpiryDesc": "Muddati tugayotgan hujjatlar haqida eslatmalar",
+      "patentPayment": "Patent to'lovi",
+      "patentPaymentDesc": "Kelgusi patent to'lovlari haqida eslatmalar",
+      "news": "Yangiliklar va yangilanishlar",
+      "newsDesc": "Muhim yangiliklar va ilova yangilanishlari"
+    },
+    "status": {
+      "connected": "Xabarnomalar faol",
+      "pending": "Xabarnomalar xizmatiga ulanmoqda..."
+    }
   }
 }
