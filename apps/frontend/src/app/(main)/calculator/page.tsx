@@ -134,9 +134,11 @@ const TOP_REGIONS = [
 function RegionSelector({
   value,
   onChange,
+  t,
 }: {
   value: RegionType | null;
   onChange: (region: RegionType, regionName: string) => void;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }) {
   const [selectedValue, setSelectedValue] = useState<string>('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -172,31 +174,31 @@ function RegionSelector({
 
   const selectedOtherLabel = getSelectedRegionLabel();
 
-  const getPenaltyInfo = () => {
+  const getLocalPenaltyInfo = () => {
     if (!value) return null;
     if (value === 'moscow' || value === 'spb') {
       return {
-        text: 'Штраф 5000-7000₽, возможна депортация',
+        text: t('services.calculator.penalty.fineWithDeportation', { min: '5000', max: '7000' }),
         color: 'text-red-600',
         bg: 'bg-red-50',
         border: 'border-red-200',
       };
     }
     return {
-      text: 'Штраф 2000-5000₽',
+      text: t('services.calculator.penalty.fineOnly', { min: '2000', max: '5000' }),
       color: 'text-orange-600',
       bg: 'bg-orange-50',
       border: 'border-orange-200',
     };
   };
 
-  const penaltyInfo = getPenaltyInfo();
+  const penaltyInfo = getLocalPenaltyInfo();
 
   return (
     <div className="mb-6">
       <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
         <MapPin className="w-4 h-4" />
-        Регион пребывания <span className="text-red-500">*</span>
+        {t('services.calculator.region')} <span className="text-red-500">*</span>
       </label>
 
       {/* Топ-5 кнопок */}
@@ -226,7 +228,7 @@ function RegionSelector({
               : 'bg-gray-50 text-gray-700 border-2 border-gray-200 hover:border-blue-300'
           }`}
         >
-          {selectedOtherLabel || 'Другой регион'} {showDropdown ? '▲' : '▼'}
+          {selectedOtherLabel || t('services.calculator.regionOther')} {showDropdown ? '▲' : '▼'}
         </button>
       </div>
 
@@ -236,7 +238,7 @@ function RegionSelector({
           <div className="max-h-64 overflow-y-auto">
             {/* Повышенные штрафы */}
             <div className="sticky top-0 bg-red-50 px-3 py-2 border-b border-red-200">
-              <span className="text-xs font-semibold text-red-700">⚠️ Повышенные штрафы (5000-7000₽)</span>
+              <span className="text-xs font-semibold text-red-700">{t('services.calculator.increasedFines')} (5000-7000)</span>
             </div>
             <div className="p-2 space-y-1">
               {[...REGIONS.moscow, ...REGIONS.spb].map(r => {
@@ -260,7 +262,7 @@ function RegionSelector({
 
             {/* Остальные регионы */}
             <div className="sticky top-0 bg-gray-100 px-3 py-2 border-y border-gray-200">
-              <span className="text-xs font-semibold text-gray-600">Остальные регионы (2000-5000₽)</span>
+              <span className="text-xs font-semibold text-gray-600">{t('services.calculator.standardFines')} (2000-5000)</span>
             </div>
             <div className="p-2 space-y-1">
               {REGIONS.other.map(r => (
@@ -292,7 +294,7 @@ function RegionSelector({
       )}
 
       {!selectedValue && (
-        <p className="text-sm text-orange-600 mt-2">Выберите ваш регион пребывания</p>
+        <p className="text-sm text-orange-600 mt-2">{t('services.calculator.regionRequired')}</p>
       )}
     </div>
   );
@@ -416,11 +418,13 @@ function PeriodForm({
   initialExit = '',
   onSave,
   onCancel,
+  t,
 }: {
   initialEntry?: string;
   initialExit?: string;
   onSave: (entry: string, exit?: string) => void;
   onCancel: () => void;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }) {
   const [entryDate, setEntryDate] = useState(initialEntry);
   const [exitDate, setExitDate] = useState(initialExit);
@@ -436,7 +440,7 @@ function PeriodForm({
     <form onSubmit={handleSubmit} className="p-4 bg-blue-50 rounded-xl space-y-4">
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs text-gray-600 mb-1">Дата въезда *</label>
+          <label className="block text-xs text-gray-600 mb-1">{t('services.calculator.entryDate')} *</label>
           <input
             type="date"
             value={entryDate}
@@ -447,7 +451,7 @@ function PeriodForm({
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-600 mb-1">Дата выезда</label>
+          <label className="block text-xs text-gray-600 mb-1">{t('services.calculator.exitDate')}</label>
           <input
             type="date"
             value={exitDate}
@@ -458,21 +462,21 @@ function PeriodForm({
           />
         </div>
       </div>
-      <p className="text-xs text-gray-500">Оставьте дату выезда пустой, если вы ещё в России</p>
+      <p className="text-xs text-gray-500">{t('services.calculator.exitDateHint')}</p>
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={!entryDate}
           className="flex-1 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Сохранить
+          {t('common.save')}
         </button>
         <button
           type="button"
           onClick={onCancel}
           className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300"
         >
-          Отмена
+          {t('common.cancel')}
         </button>
       </div>
     </form>
@@ -580,9 +584,9 @@ export default function CalculatorPage() {
               <Calendar className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900">Калькулятор 90 дней</h1>
+              <h1 className="text-lg font-bold text-gray-900">{t('services.calculator.title')}</h1>
               <p className="text-sm text-gray-500">
-                Расчёт дней пребывания в {calculation.currentYear} году
+                {t('services.calculator.pageSubtitle', { year: calculation.currentYear })}
               </p>
             </div>
           </div>
@@ -590,7 +594,7 @@ export default function CalculatorPage() {
         <button
           onClick={refresh}
           className="p-2 hover:bg-gray-100 rounded-full"
-          title="Обновить"
+          title={t('services.calculator.refresh')}
         >
           <RefreshCw className={`w-5 h-5 text-gray-600 ${isLoading ? 'animate-spin' : ''}`} />
         </button>
@@ -599,7 +603,7 @@ export default function CalculatorPage() {
       {/* Content */}
       <div className="flex-1 min-h-0 overflow-y-auto p-4 pb-6">
         {/* Region selector */}
-        <RegionSelector value={selectedRegion} onChange={handleRegionChange} />
+        <RegionSelector value={selectedRegion} onChange={handleRegionChange} t={t} />
 
         {/* Penalty warning */}
         {showPenaltyWarning && selectedRegion && <PenaltyWarning region={selectedRegion} t={t} />}
@@ -615,7 +619,7 @@ export default function CalculatorPage() {
                   {calculation.isOverstay ? calculation.overstayDays : calculation.daysRemaining}
                 </span>
                 <span className={`text-sm ${colors.subtext}`}>
-                  {calculation.isOverstay ? 'дн. сверх' : 'дн. осталось'}
+                  {calculation.isOverstay ? t('services.calculator.daysOver') : t('services.calculator.daysLeft')}
                 </span>
               </div>
             </div>
@@ -636,7 +640,7 @@ export default function CalculatorPage() {
               />
             )}
             <span className={`font-semibold ${colors.text}`}>
-              Использовано {calculation.totalDays} из 90 дней в {calculation.currentYear} году
+              {t('services.calculator.usedDays', { used: calculation.totalDays, total: 90, year: calculation.currentYear })}
             </span>
           </div>
 
@@ -660,10 +664,10 @@ export default function CalculatorPage() {
           <div className="flex items-start gap-3 p-4 bg-purple-50 rounded-xl mb-6">
             <Clock className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-purple-800">
-              <strong>Сброс лимита:</strong> 1 января {calculation.currentYear + 1} года
+              <strong>{t('services.calculator.resetLimit.title')}:</strong> {t('services.calculator.resetLimit.date', { year: calculation.currentYear + 1 })}
               <br />
               <span className="text-purple-600">
-                Через {calculation.daysUntilReset} дн. лимит обнулится
+                {t('services.calculator.resetLimit.daysUntil', { days: calculation.daysUntilReset })}
               </span>
             </div>
           </div>
@@ -711,21 +715,20 @@ export default function CalculatorPage() {
         <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl mb-6">
           <Info className="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-gray-600">
-            <strong>Правило 90 дней:</strong> С 05.02.2025 иностранные граждане могут находиться в
-            России не более 90 дней в течение календарного года (с 1 января по 31 декабря).
+            {t('services.calculator.rule')}
           </div>
         </div>
 
         {/* Periods header */}
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-gray-900">Периоды пребывания</h3>
-          <span className="text-sm text-gray-500">{periods.length} записей</span>
+          <h3 className="font-semibold text-gray-900">{t('services.calculator.periods.title')}</h3>
+          <span className="text-sm text-gray-500">{t('services.calculator.periods.count', { count: periods.length })}</span>
         </div>
 
         {/* Add period form */}
         {showAddForm ? (
           <div className="mb-4">
-            <PeriodForm onSave={handleAddPeriod} onCancel={() => setShowAddForm(false)} />
+            <PeriodForm onSave={handleAddPeriod} onCancel={() => setShowAddForm(false)} t={t} />
           </div>
         ) : (
           <button
@@ -733,18 +736,18 @@ export default function CalculatorPage() {
             className="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors mb-4"
           >
             <Plus className="w-5 h-5" />
-            Добавить въезд
+            {t('services.calculator.periods.addEntry')}
           </button>
         )}
 
         {/* Periods list */}
         {isLoading ? (
-          <div className="text-center py-8 text-gray-500">Загрузка...</div>
+          <div className="text-center py-8 text-gray-500">{t('common.loading')}</div>
         ) : periods.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <Calendar className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-            <p>Нет записей о пребывании</p>
-            <p className="text-sm">Добавьте даты въезда и выезда</p>
+            <p>{t('services.calculator.periods.noPeriods')}</p>
+            <p className="text-sm">{t('services.calculator.periods.addDatesHint')}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -756,6 +759,7 @@ export default function CalculatorPage() {
                     initialExit={period.exitDate || ''}
                     onSave={(entry, exit) => handleUpdatePeriod(period.id, entry, exit)}
                     onCancel={() => setEditingPeriodId(null)}
+                    t={t}
                   />
                 ) : (
                   <div className="p-4 bg-gray-50 rounded-xl">
@@ -772,13 +776,13 @@ export default function CalculatorPage() {
                             </span>
                           ) : (
                             <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium">
-                              Сейчас в РФ
+                              {t('services.calculator.periods.currentlyInRussia')}
                             </span>
                           )}
                         </div>
                         {period.migrationCardId && (
                           <span className="text-xs text-gray-500">
-                            Связано с миграционной картой
+                            {t('services.calculator.periods.linkedToMigrationCard')}
                           </span>
                         )}
                       </div>
@@ -786,14 +790,14 @@ export default function CalculatorPage() {
                         <button
                           onClick={() => setEditingPeriodId(period.id)}
                           className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded"
-                          title="Редактировать"
+                          title={t('common.edit')}
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeletePeriod(period.id)}
                           className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
-                          title="Удалить"
+                          title={t('common.delete')}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -816,7 +820,7 @@ export default function CalculatorPage() {
           onClick={() => router.push('/services')}
           className="w-full py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors"
         >
-          Закрыть
+          {t('services.calculator.close')}
         </button>
       </div>
     </div>

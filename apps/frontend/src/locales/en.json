@@ -821,9 +821,15 @@
       "title": "90 Days Calculator",
       "subtitle": "Days per year",
       "description": "Calculate remaining legal stay days for the current year",
+      "pageSubtitle": "Calculating stay days for {year}",
       "entryDate": "Entry date",
+      "exitDate": "Exit date",
+      "exitDateHint": "Leave exit date empty if you are still in Russia",
       "daysSpent": "Days in Russia",
       "daysRemaining": "Days remaining",
+      "daysOver": "days over",
+      "daysLeft": "days left",
+      "usedDays": "Used {used} out of {total} days in {year}",
       "mustLeave": "Must leave by",
       "rule": "From 05.02.2025: you can stay in Russia for no more than 90 days per calendar year (January 1 - December 31)",
       "lawReference": "FZ-260 dated 08.08.2024, effective from 05.02.2025",
@@ -840,12 +846,17 @@
         }
       },
       "region": "Region of stay",
+      "regionRequired": "Select your region of stay",
       "regionMoscow": "Moscow / Moscow Oblast",
       "regionSpb": "St. Petersburg / Leningrad Oblast",
       "regionOther": "Other region",
+      "increasedFines": "Increased fines",
+      "standardFines": "Other regions",
       "penalty": {
         "title": "Possible penalties",
         "fine": "Fine: {min} - {max} RUB",
+        "fineWithDeportation": "Fine {min}-{max} RUB, deportation possible",
+        "fineOnly": "Fine {min}-{max} RUB",
         "deportation": "Deportation with entry ban possible",
         "noDeportation": "Deportation unlikely for first offense"
       },
@@ -862,7 +873,23 @@
           "leave": "Obligation to leave Russia within the deadline"
         },
         "warning": "Non-compliance results in forced deportation"
-      }
+      },
+      "periods": {
+        "title": "Stay periods",
+        "count": "{count} entries",
+        "addEntry": "Add entry",
+        "noPeriods": "No stay records",
+        "addDatesHint": "Add entry and exit dates",
+        "currentlyInRussia": "Currently in RF",
+        "linkedToMigrationCard": "Linked to migration card"
+      },
+      "resetLimit": {
+        "title": "Limit reset",
+        "date": "January 1, {year}",
+        "daysUntil": "In {days} days the limit will reset"
+      },
+      "close": "Close",
+      "refresh": "Refresh"
     },
     "map": {
       "title": "Migrant map",
