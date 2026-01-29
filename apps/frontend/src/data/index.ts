@@ -30,3 +30,15 @@ export {
   type Country,
   type SupportedLanguage,
 } from './countries';
+
+export {
+  KNOWLEDGE_BASE,
+  KNOWLEDGE_COUNT,
+  searchKnowledge,
+  getKnowledgeByCategory,
+  getKnowledgeById,
+  getKnowledgeCategories,
+  getRandomKnowledge,
+  type KnowledgeItem,
+  type KnowledgeCategory,
+} from './knowledgeBase';
