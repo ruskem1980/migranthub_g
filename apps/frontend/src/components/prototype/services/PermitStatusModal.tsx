@@ -57,8 +57,14 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
   const { language } = useLanguageStore();
   const [formData, setFormData] = useState<FormData>({
-    permitType: 'RVP', region: '77', applicationDate: '', applicationNumber: '',
-    lastName: '', firstName: '', middleName: '', birthDate: '',
+    permitType: 'RVP',
+    region: '77',
+    applicationDate: '',
+    applicationNumber: '',
+    lastName: '',
+    firstName: '',
+    middleName: '',
+    birthDate: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -77,22 +83,32 @@ export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/utilities/permit-status`, {
+      const url = API_BASE_URL + '/api/v1/utilities/permit-status';
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          permitType: formData.permitType, region: formData.region, applicationDate: formData.applicationDate,
-          applicationNumber: formData.applicationNumber || undefined, lastName: formData.lastName.trim(),
-          firstName: formData.firstName.trim(), middleName: formData.middleName.trim() || undefined, birthDate: formData.birthDate,
+          permitType: formData.permitType,
+          region: formData.region,
+          applicationDate: formData.applicationDate,
+          applicationNumber: formData.applicationNumber || undefined,
+          lastName: formData.lastName.trim(),
+          firstName: formData.firstName.trim(),
+          middleName: formData.middleName.trim() || undefined,
+          birthDate: formData.birthDate,
         }),
       });
       if (!response.ok) throw new Error('Failed');
       setResult(await response.json());
-    } catch { setError(language === 'ru' ? 'Ошибка проверки' : 'Check failed'); }
-    finally { setIsLoading(false); }
+    } catch {
+      setError(language === 'ru' ? 'Ошибка проверки' : 'Check failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const statusConfig = result ? (STATUS_CONFIG[result.status] || STATUS_CONFIG.UNKNOWN) : null;
+  const StatusIcon = statusConfig?.Icon;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -107,16 +123,20 @@ export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
               <p className="text-xs text-blue-100">{language === 'ru' ? 'Проверка заявления' : 'Check application'}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full"><X className="w-6 h-6 text-white" /></button>
+          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full">
+            <X className="w-6 h-6 text-white" />
+          </button>
         </div>
         <div className="flex-1 overflow-y-auto p-6">
-          {result && statusConfig ? (
+          {result && statusConfig && StatusIcon ? (
             <div className="space-y-5">
-              <div className={`p-6 ${statusConfig.bgColor} border-2 ${statusConfig.borderColor} rounded-2xl`}>
+              <div className={'p-6 ' + statusConfig.bgColor + ' border-2 ' + statusConfig.borderColor + ' rounded-2xl'}>
                 <div className="flex items-start gap-4">
-                  <statusConfig.Icon className={`w-8 h-8 ${statusConfig.color}`} />
+                  <StatusIcon className={'w-8 h-8 ' + statusConfig.color} />
                   <div>
-                    <h3 className={`text-lg font-bold ${statusConfig.color}`}>{language === 'ru' ? statusConfig.label.ru : statusConfig.label.en}</h3>
+                    <h3 className={'text-lg font-bold ' + statusConfig.color}>
+                      {language === 'ru' ? statusConfig.label.ru : statusConfig.label.en}
+                    </h3>
                     <p className="text-sm text-gray-700">{result.message}</p>
                   </div>
                 </div>
@@ -124,39 +144,84 @@ export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
               {result.estimatedDate && (
                 <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl flex items-center gap-3">
                   <Calendar className="w-5 h-5 text-blue-600" />
-                  <div><p className="text-sm font-semibold text-blue-900">{language === 'ru' ? 'Ориентировочно' : 'Estimated'}</p>
-                  <p className="text-sm text-blue-700">{new Date(result.estimatedDate).toLocaleDateString('ru-RU')}</p></div>
+                  <div>
+                    <p className="text-sm font-semibold text-blue-900">{language === 'ru' ? 'Ориентировочно' : 'Estimated'}</p>
+                    <p className="text-sm text-blue-700">{new Date(result.estimatedDate).toLocaleDateString('ru-RU')}</p>
+                  </div>
                 </div>
               )}
-              <button onClick={() => setResult(null)} className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl">{language === 'ru' ? 'Новая проверка' : 'New Check'}</button>
+              <button onClick={() => setResult(null)} className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl">
+                {language === 'ru' ? 'Новая проверка' : 'New Check'}
+              </button>
             </div>
           ) : (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 {(['RVP', 'VNJ'] as PermitType[]).map(t => (
-                  <button key={t} onClick={() => handleInputChange('permitType', t)}
-                    className={`p-4 rounded-xl border-2 ${formData.permitType === t ? 'bg-blue-50 border-blue-500' : 'border-gray-200'}`}>
+                  <button
+                    key={t}
+                    onClick={() => handleInputChange('permitType', t)}
+                    className={'p-4 rounded-xl border-2 ' + (formData.permitType === t ? 'bg-blue-50 border-blue-500' : 'border-gray-200')}
+                  >
                     <div className="font-bold">{t === 'RVP' ? 'РВП' : 'ВНЖ'}</div>
                   </button>
                 ))}
               </div>
-              <select value={formData.region} onChange={e => handleInputChange('region', e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl">
-                {REGIONS.map(r => <option key={r.code} value={r.code}>{r.name}</option>)}
+              <select
+                value={formData.region}
+                onChange={e => handleInputChange('region', e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
+              >
+                {REGIONS.map(r => (
+                  <option key={r.code} value={r.code}>{r.name}</option>
+                ))}
               </select>
-              <input type="date" value={formData.applicationDate} onChange={e => handleInputChange('applicationDate', e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl" placeholder="Дата подачи" />
-              <input type="text" value={formData.lastName} onChange={e => handleInputChange('lastName', e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl" placeholder={language === 'ru' ? 'Фамилия *' : 'Last Name *'} />
-              <input type="text" value={formData.firstName} onChange={e => handleInputChange('firstName', e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl" placeholder={language === 'ru' ? 'Имя *' : 'First Name *'} />
-              <input type="date" value={formData.birthDate} onChange={e => handleInputChange('birthDate', e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl" />
-              {error && <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-700 text-sm">{error}</div>}
-              <button onClick={handleSubmit} disabled={isLoading}
-                className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 disabled:bg-gray-300">
-                {isLoading ? <><Loader2 className="w-5 h-5 animate-spin" />{language === 'ru' ? 'Проверка...' : 'Checking...'}</> : 
-                  <><ClipboardCheck className="w-5 h-5" />{language === 'ru' ? 'Проверить' : 'Check'}</>}
+              <input
+                type="date"
+                value={formData.applicationDate}
+                onChange={e => handleInputChange('applicationDate', e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
+                placeholder="Дата подачи"
+              />
+              <input
+                type="text"
+                value={formData.lastName}
+                onChange={e => handleInputChange('lastName', e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
+                placeholder={language === 'ru' ? 'Фамилия *' : 'Last Name *'}
+              />
+              <input
+                type="text"
+                value={formData.firstName}
+                onChange={e => handleInputChange('firstName', e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
+                placeholder={language === 'ru' ? 'Имя *' : 'First Name *'}
+              />
+              <input
+                type="date"
+                value={formData.birthDate}
+                onChange={e => handleInputChange('birthDate', e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
+              />
+              {error && (
+                <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-700 text-sm">{error}</div>
+              )}
+              <button
+                onClick={handleSubmit}
+                disabled={isLoading}
+                className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 disabled:bg-gray-300"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    {language === 'ru' ? 'Проверка...' : 'Checking...'}
+                  </>
+                ) : (
+                  <>
+                    <ClipboardCheck className="w-5 h-5" />
+                    {language === 'ru' ? 'Проверить' : 'Check'}
+                  </>
+                )}
               </button>
             </div>
           )}
