@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Loader2, Send, ArrowLeft, CheckCircle, AlertCircle, XCircle, Clock, Star, GraduationCap, Trophy, Shield, Calculator, Hash } from 'lucide-react';
+import { Loader2, Send, ArrowLeft, CheckCircle, AlertCircle, XCircle, Clock, Star, GraduationCap, Trophy, Shield, Calculator, Hash, AlertTriangle, Scale, Phone, MessageCircle, X, User, Building, Search, ChevronDown, FileText, MapPin, Briefcase, Heart, Flag, Home, CreditCard } from 'lucide-react';
 import { useTrainerStore, getDifficultyStars, type Scenario, type Message } from '@/lib/stores/trainerStore';
+import { useTranslation } from '@/lib/i18n/useTranslation';
+import { KNOWLEDGE_BASE, KNOWLEDGE_COUNT, type KnowledgeItem } from '@/data';
 
 // Quick Actions for ScenarioSelectionScreen
 const quickActions = [
@@ -10,6 +12,382 @@ const quickActions = [
   { id: 'calc-patent', label: 'Рассчитать патент', labelEn: 'Calc patent', icon: Calculator },
   { id: 'find-inn', label: 'Найти ИНН', labelEn: 'Find INN', icon: Hash },
 ];
+
+// Lawyer Modal Component
+function LawyerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [message, setMessage] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Send to backend
+    setIsSubmitted(true);
+    setTimeout(() => {
+      setIsSubmitted(false);
+      setName('');
+      setPhone('');
+      setMessage('');
+      onClose();
+    }, 2000);
+  };
+
+  const handleWhatsApp = () => {
+    window.open('https://wa.me/79001234567?text=' + encodeURIComponent(t('assistant.lawyerModal.whatsappMessage')), '_blank');
+  };
+
+  const handleTelegram = () => {
+    window.open('https://t.me/migranthub_lawyer', '_blank');
+  };
+
+  const handleCall = () => {
+    window.location.href = 'tel:+78001234567';
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="relative w-full max-w-lg bg-white rounded-t-2xl sm:rounded-2xl max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom duration-300">
+        {/* Header */}
+        <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between rounded-t-2xl">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {t('assistant.lawyerModal.title')}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 -mr-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-4 space-y-4">
+          {/* Quick Contact Buttons */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-gray-700">
+              {t('assistant.lawyerModal.quickContact')}
+            </h3>
+
+            {/* Hotline */}
+            <button
+              onClick={handleCall}
+              className="w-full flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl hover:bg-green-100 active:scale-[0.98] transition-all"
+            >
+              <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <Phone className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="font-medium text-gray-900">{t('assistant.lawyerModal.hotline')}</p>
+                <p className="text-sm text-green-600">8-800-123-45-67</p>
+              </div>
+              <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                {t('assistant.lawyerModal.free')}
+              </span>
+            </button>
+
+            {/* WhatsApp */}
+            <button
+              onClick={handleWhatsApp}
+              className="w-full flex items-center gap-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl hover:bg-emerald-100 active:scale-[0.98] transition-all"
+            >
+              <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <MessageCircle className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="font-medium text-gray-900">WhatsApp</p>
+                <p className="text-sm text-emerald-600">{t('assistant.lawyerModal.writeNow')}</p>
+              </div>
+            </button>
+
+            {/* Telegram */}
+            <button
+              onClick={handleTelegram}
+              className="w-full flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 active:scale-[0.98] transition-all"
+            >
+              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <Send className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="font-medium text-gray-900">Telegram</p>
+                <p className="text-sm text-blue-600">@migranthub_lawyer</p>
+              </div>
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-xs text-gray-400 uppercase">{t('common.or')}</span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
+
+          {/* Callback Form */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-700">
+              {t('assistant.lawyerModal.callbackRequest')}
+            </h3>
+
+            {isSubmitted ? (
+              <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-center">
+                <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                <p className="font-medium text-green-800">{t('assistant.lawyerModal.requestSent')}</p>
+                <p className="text-sm text-green-600 mt-1">{t('assistant.lawyerModal.willCallBack')}</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-3">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">
+                    {t('assistant.lawyerModal.yourName')}
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder={t('assistant.lawyerModal.namePlaceholder')}
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">
+                    {t('assistant.lawyerModal.yourPhone')}
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+7 (___) ___-__-__"
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">
+                    {t('assistant.lawyerModal.yourQuestion')}
+                  </label>
+                  <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder={t('assistant.lawyerModal.questionPlaceholder')}
+                    rows={3}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 active:scale-[0.98] transition-all"
+                >
+                  {t('assistant.lawyerModal.requestCallback')}
+                </button>
+              </form>
+            )}
+          </div>
+
+          {/* Partner Lawyers Info */}
+          <div className="p-3 bg-gray-50 rounded-xl">
+            <div className="flex items-start gap-3">
+              <Building className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-gray-700">
+                  {t('assistant.lawyerModal.partnerLawyers')}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {t('assistant.lawyerModal.partnerDescription')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Legal Disclaimer Component
+function LegalDisclaimer() {
+  const { t } = useTranslation();
+  const [isLawyerModalOpen, setIsLawyerModalOpen] = useState(false);
+
+  return (
+    <>
+      <div className="mx-4 mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+        <div className="flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-amber-800 leading-relaxed">
+              {t('assistant.disclaimer.text')}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Prominent Hire Lawyer Button */}
+      <div className="mx-4 mt-3">
+        <button
+          onClick={() => setIsLawyerModalOpen(true)}
+          className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-[0.98] transition-all"
+        >
+          <Scale className="w-5 h-5" />
+          {t('assistant.disclaimer.hireLawyer')}
+        </button>
+      </div>
+
+      <LawyerModal
+        isOpen={isLawyerModalOpen}
+        onClose={() => setIsLawyerModalOpen(false)}
+      />
+    </>
+  );
+}
+
+
+// Knowledge Base Section Component
+function KnowledgeBaseSection() {
+  const { t, language } = useTranslation();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const categories = [
+    { id: 'patent', label: t('knowledgeBase.categories.patent'), icon: FileText },
+    { id: 'registration', label: t('knowledgeBase.categories.registration'), icon: MapPin },
+    { id: 'rvp', label: t('knowledgeBase.categories.rvp'), icon: CreditCard },
+    { id: 'vnj', label: t('knowledgeBase.categories.vnj'), icon: Home },
+    { id: 'work', label: t('knowledgeBase.categories.work'), icon: Briefcase },
+    { id: 'medical', label: t('knowledgeBase.categories.medical'), icon: Heart },
+    { id: 'sos', label: t('knowledgeBase.categories.sos'), icon: AlertTriangle },
+    { id: 'citizenship', label: t('knowledgeBase.categories.citizenship'), icon: Flag },
+  ];
+
+  // Filter FAQ items
+  const filteredItems = KNOWLEDGE_BASE.filter((item: KnowledgeItem) => {
+    const matchesCategory = !selectedCategory || item.category === selectedCategory;
+    const questionText = language === 'ru' ? item.question.ru : item.question.en;
+    const answerText = language === 'ru' ? item.answer.ru : item.answer.en;
+    const matchesSearch = !searchQuery ||
+      questionText.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      answerText.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  return (
+    <div className="px-4 pt-4">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3">
+        <h4 className="text-sm font-semibold text-gray-500">
+          {t('knowledgeBase.title')}
+        </h4>
+        <span className="text-xs text-gray-400">
+          {t('knowledgeBase.questionsCount', { count: KNOWLEDGE_COUNT })}
+        </span>
+      </div>
+
+      {/* Search */}
+      <div className="relative mb-3">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={t('knowledgeBase.searchPlaceholder')}
+          className="w-full pl-9 pr-4 py-2 bg-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      {/* Category chips */}
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-3 scrollbar-hide">
+        <button
+          onClick={() => setSelectedCategory(null)}
+          className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+            selectedCategory === null
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          }`}
+        >
+          {t('common.all')}
+        </button>
+        {categories.map((cat) => {
+          const CatIcon = cat.icon;
+          return (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(selectedCategory === cat.id ? null : cat.id)}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                selectedCategory === cat.id
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <CatIcon className="w-3 h-3" />
+              {cat.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* FAQ list */}
+      <div className="space-y-2 max-h-64 overflow-y-auto">
+        {filteredItems.length === 0 ? (
+          <div className="text-center py-4 text-sm text-gray-400">
+            {t('knowledgeBase.noResults')}
+          </div>
+        ) : (
+          filteredItems.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white rounded-lg border border-gray-200 overflow-hidden"
+            >
+              <button
+                onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
+                className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-50"
+              >
+                <span className="text-sm font-medium text-gray-900 pr-4">
+                  {language === 'ru' ? item.question.ru : item.question.en}
+                </span>
+                <ChevronDown
+                  className={`w-4 h-4 text-gray-400 flex-shrink-0 transition-transform ${
+                    expandedId === item.id ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              {expandedId === item.id && (
+                <div className="px-4 pb-3 pt-0">
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {language === 'ru' ? item.answer.ru : item.answer.en}
+                  </p>
+                  {item.legalReference && (
+                    <p className="mt-2 text-xs text-blue-600">
+                      {item.legalReference}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
 
 // Scenario Selection Screen
 function ScenarioSelectionScreen() {
@@ -53,6 +431,12 @@ function ScenarioSelectionScreen() {
           Выберите сценарий для тренировки. AI будет играть роль собеседника и давать обратную связь.
         </p>
       </div>
+
+      {/* Legal Disclaimer */}
+      <LegalDisclaimer />
+
+      {/* Knowledge Base */}
+      <KnowledgeBaseSection />
 
       {/* Error */}
       {error && (

@@ -2012,6 +2012,10 @@
         "title": "Migration Registration",
         "description": "Registration at the place of stay"
       },
+      "medical": {
+        "title": "Medical Examination",
+        "description": "Medical checkup required for work patent"
+      },
       "patent": {
         "title": "Work Patent",
         "description": "Submitting documents for work patent"
@@ -2029,7 +2033,8 @@
       "deportation": "Deportation from Russia",
       "entryBan": "5-year entry ban",
       "entryBan3Years": "3-year entry ban",
-      "illegalWork": "Fine for illegal work"
+      "illegalWork": "Fine for illegal work",
+      "patentDenied": "Work patent denial"
     },
     "legend": {
       "title": "Legend",
@@ -2038,5 +2043,24 @@
       "warning": "Deadline soon",
       "overdue": "Overdue"
     }
+  },
+  "knowledgeBase": {
+    "title": "Knowledge Base",
+    "subtitle": "Frequently asked questions",
+    "searchPlaceholder": "Search questions...",
+    "questionsCount": "{count} questions",
+    "noResults": "Nothing found",
+    "categories": {
+      "patent": "Patent",
+      "registration": "Registration",
+      "rvp": "TRP",
+      "vnj": "Residence",
+      "work": "Work",
+      "medical": "Medical",
+      "sos": "SOS",
+      "citizenship": "Citizenship"
+    },
+    "showMore": "Show more",
+    "showLess": "Show less"
   }
 }
