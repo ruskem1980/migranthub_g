@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, MapPin, Wand2, GraduationCap, ClipboardCheck, Hash, Calculator, FileCheck, CalendarDays, MessageSquare, LucideIcon } from 'lucide-react';
+import { Shield, MapPin, Wand2, GraduationCap, ClipboardCheck, Hash, Calculator, FileCheck, CalendarDays, MessageSquare, LucideIcon, HelpCircle, Scale } from 'lucide-react';
 import { useState } from 'react';
 import { DocumentGenerator } from '../services/DocumentGenerator';
 import { PermitStatusModal } from '../services/PermitStatusModal';
@@ -51,6 +51,12 @@ export function ServicesScreen() {
     { id: 'aiTrainer', icon: MessageSquare, title: language === 'ru' ? 'AI Тренажёр' : 'AI Trainer', subtitle: language === 'ru' ? 'Практика диалогов' : 'Practice dialogs', color: 'violet' },
   ];
 
+  // Legal & FAQ Services
+  const legalServices = [
+    { id: 'faq', icon: HelpCircle, title: language === 'ru' ? 'Частые вопросы' : 'FAQ', subtitle: language === 'ru' ? 'Ответы на вопросы' : 'Common answers', color: 'sky' },
+    { id: 'rights', icon: Scale, title: language === 'ru' ? 'Ваши права' : 'Your Rights', subtitle: language === 'ru' ? 'Правовая защита' : 'Legal protection', color: 'rose' },
+  ];
+
   const colorClasses: Record<string, { bg: string; icon: string }> = {
     red: { bg: 'bg-red-50', icon: 'text-red-600' },
     blue: { bg: 'bg-blue-50', icon: 'text-blue-600' },
@@ -65,6 +71,8 @@ export function ServicesScreen() {
     cyan: { bg: 'bg-cyan-50', icon: 'text-cyan-600' },
     amber: { bg: 'bg-amber-50', icon: 'text-amber-600' },
     violet: { bg: 'bg-violet-50', icon: 'text-violet-600' },
+    sky: { bg: 'bg-sky-50', icon: 'text-sky-600' },
+    rose: { bg: 'bg-rose-50', icon: 'text-rose-600' },
   };
 
   const handleServiceClick = (serviceId: string) => {
@@ -95,6 +103,12 @@ export function ServicesScreen() {
         break;
       case 'aiTrainer':
         alert(language === 'ru' ? 'Перейдите на вкладку Ассистент' : 'Go to Assistant tab');
+        break;
+      case 'faq':
+        alert(language === 'ru' ? 'Раздел FAQ в разработке' : 'FAQ section coming soon');
+        break;
+      case 'rights':
+        alert(language === 'ru' ? 'Раздел о правах в разработке' : 'Rights section coming soon');
         break;
       default:
         break;
@@ -179,6 +193,16 @@ export function ServicesScreen() {
           </h3>
           <div className="grid grid-cols-2 gap-4">
             {trainingServices.map((service, index) => renderServiceCard(service, index))}
+          </div>
+        </div>
+
+        {/* Legal & FAQ */}
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+            {language === 'ru' ? 'Правовая информация' : 'Legal Info'}
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            {legalServices.map((service, index) => renderServiceCard(service, index))}
           </div>
         </div>
       </div>

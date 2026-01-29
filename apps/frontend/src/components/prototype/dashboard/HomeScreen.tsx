@@ -151,33 +151,40 @@ export function HomeScreen() {
       {/* Hero Section - Two Primary Actions */}
       <div className="px-4 py-6">
         <div className="grid grid-cols-2 gap-3">
-          {/* Legalization Wizard */}
-          <button
-            onClick={() => setShowWizard(true)}
-            className="bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-600 text-white rounded-2xl p-5 shadow-xl hover:shadow-2xl transition-all active:scale-98 relative overflow-hidden group"
-          >
-            {/* Animated Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          {/* Legalization Wizard with Tooltip */}
+          <div className="relative group/tooltip">
+            <button
+              onClick={() => setShowWizard(true)}
+              className="w-full bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-600 text-white rounded-2xl p-5 shadow-xl hover:shadow-2xl transition-all active:scale-98 relative overflow-hidden group"
+            >
+              {/* Animated Background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-            {/* Decorative Elements */}
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-10 translate-x-10"></div>
+              {/* Decorative Elements */}
+              <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-10 translate-x-10"></div>
 
-            {/* Content */}
-            <div className="relative z-10">
-              <div className="flex items-center justify-center mb-3">
-                <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <FileCheck className="w-7 h-7 text-white" />
+              {/* Content */}
+              <div className="relative z-10">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <FileCheck className="w-7 h-7 text-white" />
+                  </div>
                 </div>
-              </div>
 
-              <h2 className="text-base font-bold text-center mb-1">
-                {t('dashboard.hero.title')}
-              </h2>
-              <p className="text-center text-blue-100 text-xs">
-                {t('dashboard.hero.subtitle')}
-              </p>
+                <h2 className="text-base font-bold text-center mb-1">
+                  {t('dashboard.hero.title')}
+                </h2>
+                <p className="text-center text-blue-100 text-xs">
+                  {t('dashboard.hero.subtitle')}
+                </p>
+              </div>
+            </button>
+            {/* Tooltip */}
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-30">
+              {language === 'ru' ? 'Проверяет: патент, ИНН, запрет въезда, 90/180' : 'Checks: patent, INN, entry ban, 90/180'}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
             </div>
-          </button>
+          </div>
 
           {/* Ban Checker */}
           <button

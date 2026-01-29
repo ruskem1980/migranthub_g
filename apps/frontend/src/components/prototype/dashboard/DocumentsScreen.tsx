@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Camera, CheckCircle2, AlertTriangle, XCircle, Share2, Info, Lock, X } from 'lucide-react';
+import { Camera, CheckCircle2, AlertTriangle, XCircle, Share2, Info, Lock, X, Download, Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
@@ -303,6 +303,19 @@ export function DocumentsScreen() {
                     >
                       <Info className="w-4 h-4" />
                       {t('documents.instruction')}
+                    </button>
+                  </div>
+
+                  {/* Document Actions */}
+                  <div className="flex gap-2 mt-3">
+                    <button className="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg text-xs font-medium flex items-center justify-center gap-1 hover:bg-blue-100 transition-colors active:scale-98">
+                      <Download className="w-3 h-3" /> {t('common.download')}
+                    </button>
+                    <button className="flex-1 px-3 py-2 bg-gray-50 text-gray-600 rounded-lg text-xs font-medium flex items-center justify-center gap-1 hover:bg-gray-100 transition-colors active:scale-98">
+                      <Pencil className="w-3 h-3" /> {t('common.edit')}
+                    </button>
+                    <button className="px-3 py-2 bg-red-50 text-red-600 rounded-lg text-xs font-medium hover:bg-red-100 transition-colors active:scale-98">
+                      <Trash2 className="w-3 h-3" />
                     </button>
                   </div>
                 </div>

@@ -1,8 +1,15 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Loader2, Send, ArrowLeft, CheckCircle, AlertCircle, XCircle, Clock, Star, GraduationCap, Trophy } from 'lucide-react';
+import { Loader2, Send, ArrowLeft, CheckCircle, AlertCircle, XCircle, Clock, Star, GraduationCap, Trophy, Shield, Calculator, Hash } from 'lucide-react';
 import { useTrainerStore, getDifficultyStars, type Scenario, type Message } from '@/lib/stores/trainerStore';
+
+// Quick Actions for ScenarioSelectionScreen
+const quickActions = [
+  { id: 'check-docs', label: 'Проверить документы', labelEn: 'Check docs', icon: Shield },
+  { id: 'calc-patent', label: 'Рассчитать патент', labelEn: 'Calc patent', icon: Calculator },
+  { id: 'find-inn', label: 'Найти ИНН', labelEn: 'Find INN', icon: Hash },
+];
 
 // Scenario Selection Screen
 function ScenarioSelectionScreen() {
@@ -53,6 +60,31 @@ function ScenarioSelectionScreen() {
           <p className="text-sm text-red-600">{error}</p>
         </div>
       )}
+
+      {/* Quick Actions */}
+      <div className="px-4 pt-4">
+        <h4 className="text-sm font-semibold text-gray-500 mb-3">
+          Быстрые действия
+        </h4>
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {quickActions.map((action) => {
+            const ActionIcon = action.icon;
+            return (
+              <button
+                key={action.id}
+                onClick={() => {
+                  // Navigate to Services tab or show modal
+                  alert(`${action.label} - перейдите на вкладку Сервисы`);
+                }}
+                className="flex-shrink-0 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-blue-100 active:scale-95 transition-all"
+              >
+                <ActionIcon className="w-4 h-4" />
+                {action.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Scenarios Grid */}
       <div className="flex-1 overflow-y-auto p-4">
