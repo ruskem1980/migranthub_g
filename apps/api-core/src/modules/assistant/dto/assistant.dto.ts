@@ -10,7 +10,7 @@ export class SendMessageDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(2000)
-  message: string;
+  message!: string;
 
   @ApiPropertyOptional({
     description: 'Session ID for conversation continuity',
@@ -34,13 +34,13 @@ export class AssistantResponseDto {
     description: 'Session ID for continuing the conversation',
     example: '550e8400-e29b-41d4-a716-446655440000',
   })
-  sessionId: string;
+  sessionId!: string;
 
   @ApiProperty({
     description: 'Assistant response message',
     example: 'Для получения патента вам нужно обратиться в миграционную службу...',
   })
-  message: string;
+  message!: string;
 
   @ApiPropertyOptional({
     description: 'Indicates if the question was blocked due to illegal content',
