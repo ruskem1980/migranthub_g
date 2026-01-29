@@ -12,6 +12,8 @@ import { LegalModule } from './modules/legal/legal.module';
 import { ExamModule } from './modules/exam/exam.module';
 import { TrainerModule } from './modules/trainer/trainer.module';
 import { AssistantModule } from './modules/assistant/assistant.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { OcrModule } from './modules/ocr/ocr.module';
 import { CacheModule } from './modules/cache/cache.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { SentryModule } from './common/sentry';
@@ -25,6 +27,7 @@ import patentCheckConfig from './config/patent-check.config';
 import innCheckConfig from './config/inn-check.config';
 import entryBanConfig from './config/entry-ban.config';
 import permitStatusConfig from './config/permit-status.config';
+import yookassaConfig from './config/yookassa.config';
 
 @Module({
   imports: [
@@ -42,6 +45,7 @@ import permitStatusConfig from './config/permit-status.config';
         entryBanConfig,
         permitStatusConfig,
         openaiConfig,
+        yookassaConfig,
       ],
       envFilePath: ['.env.local', '.env'],
     }),
@@ -108,6 +112,8 @@ import permitStatusConfig from './config/permit-status.config';
     ExamModule,
     TrainerModule,
     AssistantModule,
+    PaymentsModule,
+    OcrModule,
   ],
   providers: [
     {
