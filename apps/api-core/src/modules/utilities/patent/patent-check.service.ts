@@ -359,7 +359,7 @@ export class PatentCheckService implements OnModuleInit {
           expirationDate: this.extractDate(html, 'expiration'),
           fromCache: false,
           checkedAt: now,
-          source: 'real',
+          source: PatentCheckSource.FMS,
         };
       }
     }
@@ -374,7 +374,7 @@ export class PatentCheckService implements OnModuleInit {
           number: dto.number,
           fromCache: false,
           checkedAt: now,
-          source: 'real',
+          source: PatentCheckSource.FMS,
         };
       }
     }
@@ -389,7 +389,7 @@ export class PatentCheckService implements OnModuleInit {
       number: dto.number,
       fromCache: false,
       checkedAt: now,
-      source: 'real',
+      source: PatentCheckSource.FMS,
     };
   }
 
@@ -481,7 +481,7 @@ export class PatentCheckService implements OnModuleInit {
           : undefined,
         fromCache: false,
         checkedAt: now,
-        source: 'mock',
+        source: PatentCheckSource.MOCK,
       };
     }
 
@@ -497,7 +497,7 @@ export class PatentCheckService implements OnModuleInit {
       expirationDate: lastDigit === 9 ? undefined : '2023-06-30',
       fromCache: false,
       checkedAt: now,
-      source: 'mock',
+      source: PatentCheckSource.MOCK,
     };
   }
 
@@ -509,12 +509,12 @@ export class PatentCheckService implements OnModuleInit {
       status: PatentStatus.ERROR,
       isValid: false,
       message:
-        'Сервис проверки временно недоступен. Попробуйте позже или проверьте на официальном сайте ФМС.',
+        'Сервис проверки временно недоступен. Попробуйте позже или проверьте на официальном сайте ФМС: https://services.fms.gov.ru/info-service.htm?sid=2000',
       series: dto.series,
       number: dto.number,
       fromCache: false,
       checkedAt: new Date().toISOString(),
-      source: 'real',
+      source: PatentCheckSource.FALLBACK,
     };
   }
 

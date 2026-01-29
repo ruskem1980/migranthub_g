@@ -351,6 +351,29 @@ export function InnCheckModal({ onClose }: InnCheckModalProps) {
           </div>
         )}
 
+        {/* Warning for mock/fallback sources */}
+        {(result.source === 'mock' || result.source === 'fallback') && (
+          <div className="p-4 bg-orange-50 border-2 border-orange-200 rounded-xl">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-orange-900">
+                  {language === 'ru' ? 'Тестовые данные' : 'Test Data'}
+                </p>
+                <p className="text-sm text-orange-800">
+                  {result.source === 'mock'
+                    ? language === 'ru'
+                      ? 'Сервис проверки отключен. Показаны тестовые данные, которые не отражают реальный статус. Для реальной проверки используйте официальный сайт ФНС.'
+                      : 'Verification service is disabled. Test data shown, which does not reflect the actual status. For real verification, use the official FNS website.'
+                    : language === 'ru'
+                      ? 'Сервис временно недоступен. Попробуйте позже или проверьте на официальном сайте ФНС: service.nalog.ru'
+                      : 'Service is temporarily unavailable. Try again later or check on the official FNS website: service.nalog.ru'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="text-center text-xs text-gray-500">
           {language === 'ru' ? 'Источник' : 'Source'}: {result.source.toUpperCase()} |{' '}
           {language === 'ru' ? 'Проверено' : 'Checked'}:{' '}

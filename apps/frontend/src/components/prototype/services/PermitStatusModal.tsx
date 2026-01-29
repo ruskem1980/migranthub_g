@@ -29,6 +29,7 @@ interface PermitStatusResponse {
   estimatedDate?: string;
   checkedAt: string;
   error?: string;
+  source?: 'fms' | 'cache' | 'fallback';
 }
 
 const REGIONS = [
@@ -148,6 +149,29 @@ export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
                     <p className="text-sm font-semibold text-blue-900">{language === 'ru' ? 'Ориентировочно' : 'Estimated'}</p>
                     <p className="text-sm text-blue-700">{new Date(result.estimatedDate).toLocaleDateString('ru-RU')}</p>
                   </div>
+                </div>
+              )}
+              {/* Warning for fallback source */}
+              {result.source === 'fallback' && (
+                <div className="p-4 bg-orange-50 border-2 border-orange-200 rounded-xl flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-orange-900">
+                      {language === 'ru' ? 'Сервис недоступен' : 'Service Unavailable'}
+                    </p>
+                    <p className="text-sm text-orange-800">
+                      {language === 'ru'
+                        ? 'Автоматическая проверка временно недоступна. Проверьте статус на официальном сайте ФМС: services.fms.gov.ru'
+                        : 'Automatic verification is temporarily unavailable. Check status on the official FMS website: services.fms.gov.ru'}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {result.source && (
+                <div className="text-center text-xs text-gray-500">
+                  {language === 'ru' ? 'Источник' : 'Source'}: {result.source.toUpperCase()} |{' '}
+                  {language === 'ru' ? 'Проверено' : 'Checked'}:{' '}
+                  {new Date(result.checkedAt).toLocaleString(language === 'ru' ? 'ru-RU' : 'en-US')}
                 </div>
               )}
               <button onClick={() => setResult(null)} className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl">

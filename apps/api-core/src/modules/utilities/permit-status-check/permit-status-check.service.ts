@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CacheService } from '../../cache/cache.service';
 import { FmsPermitClient } from './fms-permit.client';
-import { CheckPermitDto, PermitStatusResponseDto, PermitStatusEnum } from './dto';
+import { CheckPermitDto, PermitStatusResponseDto, PermitStatusEnum, PermitStatusSource } from './dto';
 
 // Константы кэширования
 const CACHE_KEY_PREFIX = 'permit-status:';
@@ -49,6 +49,7 @@ export class PermitStatusCheckService {
       this.logger.debug(`Cache HIT для ${cacheKey}`);
       return {
         ...cached,
+        source: PermitStatusSource.CACHE,
         checkedAt: cached.checkedAt, // Оставляем оригинальную дату проверки
       };
     }
@@ -63,15 +64,21 @@ export class PermitStatusCheckService {
     try {
       const result = await this.fmsPermitClient.checkPermitStatus(query);
 
+      // Добавляем source к результату
+      const resultWithSource = {
+        ...result,
+        source: PermitStatusSource.FMS,
+      };
+
       // Кэшируем успешный результат (не кэшируем ошибки)
       if (!result.error) {
-        await this.saveToCache(cacheKey, result);
+        await this.saveToCache(cacheKey, resultWithSource);
       }
 
       this.logger.log(
         `Результат проверки ${query.permitType}: ${result.status} для ${query.lastName}`,
       );
-      return result;
+      return resultWithSource;
     } catch (error) {
       this.logger.error(
         `Ошибка при проверке статуса: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -84,6 +91,7 @@ export class PermitStatusCheckService {
         message: 'Сервис временно недоступен. Повторите проверку позже.',
         checkedAt: new Date().toISOString(),
         error: 'Сервис ФМС временно недоступен',
+        source: PermitStatusSource.FALLBACK,
       };
     }
   }
@@ -149,6 +157,7 @@ export class PermitStatusCheckService {
       message: `Автоматическая проверка статуса ${permitName} недоступна. Рекомендуем проверить статус на официальном сайте.`,
       checkedAt: new Date().toISOString(),
       error: `Автоматическая проверка отключена. Проверьте статус вручную: ${siteUrl}`,
+      source: PermitStatusSource.FALLBACK,
     };
   }
 }
