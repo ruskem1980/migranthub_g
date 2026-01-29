@@ -250,8 +250,8 @@ export function SOSScreen() {
                   <div className="bg-purple-100 p-3 rounded-lg mt-2">
                     <p className="font-bold text-purple-900 mb-1">📞 {t('sos.detained.contacts')}:</p>
                     <ul className="space-y-1">
-                      <li>{t('sos.detained.lawyerHotline')}: <span className="font-mono">+7 (495) 123-45-67</span></li>
-                      <li>{t('sos.detained.consulateHotline')}: <span className="font-mono">+7 (495) 234-56-78</span></li>
+                      <li>{t('sos.detained.lawyerHotline')}: <span className="font-mono">+7 (800) 700-00-49</span></li>
+                      <li>{t('sos.detained.consulateHotline')}: <span className="font-mono">+7 (495) 244-16-06</span></li>
                     </ul>
                   </div>
                 </div>
