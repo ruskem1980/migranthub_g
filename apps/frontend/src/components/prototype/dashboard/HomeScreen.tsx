@@ -1,6 +1,7 @@
 'use client';
 
 import { QrCode, ChevronRight, History, Lock, Edit2, Globe, Trash2, X, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert, ClipboardList } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { useState, useMemo, useEffect } from 'react';
 import { LegalizationWizard } from '../wizard/LegalizationWizard';
 import { BanChecker } from '@/features/services/components/BanChecker';
@@ -38,6 +39,7 @@ export function HomeScreen() {
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showAILanguages, setShowAILanguages] = useState(false);
   const [showBanChecker, setShowBanChecker] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
 
   // Initialize from profile store, fallback to empty
   const [editEntryDate, setEditEntryDate] = useState(profile?.entryDate || '');
@@ -75,6 +77,30 @@ export function HomeScreen() {
     return Math.max(0, diff);
   }, [editEntryDate]);
 
+  // Generate QR code data
+  const qrData = useMemo(() => {
+    const country = getCountryByIso(editCitizenship);
+    const countryName = country?.name[language as SupportedLanguage] || country?.name.ru || editCitizenship;
+
+    const status = checkedDocs.length >= 7
+      ? 'LEGAL'
+      : checkedDocs.length >= 4
+        ? 'AT_RISK'
+        : 'ILLEGAL';
+
+    const patentExpiry = new Date(editEntryDate);
+    patentExpiry.setDate(patentExpiry.getDate() + 90);
+
+    return JSON.stringify({
+      name: editFullName,
+      citizenship: countryName,
+      status: status,
+      patentExpiry: patentExpiry.toISOString().split('T')[0],
+      daysRemaining: daysRemaining,
+      generatedAt: new Date().toISOString(),
+    });
+  }, [editFullName, editCitizenship, checkedDocs, editEntryDate, daysRemaining, language]);
+
   return (
     <div className="h-full overflow-y-auto pb-4">
       {/* Header */}
@@ -88,12 +114,22 @@ export function HomeScreen() {
         <div className="flex items-center justify-between">
           {/* Left: User Info + Edit */}
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowProfileEdit(true)}
-              className="w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-base shadow-md hover:from-blue-600 hover:to-blue-700 transition-all active:scale-95"
-            >
-              {userInitials}
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowProfileEdit(true)}
+                className="w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-base shadow-md hover:from-blue-600 hover:to-blue-700 transition-all active:scale-95"
+              >
+                {userInitials}
+              </button>
+              {/* QR Code Button */}
+              <button
+                onClick={() => setShowQRModal(true)}
+                className="absolute -bottom-1 -right-1 w-6 h-6 bg-white border-2 border-blue-500 rounded-full flex items-center justify-center shadow-md hover:bg-blue-50 transition-all active:scale-95"
+                title={t('profile.showQR')}
+              >
+                <QrCode className="w-3.5 h-3.5 text-blue-600" />
+              </button>
+            </div>
             <div>
               <div className="flex items-center gap-1.5">
                 <h2 className="text-lg font-bold text-gray-900">{editFullName}</h2>
@@ -1028,6 +1064,91 @@ export function HomeScreen() {
       {/* Ban Checker */}
       {showBanChecker && (
         <BanChecker onClose={() => setShowBanChecker(false)} />
+      )}
+
+      {/* QR Code Modal */}
+      {showQRModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-in fade-in duration-200 p-4">
+          <div className="w-full max-w-sm bg-white rounded-3xl p-6 animate-in zoom-in-95 duration-300 shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <QrCode className="w-6 h-6 text-blue-600" />
+                <h3 className="text-xl font-bold text-gray-900">{t('profile.qrCode.title')}</h3>
+              </div>
+              <button
+                onClick={() => setShowQRModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-600" />
+              </button>
+            </div>
+
+            {/* QR Code */}
+            <div className="flex flex-col items-center">
+              <div className="bg-white p-4 rounded-2xl border-2 border-gray-100 shadow-inner">
+                <QRCodeSVG
+                  value={qrData}
+                  size={200}
+                  level="M"
+                  marginSize={2}
+                  bgColor="#ffffff"
+                  fgColor="#1e3a8a"
+                />
+              </div>
+
+              {/* User Info Summary */}
+              <div className="mt-4 w-full space-y-2">
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-sm text-gray-500">{t('profile.fields.fullName')}</span>
+                  <span className="text-sm font-semibold text-gray-900">{editFullName}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-sm text-gray-500">{t('profile.fields.citizenship')}</span>
+                  <span className="text-sm font-semibold text-gray-900">
+                    {(() => {
+                      const country = getCountryByIso(editCitizenship);
+                      if (country) {
+                        return `${country.flag} ${country.name[language as SupportedLanguage] || country.name.ru}`;
+                      }
+                      return editCitizenship;
+                    })()}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-sm text-gray-500">{t('common.status')}</span>
+                  {checkedDocs.length >= 7 ? (
+                    <span className="text-sm font-semibold text-green-600">{t('dashboard.statusValues.legal')}</span>
+                  ) : checkedDocs.length >= 4 ? (
+                    <span className="text-sm font-semibold text-yellow-600">{t('dashboard.statusValues.risk')}</span>
+                  ) : (
+                    <span className="text-sm font-semibold text-red-600">{t('dashboard.statusValues.illegal')}</span>
+                  )}
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-sm text-gray-500">{t('dashboard.daysRemaining')}</span>
+                  <span className={`text-sm font-semibold ${daysRemaining > 30 ? 'text-green-600' : daysRemaining > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
+                    {daysRemaining} {t('common.days')}
+                  </span>
+                </div>
+              </div>
+
+              {/* Info Note */}
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-xl w-full">
+                <p className="text-xs text-blue-800 text-center">
+                  {t('profile.qrCode.hint')}
+                </p>
+              </div>
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setShowQRModal(false)}
+              className="w-full mt-4 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300 transition-colors"
+            >
+              {t('common.close')}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

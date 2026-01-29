@@ -578,7 +578,12 @@
     "eaeuNote": "EAEU: Patent not required",
     "myDocuments": "My documents",
     "markDocuments": "Mark documents you have",
-    "documentsCount": "Documents"
+    "documentsCount": "Documents",
+    "showQR": "Show QR Code",
+    "qrCode": {
+      "title": "Identity Card",
+      "hint": "Show this QR code for quick identity verification"
+    }
   },
   "documents": {
     "title": "My Documents",
@@ -1222,6 +1227,25 @@
       "text": "This information is for reference purposes only and does not constitute legal advice. For specific issues, please consult a specialist.",
       "hireLawyer": "Hire a lawyer",
       "lawyerRedirect": "Redirecting to lawyer consultation"
+    },
+    "lawyerModal": {
+      "title": "Lawyer Consultation",
+      "quickContact": "Quick Contact",
+      "hotline": "Hotline 24/7",
+      "free": "Free",
+      "writeNow": "Write now",
+      "callbackRequest": "Request a callback",
+      "yourName": "Your name",
+      "namePlaceholder": "Enter your name",
+      "yourPhone": "Phone number",
+      "yourQuestion": "Your question (optional)",
+      "questionPlaceholder": "Briefly describe your situation...",
+      "requestCallback": "Request callback",
+      "requestSent": "Request sent!",
+      "willCallBack": "A lawyer will contact you within 15 minutes",
+      "partnerLawyers": "Partner Lawyers",
+      "partnerDescription": "We work with verified migration lawyers with over 5 years of experience",
+      "whatsappMessage": "Hello! I need a migration lawyer consultation."
     }
   },
   "notifications": {
