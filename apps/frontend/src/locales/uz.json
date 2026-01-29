@@ -797,6 +797,10 @@
         "title": "FSSP tekshiruvi",
         "subtitle": "Sud ijrochilari qarzi"
       },
+      "passportValidity": {
+        "title": "Pasport tekshiruvi",
+        "subtitle": "RF pasporti haqiqiyligi"
+      },
       "payment": {
         "title": "Patent to'lovi",
         "subtitle": "Tezkor to'lov"

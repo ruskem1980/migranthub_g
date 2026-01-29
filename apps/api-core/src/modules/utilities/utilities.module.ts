@@ -14,6 +14,9 @@ import { FmsPermitClient } from './permit-status-check/fms-permit.client';
 import { FsspCheckController } from './fssp-check/fssp-check.controller';
 import { FsspCheckService } from './fssp-check/fssp-check.service';
 import { FsspClient } from './fssp-check/fssp.client';
+import { PassportValidityController } from './passport-validity/passport-validity.controller';
+import { PassportValidityService } from './passport-validity/passport-validity.service';
+import { MvdPassportClient } from './passport-validity/mvd-passport.client';
 import { BrowserService, CaptchaSolverService } from '../../common/services';
 
 @Module({
@@ -23,6 +26,7 @@ import { BrowserService, CaptchaSolverService } from '../../common/services';
     InnCheckController,
     PermitStatusCheckController,
     FsspCheckController,
+    PassportValidityController,
   ],
   providers: [
     BanCheckService,
@@ -35,6 +39,8 @@ import { BrowserService, CaptchaSolverService } from '../../common/services';
     FmsPermitClient,
     FsspCheckService,
     FsspClient,
+    PassportValidityService,
+    MvdPassportClient,
     BrowserService,
     CaptchaSolverService,
   ],
@@ -45,6 +51,7 @@ import { BrowserService, CaptchaSolverService } from '../../common/services';
     InnCheckService,
     PermitStatusCheckService,
     FsspCheckService,
+    PassportValidityService,
   ],
 })
 export class UtilitiesModule {}

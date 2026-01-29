@@ -2,6 +2,8 @@
 
 import { Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { useTTS } from '@/hooks/useTTS';
+import { useTranslation } from '@/lib/i18n';
+import { useAppStore } from '@/lib/stores/appStore';
 import type { Language } from '@/lib/i18n';
 
 export type SpeakButtonVariant = 'default' | 'ghost' | 'outline';
@@ -81,9 +83,11 @@ export function SpeakButton({
   label,
 }: SpeakButtonProps) {
   const { speak, stop, isSpeaking, isSupported } = useTTS();
+  const { t } = useTranslation();
+  const ttsEnabled = useAppStore((state) => state.ttsEnabled);
 
-  // Don't render if TTS is not supported
-  if (!isSupported) {
+  // Don't render if TTS is disabled or not supported
+  if (!ttsEnabled || !isSupported) {
     return null;
   }
 
@@ -96,8 +100,8 @@ export function SpeakButton({
   };
 
   const styles = sizeStyles[size];
-  const defaultAriaLabel = isSpeaking ? 'Stop speaking' : 'Read aloud';
-  const defaultLabel = isSpeaking ? 'Stop' : 'Listen';
+  const defaultAriaLabel = isSpeaking ? t('tts.stop') : t('tts.listen');
+  const defaultLabel = isSpeaking ? t('tts.stop') : t('tts.listen');
 
   return (
     <button

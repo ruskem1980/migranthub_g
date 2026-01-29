@@ -802,6 +802,10 @@
         "title": "FSSP Debt Check",
         "subtitle": "Bailiff debts"
       },
+      "passportValidity": {
+        "title": "Passport Check",
+        "subtitle": "RF passport validity"
+      },
       "payment": {
         "title": "Patent payment",
         "subtitle": "Quick payment"

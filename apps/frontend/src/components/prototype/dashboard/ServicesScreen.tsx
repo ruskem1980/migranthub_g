@@ -11,6 +11,7 @@ import { PatentPaymentModal } from '../services/PatentPaymentModal';
 import { FAQModal } from '../services/FAQModal';
 import { RightsModal } from '../services/RightsModal';
 import { FsspCheckModal } from '../services/FsspCheckModal';
+import { PassportValidityModal } from '../services/PassportValidityModal';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useProfileStore } from '@/lib/stores';
@@ -34,6 +35,7 @@ export function ServicesScreen() {
   const [showFAQ, setShowFAQ] = useState(false);
   const [showRights, setShowRights] = useState(false);
   const [showFsspCheck, setShowFsspCheck] = useState(false);
+  const [showPassportValidity, setShowPassportValidity] = useState(false);
   const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: '', visible: false });
 
   // Document Services
@@ -48,6 +50,7 @@ export function ServicesScreen() {
     { id: 'innCheck', icon: Hash, title: 'INN Check', subtitle: 'Find your tax ID', color: 'indigo' },
     { id: 'patentCheck', icon: FileCheck, title: language === 'ru' ? 'Проверка патента' : 'Patent Check', subtitle: language === 'ru' ? 'Действительность патента' : 'Check validity', color: 'cyan' },
     { id: 'fsspCheck', icon: Gavel, title: t('services.items.fsspCheck.title'), subtitle: t('services.items.fsspCheck.subtitle'), color: 'purple' },
+    { id: 'passportValidity', icon: Shield, title: t('services.items.passportValidity.title'), subtitle: t('services.items.passportValidity.subtitle'), color: 'red' },
   ];
 
   // Calculator Services
@@ -105,6 +108,9 @@ export function ServicesScreen() {
         break;
       case 'fsspCheck':
         setShowFsspCheck(true);
+        break;
+      case 'passportValidity':
+        setShowPassportValidity(true);
         break;
       case 'patentCalc':
         setShowPatentCalculator(true);
@@ -344,6 +350,11 @@ export function ServicesScreen() {
       {/* FSSP Check Modal */}
       {showFsspCheck && (
         <FsspCheckModal onClose={() => setShowFsspCheck(false)} />
+      )}
+
+      {/* Passport Validity Modal */}
+      {showPassportValidity && (
+        <PassportValidityModal onClose={() => setShowPassportValidity(false)} />
       )}
 
       {/* Toast Notification */}

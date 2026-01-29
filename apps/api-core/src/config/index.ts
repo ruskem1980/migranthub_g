@@ -7,3 +7,4 @@ export { default as innCheckConfig } from './inn-check.config';
 export { default as entryBanConfig } from './entry-ban.config';
 export { default as permitStatusConfig } from './permit-status.config';
 export { default as fsspConfig } from './fssp.config';
+export { default as passportValidityConfig } from './passport-validity.config';

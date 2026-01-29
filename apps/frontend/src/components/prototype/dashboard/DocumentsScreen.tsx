@@ -5,6 +5,7 @@ import { Camera, CheckCircle2, AlertTriangle, XCircle, Share2, Info, Lock, X, Do
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { DocumentScanner, type OcrDocumentData } from '@/components/documents/DocumentScanner';
+import { SpeakButton } from '@/components/ui/SpeakButton';
 
 type InstructionModal = {
   isOpen: boolean;

@@ -39,11 +39,15 @@ interface AppState {
   lawSyncSuccess: boolean;
   lawSyncNoChanges: boolean;
 
+  // Accessibility
+  ttsEnabled: boolean;
+
   // Actions
   setTheme: (theme: Theme) => void;
   setOnline: (isOnline: boolean) => void;
   setAppReady: (ready: boolean) => void;
   setCurrentTab: (tab: AppState['currentTab']) => void;
+  setTtsEnabled: (enabled: boolean) => void;
 
   // Notification actions
   addNotification: (notification: Omit<Notification, 'id' | 'createdAt' | 'read'>) => void;
@@ -73,6 +77,7 @@ const initialState = {
   lawSyncDate: null as string | null,
   lawSyncSuccess: false,
   lawSyncNoChanges: false,
+  ttsEnabled: true,
 };
 
 export const useAppStore = create<AppState>()(
@@ -132,6 +137,9 @@ export const useAppStore = create<AppState>()(
       setLawSyncStatus: (lawSyncDate, lawSyncSuccess, lawSyncNoChanges = false) =>
         set({ lawSyncDate, lawSyncSuccess, lawSyncNoChanges }),
 
+      setTtsEnabled: (ttsEnabled) =>
+        set({ ttsEnabled }),
+
       reset: () =>
         set(initialState),
     }),
@@ -147,6 +155,7 @@ export const useAppStore = create<AppState>()(
         lawSyncDate: state.lawSyncDate,
         lawSyncSuccess: state.lawSyncSuccess,
         lawSyncNoChanges: state.lawSyncNoChanges,
+        ttsEnabled: state.ttsEnabled,
       }),
     }
   )

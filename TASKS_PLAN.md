@@ -392,7 +392,7 @@ cd apps/frontend && npm run build
 | Строк кода | ~1000 |
 | Под-задачи | 2 |
 
-#### TASK-05.1: Backend Payment Module
+#### TASK-05.1: Backend Payment Module ✅ DONE (30.01.2026)
 
 ```
 ## Задача: Backend Payment Module
@@ -440,7 +440,7 @@ cd apps/frontend && npm run build
 cd apps/api-core && npm run test && npm run build
 ```
 
-#### TASK-05.2: PatentPaymentModal
+#### TASK-05.2: PatentPaymentModal ✅ DONE (30.01.2026)
 
 ```
 ## Задача: PatentPaymentModal компонент

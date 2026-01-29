@@ -165,6 +165,26 @@ export interface PatentRegionsResponse {
   updatedAt: string;
 }
 
+// Passport Validity Check Types
+export type PassportValidityStatus = 'VALID' | 'INVALID' | 'NOT_FOUND' | 'UNKNOWN';
+export type PassportValiditySource = 'mvd' | 'cache' | 'fallback';
+
+export interface CheckPassportValidityRequest {
+  series: string;
+  number: string;
+}
+
+export interface PassportValidityResponse {
+  status: PassportValidityStatus;
+  isValid: boolean;
+  series: string;
+  number: string;
+  source: PassportValiditySource;
+  checkedAt: string;
+  message?: string;
+  error?: string;
+}
+
 // FSSP Check Types
 export type FsspCheckSource = 'fssp' | 'cache' | 'mock' | 'fallback';
 
