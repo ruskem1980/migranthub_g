@@ -20,13 +20,7 @@ import {
 /**
  * Supported image MIME types
  */
-const SUPPORTED_MIME_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/bmp',
-  'image/tiff',
-];
+const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/bmp', 'image/tiff'];
 
 /**
  * Maximum file size in bytes (10MB)
@@ -135,7 +129,9 @@ export class OcrService {
       return data.text;
     } catch (error) {
       this.logger.error(`OCR processing failed: ${error}`);
-      throw new BadRequestException('Failed to process image. Please ensure the image is clear and readable.');
+      throw new BadRequestException(
+        'Failed to process image. Please ensure the image is clear and readable.',
+      );
     }
   }
 
@@ -206,10 +202,14 @@ export class OcrService {
       if (!rawText || rawText.trim().length < 10) {
         return {
           success: false,
-          documentType: requestedDocumentType === DocumentType.AUTO ? DocumentType.PASSPORT : requestedDocumentType,
+          documentType:
+            requestedDocumentType === DocumentType.AUTO
+              ? DocumentType.PASSPORT
+              : requestedDocumentType,
           confidence: 0,
           rawText: rawText || '',
-          error: 'Could not extract text from image. Please ensure the document is clearly visible and well-lit.',
+          error:
+            'Could not extract text from image. Please ensure the document is clearly visible and well-lit.',
           processingTimeMs: Date.now() - startTime,
           warnings: ['No readable text found in image'],
         };
@@ -267,7 +267,10 @@ export class OcrService {
 
       return {
         success: false,
-        documentType: requestedDocumentType === DocumentType.AUTO ? DocumentType.PASSPORT : requestedDocumentType,
+        documentType:
+          requestedDocumentType === DocumentType.AUTO
+            ? DocumentType.PASSPORT
+            : requestedDocumentType,
         confidence: 0,
         error: 'An error occurred during document processing. Please try again.',
         processingTimeMs: Date.now() - startTime,

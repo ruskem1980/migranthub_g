@@ -162,7 +162,14 @@ export class PatentParser extends BaseDocumentParser<PatentDataDto> {
       const monthNum = parseInt(month, 10);
       const yearNum = parseInt(year, 10);
 
-      if (dayNum >= 1 && dayNum <= 31 && monthNum >= 1 && monthNum <= 12 && yearNum >= 2000 && yearNum <= 2100) {
+      if (
+        dayNum >= 1 &&
+        dayNum <= 31 &&
+        monthNum >= 1 &&
+        monthNum <= 12 &&
+        yearNum >= 2000 &&
+        yearNum <= 2100
+      ) {
         dates.push({ date: `${day}.${month}.${year}`, index: match.index });
       }
     }
@@ -206,7 +213,10 @@ export class PatentParser extends BaseDocumentParser<PatentDataDto> {
     // Russian regions where patents are valid
     const regions = [
       { keywords: ['МОСКВА', 'MOSCOW', 'Г. МОСКВЕ'], value: 'МОСКВА' },
-      { keywords: ['МОСКОВСКАЯ ОБЛ', 'МОСКОВСКОЙ ОБЛ', 'ПОДМОСКОВЬЕ'], value: 'МОСКОВСКАЯ ОБЛАСТЬ' },
+      {
+        keywords: ['МОСКОВСКАЯ ОБЛ', 'МОСКОВСКОЙ ОБЛ', 'ПОДМОСКОВЬЕ'],
+        value: 'МОСКОВСКАЯ ОБЛАСТЬ',
+      },
       { keywords: ['САНКТ-ПЕТЕРБУРГ', 'СПБ', 'ST. PETERSBURG'], value: 'САНКТ-ПЕТЕРБУРГ' },
       { keywords: ['ЛЕНИНГРАДСКАЯ ОБЛ'], value: 'ЛЕНИНГРАДСКАЯ ОБЛАСТЬ' },
       { keywords: ['КРАСНОДАРСК', 'КРАСНОДАР'], value: 'КРАСНОДАРСКИЙ КРАЙ' },
@@ -248,9 +258,21 @@ export class PatentParser extends BaseDocumentParser<PatentDataDto> {
   private extractProfession(text: string, data: PatentDataDto): void {
     // Common professions for work patents - check first (multi-word professions first)
     const professions = [
-      'ПОДСОБНЫЙ РАБОЧИЙ', 'РАЗНОРАБОЧИЙ', 'СТРОИТЕЛЬ', 'МАЛЯР', 'ШТУКАТУР',
-      'ВОДИТЕЛЬ', 'ПРОДАВЕЦ', 'УБОРЩИК', 'ГРУЗЧИК', 'ОХРАННИК',
-      'ПОВАР', 'ОФИЦИАНТ', 'КУРЬЕР', 'ЭЛЕКТРИК', 'САНТЕХНИК',
+      'ПОДСОБНЫЙ РАБОЧИЙ',
+      'РАЗНОРАБОЧИЙ',
+      'СТРОИТЕЛЬ',
+      'МАЛЯР',
+      'ШТУКАТУР',
+      'ВОДИТЕЛЬ',
+      'ПРОДАВЕЦ',
+      'УБОРЩИК',
+      'ГРУЗЧИК',
+      'ОХРАННИК',
+      'ПОВАР',
+      'ОФИЦИАНТ',
+      'КУРЬЕР',
+      'ЭЛЕКТРИК',
+      'САНТЕХНИК',
     ];
 
     // First check for known professions anywhere in text

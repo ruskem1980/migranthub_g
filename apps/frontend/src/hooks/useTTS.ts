@@ -23,13 +23,7 @@ const FALLBACK_LANGUAGES: Record<Language, string[]> = {
   ky: ['ky-KG', 'ky', 'ru-RU'], // Fallback to Russian if Kyrgyz not available
 };
 
-interface UseTTSReturn {
-  speak: (text: string, lang?: Language) => Promise<void>;
-  stop: () => void;
-  isSupported: boolean;
-  isSpeaking: boolean;
-  error: string | null;
-}
+// Type is exported at the end of file as ReturnType<typeof useTTS>
 
 /**
  * Text-to-Speech hook that works on both web and mobile platforms.
@@ -39,7 +33,7 @@ interface UseTTSReturn {
  *
  * Automatically uses the current app language from i18n store if no language specified.
  */
-export function useTTS(): UseTTSReturn {
+export function useTTS() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
   const [error, setError] = useState<string | null>(null);

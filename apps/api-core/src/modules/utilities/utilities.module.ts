@@ -17,6 +17,12 @@ import { FsspClient } from './fssp-check/fssp.client';
 import { PassportValidityController } from './passport-validity/passport-validity.controller';
 import { PassportValidityService } from './passport-validity/passport-validity.service';
 import { MvdPassportClient } from './passport-validity/mvd-passport.client';
+import { GibddCheckController } from './gibdd-check/gibdd-check.controller';
+import { GibddCheckService } from './gibdd-check/gibdd-check.service';
+import { GibddClient } from './gibdd-check/gibdd.client';
+import { WorkPermitCheckController } from './work-permit-check/work-permit-check.controller';
+import { WorkPermitCheckService } from './work-permit-check/work-permit-check.service';
+import { WorkPermitClient } from './work-permit-check/work-permit.client';
 import { BrowserService, CaptchaSolverService } from '../../common/services';
 
 @Module({
@@ -27,6 +33,8 @@ import { BrowserService, CaptchaSolverService } from '../../common/services';
     PermitStatusCheckController,
     FsspCheckController,
     PassportValidityController,
+    GibddCheckController,
+    WorkPermitCheckController,
   ],
   providers: [
     BanCheckService,
@@ -41,6 +49,10 @@ import { BrowserService, CaptchaSolverService } from '../../common/services';
     FsspClient,
     PassportValidityService,
     MvdPassportClient,
+    GibddCheckService,
+    GibddClient,
+    WorkPermitCheckService,
+    WorkPermitClient,
     BrowserService,
     CaptchaSolverService,
   ],
@@ -52,6 +64,8 @@ import { BrowserService, CaptchaSolverService } from '../../common/services';
     PermitStatusCheckService,
     FsspCheckService,
     PassportValidityService,
+    GibddCheckService,
+    WorkPermitCheckService,
   ],
 })
 export class UtilitiesModule {}

@@ -8,11 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Backup } from './entities/backup.entity';
-import {
-  BackupResponseDto,
-  BackupListResponseDto,
-  BackupDownloadResponseDto,
-} from './dto';
+import { BackupResponseDto, BackupListResponseDto, BackupDownloadResponseDto } from './dto';
 
 /** Maximum number of backups per device */
 const MAX_BACKUPS = 3;
@@ -51,9 +47,7 @@ export class BackupService {
       throw new BadRequestException('Backup file is empty');
     }
 
-    this.logger.log(
-      `Uploading backup for device ${deviceId}, size: ${sizeBytes} bytes`,
-    );
+    this.logger.log(`Uploading backup for device ${deviceId}, size: ${sizeBytes} bytes`);
 
     // Create new backup
     const backup = this.backupRepository.create({
@@ -179,9 +173,7 @@ export class BackupService {
 
       await this.backupRepository.delete(idsToDelete);
 
-      this.logger.log(
-        `Cleaned up ${idsToDelete.length} old backups for device ${deviceId}`,
-      );
+      this.logger.log(`Cleaned up ${idsToDelete.length} old backups for device ${deviceId}`);
     }
   }
 

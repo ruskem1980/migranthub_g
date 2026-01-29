@@ -2,15 +2,19 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Page, BrowserContext } from 'playwright';
 import { BrowserService, CaptchaSolverService } from '../../../common/services';
-import { PassportValidityQueryDto } from './dto';
-import { PassportValidityStatus } from './dto/passport-validity-result.dto';
+import { WorkPermitQueryDto } from './dto';
+import { WorkPermitStatus } from './dto/work-permit-status.enum';
 
 /**
- * Результат проверки паспорта от сервиса МВД
+ * Результат проверки разрешения на работу от сервиса ФМС
  */
-export interface PassportCheckResult {
-  status: PassportValidityStatus;
+export interface WorkPermitCheckResult {
+  status: WorkPermitStatus;
   isValid: boolean;
+  region?: string;
+  employer?: string;
+  validUntil?: string;
+  issuedAt?: string;
   message?: string;
 }
 
@@ -24,7 +28,7 @@ enum CircuitState {
 }
 
 /**
- * MvdPassportClient - клиент для проверки действительности паспорта через сайт МВД.
+ * WorkPermitClient - клиент для проверки разрешения на работу через сайт ФМС.
  *
  * Особенности:
  * - Использует Playwright для взаимодействия с сайтом services.fms.gov.ru
@@ -33,8 +37,8 @@ enum CircuitState {
  * - Retry с exponential backoff
  */
 @Injectable()
-export class MvdPassportClient implements OnModuleInit {
-  private readonly logger = new Logger(MvdPassportClient.name);
+export class WorkPermitClient implements OnModuleInit {
+  private readonly logger = new Logger(WorkPermitClient.name);
 
   // Конфигурация
   private readonly serviceUrl: string;
@@ -56,26 +60,26 @@ export class MvdPassportClient implements OnModuleInit {
     private readonly captchaSolver: CaptchaSolverService,
   ) {
     this.serviceUrl = this.configService.get<string>(
-      'passportValidity.serviceUrl',
-      'https://services.fms.gov.ru/info-service.htm?sid=2000',
+      'workPermit.serviceUrl',
+      'https://services.fms.gov.ru/info-service.htm?sid=2010',
     );
-    this.enabled = this.configService.get<boolean>('passportValidity.enabled', false);
-    this.timeout = this.configService.get<number>('passportValidity.timeout', 30000);
-    this.retryAttempts = this.configService.get<number>('passportValidity.retryAttempts', 3);
-    this.retryDelay = this.configService.get<number>('passportValidity.retryDelay', 2000);
+    this.enabled = this.configService.get<boolean>('workPermit.enabled', false);
+    this.timeout = this.configService.get<number>('workPermit.timeout', 30000);
+    this.retryAttempts = this.configService.get<number>('workPermit.retryAttempts', 3);
+    this.retryDelay = this.configService.get<number>('workPermit.retryDelay', 2000);
     this.circuitBreakerThreshold = this.configService.get<number>(
-      'passportValidity.circuitBreakerThreshold',
+      'workPermit.circuitBreakerThreshold',
       5,
     );
     this.circuitBreakerResetTime = this.configService.get<number>(
-      'passportValidity.circuitBreakerResetTime',
+      'workPermit.circuitBreakerResetTime',
       60000,
     );
   }
 
   onModuleInit(): void {
     this.logger.log(
-      `MvdPassportClient initialized: enabled=${this.enabled}, url=${this.serviceUrl}`,
+      `WorkPermitClient initialized: enabled=${this.enabled}, url=${this.serviceUrl}`,
     );
   }
 
@@ -87,13 +91,13 @@ export class MvdPassportClient implements OnModuleInit {
   }
 
   /**
-   * Проверка действительности паспорта
+   * Проверка разрешения на работу
    */
-  async checkValidity(query: PassportValidityQueryDto): Promise<PassportCheckResult> {
+  async checkPermit(query: WorkPermitQueryDto): Promise<WorkPermitCheckResult> {
     // Проверка circuit breaker
     if (!this.canMakeRequest()) {
-      this.logger.warn('Circuit breaker open, MVD passport request blocked');
-      throw new Error('MVD passport service temporarily unavailable (circuit open)');
+      this.logger.warn('Circuit breaker open, work permit request blocked');
+      throw new Error('Work permit service temporarily unavailable (circuit open)');
     }
 
     let lastError: Error | null = null;
@@ -101,7 +105,7 @@ export class MvdPassportClient implements OnModuleInit {
     for (let attempt = 1; attempt <= this.retryAttempts; attempt++) {
       try {
         this.logger.debug(
-          `Attempt ${attempt}/${this.retryAttempts} for passport check: ${query.series} ${query.number}`,
+          `Attempt ${attempt}/${this.retryAttempts} for work permit check: ${query.series} ${query.number}`,
         );
         const result = await this.executeCheck(query);
         this.onSuccess();
@@ -125,7 +129,7 @@ export class MvdPassportClient implements OnModuleInit {
   /**
    * Выполнение проверки через браузер
    */
-  private async executeCheck(query: PassportValidityQueryDto): Promise<PassportCheckResult> {
+  private async executeCheck(query: WorkPermitQueryDto): Promise<WorkPermitCheckResult> {
     let page: Page | null = null;
     let context: BrowserContext | null = null;
 
@@ -161,15 +165,16 @@ export class MvdPassportClient implements OnModuleInit {
   }
 
   /**
-   * Заполнение формы проверки паспорта
+   * Заполнение формы проверки разрешения на работу
    */
-  private async fillForm(page: Page, query: PassportValidityQueryDto): Promise<void> {
-    this.logger.debug('Filling passport check form...');
+  private async fillForm(page: Page, query: WorkPermitQueryDto): Promise<void> {
+    this.logger.debug('Filling work permit check form...');
 
-    // Серия паспорта
+    // Серия разрешения
     const seriesSelectors = [
       'input[name="sid"]',
       'input[name="series"]',
+      'input[name="seria"]',
       'input#seria',
       'input[placeholder*="серия"]',
       'input[placeholder*="Серия"]',
@@ -184,7 +189,7 @@ export class MvdPassportClient implements OnModuleInit {
       }
     }
 
-    // Номер паспорта
+    // Номер разрешения
     const numberSelectors = [
       'input[name="num"]',
       'input[name="number"]',
@@ -199,6 +204,64 @@ export class MvdPassportClient implements OnModuleInit {
         await input.fill(query.number);
         this.logger.debug(`Filled number via: ${selector}`);
         break;
+      }
+    }
+
+    // ФИО (опционально, для уточнения поиска)
+    if (query.lastName) {
+      const lastNameSelectors = [
+        'input[name="lastName"]',
+        'input[name="surname"]',
+        'input[name="fam"]',
+        'input[placeholder*="фамилия"]',
+        'input[placeholder*="Фамилия"]',
+      ];
+
+      for (const selector of lastNameSelectors) {
+        const input = await page.$(selector);
+        if (input) {
+          await input.fill(query.lastName);
+          this.logger.debug(`Filled lastName via: ${selector}`);
+          break;
+        }
+      }
+    }
+
+    if (query.firstName) {
+      const firstNameSelectors = [
+        'input[name="firstName"]',
+        'input[name="name"]',
+        'input[name="im"]',
+        'input[placeholder*="имя"]',
+        'input[placeholder*="Имя"]',
+      ];
+
+      for (const selector of firstNameSelectors) {
+        const input = await page.$(selector);
+        if (input) {
+          await input.fill(query.firstName);
+          this.logger.debug(`Filled firstName via: ${selector}`);
+          break;
+        }
+      }
+    }
+
+    if (query.middleName) {
+      const middleNameSelectors = [
+        'input[name="middleName"]',
+        'input[name="patronymic"]',
+        'input[name="ot"]',
+        'input[placeholder*="отчество"]',
+        'input[placeholder*="Отчество"]',
+      ];
+
+      for (const selector of middleNameSelectors) {
+        const input = await page.$(selector);
+        if (input) {
+          await input.fill(query.middleName);
+          this.logger.debug(`Filled middleName via: ${selector}`);
+          break;
+        }
       }
     }
   }
@@ -315,65 +378,123 @@ export class MvdPassportClient implements OnModuleInit {
   /**
    * Парсинг результата проверки из HTML
    */
-  private parseResult(html: string): PassportCheckResult {
+  private parseResult(html: string): WorkPermitCheckResult {
     const normalizedHtml = html.toLowerCase();
 
-    // Индикаторы недействительного паспорта
-    const invalidIndicators = [
-      'недействителен',
-      'не действителен',
-      'не является действительным',
-      'входит в базу недействительных',
-      'числится в базе',
-      'значится недействительным',
-      'аннулирован',
+    // Парсинг дополнительных данных
+    const region = this.extractField(html, [
+      /регион[:\s]+([а-яё\s\-\.]+)/i,
+      /субъект[:\s]+([а-яё\s\-\.]+)/i,
+      /место выдачи[:\s]+([а-яё\s\-\.]+)/i,
+    ]);
+
+    const employer = this.extractField(html, [
+      /работодатель[:\s]+([а-яё\w\s\"\'\-\.\,]+)/i,
+      /организация[:\s]+([а-яё\w\s\"\'\-\.\,]+)/i,
+      /наниматель[:\s]+([а-яё\w\s\"\'\-\.\,]+)/i,
+    ]);
+
+    const validUntil = this.extractDate(html, [
+      /действительно до[:\s]+(\d{2}[\.\-\/]\d{2}[\.\-\/]\d{4})/i,
+      /срок действия до[:\s]+(\d{2}[\.\-\/]\d{2}[\.\-\/]\d{4})/i,
+      /дата окончания[:\s]+(\d{2}[\.\-\/]\d{2}[\.\-\/]\d{4})/i,
+    ]);
+
+    const issuedAt = this.extractDate(html, [
+      /дата выдачи[:\s]+(\d{2}[\.\-\/]\d{2}[\.\-\/]\d{4})/i,
+      /выдано[:\s]+(\d{2}[\.\-\/]\d{2}[\.\-\/]\d{4})/i,
+    ]);
+
+    // Индикаторы истекшего срока действия
+    const expiredIndicators = [
+      'срок действия истек',
+      'истёк срок действия',
+      'просрочено',
+      'недействительно по сроку',
     ];
 
-    // Проверяем на недействительность
-    for (const indicator of invalidIndicators) {
+    for (const indicator of expiredIndicators) {
       if (normalizedHtml.includes(indicator)) {
-        this.logger.log('Passport is INVALID');
+        this.logger.log('Work permit is EXPIRED');
         return {
-          status: PassportValidityStatus.INVALID,
+          status: WorkPermitStatus.EXPIRED,
           isValid: false,
-          message: 'Паспорт числится в базе недействительных паспортов МВД',
+          region,
+          employer,
+          validUntil,
+          issuedAt,
+          message: 'Срок действия разрешения на работу истек',
         };
       }
     }
 
-    // Индикаторы действительного паспорта / не найден в базе
+    // Индикаторы недействительного разрешения
+    const invalidIndicators = [
+      'недействительно',
+      'не действительно',
+      'аннулировано',
+      'отозвано',
+      'отменено',
+      'признано недействительным',
+    ];
+
+    for (const indicator of invalidIndicators) {
+      if (normalizedHtml.includes(indicator)) {
+        this.logger.log('Work permit is INVALID');
+        return {
+          status: WorkPermitStatus.INVALID,
+          isValid: false,
+          region,
+          employer,
+          validUntil,
+          issuedAt,
+          message: 'Разрешение на работу недействительно (аннулировано)',
+        };
+      }
+    }
+
+    // Индикаторы действительного разрешения
     const validIndicators = [
-      'не значится',
-      'не числится',
-      'не входит в базу недействительных',
-      'среди недействительных не значится',
-      'не найден в базе недействительных',
-      'паспорт действителен',
+      'действительно',
       'является действительным',
+      'разрешение действует',
+      'статус: действующее',
+      'актуальное',
     ];
 
     for (const indicator of validIndicators) {
       if (normalizedHtml.includes(indicator)) {
-        this.logger.log('Passport NOT FOUND in invalid database (considered valid)');
+        this.logger.log('Work permit is VALID');
         return {
-          status: PassportValidityStatus.NOT_FOUND,
+          status: WorkPermitStatus.VALID,
           isValid: true,
-          message: 'Паспорт не найден в базе недействительных паспортов',
+          region,
+          employer,
+          validUntil,
+          issuedAt,
+          message: 'Разрешение на работу действительно',
         };
       }
     }
 
-    // Если есть результат проверки, но не удалось определить статус
-    const resultIndicators = ['результат проверки', 'проверка завершена', 'данные о паспорте'];
+    // Индикаторы не найденного разрешения
+    const notFoundIndicators = [
+      'не найдено',
+      'не найден',
+      'не значится',
+      'не числится',
+      'отсутствует в базе',
+      'нет данных',
+      'информация не найдена',
+    ];
 
-    for (const indicator of resultIndicators) {
+    for (const indicator of notFoundIndicators) {
       if (normalizedHtml.includes(indicator)) {
-        this.logger.debug('Result found but status unclear');
-        // Если в результате нет явных признаков недействительности - считаем действительным
+        this.logger.log('Work permit NOT_FOUND');
         return {
-          status: PassportValidityStatus.NOT_FOUND,
-          isValid: true,
-          message: 'Паспорт не найден в базе недействительных паспортов',
+          status: WorkPermitStatus.NOT_FOUND,
+          isValid: false,
+          message: 'Разрешение на работу не найдено в базе данных',
         };
       }
     }
@@ -385,20 +506,80 @@ export class MvdPassportClient implements OnModuleInit {
       if (normalizedHtml.includes(indicator)) {
         this.logger.warn('Error indicator found in response');
         return {
-          status: PassportValidityStatus.UNKNOWN,
+          status: WorkPermitStatus.UNKNOWN,
           isValid: false,
           message: 'Ошибка при проверке. Повторите попытку позже.',
         };
       }
     }
 
+    // Если есть какие-то результаты но не можем определить статус
+    const resultIndicators = ['результат проверки', 'проверка завершена', 'данные о разрешении'];
+
+    for (const indicator of resultIndicators) {
+      if (normalizedHtml.includes(indicator)) {
+        // Есть результат, но статус неясен - возвращаем UNKNOWN
+        this.logger.debug('Result found but status unclear');
+        return {
+          status: WorkPermitStatus.UNKNOWN,
+          isValid: false,
+          region,
+          employer,
+          validUntil,
+          issuedAt,
+          message: 'Статус разрешения не определен. Рекомендуем проверить на официальном сайте.',
+        };
+      }
+    }
+
     // Не удалось определить статус
-    this.logger.warn('Could not determine passport validity status');
+    this.logger.warn('Could not determine work permit status');
     return {
-      status: PassportValidityStatus.UNKNOWN,
+      status: WorkPermitStatus.UNKNOWN,
       isValid: false,
-      message: 'Не удалось определить статус паспорта',
+      message: 'Не удалось определить статус разрешения на работу',
     };
+  }
+
+  /**
+   * Извлечение значения поля из HTML по паттернам
+   */
+  private extractField(html: string, patterns: RegExp[]): string | undefined {
+    for (const pattern of patterns) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        return match[1].trim();
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * Извлечение и конвертация даты из HTML
+   */
+  private extractDate(html: string, patterns: RegExp[]): string | undefined {
+    for (const pattern of patterns) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        try {
+          // Парсим дату в формате DD.MM.YYYY или DD-MM-YYYY или DD/MM/YYYY
+          const dateStr = match[1];
+          const parts = dateStr.split(/[\.\-\/]/);
+          if (parts.length === 3) {
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1;
+            const year = parseInt(parts[2], 10);
+            const date = new Date(year, month, day);
+            if (!isNaN(date.getTime())) {
+              return date.toISOString();
+            }
+          }
+        } catch {
+          // Ignore parsing errors
+        }
+      }
+    }
+    return undefined;
   }
 
   /**

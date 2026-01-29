@@ -97,9 +97,9 @@ describe('YooKassaProvider', () => {
       }
 
       // Next request should fail immediately
-      await expect(
-        provider.createPayment(100, 'Test', 'idem-next'),
-      ).rejects.toThrow(ServiceUnavailableException);
+      await expect(provider.createPayment(100, 'Test', 'idem-next')).rejects.toThrow(
+        ServiceUnavailableException,
+      );
 
       // Fetch should not be called when circuit is open
       expect(global.fetch).toHaveBeenCalledTimes(5);
@@ -126,12 +126,9 @@ describe('YooKassaProvider', () => {
         json: () => Promise.resolve(mockResponse),
       });
 
-      const result = await provider.createPayment(
-        100,
-        'Test payment',
-        'idem-123',
-        { userId: 'user-123' },
-      );
+      const result = await provider.createPayment(100, 'Test payment', 'idem-123', {
+        userId: 'user-123',
+      });
 
       expect(result).toEqual(mockResponse);
       expect(global.fetch).toHaveBeenCalledWith(
@@ -140,7 +137,7 @@ describe('YooKassaProvider', () => {
           method: 'POST',
           headers: expect.objectContaining({
             'Content-Type': 'application/json',
-            'Authorization': expect.stringContaining('Basic'),
+            Authorization: expect.stringContaining('Basic'),
             'Idempotence-Key': 'idem-123',
           }),
         }),
@@ -154,9 +151,9 @@ describe('YooKassaProvider', () => {
         text: () => Promise.resolve('Bad Request'),
       });
 
-      await expect(
-        provider.createPayment(100, 'Test', 'idem-123'),
-      ).rejects.toThrow('YooKassa API error: 400');
+      await expect(provider.createPayment(100, 'Test', 'idem-123')).rejects.toThrow(
+        'YooKassa API error: 400',
+      );
     });
   });
 

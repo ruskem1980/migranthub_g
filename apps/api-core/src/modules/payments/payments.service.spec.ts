@@ -113,12 +113,7 @@ describe('PaymentsService', () => {
       paymentRepository.save.mockResolvedValue(mockPayment);
       yooKassaProvider.createPayment.mockResolvedValue(mockYooKassaResponse);
 
-      const result = await service.createPayment(
-        'user-123',
-        createDto,
-        '127.0.0.1',
-        'Mozilla/5.0',
-      );
+      const result = await service.createPayment('user-123', createDto, '127.0.0.1', 'Mozilla/5.0');
 
       expect(result).toHaveProperty('id');
       expect(result).toHaveProperty('paymentUrl');
@@ -190,9 +185,9 @@ describe('PaymentsService', () => {
       cacheService.get.mockResolvedValue(null);
       paymentRepository.findOne.mockResolvedValue(null);
 
-      await expect(
-        service.getPaymentStatus('non-existent-id', 'user-123'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.getPaymentStatus('non-existent-id', 'user-123')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should check YooKassa for pending payments', async () => {
@@ -232,9 +227,9 @@ describe('PaymentsService', () => {
     it('should throw NotFoundException if payment not found', async () => {
       paymentRepository.findOne.mockResolvedValue(null);
 
-      await expect(
-        service.getPayment('non-existent-id', 'user-123'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.getPayment('non-existent-id', 'user-123')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

@@ -147,7 +147,12 @@ export class MigrationCardParser extends BaseDocumentParser<MigrationCardDataDto
     // First try to find purpose using the value extraction method
     const purposeKeywords = ['ЦЕЛЬ ВИЗИТА', 'PURPOSE', 'ЦЕЛЬ ВЪЕЗДА'];
     const purpose = this.findValueAfterKeyword(text, purposeKeywords, [
-      'СРОК', 'ПУНКТ', 'ДАТА', 'ФАМИЛИЯ', 'ДОМОДЕДОВО', 'ШЕРЕМЕТЬЕВО',
+      'СРОК',
+      'ПУНКТ',
+      'ДАТА',
+      'ФАМИЛИЯ',
+      'ДОМОДЕДОВО',
+      'ШЕРЕМЕТЬЕВО',
     ]);
 
     if (purpose) {
@@ -200,10 +205,22 @@ export class MigrationCardParser extends BaseDocumentParser<MigrationCardDataDto
 
     // Common entry checkpoints
     const checkpoints = [
-      'ДОМОДЕДОВО', 'ШЕРЕМЕТЬЕВО', 'ВНУКОВО', 'ПУЛКОВО',
-      'КОЛЬЦОВО', 'ТОЛМАЧЕВО', 'КАЗАНЬ', 'САМАРА',
-      'СОЧИ', 'КРАСНОДАР', 'РОСТОВ', 'ВЛАДИВОСТОК',
-      'DOMODEDOVO', 'SHEREMETYEVO', 'VNUKOVO', 'PULKOVO',
+      'ДОМОДЕДОВО',
+      'ШЕРЕМЕТЬЕВО',
+      'ВНУКОВО',
+      'ПУЛКОВО',
+      'КОЛЬЦОВО',
+      'ТОЛМАЧЕВО',
+      'КАЗАНЬ',
+      'САМАРА',
+      'СОЧИ',
+      'КРАСНОДАР',
+      'РОСТОВ',
+      'ВЛАДИВОСТОК',
+      'DOMODEDOVO',
+      'SHEREMETYEVO',
+      'VNUKOVO',
+      'PULKOVO',
     ];
 
     // Try to find after keyword

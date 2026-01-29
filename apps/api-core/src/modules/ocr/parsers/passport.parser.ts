@@ -155,7 +155,14 @@ export class PassportParser extends BaseDocumentParser<PassportDataDto> {
       const monthNum = parseInt(month, 10);
       const yearNum = parseInt(year, 10);
 
-      if (dayNum >= 1 && dayNum <= 31 && monthNum >= 1 && monthNum <= 12 && yearNum >= 1900 && yearNum <= 2100) {
+      if (
+        dayNum >= 1 &&
+        dayNum <= 31 &&
+        monthNum >= 1 &&
+        monthNum <= 12 &&
+        yearNum >= 1900 &&
+        yearNum <= 2100
+      ) {
         dates.push({ date: `${day}.${month}.${year}`, index: match.index });
       }
     }
@@ -246,10 +253,24 @@ export class PassportParser extends BaseDocumentParser<PassportDataDto> {
 
     // Common CIS countries detection
     const countries = [
-      'УЗБЕКИСТАН', 'ТАДЖИКИСТАН', 'КЫРГЫЗСТАН', 'КИРГИЗИЯ',
-      'КАЗАХСТАН', 'АРМЕНИЯ', 'АЗЕРБАЙДЖАН', 'МОЛДОВА', 'МОЛДАВИЯ',
-      'УКРАИНА', 'БЕЛАРУСЬ', 'БЕЛОРУССИЯ', 'РОССИЯ', 'РОССИЙСКАЯ ФЕДЕРАЦИЯ',
-      'UZBEKISTAN', 'TAJIKISTAN', 'KYRGYZSTAN', 'KAZAKHSTAN',
+      'УЗБЕКИСТАН',
+      'ТАДЖИКИСТАН',
+      'КЫРГЫЗСТАН',
+      'КИРГИЗИЯ',
+      'КАЗАХСТАН',
+      'АРМЕНИЯ',
+      'АЗЕРБАЙДЖАН',
+      'МОЛДОВА',
+      'МОЛДАВИЯ',
+      'УКРАИНА',
+      'БЕЛАРУСЬ',
+      'БЕЛОРУССИЯ',
+      'РОССИЯ',
+      'РОССИЙСКАЯ ФЕДЕРАЦИЯ',
+      'UZBEKISTAN',
+      'TAJIKISTAN',
+      'KYRGYZSTAN',
+      'KAZAKHSTAN',
     ];
 
     for (const country of countries) {

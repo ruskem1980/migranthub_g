@@ -1,11 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import {
-  PiiFilterService,
-  PiiType,
-  PiiFilterLevel,
-  DetectedPii,
-} from './pii-filter.service';
+import { PiiFilterService, PiiType, PiiFilterLevel, DetectedPii } from './pii-filter.service';
 
 describe('PiiFilterService', () => {
   let service: PiiFilterService;
@@ -300,9 +295,7 @@ describe('PiiFilterService', () => {
     });
 
     it('should group warnings by type', () => {
-      const result = service.validateMessage(
-        'Паспорт 45 07 123456, телефон +7 916 123 45 67',
-      );
+      const result = service.validateMessage('Паспорт 45 07 123456, телефон +7 916 123 45 67');
 
       expect(result.safe).toBe(false);
       expect(result.warnings).toHaveLength(2);

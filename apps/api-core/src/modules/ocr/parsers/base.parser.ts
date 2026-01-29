@@ -46,10 +46,7 @@ export abstract class BaseDocumentParser<T> {
   protected extractDate(text: string, pattern?: RegExp): string | undefined {
     const datePatterns = pattern
       ? [pattern]
-      : [
-          /(\d{2})[.\/-](\d{2})[.\/-](\d{4})/g,
-          /(\d{2})\s*(\d{2})\s*(\d{4})/g,
-        ];
+      : [/(\d{2})[.\/-](\d{2})[.\/-](\d{4})/g, /(\d{2})\s*(\d{2})\s*(\d{4})/g];
 
     for (const p of datePatterns) {
       const matches = text.matchAll(p);
@@ -60,7 +57,14 @@ export abstract class BaseDocumentParser<T> {
         const yearNum = parseInt(year, 10);
 
         // Basic validation
-        if (dayNum >= 1 && dayNum <= 31 && monthNum >= 1 && monthNum <= 12 && yearNum >= 1900 && yearNum <= 2100) {
+        if (
+          dayNum >= 1 &&
+          dayNum <= 31 &&
+          monthNum >= 1 &&
+          monthNum <= 12 &&
+          yearNum >= 1900 &&
+          yearNum <= 2100
+        ) {
           return `${day}.${month}.${year}`;
         }
       }
@@ -134,9 +138,24 @@ export abstract class BaseDocumentParser<T> {
 
         // Stop at common structural keywords
         const defaultStopKeywords = [
-          'ДАТА', 'НОМЕР', 'СЕРИЯ', 'ВЫДАН', 'МЕСТО', 'ПОЛ', 'ГРАЖДАНСТВО',
-          'ФАМИЛИЯ', 'ИМЯ', 'ОТЧЕСТВО', 'СРОК', 'ДЕЙСТВИТЕЛЕН', 'АДРЕС',
-          'ПРИНИМАЮЩАЯ', 'ЦЕЛЬ', 'ВЪЕЗД', 'ПРОФЕССИЯ', 'ТЕРРИТОРИЯ',
+          'ДАТА',
+          'НОМЕР',
+          'СЕРИЯ',
+          'ВЫДАН',
+          'МЕСТО',
+          'ПОЛ',
+          'ГРАЖДАНСТВО',
+          'ФАМИЛИЯ',
+          'ИМЯ',
+          'ОТЧЕСТВО',
+          'СРОК',
+          'ДЕЙСТВИТЕЛЕН',
+          'АДРЕС',
+          'ПРИНИМАЮЩАЯ',
+          'ЦЕЛЬ',
+          'ВЪЕЗД',
+          'ПРОФЕССИЯ',
+          'ТЕРРИТОРИЯ',
         ];
 
         const allStopKeywords = [...stopKeywords, ...defaultStopKeywords];

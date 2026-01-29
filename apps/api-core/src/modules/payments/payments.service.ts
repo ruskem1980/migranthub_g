@@ -112,10 +112,7 @@ export class PaymentsService {
   /**
    * Get payment status
    */
-  async getPaymentStatus(
-    paymentId: string,
-    userId: string,
-  ): Promise<PaymentStatusResponseDto> {
+  async getPaymentStatus(paymentId: string, userId: string): Promise<PaymentStatusResponseDto> {
     // Try cache first
     const cacheKey = `${PAYMENT_CACHE_PREFIX}${paymentId}`;
     const cached = await this.cacheService.get<PaymentStatusResponseDto>(cacheKey);
@@ -134,10 +131,7 @@ export class PaymentsService {
     }
 
     // If payment is still pending and has external ID, check YooKassa
-    if (
-      payment.status === PaymentStatus.PENDING &&
-      payment.externalId
-    ) {
+    if (payment.status === PaymentStatus.PENDING && payment.externalId) {
       try {
         const yooKassaPayment = await this.yooKassaProvider.getPayment(payment.externalId);
         const newStatus = this.mapYooKassaStatus(yooKassaPayment.status);
@@ -249,7 +243,11 @@ export class PaymentsService {
    */
   private async updatePaymentFromYooKassa(
     payment: Payment,
-    yooKassaPayment: { status: string; cancellation_details?: { reason: string }; captured_at?: string },
+    yooKassaPayment: {
+      status: string;
+      cancellation_details?: { reason: string };
+      captured_at?: string;
+    },
   ): Promise<void> {
     const newStatus = this.mapYooKassaStatus(yooKassaPayment.status);
 
@@ -293,10 +291,7 @@ export class PaymentsService {
         PaymentStatus.SUCCEEDED,
         PaymentStatus.CANCELED,
       ],
-      [PaymentStatus.WAITING_FOR_CAPTURE]: [
-        PaymentStatus.SUCCEEDED,
-        PaymentStatus.CANCELED,
-      ],
+      [PaymentStatus.WAITING_FOR_CAPTURE]: [PaymentStatus.SUCCEEDED, PaymentStatus.CANCELED],
       [PaymentStatus.SUCCEEDED]: [PaymentStatus.REFUNDED],
       [PaymentStatus.CANCELED]: [],
       [PaymentStatus.REFUNDED]: [],

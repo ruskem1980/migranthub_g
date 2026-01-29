@@ -2,7 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CacheService } from '../../cache/cache.service';
 import { FmsPermitClient } from './fms-permit.client';
-import { CheckPermitDto, PermitStatusResponseDto, PermitStatusEnum, PermitStatusSource } from './dto';
+import {
+  CheckPermitDto,
+  PermitStatusResponseDto,
+  PermitStatusEnum,
+  PermitStatusSource,
+} from './dto';
 
 // Константы кэширования
 const CACHE_KEY_PREFIX = 'permit-status:';

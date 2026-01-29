@@ -132,7 +132,7 @@ export function CloudSafeSection() {
                   </span>
                 </div>
                 <span className="text-xs text-gray-500 ml-6">
-                  {t('cloudSafe.backupSize', { size: formatSize(backup.size) })}
+                  {t('cloudSafe.backupSize', { size: formatSize(backup.sizeBytes) })}
                 </span>
               </div>
 

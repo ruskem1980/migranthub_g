@@ -15,6 +15,7 @@ import { AssistantModule } from './modules/assistant/assistant.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { OcrModule } from './modules/ocr/ocr.module';
 import { BackupModule } from './modules/backup/backup.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 import { CacheModule } from './modules/cache/cache.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { SentryModule } from './common/sentry';
@@ -31,6 +32,7 @@ import permitStatusConfig from './config/permit-status.config';
 import fsspConfig from './config/fssp.config';
 import passportValidityConfig from './config/passport-validity.config';
 import yookassaConfig from './config/yookassa.config';
+import firebaseConfig from './config/firebase.config';
 
 @Module({
   imports: [
@@ -51,6 +53,7 @@ import yookassaConfig from './config/yookassa.config';
         passportValidityConfig,
         openaiConfig,
         yookassaConfig,
+        firebaseConfig,
       ],
       envFilePath: ['.env.local', '.env'],
     }),
@@ -120,6 +123,7 @@ import yookassaConfig from './config/yookassa.config';
     PaymentsModule,
     OcrModule,
     BackupModule,
+    NotificationsModule,
   ],
   providers: [
     {

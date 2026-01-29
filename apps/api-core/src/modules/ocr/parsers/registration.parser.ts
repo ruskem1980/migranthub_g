@@ -97,8 +97,12 @@ export class RegistrationParser extends BaseDocumentParser<RegistrationDataDto> 
 
   private extractName(text: string, data: RegistrationDataDto): void {
     const nameKeywords = [
-      'ФАМИЛИЯ', 'SURNAME', 'ФИО', 'NAME',
-      'ИНОСТРАННЫЙ ГРАЖДАНИН', 'FOREIGN CITIZEN',
+      'ФАМИЛИЯ',
+      'SURNAME',
+      'ФИО',
+      'NAME',
+      'ИНОСТРАННЫЙ ГРАЖДАНИН',
+      'FOREIGN CITIZEN',
       'ГРАЖДАНИН',
     ];
     let foundName = this.findAfterKeyword(text, nameKeywords, 80);
@@ -116,18 +120,27 @@ export class RegistrationParser extends BaseDocumentParser<RegistrationDataDto> 
 
   private extractAddress(text: string, data: RegistrationDataDto): void {
     const addressKeywords = [
-      'АДРЕС', 'ADDRESS', 'МЕСТО ПРЕБЫВАНИЯ', 'МЕСТО ЖИТЕЛЬСТВА',
-      'PLACE OF STAY', 'ЗАРЕГИСТРИРОВАН ПО АДРЕСУ',
+      'АДРЕС',
+      'ADDRESS',
+      'МЕСТО ПРЕБЫВАНИЯ',
+      'МЕСТО ЖИТЕЛЬСТВА',
+      'PLACE OF STAY',
+      'ЗАРЕГИСТРИРОВАН ПО АДРЕСУ',
     ];
 
     // Use value extraction with stop keywords
     const address = this.findValueAfterKeyword(text, addressKeywords, [
-      'СРОК', 'ПРИНИМАЮЩАЯ', 'С ', 'ПО ', 'ОТ ', 'ДО ',
+      'СРОК',
+      'ПРИНИМАЮЩАЯ',
+      'С ',
+      'ПО ',
+      'ОТ ',
+      'ДО ',
     ]);
 
     if (address) {
       // Clean up address
-      let cleanAddress = address
+      const cleanAddress = address
         .replace(/^[:\s]+/, '')
         .replace(/СРОК.*$/, '')
         .replace(/ПРИНИМАЮЩАЯ.*$/, '')
@@ -162,7 +175,14 @@ export class RegistrationParser extends BaseDocumentParser<RegistrationDataDto> 
       const monthNum = parseInt(month, 10);
       const yearNum = parseInt(year, 10);
 
-      if (dayNum >= 1 && dayNum <= 31 && monthNum >= 1 && monthNum <= 12 && yearNum >= 2000 && yearNum <= 2100) {
+      if (
+        dayNum >= 1 &&
+        dayNum <= 31 &&
+        monthNum >= 1 &&
+        monthNum <= 12 &&
+        yearNum >= 2000 &&
+        yearNum <= 2100
+      ) {
         dates.push({ date: `${day}.${month}.${year}`, index: match.index });
       }
     }
@@ -186,7 +206,8 @@ export class RegistrationParser extends BaseDocumentParser<RegistrationDataDto> 
     }
 
     // Try to find date range pattern: С XX.XX.XXXX ПО XX.XX.XXXX
-    const rangePattern = /С\s*(\d{2}[.\/-]\d{2}[.\/-]\d{4})\s*(?:ПО|ДО)\s*(\d{2}[.\/-]\d{2}[.\/-]\d{4})/i;
+    const rangePattern =
+      /С\s*(\d{2}[.\/-]\d{2}[.\/-]\d{4})\s*(?:ПО|ДО)\s*(\d{2}[.\/-]\d{2}[.\/-]\d{4})/i;
     const rangeMatch = text.match(rangePattern);
 
     if (rangeMatch) {
@@ -217,8 +238,11 @@ export class RegistrationParser extends BaseDocumentParser<RegistrationDataDto> 
 
   private extractHostName(text: string, data: RegistrationDataDto): void {
     const hostKeywords = [
-      'ПРИНИМАЮЩАЯ СТОРОНА', 'HOST', 'ПРИГЛАШАЮЩАЯ СТОРОНА',
-      'МЕСТО ПРЕБЫВАНИЯ ПРЕДОСТАВЛЕНО', 'ВЛАДЕЛЕЦ',
+      'ПРИНИМАЮЩАЯ СТОРОНА',
+      'HOST',
+      'ПРИГЛАШАЮЩАЯ СТОРОНА',
+      'МЕСТО ПРЕБЫВАНИЯ ПРЕДОСТАВЛЕНО',
+      'ВЛАДЕЛЕЦ',
     ];
 
     const host = this.findAfterKeyword(text, hostKeywords, 100);
@@ -238,7 +262,8 @@ export class RegistrationParser extends BaseDocumentParser<RegistrationDataDto> 
     const authorityKeywords = ['ОРГАН', 'AUTHORITY', 'ОВМ', 'ОТДЕЛ'];
 
     // Common issuing authorities for registration
-    const authorityPattern = /(ОВМ|ОТДЕЛ\s*ПО\s*ВОПРОСАМ\s*МИГРАЦИИ)[^.]*(?:УМВД|МВД|ПОЛИЦИИ)[^.]+/i;
+    const authorityPattern =
+      /(ОВМ|ОТДЕЛ\s*ПО\s*ВОПРОСАМ\s*МИГРАЦИИ)[^.]*(?:УМВД|МВД|ПОЛИЦИИ)[^.]+/i;
     const match = text.match(authorityPattern);
 
     if (match) {

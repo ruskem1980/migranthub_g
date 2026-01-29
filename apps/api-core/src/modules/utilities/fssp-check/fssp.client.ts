@@ -146,13 +146,22 @@ export class FsspClient implements OnModuleInit {
     private readonly browserService: BrowserService,
     private readonly captchaSolver: CaptchaSolverService,
   ) {
-    this.serviceUrl = this.configService.get<string>('fssp.serviceUrl', 'https://fssp.gov.ru/iss/ip');
+    this.serviceUrl = this.configService.get<string>(
+      'fssp.serviceUrl',
+      'https://fssp.gov.ru/iss/ip',
+    );
     this.enabled = this.configService.get<boolean>('fssp.enabled', false);
     this.timeout = this.configService.get<number>('fssp.timeout', 30000);
     this.retryAttempts = this.configService.get<number>('fssp.retryAttempts', 3);
     this.retryDelay = this.configService.get<number>('fssp.retryDelay', 2000);
-    this.circuitBreakerThreshold = this.configService.get<number>('fssp.circuitBreakerThreshold', 5);
-    this.circuitBreakerResetTime = this.configService.get<number>('fssp.circuitBreakerResetTime', 60000);
+    this.circuitBreakerThreshold = this.configService.get<number>(
+      'fssp.circuitBreakerThreshold',
+      5,
+    );
+    this.circuitBreakerResetTime = this.configService.get<number>(
+      'fssp.circuitBreakerResetTime',
+      60000,
+    );
   }
 
   onModuleInit(): void {
@@ -216,7 +225,9 @@ export class FsspClient implements OnModuleInit {
       context = result.context;
 
       // Ждем загрузки формы
-      await page.waitForSelector('form, .search-form, #searchForm, .ip-search', { timeout: this.timeout });
+      await page.waitForSelector('form, .search-form, #searchForm, .ip-search', {
+        timeout: this.timeout,
+      });
 
       // Выбираем поиск по физическим лицам
       await this.selectPhysicalPersonSearch(page);
@@ -424,7 +435,9 @@ export class FsspClient implements OnModuleInit {
       if (submitButton) {
         try {
           await Promise.all([
-            page.waitForNavigation({ waitUntil: 'networkidle', timeout: this.timeout }).catch(() => {}),
+            page
+              .waitForNavigation({ waitUntil: 'networkidle', timeout: this.timeout })
+              .catch(() => {}),
             submitButton.click(),
           ]);
           return;
@@ -504,7 +517,9 @@ export class FsspClient implements OnModuleInit {
 
     // Если найдены производства, значит есть долг
     if (execProceedings.length > 0) {
-      this.logger.log(`Found ${execProceedings.length} executive proceedings, total: ${totalAmount}`);
+      this.logger.log(
+        `Found ${execProceedings.length} executive proceedings, total: ${totalAmount}`,
+      );
       return {
         hasDebt: true,
         totalAmount,

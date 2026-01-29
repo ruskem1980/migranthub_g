@@ -144,7 +144,7 @@ export function RestoreBackupModal({ isOpen, onClose, backupId, onSuccess }: Res
                                       {formatDate(backup.createdAt, language)}
                                     </p>
                                     <p className="text-xs text-gray-500">
-                                      {formatSize(backup.size)}
+                                      {formatSize(backup.sizeBytes)}
                                     </p>
                                   </div>
                                 </div>
@@ -173,7 +173,7 @@ export function RestoreBackupModal({ isOpen, onClose, backupId, onSuccess }: Res
                   <div className="flex items-center gap-3">
                     <HardDrive className="w-5 h-5 text-blue-600" />
                     <span className="text-sm text-blue-700">
-                      {t('cloudSafe.backupSize', { size: formatSize(selectedBackup.size) })}
+                      {t('cloudSafe.backupSize', { size: formatSize(selectedBackup.sizeBytes) })}
                     </span>
                   </div>
                 </div>

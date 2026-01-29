@@ -8,3 +8,5 @@ export { default as entryBanConfig } from './entry-ban.config';
 export { default as permitStatusConfig } from './permit-status.config';
 export { default as fsspConfig } from './fssp.config';
 export { default as passportValidityConfig } from './passport-validity.config';
+export { default as gibddConfig } from './gibdd.config';
+export { default as workPermitConfig } from './work-permit.config';

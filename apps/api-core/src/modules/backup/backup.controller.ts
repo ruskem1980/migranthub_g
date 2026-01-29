@@ -106,12 +106,7 @@ export class BackupController {
       throw new Error('File is required');
     }
 
-    return this.backupService.upload(
-      user.deviceId,
-      file.buffer,
-      dto.salt,
-      dto.iv,
-    );
+    return this.backupService.upload(user.deviceId, file.buffer, dto.salt, dto.iv);
   }
 
   @Get('list')
@@ -127,9 +122,7 @@ export class BackupController {
   @ApiUnauthorizedResponse({
     description: 'User not authenticated',
   })
-  async list(
-    @CurrentUser() user: CurrentUserPayload,
-  ): Promise<BackupListResponseDto> {
+  async list(@CurrentUser() user: CurrentUserPayload): Promise<BackupListResponseDto> {
     return this.backupService.list(user.deviceId);
   }
 
@@ -149,9 +142,7 @@ export class BackupController {
   @ApiUnauthorizedResponse({
     description: 'User not authenticated',
   })
-  async getLatest(
-    @CurrentUser() user: CurrentUserPayload,
-  ): Promise<BackupResponseDto> {
+  async getLatest(@CurrentUser() user: CurrentUserPayload): Promise<BackupResponseDto> {
     const backup = await this.backupService.getLatest(user.deviceId);
 
     if (!backup) {
@@ -195,10 +186,7 @@ export class BackupController {
     @CurrentUser() user: CurrentUserPayload,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    const { data, backup } = await this.backupService.download(
-      user.deviceId,
-      id,
-    );
+    const { data, backup } = await this.backupService.download(user.deviceId, id);
 
     res.set({
       'Content-Type': 'application/octet-stream',

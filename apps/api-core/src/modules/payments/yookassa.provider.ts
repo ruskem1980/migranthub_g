@@ -74,11 +74,17 @@ export class YooKassaProvider {
     this.timeout = this.configService.get<number>('yookassa.timeout')!;
 
     // Circuit breaker settings
-    this.failureThreshold = this.configService.get<number>('yookassa.circuitBreaker.failureThreshold')!;
-    this.successThreshold = this.configService.get<number>('yookassa.circuitBreaker.successThreshold')!;
+    this.failureThreshold = this.configService.get<number>(
+      'yookassa.circuitBreaker.failureThreshold',
+    )!;
+    this.successThreshold = this.configService.get<number>(
+      'yookassa.circuitBreaker.successThreshold',
+    )!;
     this.circuitTimeout = this.configService.get<number>('yookassa.circuitBreaker.timeout')!;
 
-    this.logger.log(`YooKassa provider initialized with shop ID: ${this.shopId ? '***' + this.shopId.slice(-4) : 'NOT SET'}`);
+    this.logger.log(
+      `YooKassa provider initialized with shop ID: ${this.shopId ? '***' + this.shopId.slice(-4) : 'NOT SET'}`,
+    );
   }
 
   /**
@@ -178,7 +184,7 @@ export class YooKassaProvider {
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'Authorization': `Basic ${auth}`,
+      Authorization: `Basic ${auth}`,
     };
 
     if (idempotencyKey) {

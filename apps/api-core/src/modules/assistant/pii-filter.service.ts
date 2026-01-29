@@ -51,25 +51,123 @@ export enum PiiFilterLevel {
  */
 const COMMON_NAMES = new Set([
   // Male names
-  'александр', 'алексей', 'анатолий', 'андрей', 'антон', 'артём', 'артем',
-  'борис', 'вадим', 'валентин', 'валерий', 'василий', 'виктор', 'виталий',
-  'владимир', 'владислав', 'вячеслав', 'геннадий', 'георгий', 'григорий',
-  'дмитрий', 'евгений', 'иван', 'игорь', 'илья', 'кирилл', 'константин',
-  'леонид', 'максим', 'михаил', 'никита', 'николай', 'олег', 'павел',
-  'пётр', 'петр', 'роман', 'руслан', 'сергей', 'станислав', 'степан',
-  'тимур', 'фёдор', 'федор', 'юрий', 'ярослав',
+  'александр',
+  'алексей',
+  'анатолий',
+  'андрей',
+  'антон',
+  'артём',
+  'артем',
+  'борис',
+  'вадим',
+  'валентин',
+  'валерий',
+  'василий',
+  'виктор',
+  'виталий',
+  'владимир',
+  'владислав',
+  'вячеслав',
+  'геннадий',
+  'георгий',
+  'григорий',
+  'дмитрий',
+  'евгений',
+  'иван',
+  'игорь',
+  'илья',
+  'кирилл',
+  'константин',
+  'леонид',
+  'максим',
+  'михаил',
+  'никита',
+  'николай',
+  'олег',
+  'павел',
+  'пётр',
+  'петр',
+  'роман',
+  'руслан',
+  'сергей',
+  'станислав',
+  'степан',
+  'тимур',
+  'фёдор',
+  'федор',
+  'юрий',
+  'ярослав',
   // Female names
-  'александра', 'алёна', 'алена', 'алина', 'анастасия', 'анна', 'валентина',
-  'валерия', 'вера', 'виктория', 'галина', 'дарья', 'евгения', 'екатерина',
-  'елена', 'ирина', 'кристина', 'ксения', 'лариса', 'людмила', 'маргарита',
-  'марина', 'мария', 'надежда', 'наталья', 'нина', 'оксана', 'ольга',
-  'полина', 'светлана', 'софья', 'софия', 'татьяна', 'юлия', 'яна',
+  'александра',
+  'алёна',
+  'алена',
+  'алина',
+  'анастасия',
+  'анна',
+  'валентина',
+  'валерия',
+  'вера',
+  'виктория',
+  'галина',
+  'дарья',
+  'евгения',
+  'екатерина',
+  'елена',
+  'ирина',
+  'кристина',
+  'ксения',
+  'лариса',
+  'людмила',
+  'маргарита',
+  'марина',
+  'мария',
+  'надежда',
+  'наталья',
+  'нина',
+  'оксана',
+  'ольга',
+  'полина',
+  'светлана',
+  'софья',
+  'софия',
+  'татьяна',
+  'юлия',
+  'яна',
   // Central Asian names (common among migrants)
-  'азамат', 'азиз', 'акбар', 'бахтияр', 'давлат', 'джамшед', 'зафар',
-  'ислом', 'камол', 'мухаммад', 'мухамад', 'нодир', 'рустам', 'санжар',
-  'тимур', 'улугбек', 'фаррух', 'хуршед', 'шавкат', 'шерзод',
-  'гулнора', 'дилноза', 'зарина', 'зебо', 'лола', 'малика', 'мунира',
-  'нигора', 'сабрина', 'севара', 'фатима', 'ферузa', 'феруза', 'шахноза',
+  'азамат',
+  'азиз',
+  'акбар',
+  'бахтияр',
+  'давлат',
+  'джамшед',
+  'зафар',
+  'ислом',
+  'камол',
+  'мухаммад',
+  'мухамад',
+  'нодир',
+  'рустам',
+  'санжар',
+  'тимур',
+  'улугбек',
+  'фаррух',
+  'хуршед',
+  'шавкат',
+  'шерзод',
+  'гулнора',
+  'дилноза',
+  'зарина',
+  'зебо',
+  'лола',
+  'малика',
+  'мунира',
+  'нигора',
+  'сабрина',
+  'севара',
+  'фатима',
+  'ферузa',
+  'феруза',
+  'шахноза',
 ]);
 
 /**
@@ -150,13 +248,14 @@ export class PiiFilterService {
       // Russian phone: +7/8 (XXX) XXX-XX-XX - requires country code or parentheses
       {
         type: PiiType.PHONE,
-        regex: /(?:(?:\+7|8)\s?\(?(\d{3})\)?[\s-]?(\d{3})[\s-]?(\d{2})[\s-]?(\d{2})|\((\d{3})\)\s?(\d{3})[\s-]?(\d{2})[\s-]?(\d{2}))\b/g,
+        regex:
+          /(?:(?:\+7|8)\s?\(?(\d{3})\)?[\s-]?(\d{3})[\s-]?(\d{2})[\s-]?(\d{2})|\((\d{3})\)\s?(\d{3})[\s-]?(\d{2})[\s-]?(\d{2}))\b/g,
         mask: (match: string) => {
           // Extract area code from the match
           const cleaned = match.replace(/[\s()-]/g, '');
           const digits = cleaned.replace(/\D/g, '');
           // If starts with 7 or 8, skip first digit for area code
-          const start = (digits.startsWith('7') || digits.startsWith('8')) ? 1 : 0;
+          const start = digits.startsWith('7') || digits.startsWith('8') ? 1 : 0;
           const areaCode = digits.slice(start, start + 3);
           return `+7 (${areaCode}) ***-**-**`;
         },
@@ -168,9 +267,10 @@ export class PiiFilterService {
         regex: /\b([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\b/g,
         mask: (match: string) => {
           const [local, domain] = match.split('@');
-          const maskedLocal = local.length > 2
-            ? `${local[0]}${'*'.repeat(local.length - 2)}${local[local.length - 1]}`
-            : '***';
+          const maskedLocal =
+            local.length > 2
+              ? `${local[0]}${'*'.repeat(local.length - 2)}${local[local.length - 1]}`
+              : '***';
           return `${maskedLocal}@${domain}`;
         },
         level: PiiFilterLevel.CONTACTS,
@@ -253,12 +353,12 @@ export class PiiFilterService {
    * Higher priority types are preferred when matches overlap
    */
   private readonly typePriority: Record<PiiType, number> = {
-    [PiiType.SNILS]: 6,       // Most specific format
+    [PiiType.SNILS]: 6, // Most specific format
     [PiiType.PASSPORT_RF]: 5, // Specific format
-    [PiiType.BANK_CARD]: 4,   // 16 digits is quite specific
-    [PiiType.INN]: 3,         // 10/12 digits
+    [PiiType.BANK_CARD]: 4, // 16 digits is quite specific
+    [PiiType.INN]: 3, // 10/12 digits
     [PiiType.EMAIL]: 2,
-    [PiiType.PHONE]: 1,       // Lowest priority - matches many number sequences
+    [PiiType.PHONE]: 1, // Lowest priority - matches many number sequences
     [PiiType.NAME]: 0,
   };
 
@@ -349,9 +449,7 @@ export class PiiFilterService {
 
     for (const pii of sortedDesc) {
       maskedText =
-        maskedText.slice(0, pii.startIndex) +
-        pii.maskedValue +
-        maskedText.slice(pii.endIndex);
+        maskedText.slice(0, pii.startIndex) + pii.maskedValue + maskedText.slice(pii.endIndex);
     }
 
     return maskedText;

@@ -8,6 +8,13 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 
 type Theme = 'light' | 'dark' | 'system';
 
+// Push notification preferences (synced with backend)
+export interface PushNotificationPreferences {
+  document_expiry: boolean;
+  patent_payment: boolean;
+  news: boolean;
+}
+
 interface Notification {
   id: string;
   type: 'info' | 'warning' | 'success' | 'error';
@@ -42,6 +49,11 @@ interface AppState {
   // Accessibility
   ttsEnabled: boolean;
 
+  // Push Notifications
+  pushNotificationsEnabled: boolean;
+  fcmToken: string | null;
+  pushPreferences: PushNotificationPreferences;
+
   // Actions
   setTheme: (theme: Theme) => void;
   setOnline: (isOnline: boolean) => void;
@@ -62,6 +74,12 @@ interface AppState {
   // Law Sync actions
   setLawSyncStatus: (date: string, success: boolean, noChanges?: boolean) => void;
 
+  // Push Notification actions
+  setPushNotificationsEnabled: (enabled: boolean) => void;
+  setFcmToken: (token: string | null) => void;
+  setPushPreferences: (preferences: PushNotificationPreferences) => void;
+  updatePushPreference: (key: keyof PushNotificationPreferences, value: boolean) => void;
+
   reset: () => void;
 }
 
@@ -78,6 +96,13 @@ const initialState = {
   lawSyncSuccess: false,
   lawSyncNoChanges: false,
   ttsEnabled: true,
+  pushNotificationsEnabled: false,
+  fcmToken: null as string | null,
+  pushPreferences: {
+    document_expiry: true,
+    patent_payment: true,
+    news: true,
+  } as PushNotificationPreferences,
 };
 
 export const useAppStore = create<AppState>()(
@@ -140,6 +165,23 @@ export const useAppStore = create<AppState>()(
       setTtsEnabled: (ttsEnabled) =>
         set({ ttsEnabled }),
 
+      setPushNotificationsEnabled: (pushNotificationsEnabled) =>
+        set({ pushNotificationsEnabled }),
+
+      setFcmToken: (fcmToken) =>
+        set({ fcmToken }),
+
+      setPushPreferences: (pushPreferences) =>
+        set({ pushPreferences }),
+
+      updatePushPreference: (key, value) =>
+        set((state) => ({
+          pushPreferences: {
+            ...state.pushPreferences,
+            [key]: value,
+          },
+        })),
+
       reset: () =>
         set(initialState),
     }),
@@ -156,6 +198,9 @@ export const useAppStore = create<AppState>()(
         lawSyncSuccess: state.lawSyncSuccess,
         lawSyncNoChanges: state.lawSyncNoChanges,
         ttsEnabled: state.ttsEnabled,
+        pushNotificationsEnabled: state.pushNotificationsEnabled,
+        fcmToken: state.fcmToken,
+        pushPreferences: state.pushPreferences,
       }),
     }
   )
