@@ -1,18 +1,10 @@
-import {
-  Injectable,
-  Logger,
-  OnModuleInit,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import * as admin from 'firebase-admin';
 import { FcmToken, NotificationPreferences, Platform } from './entities/fcm-token.entity';
-import {
-  NotificationType,
-  NotificationResponseDto,
-} from './dto';
+import { NotificationType, NotificationResponseDto } from './dto';
 
 @Injectable()
 export class NotificationsService implements OnModuleInit {
@@ -41,9 +33,7 @@ export class NotificationsService implements OnModuleInit {
     const clientEmail = this.configService.get<string>('firebase.clientEmail');
 
     if (!projectId || !privateKey || !clientEmail) {
-      this.logger.warn(
-        'Firebase credentials not configured. Push notifications will be disabled.',
-      );
+      this.logger.warn('Firebase credentials not configured. Push notifications will be disabled.');
       return;
     }
 
@@ -71,14 +61,8 @@ export class NotificationsService implements OnModuleInit {
   /**
    * Register or update FCM token for a device
    */
-  async registerToken(
-    deviceId: string,
-    token: string,
-    platform: Platform,
-  ): Promise<FcmToken> {
-    this.logger.log(
-      `Registering FCM token for device ${deviceId}, platform: ${platform}`,
-    );
+  async registerToken(deviceId: string, token: string, platform: Platform): Promise<FcmToken> {
+    this.logger.log(`Registering FCM token for device ${deviceId}, platform: ${platform}`);
 
     // Check if token already exists (could be from another device)
     const existingToken = await this.fcmTokenRepository.findOne({
@@ -128,9 +112,7 @@ export class NotificationsService implements OnModuleInit {
     const result = await this.fcmTokenRepository.delete({ deviceId });
 
     if (result.affected === 0) {
-      throw new NotFoundException(
-        `No FCM token found for device ${deviceId}`,
-      );
+      throw new NotFoundException(`No FCM token found for device ${deviceId}`);
     }
   }
 
@@ -210,9 +192,7 @@ export class NotificationsService implements OnModuleInit {
     // Check if notification type is enabled in preferences
     const preferenceKey = type as keyof NotificationPreferences;
     if (!fcmToken.notificationPreferences[preferenceKey]) {
-      this.logger.log(
-        `Notification type ${type} is disabled for device ${deviceId}`,
-      );
+      this.logger.log(`Notification type ${type} is disabled for device ${deviceId}`);
       return { success: false };
     }
 
@@ -245,19 +225,14 @@ export class NotificationsService implements OnModuleInit {
 
       const response = await admin.messaging().send(message);
 
-      this.logger.log(
-        `Push notification sent to device ${deviceId}: ${response}`,
-      );
+      this.logger.log(`Push notification sent to device ${deviceId}: ${response}`);
 
       return {
         success: true,
         messageId: response,
       };
     } catch (error) {
-      this.logger.error(
-        `Failed to send push notification to device ${deviceId}`,
-        error,
-      );
+      this.logger.error(`Failed to send push notification to device ${deviceId}`, error);
 
       // Handle invalid token
       if (
@@ -299,14 +274,10 @@ export class NotificationsService implements OnModuleInit {
 
     // Filter tokens based on notification preferences
     const preferenceKey = type as keyof NotificationPreferences;
-    const eligibleTokens = fcmTokens.filter(
-      (t) => t.notificationPreferences[preferenceKey],
-    );
+    const eligibleTokens = fcmTokens.filter((t) => t.notificationPreferences[preferenceKey]);
 
     if (eligibleTokens.length === 0) {
-      this.logger.log(
-        `No devices have notification type ${type} enabled`,
-      );
+      this.logger.log(`No devices have notification type ${type} enabled`);
       return { success: true, successCount: 0, failureCount: 0 };
     }
 
@@ -362,9 +333,7 @@ export class NotificationsService implements OnModuleInit {
         await this.fcmTokenRepository.delete({
           deviceId: In(invalidTokenDeviceIds),
         });
-        this.logger.log(
-          `Removed ${invalidTokenDeviceIds.length} invalid tokens`,
-        );
+        this.logger.log(`Removed ${invalidTokenDeviceIds.length} invalid tokens`);
       }
 
       return {
@@ -458,10 +427,7 @@ export class NotificationsService implements OnModuleInit {
       this.logger.log(`Device ${deviceId} subscribed to topic ${topic}`);
       return true;
     } catch (error) {
-      this.logger.error(
-        `Failed to subscribe device ${deviceId} to topic ${topic}`,
-        error,
-      );
+      this.logger.error(`Failed to subscribe device ${deviceId} to topic ${topic}`, error);
       return false;
     }
   }
@@ -487,10 +453,7 @@ export class NotificationsService implements OnModuleInit {
       this.logger.log(`Device ${deviceId} unsubscribed from topic ${topic}`);
       return true;
     } catch (error) {
-      this.logger.error(
-        `Failed to unsubscribe device ${deviceId} from topic ${topic}`,
-        error,
-      );
+      this.logger.error(`Failed to unsubscribe device ${deviceId} from topic ${topic}`, error);
       return false;
     }
   }

@@ -1,12 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsString,
-  IsEnum,
-  IsOptional,
-  IsObject,
-  Length,
-  IsArray,
-} from 'class-validator';
+import { IsString, IsEnum, IsOptional, IsObject, Length, IsArray } from 'class-validator';
 
 export enum NotificationType {
   DOCUMENT_EXPIRY = 'document_expiry',
