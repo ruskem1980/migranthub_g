@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ShieldCheck, Wallet, LayoutGrid, Bot, Siren, RefreshCw, Cloud, CloudOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/lib/i18n';
@@ -16,9 +16,14 @@ type TabId = 'home' | 'documents' | 'services' | 'assistant' | 'sos';
 
 export function DashboardLayout() {
   const [activeTab, setActiveTab] = useState<TabId>('home');
+  const [mounted, setMounted] = useState(false);
   const { t } = useTranslation();
   const { pendingCount, isSyncing, sync } = useOfflineQueue();
   const isOnline = useOnlineStatus();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const tabs = [
     {
@@ -68,7 +73,7 @@ export function DashboardLayout() {
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-gray-50">
       {/* Sync Status Bar */}
-      {(!isOnline || pendingCount > 0) && (
+      {mounted && (!isOnline || pendingCount > 0) && (
         <div className="flex-shrink-0 bg-white border-b border-gray-200 px-4 py-2 safe-area-top">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
