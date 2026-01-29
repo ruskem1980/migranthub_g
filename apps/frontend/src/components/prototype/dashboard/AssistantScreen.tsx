@@ -1,211 +1,284 @@
 'use client';
 
-import { Loader2, Mic, Send, Sparkles, UserCheck, AlertTriangle } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import { useTranslation } from '@/lib/i18n';
-import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { Loader2, Send, ArrowLeft, CheckCircle, AlertCircle, XCircle, Clock, Star, GraduationCap, Trophy } from 'lucide-react';
+import { useTrainerStore, getDifficultyStars, type Scenario, type Message } from '@/lib/stores/trainerStore';
 
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-  blocked?: boolean;
-  timestamp: Date;
-}
+// Scenario Selection Screen
+function ScenarioSelectionScreen() {
+  const { scenarios, isLoading, error, fetchScenarios, startScenario } = useTrainerStore();
 
-interface AssistantResponse {
-  sessionId: string;
-  message: string;
-  blocked?: boolean;
-  blockReason?: string;
-}
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
-export function AssistantScreen() {
-  const { t, locale } = useTranslation();
-  const [inputMessage, setInputMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [sessionId, setSessionId] = useState<string | undefined>();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const quickChips = [
-    { label: t('assistant.quickChips.patent'), emoji: '📄' },
-    { label: t('assistant.quickChips.registration'), emoji: '🏠' },
-    { label: t('assistant.quickChips.documents'), emoji: '📋' },
-    { label: t('assistant.quickChips.ban'), emoji: '🛡️' },
-  ];
-
-  // Scroll to bottom when new messages arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  const sendMessage = async (messageText: string) => {
-    if (!messageText.trim() || isLoading) return;
-
-    const userMessage: Message = {
-      role: 'user',
-      content: messageText.trim(),
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInputMessage('');
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(`${API_URL}/api/v1/assistant/message`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: messageText.trim(),
-          sessionId,
-          language: locale,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data: AssistantResponse = await response.json();
-
-      // Save session ID for future messages
-      if (data.sessionId) {
-        setSessionId(data.sessionId);
-      }
-
-      const assistantMessage: Message = {
-        role: 'assistant',
-        content: data.message,
-        blocked: data.blocked,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error('Failed to send message:', error);
-
-      // Add error message
-      const errorMessage: Message = {
-        role: 'assistant',
-        content: t('assistant.error') || 'Sorry, there was an error. Please try again.',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-      inputRef.current?.focus();
+    if (scenarios.length === 0) {
+      fetchScenarios();
     }
+  }, [scenarios.length, fetchScenarios]);
+
+  const handleStartScenario = async (scenarioId: string) => {
+    await startScenario(scenarioId);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    sendMessage(inputMessage);
-  };
-
-  const handleChipClick = (chipLabel: string) => {
-    sendMessage(chipLabel);
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
+  if (isLoading && scenarios.length === 0) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-2" />
+          <p className="text-gray-500">Загрузка сценариев...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="px-4 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white relative z-20">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold">{t('assistant.title')}</h1>
-              <p className="text-sm text-white/80">{t('assistant.subtitle')}</p>
-            </div>
+      <div className="px-4 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+            <GraduationCap className="w-6 h-6" />
           </div>
-          <LanguageSwitcher variant="compact" className="bg-white/20 hover:bg-white/30" />
+          <div>
+            <h1 className="text-xl font-bold">AI Тренажёр</h1>
+            <p className="text-sm text-white/80">Практикуйте реальные ситуации</p>
+          </div>
         </div>
+        <p className="text-sm text-white/90 leading-relaxed">
+          Выберите сценарий для тренировки. AI будет играть роль собеседника и давать обратную связь.
+        </p>
+      </div>
 
-        <button className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 rounded-xl py-3 px-4 transition-all active:scale-98 flex items-center justify-center gap-2">
-          <UserCheck className="w-5 h-5" />
-          <span className="font-semibold">{t('sos.lawyer')} ($)</span>
+      {/* Error */}
+      {error && (
+        <div className="mx-4 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
+
+      {/* Scenarios Grid */}
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="grid grid-cols-1 gap-3">
+          {scenarios.map((scenario) => (
+            <ScenarioCard
+              key={scenario.id}
+              scenario={scenario}
+              onStart={() => handleStartScenario(scenario.id)}
+              isLoading={isLoading}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Scenario Card Component
+function ScenarioCard({
+  scenario,
+  onStart,
+  isLoading,
+}: {
+  scenario: Scenario;
+  onStart: () => void;
+  isLoading: boolean;
+}) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+      <div className="flex items-start gap-3">
+        <div className="text-3xl">{scenario.icon}</div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-gray-900 mb-1">{scenario.title}</h3>
+          <p className="text-sm text-gray-500 mb-2 line-clamp-2">{scenario.description}</p>
+          <div className="flex items-center gap-4 text-xs text-gray-400">
+            <span className="flex items-center gap-1">
+              <Star className="w-3 h-3" />
+              {getDifficultyStars(scenario.difficulty)}
+            </span>
+            <span className="flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              ~{scenario.estimatedMinutes} мин
+            </span>
+          </div>
+        </div>
+        <button
+          onClick={onStart}
+          disabled={isLoading}
+          className="flex-shrink-0 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            'Начать'
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Chat Screen
+function ChatScreen() {
+  const {
+    currentSession,
+    scenarios,
+    isSending,
+    error,
+    sendMessage,
+    endSession,
+    clearError,
+  } = useTrainerStore();
+  const [inputMessage, setInputMessage] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const currentScenario = scenarios.find((s) => s.id === currentSession?.scenarioId);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [currentSession?.messages]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputMessage.trim() || isSending) return;
+
+    const message = inputMessage.trim();
+    setInputMessage('');
+    await sendMessage(message);
+    inputRef.current?.focus();
+  };
+
+  const handleEndSession = () => {
+    endSession();
+  };
+
+  const formatTime = (timestamp: string) => {
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const getFeedbackIcon = (score: 'correct' | 'partial' | 'incorrect') => {
+    switch (score) {
+      case 'correct':
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case 'partial':
+        return <AlertCircle className="w-4 h-4 text-yellow-500" />;
+      case 'incorrect':
+        return <XCircle className="w-4 h-4 text-red-500" />;
+    }
+  };
+
+  const getFeedbackColor = (score: 'correct' | 'partial' | 'incorrect') => {
+    switch (score) {
+      case 'correct':
+        return 'bg-green-50 border-green-200';
+      case 'partial':
+        return 'bg-yellow-50 border-yellow-200';
+      case 'incorrect':
+        return 'bg-red-50 border-red-200';
+    }
+  };
+
+  // Show completion screen
+  if (currentSession?.status === 'completed') {
+    return (
+      <div className="h-full flex flex-col">
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center max-w-sm">
+            <div className="w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Trophy className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Сценарий завершён!</h2>
+            {currentSession.finalScore !== undefined && (
+              <div className="mb-4">
+                <p className="text-gray-500 mb-1">Ваш результат:</p>
+                <p className="text-4xl font-bold text-blue-600">
+                  {currentSession.finalScore}
+                  <span className="text-lg text-gray-400">/100</span>
+                </p>
+              </div>
+            )}
+            <p className="text-gray-500 mb-6">
+              {currentScenario?.title}
+            </p>
+            <button
+              onClick={handleEndSession}
+              className="w-full px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 active:scale-95 transition-all"
+            >
+              Выбрать другой сценарий
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white flex items-center gap-3">
+        <button
+          onClick={handleEndSession}
+          className="p-2 -ml-2 hover:bg-white/10 rounded-full transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <div className="flex-1 min-w-0">
+          <h1 className="font-semibold truncate">{currentScenario?.title || 'Тренировка'}</h1>
+          <p className="text-xs text-white/80 truncate">{currentScenario?.description}</p>
+        </div>
+        <button
+          onClick={handleEndSession}
+          className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
+        >
+          Завершить
         </button>
       </div>
 
-      {/* Chat Area */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 bg-gray-50">
-        {/* Legal Disclaimer */}
-        <div className="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
-          <div className="flex items-start gap-2">
-            <span className="text-lg">⚠️</span>
-            <div>
-              <p className="text-xs font-semibold text-yellow-900 mb-1">{t('sos.legalHelp.title')}</p>
-              <p className="text-xs text-yellow-800 leading-relaxed">
-                {t('sos.legalHelp.subtitle')}
-              </p>
-            </div>
-          </div>
+      {/* Error */}
+      {error && (
+        <div className="mx-4 mt-2 p-2 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+          <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+          <p className="text-sm text-red-600 flex-1">{error}</p>
+          <button
+            onClick={clearError}
+            className="text-red-600 hover:text-red-700 p-1"
+          >
+            <XCircle className="w-4 h-4" />
+          </button>
         </div>
+      )}
 
-        {/* Initial greeting if no messages */}
-        {messages.length === 0 && (
+      {/* Messages */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 bg-gray-50">
+        {/* Initial instruction */}
+        {currentSession?.messages.length === 0 && (
           <div className="flex justify-start mb-4">
-            <div className="max-w-[80%] bg-white text-gray-900 rounded-2xl rounded-bl-sm px-4 py-3 shadow-md border border-gray-200">
+            <div className="max-w-[85%] bg-white text-gray-900 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm border border-gray-200">
               <p className="text-sm leading-relaxed">
-                {t('assistant.greeting')}
+                Сценарий начался. Отвечайте так, как вы бы ответили в реальной ситуации.
               </p>
-              <p className="text-xs text-gray-400 mt-1">{formatTime(new Date())}</p>
             </div>
           </div>
         )}
 
-        {/* Messages */}
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`flex mb-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
-            <div
-              className={`max-w-[80%] rounded-2xl px-4 py-3 shadow-md ${
-                msg.role === 'user'
-                  ? 'bg-blue-600 text-white rounded-br-sm'
-                  : msg.blocked
-                  ? 'bg-amber-50 text-gray-900 rounded-bl-sm border-2 border-amber-300'
-                  : 'bg-white text-gray-900 rounded-bl-sm border border-gray-200'
-              }`}
-            >
-              {msg.blocked && (
-                <div className="flex items-center gap-1 mb-2 text-amber-700">
-                  <AlertTriangle className="w-4 h-4" />
-                  <span className="text-xs font-semibold">{t('assistant.blocked') || 'Restricted topic'}</span>
-                </div>
-              )}
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-              <p
-                className={`text-xs mt-1 ${
-                  msg.role === 'user' ? 'text-blue-200' : 'text-gray-400'
-                }`}
-              >
-                {formatTime(msg.timestamp)}
-              </p>
-            </div>
-          </div>
+        {currentSession?.messages.map((msg) => (
+          <MessageBubble
+            key={msg.id}
+            message={msg}
+            formatTime={formatTime}
+            getFeedbackIcon={getFeedbackIcon}
+            getFeedbackColor={getFeedbackColor}
+          />
         ))}
 
         {/* Loading indicator */}
-        {isLoading && (
+        {isSending && (
           <div className="flex justify-start mb-4">
-            <div className="max-w-[80%] bg-white text-gray-900 rounded-2xl rounded-bl-sm px-4 py-3 shadow-md border border-gray-200">
+            <div className="max-w-[85%] bg-white text-gray-900 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm border border-gray-200">
               <div className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                <span className="text-sm text-gray-500">{t('assistant.thinking') || 'Thinking...'}</span>
+                <span className="text-sm text-gray-500">Анализирую ответ...</span>
               </div>
             </div>
           </div>
@@ -214,60 +287,28 @@ export function AssistantScreen() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* KB Chips - only show if no messages yet or after first response */}
-      {(messages.length === 0 || messages.length > 0) && !isLoading && (
-        <div className="px-4 py-3 bg-white border-t border-gray-200">
-          <p className="text-xs text-gray-500 mb-2 font-medium">{t('assistant.quickQuestions.title')}:</p>
-          <div className="flex flex-wrap gap-2">
-            {quickChips.map((chip, index) => (
-              <button
-                key={index}
-                onClick={() => handleChipClick(chip.label)}
-                disabled={isLoading}
-                className={`px-3 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium transition-colors active:scale-95 flex items-center gap-1 ${
-                  isLoading
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:bg-blue-100'
-                }`}
-              >
-                <span>{chip.emoji}</span>
-                <span>{chip.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Input Area */}
       <form onSubmit={handleSubmit} className="px-4 py-3 bg-white border-t border-gray-200">
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="flex-shrink-0 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center hover:bg-purple-200 transition-colors active:scale-95"
-          >
-            <Mic className="w-5 h-5" />
-          </button>
-
           <input
             ref={inputRef}
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            placeholder={t('assistant.placeholder')}
-            disabled={isLoading}
+            placeholder="Введите ваш ответ..."
+            disabled={isSending}
             className="flex-1 px-4 py-3 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all disabled:opacity-50"
           />
-
           <button
             type="submit"
-            disabled={!inputMessage.trim() || isLoading}
+            disabled={!inputMessage.trim() || isSending}
             className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-95 ${
-              inputMessage.trim() && !isLoading
+              inputMessage.trim() && !isSending
                 ? 'bg-blue-600 text-white hover:bg-blue-700'
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'
             }`}
           >
-            {isLoading ? (
+            {isSending ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <Send className="w-5 h-5" />
@@ -277,4 +318,69 @@ export function AssistantScreen() {
       </form>
     </div>
   );
+}
+
+// Message Bubble Component
+function MessageBubble({
+  message,
+  formatTime,
+  getFeedbackIcon,
+  getFeedbackColor,
+}: {
+  message: Message;
+  formatTime: (timestamp: string) => string;
+  getFeedbackIcon: (score: 'correct' | 'partial' | 'incorrect') => JSX.Element;
+  getFeedbackColor: (score: 'correct' | 'partial' | 'incorrect') => string;
+}) {
+  const isUser = message.role === 'user';
+
+  return (
+    <div className={`flex mb-4 ${isUser ? 'justify-end' : 'justify-start'}`}>
+      <div
+        className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-sm ${
+          isUser
+            ? 'bg-blue-600 text-white rounded-br-sm'
+            : 'bg-white text-gray-900 rounded-bl-sm border border-gray-200'
+        }`}
+      >
+        <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+        <p
+          className={`text-xs mt-1 ${isUser ? 'text-blue-200' : 'text-gray-400'}`}
+        >
+          {formatTime(message.timestamp)}
+        </p>
+      </div>
+
+      {/* Feedback badge for user messages */}
+      {isUser && message.feedback && (
+        <div className={`ml-2 self-end mb-1 px-2 py-1 rounded-lg border text-xs ${getFeedbackColor(message.feedback.score)}`}>
+          <div className="flex items-center gap-1">
+            {getFeedbackIcon(message.feedback.score)}
+            <span className="font-medium">
+              {message.feedback.score === 'correct' && 'Верно'}
+              {message.feedback.score === 'partial' && 'Частично'}
+              {message.feedback.score === 'incorrect' && 'Неверно'}
+            </span>
+          </div>
+          {message.feedback.comment && (
+            <p className="mt-1 text-gray-600">{message.feedback.comment}</p>
+          )}
+          {message.feedback.tip && (
+            <p className="mt-1 text-blue-600 italic">{message.feedback.tip}</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Main AssistantScreen Component
+export function AssistantScreen() {
+  const { currentSession } = useTrainerStore();
+
+  if (currentSession) {
+    return <ChatScreen />;
+  }
+
+  return <ScenarioSelectionScreen />;
 }

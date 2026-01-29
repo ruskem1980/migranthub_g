@@ -1,8 +1,11 @@
 'use client';
 
-import { Shield, FileText, Briefcase, Home, MapPin, Languages, CreditCard, Wand2, Grid3x3, X, GraduationCap, Map } from 'lucide-react';
+import { Shield, FileText, Briefcase, Home, MapPin, Languages, Wand2, Grid3x3, X, GraduationCap, Map, ClipboardCheck, Hash, Calculator } from 'lucide-react';
 import { useState } from 'react';
 import { DocumentGenerator } from '../services/DocumentGenerator';
+import { PermitStatusModal } from '../services/PermitStatusModal';
+import { InnCheckModal } from '../services/InnCheckModal';
+import { PatentCalculatorModal } from '../services/PatentCalculatorModal';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useProfileStore } from '@/lib/stores';
@@ -15,12 +18,17 @@ export function ServicesScreen() {
   const [showDocGenerator, setShowDocGenerator] = useState(false);
   const [showOtherServices, setShowOtherServices] = useState(false);
   const [showExamTrainer, setShowExamTrainer] = useState(false);
+  const [showPermitStatus, setShowPermitStatus] = useState(false);
+  const [showInnCheck, setShowInnCheck] = useState(false);
+  const [showPatentCalculator, setShowPatentCalculator] = useState(false);
 
   // Core Services (Main Grid)
   const coreServices = [
     { id: 'autofill', icon: Wand2, title: t('services.items.autofill.title'), subtitle: t('services.items.autofill.subtitle'), color: 'purple', special: true },
     { id: 'check', icon: Shield, title: t('services.items.check.title'), subtitle: t('services.items.check.subtitle'), color: 'red' },
-    { id: 'payment', icon: CreditCard, title: t('services.items.payment.title'), subtitle: t('services.items.payment.subtitle'), color: 'green' },
+    { id: 'permitStatus', icon: ClipboardCheck, title: t('services.items.permitStatus.title'), subtitle: t('services.items.permitStatus.subtitle'), color: 'blue' },
+    { id: 'innCheck', icon: Hash, title: 'INN Check', subtitle: 'Find your tax ID', color: 'indigo', isNew: true },
+    { id: 'patentCalc', icon: Calculator, title: 'Patent Calculator', subtitle: 'Calculate cost', color: 'green' },
     { id: 'map', icon: MapPin, title: t('services.items.map.title'), subtitle: t('services.items.map.subtitle'), color: 'pink', hasModal: true },
     { id: 'other', icon: Grid3x3, title: t('services.items.other.title'), subtitle: `6 ${t('services.items.other.subtitle')}`, color: 'gray' },
   ];
@@ -79,6 +87,12 @@ export function ServicesScreen() {
                     setShowDocGenerator(true);
                   } else if (service.id === 'other') {
                     setShowOtherServices(true);
+                  } else if (service.id === 'permitStatus') {
+                    setShowPermitStatus(true);
+                  } else if (service.id === 'innCheck') {
+                    setShowInnCheck(true);
+                  } else if (service.id === 'patentCalc') {
+                    setShowPatentCalculator(true);
                   }
                 }}
                 className={`${colors.bg} border-2 ${service.special ? 'border-purple-400 ring-2 ring-purple-200' : service.id === 'other' ? 'border-gray-300 border-dashed' : 'border-gray-200'} rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md hover:shadow-xl relative`}
@@ -236,6 +250,21 @@ export function ServicesScreen() {
       {/* Exam Trainer */}
       {showExamTrainer && (
         <ExamTrainer onClose={() => setShowExamTrainer(false)} />
+      )}
+
+      {/* Permit Status Modal */}
+      {showPermitStatus && (
+        <PermitStatusModal onClose={() => setShowPermitStatus(false)} />
+      )}
+
+      {/* INN Check Modal */}
+      {showInnCheck && (
+        <InnCheckModal onClose={() => setShowInnCheck(false)} />
+      )}
+
+      {/* Patent Calculator Modal */}
+      {showPatentCalculator && (
+        <PatentCalculatorModal onClose={() => setShowPatentCalculator(false)} />
       )}
     </div>
   );
