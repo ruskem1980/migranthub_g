@@ -7,3 +7,6 @@ export { useAppStore } from './appStore';
 
 export { useDocumentCheckStore, getCheckLabel, getCheckIcon } from './documentCheckStore';
 export type { CheckType, CheckStatus, CheckResult } from './documentCheckStore';
+
+export { useBackupStore } from './backupStore';
+export type { BackupInfo } from './backupStore';

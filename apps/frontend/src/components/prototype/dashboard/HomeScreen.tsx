@@ -6,6 +6,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { LegalizationWizard } from '../wizard/LegalizationWizard';
 import { BanChecker } from '@/features/services/components/BanChecker';
 import { useTranslation, LANGUAGES } from '@/lib/i18n';
+import { CloudSafeSection } from '@/components/settings/CloudSafeSection';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useProfileStore } from '@/lib/stores';
 import {
@@ -743,6 +744,9 @@ export function HomeScreen() {
                   </button>
                 </div>
 
+                {/* Cloud Safe Section */}
+                <CloudSafeSection />
+
                 {/* Delete Data */}
                 <button
                   onClick={() => {
@@ -758,7 +762,7 @@ export function HomeScreen() {
                       window.location.href = '/prototype';
                     }
                   }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 border-2 border-red-200 rounded-xl hover:bg-red-100 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 border-2 border-red-200 rounded-xl hover:bg-red-100 transition-colors mt-4"
                 >
                   <Trash2 className="w-5 h-5 text-red-600" />
                   <span className="font-semibold text-red-600">{t('profile.settings.deleteData')}</span>

@@ -28,6 +28,8 @@ import type {
   PermitStatusResponse,
   CheckFsspRequest,
   FsspCheckResponse,
+  CheckPassportValidityRequest,
+  PassportValidityResponse,
   ChatHistoryMessage,
   AssistantChatResponse,
   AssistantSearchResponse,
@@ -329,6 +331,9 @@ export const utilitiesApi = {
 
   checkFssp: (data: CheckFsspRequest) =>
     apiClient.post<FsspCheckResponse>('/utilities/fssp-check', data),
+
+  checkPassportValidity: (data: CheckPassportValidityRequest) =>
+    apiClient.post<PassportValidityResponse>('/utilities/passport-validity', data),
 };
 
 // Health API
@@ -431,6 +436,165 @@ export const ocrApi = {
       return json.data as OcrProcessResponse;
     }
     return json as OcrProcessResponse;
+  },
+};
+
+// Backup Types (local, not from backend yet)
+export interface BackupInfo {
+  id: string;
+  createdAt: string;
+  sizeBytes: number;
+  salt?: string;
+  iv?: string;
+}
+
+interface BackupUploadResponse {
+  id: string;
+  createdAt: string;
+  sizeBytes: number;
+  salt: string;
+  iv: string;
+}
+
+interface BackupListResponse {
+  backups: BackupInfo[];
+}
+
+// Backup API
+export const backupApi = {
+  /**
+   * Upload encrypted backup
+   * Uses multipart/form-data for file upload
+   */
+  upload: async (data: FormData): Promise<BackupUploadResponse> => {
+    const token = await tokenStorage.getAccessToken();
+
+    const response = await fetch(`${API_BASE_URL}/backup/upload`, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: data,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({
+        message: 'Ошибка загрузки бэкапа',
+        statusCode: response.status,
+      }));
+      throw error;
+    }
+
+    const json = await response.json();
+    if (json && typeof json === 'object' && 'data' in json) {
+      return json.data as BackupUploadResponse;
+    }
+    return json as BackupUploadResponse;
+  },
+
+  /**
+   * Download backup file
+   */
+  download: async (id: string): Promise<Blob> => {
+    const token = await tokenStorage.getAccessToken();
+
+    const response = await fetch(`${API_BASE_URL}/backup/${id}/download`, {
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({
+        message: 'Ошибка скачивания бэкапа',
+        statusCode: response.status,
+      }));
+      throw error;
+    }
+
+    return response.blob();
+  },
+
+  /**
+   * Get list of backups
+   */
+  list: async (): Promise<BackupInfo[]> => {
+    const token = await tokenStorage.getAccessToken();
+
+    const response = await fetch(`${API_BASE_URL}/backup/list`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({
+        message: 'Ошибка получения списка бэкапов',
+        statusCode: response.status,
+      }));
+      throw error;
+    }
+
+    const json = await response.json();
+    if (json && typeof json === 'object' && 'data' in json) {
+      return (json.data as BackupListResponse).backups;
+    }
+    return (json as BackupListResponse).backups;
+  },
+
+  /**
+   * Delete backup
+   */
+  delete: async (id: string): Promise<void> => {
+    const token = await tokenStorage.getAccessToken();
+
+    const response = await fetch(`${API_BASE_URL}/backup/${id}`, {
+      method: 'DELETE',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({
+        message: 'Ошибка удаления бэкапа',
+        statusCode: response.status,
+      }));
+      throw error;
+    }
+  },
+
+  /**
+   * Get latest backup info
+   */
+  getLatest: async (): Promise<BackupInfo | null> => {
+    const token = await tokenStorage.getAccessToken();
+
+    const response = await fetch(`${API_BASE_URL}/backup/latest`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (response.status === 404) {
+      return null;
+    }
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({
+        message: 'Ошибка получения последнего бэкапа',
+        statusCode: response.status,
+      }));
+      throw error;
+    }
+
+    const json = await response.json();
+    if (json && typeof json === 'object' && 'data' in json) {
+      return json.data as BackupInfo;
+    }
+    return json as BackupInfo;
   },
 };
 

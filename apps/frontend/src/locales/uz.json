@@ -2084,6 +2084,14 @@
     "showMore": "Ko'proq ko'rsatish",
     "showLess": "Yashirish"
   },
+  "tts": {
+    "listen": "Tinglash",
+    "stop": "To'xtatish",
+    "notSupported": "Ovozli o'qish qo'llab-quvvatlanmaydi",
+    "speakingNow": "O'qilmoqda...",
+    "enabled": "Matnni ovozli o'qish",
+    "enabledDesc": "Matnni tinglash tugmalari"
+  },
   "cloudSafe": {
     "title": "Bulutli saqlash",
     "subtitle": "Xavfsiz zaxira nusxalash",

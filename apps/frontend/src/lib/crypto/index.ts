@@ -8,3 +8,5 @@ export {
   hashData,
   type EncryptedData,
 } from './encryption';
+
+export * from './backup-crypto';

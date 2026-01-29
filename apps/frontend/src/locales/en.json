@@ -2133,6 +2133,14 @@
     "showMore": "Show more",
     "showLess": "Show less"
   },
+  "tts": {
+    "listen": "Listen",
+    "stop": "Stop",
+    "notSupported": "Text-to-speech not supported",
+    "speakingNow": "Speaking...",
+    "enabled": "Text-to-speech",
+    "enabledDesc": "Buttons to listen to text"
+  },
   "cloudSafe": {
     "title": "Cloud Safe",
     "subtitle": "Secure backup storage",
