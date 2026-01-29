@@ -348,7 +348,77 @@ Temperature: 0.7
 
 ---
 
-## PART 6: АРХИТЕКТУРНЫЕ ДОСТОИНСТВА
+## PART 6: EXTERNAL API VERIFICATION AUDIT
+
+### 6.1 Сводка внешних API
+
+| Сервис | Внешний URL | Метод интеграции | Enabled | Source Enum |
+|--------|-------------|------------------|---------|-------------|
+| **INN Check** | `https://service.nalog.ru/inn.do` | Playwright + 2Captcha | `innCheck.enabled=false` | `fns`, `cache`, `mock`, `fallback` |
+| **Patent Check** | `https://services.fms.gov.ru/info-service.htm?sid=2000` | Playwright + 2Captcha | `patentCheck.enabled=false` | `fms`, `cache`, `mock`, `fallback` |
+| **Permit Status (RVP)** | `https://services.fms.gov.ru/info-service.htm?sid=2060` | Playwright + 2Captcha | `permitStatus.enabled=false` | `fms`, `cache`, `fallback` |
+| **Permit Status (VNJ)** | `https://services.fms.gov.ru/info-service.htm?sid=2070` | Playwright + 2Captcha | `permitStatus.enabled=false` | `fms`, `cache`, `fallback` |
+| **Ban Check (MVD)** | `https://services.fms.gov.ru/info-service.htm?sid=2000` | HTTP fetch | `mvd.enabled=false` | `mvd`, `cache`, `fallback` |
+| **Ban Check (FMS)** | `https://services.fms.gov.ru/info-service.htm?sid=3000` | Playwright + 2Captcha | `entryBan.enabled=false` | `fms`, `cache`, `fallback` |
+
+### 6.2 Source Indicator во всех DTO
+
+| DTO | Source Field | Enum Values | Файл |
+|-----|--------------|-------------|------|
+| `InnResultDto` | `source: InnCheckSource` | `fns`, `cache`, `mock`, `fallback` | `inn-check/dto/inn-result.dto.ts` |
+| `PatentCheckResultDto` | `source: PatentCheckSource` | `fms`, `cache`, `mock`, `fallback` | `patent/dto/patent-check-result.dto.ts` |
+| `PermitStatusResponseDto` | `source?: PermitStatusSource` | `fms`, `cache`, `fallback` | `permit-status-check/dto/permit-status-response.dto.ts` |
+| `BanCheckResponseDto` | `source: BanCheckSource` | `mvd`, `fms`, `cache`, `fallback` | `ban-check/dto/ban-check-response.dto.ts` |
+
+### 6.3 Mock Warning в UI
+
+| Компонент | Mock Warning | Fallback Warning | Source Display |
+|-----------|--------------|------------------|----------------|
+| `InnCheckModal.tsx` | ✅ Да (orange box) | ✅ Да | ✅ Да |
+| `PatentCheckModal.tsx` | ✅ Да (orange box) | ✅ Да | ✅ Да |
+| `PermitStatusModal.tsx` | N/A | ✅ Да (orange box) | ✅ Да |
+| `BanChecker.tsx` | ❌ **НЕ ПОДКЛЮЧЕН** | ❌ **НЕ ПОДКЛЮЧЕН** | ❌ Только demo |
+
+### 6.4 Поведение при различных source
+
+| Source | Описание | UI Warning | Рекомендация пользователю |
+|--------|----------|------------|---------------------------|
+| `fns`/`fms`/`mvd` | Реальные данные от госсервиса | Нет | Результат актуален |
+| `cache` | Кэшированный результат | Нет | Результат может быть устаревшим |
+| `mock` | Тестовые данные (сервис отключен) | ✅ Orange warning | Проверить на официальном сайте |
+| `fallback` | Сервис недоступен | ✅ Orange warning | Повторить позже или использовать официальный сайт |
+
+### 6.5 Circuit Breaker конфигурация
+
+| Сервис | Threshold | Reset Time | Retry Attempts | Backoff |
+|--------|-----------|------------|----------------|---------|
+| INN Check | 5 failures | 60s | 3 | Exponential (2s base) |
+| Patent Check | 5 failures | 60s | 3 | Exponential (2s base) |
+| Permit Status | 5 failures | 60s | 3 | Exponential (2s base) |
+| Ban Check (MVD) | 5 failures | 60s | 3 | Exponential (1s base) |
+| Ban Check (FMS) | 5 failures | 60s | 3 | Exponential (2s base) |
+
+### 6.6 BanChecker - Требуется интеграция
+
+**Текущий статус:** ❌ Использует setTimeout mock (строки 32-33)
+
+**Требуется:**
+1. Подключить к `GET /v1/utilities/ban-check`
+2. Добавить `source` field в интерфейс
+3. Добавить mock/fallback warning как в других модалях
+4. Добавить localization
+
+**Пример интеграции:**
+```typescript
+// Заменить setTimeout mock на:
+const response = await fetch(`${API_BASE_URL}/api/v1/utilities/ban-check?${params}`);
+const data = await response.json();
+// Показать source warning если data.source === 'mock' || data.source === 'fallback'
+```
+
+---
+
+## PART 7: АРХИТЕКТУРНЫЕ ДОСТОИНСТВА
 
 ### Что реализовано правильно
 
@@ -382,9 +452,20 @@ Backend Enabled:     ████████░░░░░░░░░░░�
 Frontend UI:         █████████████████████████░░░ 95%
 Frontend API:        ████████████████████░░░░░░░░ 75%
 Localization:        ███████████████████░░░░░░░░░ 70%
+Source Indicators:   ████████████████████████░░░░ 86%
 ────────────────────────────────────────────────────
 Production Ready:    ████████████████░░░░░░░░░░░░ 60%
 ```
+
+### External API Source Indicators
+
+| Критерий | Статус |
+|----------|--------|
+| Source enum в DTO | ✅ 4/4 сервисов |
+| Source отображается в UI | ✅ 3/4 компонентов |
+| Mock warning в UI | ✅ 3/4 компонентов |
+| Fallback warning в UI | ✅ 3/4 компонентов |
+| BanChecker интеграция | ❌ Требуется |
 
 ### Вердикт
 
