@@ -1,46 +1,54 @@
 'use client';
 
-import { Shield, FileText, Briefcase, Home, MapPin, Languages, Wand2, Grid3x3, X, GraduationCap, Map, ClipboardCheck, Hash, Calculator } from 'lucide-react';
+import { Shield, MapPin, Wand2, GraduationCap, ClipboardCheck, Hash, Calculator, FileCheck, CalendarDays, MessageSquare, LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 import { DocumentGenerator } from '../services/DocumentGenerator';
 import { PermitStatusModal } from '../services/PermitStatusModal';
 import { InnCheckModal } from '../services/InnCheckModal';
 import { PatentCalculatorModal } from '../services/PatentCalculatorModal';
+import { PatentCheckModal } from '../services/PatentCheckModal';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useProfileStore } from '@/lib/stores';
+import { useLanguageStore } from '@/lib/stores/languageStore';
 import { ExamTrainer } from '@/features/services';
 
 export function ServicesScreen() {
   const { t } = useTranslation();
+  const { language } = useLanguageStore();
   const { profile, updateProfile } = useProfileStore();
   const [showMapModal, setShowMapModal] = useState(false);
   const [showDocGenerator, setShowDocGenerator] = useState(false);
-  const [showOtherServices, setShowOtherServices] = useState(false);
   const [showExamTrainer, setShowExamTrainer] = useState(false);
   const [showPermitStatus, setShowPermitStatus] = useState(false);
   const [showInnCheck, setShowInnCheck] = useState(false);
   const [showPatentCalculator, setShowPatentCalculator] = useState(false);
+  const [showPatentCheck, setShowPatentCheck] = useState(false);
 
-  // Core Services (Main Grid)
-  const coreServices = [
+  // Document Services
+  const documentServices = [
     { id: 'autofill', icon: Wand2, title: t('services.items.autofill.title'), subtitle: t('services.items.autofill.subtitle'), color: 'purple', special: true },
     { id: 'check', icon: Shield, title: t('services.items.check.title'), subtitle: t('services.items.check.subtitle'), color: 'red' },
-    { id: 'permitStatus', icon: ClipboardCheck, title: t('services.items.permitStatus.title'), subtitle: t('services.items.permitStatus.subtitle'), color: 'blue' },
-    { id: 'innCheck', icon: Hash, title: 'INN Check', subtitle: 'Find your tax ID', color: 'indigo', isNew: true },
-    { id: 'patentCalc', icon: Calculator, title: 'Patent Calculator', subtitle: 'Calculate cost', color: 'green' },
-    { id: 'map', icon: MapPin, title: t('services.items.map.title'), subtitle: t('services.items.map.subtitle'), color: 'pink', hasModal: true },
-    { id: 'other', icon: Grid3x3, title: t('services.items.other.title'), subtitle: `6 ${t('services.items.other.subtitle')}`, color: 'gray' },
   ];
 
-  // Secondary Services (Hidden in "Other Services")
-  const otherServices = [
-    { id: 'translator', icon: Languages, title: t('services.items.translator.title'), subtitle: t('services.items.translator.subtitle'), color: 'indigo' },
-    { id: 'contracts', icon: FileText, title: t('services.items.contracts.title'), subtitle: t('services.items.contracts.subtitle'), color: 'orange' },
-    { id: 'jobs', icon: Briefcase, title: t('services.items.jobs.title'), subtitle: t('services.items.jobs.subtitle'), color: 'green' },
-    { id: 'housing', icon: Home, title: t('services.items.housing.title'), subtitle: t('services.items.housing.subtitle'), color: 'purple' },
+  // Verification Services
+  const checkServices = [
+    { id: 'permitStatus', icon: ClipboardCheck, title: t('services.items.permitStatus.title'), subtitle: t('services.items.permitStatus.subtitle'), color: 'blue' },
+    { id: 'innCheck', icon: Hash, title: 'INN Check', subtitle: 'Find your tax ID', color: 'indigo' },
+    { id: 'patentCheck', icon: FileCheck, title: language === 'ru' ? 'Проверка патента' : 'Patent Check', subtitle: language === 'ru' ? 'Действительность патента' : 'Check validity', color: 'cyan' },
+  ];
+
+  // Calculator Services
+  const calculatorServices = [
+    { id: 'patentCalc', icon: Calculator, title: 'Patent Calculator', subtitle: 'Calculate cost', color: 'green' },
+    { id: 'days90180', icon: CalendarDays, title: language === 'ru' ? 'Калькулятор 90/180' : '90/180 Calculator', subtitle: language === 'ru' ? 'Дни пребывания' : 'Stay days', color: 'amber' },
+    { id: 'map', icon: MapPin, title: t('services.items.map.title'), subtitle: t('services.items.map.subtitle'), color: 'pink', hasModal: true },
+  ];
+
+  // Training Services
+  const trainingServices = [
     { id: 'exam', icon: GraduationCap, title: t('services.items.exam.title'), subtitle: t('services.items.exam.subtitle'), color: 'emerald' },
-    { id: 'mosques', icon: Map, title: t('services.items.mosques.title'), subtitle: t('services.items.mosques.subtitle'), color: 'teal' },
+    { id: 'aiTrainer', icon: MessageSquare, title: language === 'ru' ? 'AI Тренажёр' : 'AI Trainer', subtitle: language === 'ru' ? 'Практика диалогов' : 'Practice dialogs', color: 'violet' },
   ];
 
   const colorClasses: Record<string, { bg: string; icon: string }> = {
@@ -54,6 +62,71 @@ export function ServicesScreen() {
     gray: { bg: 'bg-gray-50', icon: 'text-gray-600' },
     emerald: { bg: 'bg-emerald-50', icon: 'text-emerald-600' },
     teal: { bg: 'bg-teal-50', icon: 'text-teal-600' },
+    cyan: { bg: 'bg-cyan-50', icon: 'text-cyan-600' },
+    amber: { bg: 'bg-amber-50', icon: 'text-amber-600' },
+    violet: { bg: 'bg-violet-50', icon: 'text-violet-600' },
+  };
+
+  const handleServiceClick = (serviceId: string) => {
+    switch (serviceId) {
+      case 'autofill':
+        setShowDocGenerator(true);
+        break;
+      case 'permitStatus':
+        setShowPermitStatus(true);
+        break;
+      case 'innCheck':
+        setShowInnCheck(true);
+        break;
+      case 'patentCheck':
+        setShowPatentCheck(true);
+        break;
+      case 'patentCalc':
+        setShowPatentCalculator(true);
+        break;
+      case 'days90180':
+        alert(language === 'ru' ? 'Скоро будет доступно' : 'Coming soon');
+        break;
+      case 'map':
+        setShowMapModal(true);
+        break;
+      case 'exam':
+        setShowExamTrainer(true);
+        break;
+      case 'aiTrainer':
+        alert(language === 'ru' ? 'Перейдите на вкладку Ассистент' : 'Go to Assistant tab');
+        break;
+      default:
+        break;
+    }
+  };
+
+  const renderServiceCard = (service: { id: string; icon: LucideIcon; title: string; subtitle: string; color: string; special?: boolean }, index: number) => {
+    const Icon = service.icon;
+    const colors = colorClasses[service.color];
+
+    return (
+      <button
+        key={index}
+        onClick={() => handleServiceClick(service.id)}
+        className={`${colors.bg} border-2 ${service.special ? 'border-purple-400 ring-2 ring-purple-200' : 'border-gray-200'} rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md hover:shadow-xl relative`}
+      >
+        {service.special && (
+          <div className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+            {t('common.new')}
+          </div>
+        )}
+        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
+          <Icon className={`w-7 h-7 ${colors.icon}`} strokeWidth={2} />
+        </div>
+        <h3 className="text-sm font-bold text-gray-900 text-center mb-1">
+          {service.title}
+        </h3>
+        <p className="text-xs text-gray-600 text-center">
+          {service.subtitle}
+        </p>
+      </button>
+    );
   };
 
   return (
@@ -67,53 +140,46 @@ export function ServicesScreen() {
         <p className="text-sm text-gray-500">{t('services.subtitle')}</p>
       </div>
 
-      {/* Core Services Grid */}
+      {/* Services by Category */}
       <div className="px-4 py-6">
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-          {t('services.mainServices')}
-        </h3>
-        <div className="grid grid-cols-2 gap-4">
-          {coreServices.map((service, index) => {
-            const Icon = service.icon;
-            const colors = colorClasses[service.color];
+        {/* Documents */}
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+            {language === 'ru' ? 'Документы' : 'Documents'}
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            {documentServices.map((service, index) => renderServiceCard(service, index))}
+          </div>
+        </div>
 
-            return (
-              <button
-                key={index}
-                onClick={() => {
-                  if (service.id === 'map') {
-                    setShowMapModal(true);
-                  } else if (service.id === 'autofill') {
-                    setShowDocGenerator(true);
-                  } else if (service.id === 'other') {
-                    setShowOtherServices(true);
-                  } else if (service.id === 'permitStatus') {
-                    setShowPermitStatus(true);
-                  } else if (service.id === 'innCheck') {
-                    setShowInnCheck(true);
-                  } else if (service.id === 'patentCalc') {
-                    setShowPatentCalculator(true);
-                  }
-                }}
-                className={`${colors.bg} border-2 ${service.special ? 'border-purple-400 ring-2 ring-purple-200' : service.id === 'other' ? 'border-gray-300 border-dashed' : 'border-gray-200'} rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md hover:shadow-xl relative`}
-              >
-                {service.special && (
-                  <div className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                    {t('common.new')}
-                  </div>
-                )}
-                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
-                  <Icon className={`w-7 h-7 ${colors.icon}`} strokeWidth={2} />
-                </div>
-                <h3 className="text-sm font-bold text-gray-900 text-center mb-1">
-                  {service.title}
-                </h3>
-                <p className="text-xs text-gray-600 text-center">
-                  {service.subtitle}
-                </p>
-              </button>
-            );
-          })}
+        {/* Verification */}
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+            {language === 'ru' ? 'Проверки' : 'Verification'}
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            {checkServices.map((service, index) => renderServiceCard(service, index))}
+          </div>
+        </div>
+
+        {/* Calculators */}
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+            {language === 'ru' ? 'Калькуляторы и карта' : 'Calculators & Map'}
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            {calculatorServices.map((service, index) => renderServiceCard(service, index))}
+          </div>
+        </div>
+
+        {/* Training */}
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+            {language === 'ru' ? 'Обучение' : 'Training'}
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            {trainingServices.map((service, index) => renderServiceCard(service, index))}
+          </div>
         </div>
       </div>
 
@@ -172,72 +238,6 @@ export function ServicesScreen() {
         </div>
       )}
 
-      {/* Other Services Modal */}
-      {showOtherServices && (
-        <div className="fixed inset-0 bg-black/50 flex items-end z-50 animate-in fade-in duration-200">
-          <div className="w-full bg-white rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-300 max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">{t('services.otherServices.title')}</h3>
-                <p className="text-sm text-gray-500">{t('services.otherServices.subtitle')}</p>
-              </div>
-              <button
-                onClick={() => setShowOtherServices(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="w-6 h-6 text-gray-600" />
-              </button>
-            </div>
-
-            {/* Secondary Services Grid */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              {otherServices.map((service, index) => {
-                const Icon = service.icon;
-                const colors = colorClasses[service.color];
-
-                return (
-                  <button
-                    key={index}
-                    onClick={() => {
-                      if (service.id === 'exam') {
-                        setShowOtherServices(false);
-                        setShowExamTrainer(true);
-                      }
-                    }}
-                    className={`${colors.bg} border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md hover:shadow-xl`}
-                  >
-                    <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
-                      <Icon className={`w-7 h-7 ${colors.icon}`} strokeWidth={2} />
-                    </div>
-                    <h3 className="text-sm font-bold text-gray-900 text-center mb-1">
-                      {service.title}
-                    </h3>
-                    <p className="text-xs text-gray-600 text-center">
-                      {service.subtitle}
-                    </p>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Info Card */}
-            <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl mb-4">
-              <p className="text-sm text-blue-800">
-                {t('services.otherServices.tip')}
-              </p>
-            </div>
-
-            {/* Close Button */}
-            <button
-              onClick={() => setShowOtherServices(false)}
-              className="w-full bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 transition-colors"
-            >
-              {t('common.close')}
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Document Generator */}
       {showDocGenerator && (
         <DocumentGenerator
@@ -265,6 +265,11 @@ export function ServicesScreen() {
       {/* Patent Calculator Modal */}
       {showPatentCalculator && (
         <PatentCalculatorModal onClose={() => setShowPatentCalculator(false)} />
+      )}
+
+      {/* Patent Check Modal */}
+      {showPatentCheck && (
+        <PatentCheckModal onClose={() => setShowPatentCheck(false)} />
       )}
     </div>
   );
