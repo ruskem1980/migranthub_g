@@ -1,6 +1,6 @@
 'use client';
 
-import { QrCode, ChevronRight, History, Lock, Edit2, Globe, Trash2, X, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert, ClipboardList } from 'lucide-react';
+import { QrCode, ChevronRight, History, Lock, Edit2, Globe, Trash2, X, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert, ClipboardList, Volume2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState, useMemo, useEffect } from 'react';
 import { LegalizationWizard } from '../wizard/LegalizationWizard';
@@ -8,7 +8,7 @@ import { BanChecker } from '@/features/services/components/BanChecker';
 import { useTranslation, LANGUAGES } from '@/lib/i18n';
 import { CloudSafeSection } from '@/components/settings/CloudSafeSection';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
-import { useProfileStore } from '@/lib/stores';
+import { useProfileStore, useAppStore } from '@/lib/stores';
 import {
   COUNTRIES,
   PRIORITY_COUNTRIES,
@@ -32,6 +32,7 @@ function getInitials(fullName: string): string {
 export function HomeScreen() {
   const { t, language, setLanguage: setAppLanguage } = useTranslation();
   const { profile, updateProfile, reset: resetProfile } = useProfileStore();
+  const { ttsEnabled, setTtsEnabled } = useAppStore();
 
   const [showHistory, setShowHistory] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
@@ -741,6 +742,25 @@ export function HomeScreen() {
                       </span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-gray-400" />
+                  </button>
+                </div>
+
+                {/* TTS Toggle */}
+                <div className="mb-4">
+                  <button
+                    onClick={() => setTtsEnabled(!ttsEnabled)}
+                    className="w-full flex items-center justify-between px-4 py-3 bg-white border-2 border-gray-200 rounded-xl hover:border-gray-300 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Volume2 className="w-5 h-5 text-gray-600" />
+                      <div className="text-left">
+                        <span className="font-medium text-gray-700 block">{t('tts.enabled')}</span>
+                        <span className="text-xs text-gray-500">{t('tts.enabledDesc')}</span>
+                      </div>
+                    </div>
+                    <div className={`w-12 h-7 rounded-full transition-colors relative ${ttsEnabled ? 'bg-blue-500' : 'bg-gray-300'}`}>
+                      <div className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-transform ${ttsEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </div>
                   </button>
                 </div>
 

@@ -306,6 +306,13 @@ export function DocumentsScreen() {
                   <span className={`font-semibold ${statusConfig.textColor}`}>
                     {doc.statusText}
                   </span>
+                  {(doc.status === 'warning' || doc.status === 'error') && (
+                    <SpeakButton
+                      text={`${doc.title}. ${doc.statusText}`}
+                      variant="ghost"
+                      size="sm"
+                    />
+                  )}
                 </div>
 
                 {/* Action Buttons */}
