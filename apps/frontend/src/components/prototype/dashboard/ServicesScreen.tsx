@@ -341,6 +341,11 @@ export function ServicesScreen() {
         <RightsModal onClose={() => setShowRights(false)} />
       )}
 
+      {/* FSSP Check Modal */}
+      {showFsspCheck && (
+        <FsspCheckModal onClose={() => setShowFsspCheck(false)} />
+      )}
+
       {/* Toast Notification */}
       {toast.visible && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">

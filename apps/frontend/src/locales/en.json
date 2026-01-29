@@ -38,6 +38,8 @@
     "download": "Download",
     "upload": "Upload",
     "share": "Share",
+    "listen": "Listen",
+    "stop": "Stop",
     "copy": "Copy",
     "copied": "Copied",
     "send": "Send",
@@ -795,6 +797,10 @@
       "permitStatus": {
         "title": "RVP/VNJ Status",
         "subtitle": "Check application"
+      },
+      "fsspCheck": {
+        "title": "FSSP Debt Check",
+        "subtitle": "Bailiff debts"
       },
       "payment": {
         "title": "Patent payment",
@@ -2126,5 +2132,35 @@
     },
     "showMore": "Show more",
     "showLess": "Show less"
+  },
+  "cloudSafe": {
+    "title": "Cloud Safe",
+    "subtitle": "Secure backup storage",
+    "notConfigured": "Backup not configured",
+    "lastBackup": "Last backup: {date}",
+    "createBackup": "Create Backup",
+    "restore": "Restore",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this backup?",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordRequirements": "Minimum 8 characters",
+    "recoveryCode": "Recovery Code",
+    "copyRecoveryCode": "Copy code",
+    "recoveryCodeCopied": "Code copied",
+    "saveRecoveryCode": "Save this code! You will need it to restore your data",
+    "warningLostPassword": "I understand that if I lose my password, my data cannot be recovered",
+    "warningReplace": "Warning! Current data will be replaced",
+    "creating": "Creating backup...",
+    "restoring": "Restoring...",
+    "success": "Backup created successfully",
+    "successRestore": "Data restored successfully",
+    "error": "An error occurred",
+    "selectBackup": "Select backup",
+    "backupSize": "Size: {size}",
+    "backupDate": "Created: {date}",
+    "noBackups": "No saved backups",
+    "encryption": "AES-256 encryption"
   }
 }

@@ -38,6 +38,8 @@
     "download": "Yuklab olish",
     "upload": "Yuklash",
     "share": "Ulashish",
+    "listen": "Tinglash",
+    "stop": "To'xtatish",
     "copy": "Nusxalash",
     "copied": "Nusxalandi",
     "send": "Yuborish",
@@ -786,6 +788,14 @@
       "check": {
         "title": "Taqiqlarni tekshirish",
         "subtitle": "IIV/FSSP bazalari"
+      },
+      "permitStatus": {
+        "title": "RVP/VNJ holati",
+        "subtitle": "Arizani tekshirish"
+      },
+      "fsspCheck": {
+        "title": "FSSP tekshiruvi",
+        "subtitle": "Sud ijrochilari qarzi"
       },
       "payment": {
         "title": "Patent to'lovi",
@@ -2073,5 +2083,35 @@
     },
     "showMore": "Ko'proq ko'rsatish",
     "showLess": "Yashirish"
+  },
+  "cloudSafe": {
+    "title": "Bulutli saqlash",
+    "subtitle": "Xavfsiz zaxira nusxalash",
+    "notConfigured": "Zaxira nusxasi sozlanmagan",
+    "lastBackup": "Oxirgi zaxira: {date}",
+    "createBackup": "Zaxira yaratish",
+    "restore": "Tiklash",
+    "delete": "O'chirish",
+    "deleteConfirm": "Ushbu zaxira nusxasini o'chirishni xohlaysizmi?",
+    "password": "Parol",
+    "confirmPassword": "Parolni tasdiqlang",
+    "passwordMismatch": "Parollar mos kelmaydi",
+    "passwordRequirements": "Kamida 8 ta belgi",
+    "recoveryCode": "Tiklash kodi",
+    "copyRecoveryCode": "Kodni nusxalash",
+    "recoveryCodeCopied": "Kod nusxalandi",
+    "saveRecoveryCode": "Bu kodni saqlang! Ma'lumotlarni tiklash uchun kerak bo'ladi",
+    "warningLostPassword": "Parolni yo'qotsam, ma'lumotlarni tiklab bo'lmasligini tushunaman",
+    "warningReplace": "Diqqat! Joriy ma'lumotlar almashtiriladi",
+    "creating": "Zaxira yaratilmoqda...",
+    "restoring": "Tiklanmoqda...",
+    "success": "Zaxira muvaffaqiyatli yaratildi",
+    "successRestore": "Ma'lumotlar muvaffaqiyatli tiklandi",
+    "error": "Xatolik yuz berdi",
+    "selectBackup": "Zaxirani tanlang",
+    "backupSize": "Hajmi: {size}",
+    "backupDate": "Yaratilgan: {date}",
+    "noBackups": "Saqlangan zaxiralar yo'q",
+    "encryption": "AES-256 shifrlash"
   }
 }

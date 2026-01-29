@@ -14,6 +14,7 @@ import { TrainerModule } from './modules/trainer/trainer.module';
 import { AssistantModule } from './modules/assistant/assistant.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { OcrModule } from './modules/ocr/ocr.module';
+import { BackupModule } from './modules/backup/backup.module';
 import { CacheModule } from './modules/cache/cache.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { SentryModule } from './common/sentry';
@@ -116,6 +117,7 @@ import yookassaConfig from './config/yookassa.config';
     AssistantModule,
     PaymentsModule,
     OcrModule,
+    BackupModule,
   ],
   providers: [
     {

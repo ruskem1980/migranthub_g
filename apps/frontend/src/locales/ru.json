@@ -38,6 +38,8 @@
     "download": "Скачать",
     "upload": "Загрузить",
     "share": "Поделиться",
+    "listen": "Слушать",
+    "stop": "Стоп",
     "copy": "Копировать",
     "copied": "Скопировано",
     "send": "Отправить",
@@ -795,6 +797,10 @@
       "permitStatus": {
         "title": "Статус РВП/ВНЖ",
         "subtitle": "Проверить заявление"
+      },
+      "fsspCheck": {
+        "title": "Проверка ФССП",
+        "subtitle": "Задолженность приставов"
       },
       "payment": {
         "title": "Оплата патента",
@@ -2130,5 +2136,35 @@
     },
     "showMore": "Показать ещё",
     "showLess": "Скрыть"
+  },
+  "cloudSafe": {
+    "title": "Облачное хранилище",
+    "subtitle": "Безопасное резервное копирование",
+    "notConfigured": "Бэкап не настроен",
+    "lastBackup": "Последний бэкап: {date}",
+    "createBackup": "Создать бэкап",
+    "restore": "Восстановить",
+    "delete": "Удалить",
+    "deleteConfirm": "Вы уверены, что хотите удалить этот бэкап?",
+    "password": "Пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "passwordMismatch": "Пароли не совпадают",
+    "passwordRequirements": "Минимум 8 символов",
+    "recoveryCode": "Код восстановления",
+    "copyRecoveryCode": "Скопировать код",
+    "recoveryCodeCopied": "Код скопирован",
+    "saveRecoveryCode": "Сохраните этот код! Он понадобится для восстановления данных",
+    "warningLostPassword": "Я понимаю, что при утере пароля данные невозможно восстановить",
+    "warningReplace": "Внимание! Текущие данные будут заменены",
+    "creating": "Создание бэкапа...",
+    "restoring": "Восстановление...",
+    "success": "Бэкап успешно создан",
+    "successRestore": "Данные успешно восстановлены",
+    "error": "Произошла ошибка",
+    "selectBackup": "Выберите бэкап",
+    "backupSize": "Размер: {size}",
+    "backupDate": "Создан: {date}",
+    "noBackups": "Нет сохранённых бэкапов",
+    "encryption": "Шифрование AES-256"
   }
 }
