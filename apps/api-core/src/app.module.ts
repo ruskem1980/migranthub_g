@@ -11,6 +11,7 @@ import { UtilitiesModule } from './modules/utilities/utilities.module';
 import { LegalModule } from './modules/legal/legal.module';
 import { ExamModule } from './modules/exam/exam.module';
 import { TrainerModule } from './modules/trainer/trainer.module';
+import { AssistantModule } from './modules/assistant/assistant.module';
 import { CacheModule } from './modules/cache/cache.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { SentryModule } from './common/sentry';
@@ -106,6 +107,7 @@ import permitStatusConfig from './config/permit-status.config';
     LegalModule,
     ExamModule,
     TrainerModule,
+    AssistantModule,
   ],
   providers: [
     {
