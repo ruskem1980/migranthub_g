@@ -1,12 +1,13 @@
 'use client';
 
-import { Shield, MapPin, Wand2, GraduationCap, ClipboardCheck, Hash, Calculator, FileCheck, CalendarDays, MessageSquare, LucideIcon, HelpCircle, Scale, Route } from 'lucide-react';
+import { Shield, MapPin, Wand2, GraduationCap, ClipboardCheck, Hash, Calculator, FileCheck, CalendarDays, MessageSquare, LucideIcon, HelpCircle, Scale, Route, CreditCard } from 'lucide-react';
 import { useState } from 'react';
 import { DocumentGenerator } from '../services/DocumentGenerator';
 import { PermitStatusModal } from '../services/PermitStatusModal';
 import { InnCheckModal } from '../services/InnCheckModal';
 import { PatentCalculatorModal } from '../services/PatentCalculatorModal';
 import { PatentCheckModal } from '../services/PatentCheckModal';
+import { PatentPaymentModal } from '../services/PatentPaymentModal';
 import { FAQModal } from '../services/FAQModal';
 import { RightsModal } from '../services/RightsModal';
 import { useTranslation } from '@/lib/i18n';
@@ -27,6 +28,7 @@ export function ServicesScreen() {
   const [showInnCheck, setShowInnCheck] = useState(false);
   const [showPatentCalculator, setShowPatentCalculator] = useState(false);
   const [showPatentCheck, setShowPatentCheck] = useState(false);
+  const [showPatentPayment, setShowPatentPayment] = useState(false);
   const [showRoadmap, setShowRoadmap] = useState(false);
   const [showFAQ, setShowFAQ] = useState(false);
   const [showRights, setShowRights] = useState(false);
@@ -48,6 +50,7 @@ export function ServicesScreen() {
   // Calculator Services
   const calculatorServices = [
     { id: 'patentCalc', icon: Calculator, title: 'Patent Calculator', subtitle: 'Calculate cost', color: 'green' },
+    { id: 'patentPayment', icon: CreditCard, title: language === 'ru' ? 'Оплата патента' : 'Patent Payment', subtitle: language === 'ru' ? 'Оплата через YooKassa' : 'Pay via YooKassa', color: 'blue', special: true },
     { id: 'days90180', icon: CalendarDays, title: language === 'ru' ? 'Калькулятор 90/180' : '90/180 Calculator', subtitle: language === 'ru' ? 'Дни пребывания' : 'Stay days', color: 'amber' },
     { id: 'roadmap', icon: Route, title: t('roadmap.title'), subtitle: t('roadmap.subtitle'), color: 'indigo', special: true },
     { id: 'map', icon: MapPin, title: t('services.items.map.title'), subtitle: t('services.items.map.subtitle'), color: 'pink', hasModal: true },
@@ -99,6 +102,9 @@ export function ServicesScreen() {
         break;
       case 'patentCalc':
         setShowPatentCalculator(true);
+        break;
+      case 'patentPayment':
+        setShowPatentPayment(true);
         break;
       case 'days90180':
         setToast({ message: language === 'ru' ? 'Скоро будет доступно' : 'Coming soon', visible: true });
@@ -307,6 +313,11 @@ export function ServicesScreen() {
       {/* Patent Check Modal */}
       {showPatentCheck && (
         <PatentCheckModal onClose={() => setShowPatentCheck(false)} />
+      )}
+
+      {/* Patent Payment Modal */}
+      {showPatentPayment && (
+        <PatentPaymentModal onClose={() => setShowPatentPayment(false)} />
       )}
 
       {/* Roadmap Screen */}

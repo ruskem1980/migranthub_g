@@ -42,3 +42,11 @@ export {
   type KnowledgeItem,
   type KnowledgeCategory,
 } from './knowledgeBase';
+
+export {
+  patentPrices,
+  getPatentPrice,
+  calculatePatentTotal,
+  formatPrice,
+  type PatentRegionPrice,
+} from './patentPrices';

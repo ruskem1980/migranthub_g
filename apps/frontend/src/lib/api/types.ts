@@ -258,3 +258,76 @@ export interface AssistantSearchResult {
 export interface AssistantSearchResponse {
   results: AssistantSearchResult[];
 }
+
+// Payment Types
+export type PaymentStatus = 'pending' | 'waiting_for_capture' | 'succeeded' | 'canceled' | 'refunded';
+export type PaymentProvider = 'yookassa' | 'sbp';
+
+export interface CreatePaymentRequest {
+  amount: number;
+  description: string;
+  metadata?: {
+    patentRegion?: string;
+    patentMonth?: number;
+    patentYear?: number;
+    months?: number;
+    [key: string]: unknown;
+  };
+}
+
+export interface PaymentResponse {
+  id: string;
+  externalId: string | null;
+  amount: string;
+  currency: string;
+  status: PaymentStatus;
+  provider: PaymentProvider;
+  description: string;
+  paymentUrl?: string | null;
+  createdAt: string;
+  paidAt?: string | null;
+}
+
+export interface CreatePaymentResponse extends PaymentResponse {
+  paymentUrl: string;
+}
+
+export interface PaymentStatusResponse {
+  id: string;
+  status: PaymentStatus;
+  paidAt?: string | null;
+  cancellationReason?: string | null;
+}
+
+export interface PaymentHistoryResponse {
+  payments: PaymentResponse[];
+  total: number;
+}
+
+// OCR Types
+export interface OcrDocumentData {
+  documentType?: string;
+  fullName?: string;
+  fullNameLatin?: string;
+  documentNumber?: string;
+  issueDate?: string;
+  expiryDate?: string;
+  birthDate?: string;
+  gender?: 'male' | 'female';
+  citizenship?: string;
+  registrationAddress?: string;
+  hostName?: string;
+  entryDate?: string;
+  borderPoint?: string;
+  purpose?: string;
+  patentRegion?: string;
+  employer?: string;
+}
+
+export interface OcrProcessResponse {
+  success: boolean;
+  data?: OcrDocumentData;
+  rawText?: string;
+  confidence?: number;
+  error?: string;
+}

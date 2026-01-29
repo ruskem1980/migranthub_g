@@ -29,6 +29,12 @@ import type {
   ChatHistoryMessage,
   AssistantChatResponse,
   AssistantSearchResponse,
+  CreatePaymentRequest,
+  CreatePaymentResponse,
+  PaymentResponse,
+  PaymentStatusResponse,
+  PaymentHistoryResponse,
+  OcrProcessResponse,
 } from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
@@ -359,6 +365,68 @@ export const assistantApi = {
 
   search: (query: string, limit?: number) =>
     apiClient.post<AssistantSearchResponse>('/assistant/search', { query, limit }, { skipAuth: true }),
+};
+
+// Payments API
+export const paymentsApi = {
+  create: (data: CreatePaymentRequest) =>
+    apiClient.post<CreatePaymentResponse>('/payments/create', data, {
+      offlineAction: 'Создание платежа',
+    }),
+
+  getStatus: (paymentId: string) =>
+    apiClient.get<PaymentStatusResponse>(`/payments/${paymentId}/status`),
+
+  getPayment: (paymentId: string) =>
+    apiClient.get<PaymentResponse>(`/payments/${paymentId}`),
+
+  getHistory: (limit?: number, offset?: number) => {
+    const params = new URLSearchParams();
+    if (limit) params.append('limit', limit.toString());
+    if (offset) params.append('offset', offset.toString());
+    const query = params.toString();
+    return apiClient.get<PaymentHistoryResponse>(`/payments${query ? `?${query}` : ''}`);
+  },
+};
+
+// OCR API
+export const ocrApi = {
+  /**
+   * Process document image with OCR
+   * Uses multipart/form-data for file upload
+   */
+  processDocument: async (file: File, documentType?: string): Promise<OcrProcessResponse> => {
+    const formData = new FormData();
+    formData.append('image', file);
+    if (documentType) {
+      formData.append('documentType', documentType);
+    }
+
+    const token = await tokenStorage.getAccessToken();
+
+    const response = await fetch(`${API_BASE_URL}/ocr/process`, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({
+        message: 'OCR processing failed',
+        statusCode: response.status,
+      }));
+      throw error;
+    }
+
+    const json = await response.json();
+    // Handle wrapped response
+    if (json && typeof json === 'object' && 'data' in json) {
+      return json.data as OcrProcessResponse;
+    }
+    return json as OcrProcessResponse;
+  },
 };
 
 export { API_BASE_URL };
