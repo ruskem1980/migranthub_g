@@ -1217,7 +1217,12 @@
       "ban": "How to check entry ban?",
       "work": "How to find a job?"
     },
-    "voiceInput": "Voice input"
+    "voiceInput": "Voice input",
+    "disclaimer": {
+      "text": "This information is for reference purposes only and does not constitute legal advice. For specific issues, please consult a specialist.",
+      "hireLawyer": "Hire a lawyer",
+      "lawyerRedirect": "Redirecting to lawyer consultation"
+    }
   },
   "notifications": {
     "patentExpiry": "Patent expiring",
@@ -1958,6 +1963,56 @@
       "correct": "Correct!",
       "explanation": "Explanation:",
       "hint": "💡 Hint: Think about the key concepts related to this topic."
+    }
+  },
+  "roadmap": {
+    "title": "Roadmap",
+    "subtitle": "Your legalization path",
+    "entryDate": "Entry date",
+    "daysInRussia": "Days in Russia",
+    "deadlineBy": "Deadline",
+    "daysLeft": "{days} days left",
+    "overdue": "Overdue by {days} days",
+    "tapForDetails": "Tap for details",
+    "noEntryDate": {
+      "title": "Set entry date",
+      "description": "To calculate your deadlines, please set your entry date to Russia in your profile.",
+      "goToProfile": "Go to profile"
+    },
+    "stages": {
+      "entry": {
+        "title": "Entry to Russia",
+        "description": "Border crossing, receiving migration card"
+      },
+      "registration": {
+        "title": "Migration Registration",
+        "description": "Registration at the place of stay"
+      },
+      "patent": {
+        "title": "Work Patent",
+        "description": "Submitting documents for work patent"
+      },
+      "longRegistration": {
+        "title": "Registration Extension",
+        "description": "Extending migration registration after 90 days"
+      }
+    },
+    "fines": {
+      "title": "Fines"
+    },
+    "risks": {
+      "title": "Risks",
+      "deportation": "Deportation from Russia",
+      "entryBan": "5-year entry ban",
+      "entryBan3Years": "3-year entry ban",
+      "illegalWork": "Fine for illegal work"
+    },
+    "legend": {
+      "title": "Legend",
+      "completed": "Completed",
+      "inProgress": "In progress",
+      "warning": "Deadline soon",
+      "overdue": "Overdue"
     }
   }
 }

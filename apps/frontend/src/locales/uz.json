@@ -1193,7 +1193,12 @@
       "ban": "Kirish taqiqini qanday tekshirish mumkin?",
       "work": "Ish qanday topish mumkin?"
     },
-    "voiceInput": "Ovozli kiritish"
+    "voiceInput": "Ovozli kiritish",
+    "disclaimer": {
+      "text": "Bu ma'lumot faqat ma'lumot uchun va huquqiy maslahat emas. Aniq masalalar uchun mutaxassisga murojaat qiling.",
+      "hireLawyer": "Advokat yollash",
+      "lawyerRedirect": "Advokat maslahatiga o'tish"
+    }
   },
   "notifications": {
     "patentExpiry": "Patent muddati tugayapti",
@@ -1937,6 +1942,56 @@
       "correct": "To'g'ri!",
       "explanation": "Tushuntirish:",
       "hint": "💡 Maslahat: Ushbu mavzu bilan bog'liq asosiy tushunchalar haqida o'ylang."
+    }
+  },
+  "roadmap": {
+    "title": "Yo'l xaritasi",
+    "subtitle": "Sizning legallashuv yo'lingiz",
+    "entryDate": "Kirish sanasi",
+    "daysInRussia": "Rossiyada kunlar",
+    "deadlineBy": "Muddat",
+    "daysLeft": "{days} kun qoldi",
+    "overdue": "{days} kunga kechiktirildi",
+    "tapForDetails": "Batafsil ma'lumot uchun bosing",
+    "noEntryDate": {
+      "title": "Kirish sanasini kiriting",
+      "description": "Muddatlaringizni hisoblash uchun profilingizda Rossiyaga kirish sanasini kiriting.",
+      "goToProfile": "Profilga o'tish"
+    },
+    "stages": {
+      "entry": {
+        "title": "Rossiyaga kirish",
+        "description": "Chegara kesib o'tish, migratsiya kartasini olish"
+      },
+      "registration": {
+        "title": "Migratsiya ro'yxatga olish",
+        "description": "Turish joyida ro'yxatga olish"
+      },
+      "patent": {
+        "title": "Ish patenti",
+        "description": "Ish patenti uchun hujjatlar topshirish"
+      },
+      "longRegistration": {
+        "title": "Ro'yxatni uzaytirish",
+        "description": "90 kundan keyin migratsiya ro'yxatini uzaytirish"
+      }
+    },
+    "fines": {
+      "title": "Jarimalar"
+    },
+    "risks": {
+      "title": "Xavflar",
+      "deportation": "Rossiyadan deportatsiya",
+      "entryBan": "5 yillik kirish taqiqi",
+      "entryBan3Years": "3 yillik kirish taqiqi",
+      "illegalWork": "Noqonuniy ish uchun jarima"
+    },
+    "legend": {
+      "title": "Belgilar",
+      "completed": "Bajarildi",
+      "inProgress": "Jarayonda",
+      "warning": "Muddat yaqinlashmoqda",
+      "overdue": "Muddati o'tgan"
     }
   }
 }

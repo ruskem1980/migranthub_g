@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, MapPin, Wand2, GraduationCap, ClipboardCheck, Hash, Calculator, FileCheck, CalendarDays, MessageSquare, LucideIcon, HelpCircle, Scale } from 'lucide-react';
+import { Shield, MapPin, Wand2, GraduationCap, ClipboardCheck, Hash, Calculator, FileCheck, CalendarDays, MessageSquare, LucideIcon, HelpCircle, Scale, Route } from 'lucide-react';
 import { useState } from 'react';
 import { DocumentGenerator } from '../services/DocumentGenerator';
 import { PermitStatusModal } from '../services/PermitStatusModal';
@@ -12,6 +12,7 @@ import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useProfileStore } from '@/lib/stores';
 import { useLanguageStore } from '@/lib/stores/languageStore';
 import { ExamTrainer } from '@/features/services';
+import { RoadmapScreen } from './RoadmapScreen';
 
 export function ServicesScreen() {
   const { t } = useTranslation();
@@ -24,6 +25,7 @@ export function ServicesScreen() {
   const [showInnCheck, setShowInnCheck] = useState(false);
   const [showPatentCalculator, setShowPatentCalculator] = useState(false);
   const [showPatentCheck, setShowPatentCheck] = useState(false);
+  const [showRoadmap, setShowRoadmap] = useState(false);
 
   // Document Services
   const documentServices = [
@@ -42,6 +44,7 @@ export function ServicesScreen() {
   const calculatorServices = [
     { id: 'patentCalc', icon: Calculator, title: 'Patent Calculator', subtitle: 'Calculate cost', color: 'green' },
     { id: 'days90180', icon: CalendarDays, title: language === 'ru' ? 'Калькулятор 90/180' : '90/180 Calculator', subtitle: language === 'ru' ? 'Дни пребывания' : 'Stay days', color: 'amber' },
+    { id: 'roadmap', icon: Route, title: t('roadmap.title'), subtitle: t('roadmap.subtitle'), color: 'indigo', special: true },
     { id: 'map', icon: MapPin, title: t('services.items.map.title'), subtitle: t('services.items.map.subtitle'), color: 'pink', hasModal: true },
   ];
 
@@ -94,6 +97,9 @@ export function ServicesScreen() {
         break;
       case 'days90180':
         alert(language === 'ru' ? 'Скоро будет доступно' : 'Coming soon');
+        break;
+      case 'roadmap':
+        setShowRoadmap(true);
         break;
       case 'map':
         setShowMapModal(true);
@@ -294,6 +300,11 @@ export function ServicesScreen() {
       {/* Patent Check Modal */}
       {showPatentCheck && (
         <PatentCheckModal onClose={() => setShowPatentCheck(false)} />
+      )}
+
+      {/* Roadmap Screen */}
+      {showRoadmap && (
+        <RoadmapScreen onClose={() => setShowRoadmap(false)} />
       )}
     </div>
   );
