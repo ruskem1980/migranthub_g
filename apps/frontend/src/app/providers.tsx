@@ -10,6 +10,7 @@ import { NotificationProvider } from '@/lib/hooks/useNotifications';
 import { useTranslation, useLanguageStore } from '@/lib/i18n';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useBackButton } from '@/hooks/useBackButton';
+import { ToastProvider } from '@/components/ui/ToastProvider';
 import type { Locale } from '@/i18n';
 
 // Dynamic message loader for next-intl
@@ -96,7 +97,9 @@ export function Providers({ children }: ProvidersProps) {
       <QueryProvider>
         <NextIntlWrapper>
           <NotificationProvider>
-            <AppInitializer>{children}</AppInitializer>
+            <ToastProvider>
+              <AppInitializer>{children}</AppInitializer>
+            </ToastProvider>
           </NotificationProvider>
         </NextIntlWrapper>
       </QueryProvider>
