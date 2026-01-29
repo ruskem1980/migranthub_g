@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Loader2, Send, ArrowLeft, CheckCircle, AlertCircle, XCircle, Clock, Star, GraduationCap, Trophy, Shield, Calculator, Hash, AlertTriangle, Scale, Phone, MessageCircle, X, User, Building, Search, ChevronDown, FileText, MapPin, Briefcase, Heart, Flag, Home, CreditCard } from 'lucide-react';
 import { useTrainerStore, getDifficultyStars, type Scenario, type Message } from '@/lib/stores/trainerStore';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useToast } from '@/hooks/useToast';
 import { KNOWLEDGE_BASE, KNOWLEDGE_COUNT, type KnowledgeItem } from '@/data';
 
 // Quick Actions for ScenarioSelectionScreen
@@ -43,7 +44,7 @@ function LawyerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   };
 
   const handleCall = () => {
-    window.location.href = 'tel:+78001234567';
+    window.location.href = 'tel:+78002227447';
   };
 
   if (!isOpen) return null;
@@ -88,7 +89,7 @@ function LawyerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
               </div>
               <div className="flex-1 text-left">
                 <p className="font-medium text-gray-900">{t('assistant.lawyerModal.hotline')}</p>
-                <p className="text-sm text-green-600">8-800-123-45-67</p>
+                <p className="text-sm text-green-600">+7 (800) 222-74-47</p>
               </div>
               <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
                 {t('assistant.lawyerModal.free')}
@@ -392,6 +393,8 @@ function KnowledgeBaseSection() {
 // Scenario Selection Screen
 function ScenarioSelectionScreen() {
   const { scenarios, isLoading, error, fetchScenarios, startScenario } = useTrainerStore();
+  const { t } = useTranslation();
+  const toast = useToast();
 
   useEffect(() => {
     if (scenarios.length === 0) {
@@ -458,7 +461,7 @@ function ScenarioSelectionScreen() {
                 key={action.id}
                 onClick={() => {
                   // Navigate to Services tab or show modal
-                  alert(`${action.label} - перейдите на вкладку Сервисы`);
+                  toast.info(`${action.label} - ${t('common.goToServicesTab')}`);
                 }}
                 className="flex-shrink-0 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-blue-100 active:scale-95 transition-all"
               >

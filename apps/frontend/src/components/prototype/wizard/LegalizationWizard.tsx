@@ -715,12 +715,6 @@ export function LegalizationWizard({ onClose, onComplete, profileData }: Legaliz
             {/* Skip Option - NEW */}
             <button
               onClick={() => {
-                console.log('Skip clicked:', {
-                  currentDocIndex,
-                  totalDocs: documentsToScan.length,
-                  hasMore: currentDocIndex < documentsToScan.length - 1
-                });
-
                 // Skip this document and move to next
                 const hasMoreDocuments = currentDocIndex < documentsToScan.length - 1;
 

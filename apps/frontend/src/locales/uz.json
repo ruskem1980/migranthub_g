@@ -1198,6 +1198,25 @@
       "text": "Bu ma'lumot faqat ma'lumot uchun va huquqiy maslahat emas. Aniq masalalar uchun mutaxassisga murojaat qiling.",
       "hireLawyer": "Advokat yollash",
       "lawyerRedirect": "Advokat maslahatiga o'tish"
+    },
+    "lawyerModal": {
+      "title": "Advokat maslahati",
+      "quickContact": "Tezkor aloqa",
+      "hotline": "Ishonch telefoni 24/7",
+      "free": "Bepul",
+      "writeNow": "Hozir yozish",
+      "callbackRequest": "Qayta qo'ng'iroq so'rash",
+      "yourName": "Ismingiz",
+      "namePlaceholder": "Ismingizni kiriting",
+      "yourPhone": "Telefon raqami",
+      "yourQuestion": "Savolingiz (ixtiyoriy)",
+      "questionPlaceholder": "Vaziyatingizni qisqacha tasvirlab bering...",
+      "requestCallback": "Qo'ng'iroq so'rash",
+      "requestSent": "So'rov yuborildi!",
+      "willCallBack": "Advokat 15 daqiqa ichida siz bilan bog'lanadi",
+      "partnerLawyers": "Hamkor advokatlar",
+      "partnerDescription": "Biz 5 yildan ortiq tajribaga ega tasdiqlangan migratsiya advokatlari bilan ishlaymiz",
+      "whatsappMessage": "Salom! Menga migratsiya advokati maslahati kerak."
     }
   },
   "notifications": {
@@ -1564,31 +1583,6 @@
       "inn": "🔢 INN / SNILS",
       "family": "💍 Nikoh / tug'ilish guvohnomasi",
       "familySubtitle": "RVP/VNZh uchun"
-    }
-  },
-  "roadmap": {
-    "title": "Sizning yo'l xaritangiz",
-    "subtitle": "Qonuniy yashash uchun harakatlar rejasi",
-    "proceedButton": "Rasmiylashtirish",
-    "status": {
-      "done": "Tayyor"
-    },
-    "risk": {
-      "deportation": "Xavf: Deportatsiya"
-    },
-    "nextStep": {
-      "title": "Keyingi qadam",
-      "description": "Migratsiya hisobini 3 kun ichida rasmiylashiring. Eng yaqin IIB bo'limini topishga yordam beramiz."
-    },
-    "steps": {
-      "passport": "Pasport",
-      "passportDeadline": "Muddat: 7 kun, Jarima: 5000₽",
-      "migCard": "Migratsiya kartasi",
-      "migCardDeadline": "Muddat: 3 kun, Jarima: 5000₽",
-      "registration": "Ro'yxatga olish",
-      "registrationDeadline": "Muddat: 7 kun, Jarima: 3000₽",
-      "patent": "Patent",
-      "patentDeadline": "Muddat: 30 kun, Jarima: 5000₽"
     }
   },
   "reference": {
@@ -1967,6 +1961,10 @@
         "title": "Migratsiya ro'yxatga olish",
         "description": "Turish joyida ro'yxatga olish"
       },
+      "medical": {
+        "title": "Tibbiy ko'rik",
+        "description": "Ish patenti uchun tibbiy tekshiruv"
+      },
       "patent": {
         "title": "Ish patenti",
         "description": "Ish patenti uchun hujjatlar topshirish"
@@ -1984,7 +1982,8 @@
       "deportation": "Rossiyadan deportatsiya",
       "entryBan": "5 yillik kirish taqiqi",
       "entryBan3Years": "3 yillik kirish taqiqi",
-      "illegalWork": "Noqonuniy ish uchun jarima"
+      "illegalWork": "Noqonuniy ish uchun jarima",
+      "patentDenied": "Ish patenti rad etilishi"
     },
     "legend": {
       "title": "Belgilar",
@@ -1993,5 +1992,24 @@
       "warning": "Muddat yaqinlashmoqda",
       "overdue": "Muddati o'tgan"
     }
+  },
+  "knowledgeBase": {
+    "title": "Bilimlar bazasi",
+    "subtitle": "Tez-tez so'raladigan savollar",
+    "searchPlaceholder": "Savollar bo'yicha qidirish...",
+    "questionsCount": "{count} ta savol",
+    "noResults": "Hech narsa topilmadi",
+    "categories": {
+      "patent": "Patent",
+      "registration": "Ro'yxatga olish",
+      "rvp": "RVP",
+      "vnj": "VNJ",
+      "work": "Ish",
+      "medical": "Tibbiyot",
+      "sos": "SOS",
+      "citizenship": "Fuqarolik"
+    },
+    "showMore": "Ko'proq ko'rsatish",
+    "showLess": "Yashirish"
   }
 }

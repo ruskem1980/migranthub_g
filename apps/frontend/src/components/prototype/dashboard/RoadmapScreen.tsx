@@ -13,7 +13,8 @@ import {
   ArrowLeft,
   Info,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Stethoscope
 } from 'lucide-react';
 import { useProfileStore } from '@/lib/stores';
 import { useTranslation } from '@/lib/i18n';
@@ -70,6 +71,12 @@ export function RoadmapScreen({ onClose }: RoadmapScreenProps) {
       fineMin: 2000,
       fineMax: 5000,
       risks: ['deportation', 'entryBan'],
+    },
+    {
+      id: 'medical',
+      icon: Stethoscope,
+      deadline: 30,
+      risks: ['patentDenied'],
     },
     {
       id: 'patent',

@@ -1610,31 +1610,6 @@
       "familySubtitle": "For TRP/Residence permit"
     }
   },
-  "roadmap": {
-    "title": "Your roadmap",
-    "subtitle": "Action plan for legal stay",
-    "proceedButton": "Proceed to processing",
-    "status": {
-      "done": "Done"
-    },
-    "risk": {
-      "deportation": "Risk: Deportation"
-    },
-    "nextStep": {
-      "title": "Next step",
-      "description": "Complete migration registration within 3 days. We'll help find the nearest MVD department."
-    },
-    "steps": {
-      "passport": "Passport",
-      "passportDeadline": "Deadline: 7 days, Fine: 5000 RUB",
-      "migCard": "Migration card",
-      "migCardDeadline": "Deadline: 3 days, Fine: 5000 RUB",
-      "registration": "Registration",
-      "registrationDeadline": "Deadline: 7 days, Fine: 3000 RUB",
-      "patent": "Patent",
-      "patentDeadline": "Deadline: 30 days, Fine: 5000 RUB"
-    }
-  },
   "reference": {
     "title": "Legal Reference",
     "dataAsOf": "Data as of",

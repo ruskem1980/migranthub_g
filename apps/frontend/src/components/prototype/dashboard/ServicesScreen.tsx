@@ -7,6 +7,8 @@ import { PermitStatusModal } from '../services/PermitStatusModal';
 import { InnCheckModal } from '../services/InnCheckModal';
 import { PatentCalculatorModal } from '../services/PatentCalculatorModal';
 import { PatentCheckModal } from '../services/PatentCheckModal';
+import { FAQModal } from '../services/FAQModal';
+import { RightsModal } from '../services/RightsModal';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useProfileStore } from '@/lib/stores';
@@ -26,6 +28,9 @@ export function ServicesScreen() {
   const [showPatentCalculator, setShowPatentCalculator] = useState(false);
   const [showPatentCheck, setShowPatentCheck] = useState(false);
   const [showRoadmap, setShowRoadmap] = useState(false);
+  const [showFAQ, setShowFAQ] = useState(false);
+  const [showRights, setShowRights] = useState(false);
+  const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: '', visible: false });
 
   // Document Services
   const documentServices = [
@@ -96,7 +101,8 @@ export function ServicesScreen() {
         setShowPatentCalculator(true);
         break;
       case 'days90180':
-        alert(language === 'ru' ? 'Скоро будет доступно' : 'Coming soon');
+        setToast({ message: language === 'ru' ? 'Скоро будет доступно' : 'Coming soon', visible: true });
+        setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 3000);
         break;
       case 'roadmap':
         setShowRoadmap(true);
@@ -108,13 +114,14 @@ export function ServicesScreen() {
         setShowExamTrainer(true);
         break;
       case 'aiTrainer':
-        alert(language === 'ru' ? 'Перейдите на вкладку Ассистент' : 'Go to Assistant tab');
+        setToast({ message: language === 'ru' ? 'Перейдите на вкладку Ассистент' : 'Go to Assistant tab', visible: true });
+        setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 3000);
         break;
       case 'faq':
-        alert(language === 'ru' ? 'Раздел FAQ в разработке' : 'FAQ section coming soon');
+        setShowFAQ(true);
         break;
       case 'rights':
-        alert(language === 'ru' ? 'Раздел о правах в разработке' : 'Rights section coming soon');
+        setShowRights(true);
         break;
       default:
         break;
@@ -305,6 +312,25 @@ export function ServicesScreen() {
       {/* Roadmap Screen */}
       {showRoadmap && (
         <RoadmapScreen onClose={() => setShowRoadmap(false)} />
+      )}
+
+      {/* FAQ Modal */}
+      {showFAQ && (
+        <FAQModal onClose={() => setShowFAQ(false)} />
+      )}
+
+      {/* Rights Modal */}
+      {showRights && (
+        <RightsModal onClose={() => setShowRights(false)} />
+      )}
+
+      {/* Toast Notification */}
+      {toast.visible && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="bg-gray-900 text-white px-6 py-3 rounded-full shadow-lg text-sm font-medium">
+            {toast.message}
+          </div>
+        </div>
       )}
     </div>
   );
