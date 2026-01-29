@@ -1217,6 +1217,20 @@
       "partnerLawyers": "Hamkor advokatlar",
       "partnerDescription": "Biz 5 yildan ortiq tajribaga ega tasdiqlangan migratsiya advokatlari bilan ishlaymiz",
       "whatsappMessage": "Salom! Menga migratsiya advokati maslahati kerak."
+    },
+    "chat": {
+      "title": "AI Chat",
+      "subtitle": "Istalgan savol bering",
+      "tabTitle": "AI Chat",
+      "knowledgeTab": "Bilimlar bazasi",
+      "emptyTitle": "Suhbatni boshlang",
+      "emptyDescription": "Migratsiya, hujjatlar yoki huquqiy masalalar haqida savol bering",
+      "clearHistory": "Tarixni tozalash",
+      "sources": "Manbalar",
+      "piiWarningTitle": "Diqqat: shaxsiy ma'lumotlar",
+      "piiWarningText": "Chatda hujjat raqamlari, pasportlar yoki boshqa shaxsiy ma'lumotlarni yubormang.",
+      "quickActions": "Tezkor harakatlar",
+      "trainerScenarios": "Trening stsenariylari"
     }
   },
   "notifications": {

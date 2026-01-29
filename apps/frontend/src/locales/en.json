@@ -1246,6 +1246,20 @@
       "partnerLawyers": "Partner Lawyers",
       "partnerDescription": "We work with verified migration lawyers with over 5 years of experience",
       "whatsappMessage": "Hello! I need a migration lawyer consultation."
+    },
+    "chat": {
+      "title": "AI Chat",
+      "subtitle": "Ask any question",
+      "tabTitle": "AI Chat",
+      "knowledgeTab": "Knowledge Base",
+      "emptyTitle": "Start a conversation",
+      "emptyDescription": "Ask a question about migration, documents or legal issues",
+      "clearHistory": "Clear history",
+      "sources": "Sources",
+      "piiWarningTitle": "Warning: personal data",
+      "piiWarningText": "Do not send document numbers, passports or other personal data in the chat.",
+      "quickActions": "Quick actions",
+      "trainerScenarios": "Training scenarios"
     }
   },
   "notifications": {

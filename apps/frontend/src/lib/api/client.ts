@@ -26,6 +26,9 @@ import type {
   InnCheckResponse,
   CheckPermitRequest,
   PermitStatusResponse,
+  ChatHistoryMessage,
+  AssistantChatResponse,
+  AssistantSearchResponse,
 } from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
@@ -347,6 +350,15 @@ export const legalApi = {
     const query = categoryId ? `?categoryId=${categoryId}` : '';
     return apiClient.get<FaqItemDto[]>(`/legal/faq${query}`, { skipAuth: true });
   },
+};
+
+// Assistant API
+export const assistantApi = {
+  chat: (message: string, history?: ChatHistoryMessage[]) =>
+    apiClient.post<AssistantChatResponse>('/assistant/chat', { message, history }, { skipAuth: true }),
+
+  search: (query: string, limit?: number) =>
+    apiClient.post<AssistantSearchResponse>('/assistant/search', { query, limit }, { skipAuth: true }),
 };
 
 export { API_BASE_URL };

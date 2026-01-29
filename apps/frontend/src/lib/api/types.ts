@@ -225,3 +225,36 @@ export interface LegalMetadataDto {
   formsCount: number;
   faqCount: number;
 }
+
+// Assistant Types
+export interface ChatHistoryMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface AssistantChatRequest {
+  message: string;
+  history?: ChatHistoryMessage[];
+}
+
+export interface AssistantChatResponse {
+  answer: string;
+  sources?: string[];
+}
+
+export interface AssistantSearchRequest {
+  query: string;
+  limit?: number;
+}
+
+export interface AssistantSearchResult {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+  score: number;
+}
+
+export interface AssistantSearchResponse {
+  results: AssistantSearchResult[];
+}

@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import OpenAI from 'openai';
 import { KnowledgeEmbedding } from './entities';
-import { KNOWLEDGE_BASE, KnowledgeItem } from './data/knowledge-base';
+import { KNOWLEDGE_BASE } from './data/knowledge-base';
 
 export interface SearchResult {
   knowledgeId: string;
@@ -105,7 +105,8 @@ export class EmbeddingsService implements OnModuleInit {
         const contentRu = `${item.question.ru}\n\n${item.answer.ru}`;
         const contentEn = `${item.question.en}\n\n${item.answer.en}`;
 
-        const needsUpdate = !existing ||
+        const needsUpdate =
+          !existing ||
           existing.questionRu !== item.question.ru ||
           existing.answerRu !== item.answer.ru;
 
@@ -172,11 +173,9 @@ export class EmbeddingsService implements OnModuleInit {
     }
 
     try {
-      // Generate query embedding
-      const queryEmbedding = await this.generateEmbedding(query);
-
       // For now, use text-based search since pgvector requires specific column type
       // In production, this would use cosine similarity with the vector column
+      // const queryEmbedding = await this.generateEmbedding(query);
       return this.fallbackTextSearch(query, lang, limit);
     } catch (error) {
       this.logger.error(`Vector search failed, using fallback: ${error}`);
@@ -203,9 +202,10 @@ export class EmbeddingsService implements OnModuleInit {
 
     const results = embeddings
       .map((embedding) => {
-        const searchText = lang === 'ru'
-          ? `${embedding.questionRu} ${embedding.answerRu} ${(embedding.tags || []).join(' ')}`
-          : `${embedding.questionEn} ${embedding.answerEn} ${(embedding.tags || []).join(' ')}`;
+        const searchText =
+          lang === 'ru'
+            ? `${embedding.questionRu} ${embedding.answerRu} ${(embedding.tags || []).join(' ')}`
+            : `${embedding.questionEn} ${embedding.answerEn} ${(embedding.tags || []).join(' ')}`;
 
         const searchTextLower = searchText.toLowerCase();
         const matchCount = keywords.filter((k) => searchTextLower.includes(k)).length;

@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Loader2, Send, ArrowLeft, CheckCircle, AlertCircle, XCircle, Clock, Star, GraduationCap, Trophy, Shield, Calculator, Hash, AlertTriangle, Scale, Phone, MessageCircle, X, User, Building, Search, ChevronDown, FileText, MapPin, Briefcase, Heart, Flag, Home, CreditCard } from 'lucide-react';
+import { Loader2, Send, ArrowLeft, CheckCircle, AlertCircle, XCircle, Clock, Star, Trophy, Shield, Calculator, Hash, AlertTriangle, Scale, Phone, MessageCircle, X, User, Building, Search, ChevronDown, FileText, MapPin, Briefcase, Heart, Flag, Home, CreditCard, Bot, BookOpen } from 'lucide-react';
 import { useTrainerStore, getDifficultyStars, type Scenario, type Message } from '@/lib/stores/trainerStore';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useToast } from '@/hooks/useToast';
 import { KNOWLEDGE_BASE, KNOWLEDGE_COUNT, type KnowledgeItem } from '@/data';
+import { AIChatPanel } from '@/components/assistant/AIChatPanel';
 
 // Quick Actions for ScenarioSelectionScreen
 const quickActions = [
@@ -390,106 +391,6 @@ function KnowledgeBaseSection() {
   );
 }
 
-// Scenario Selection Screen
-function ScenarioSelectionScreen() {
-  const { scenarios, isLoading, error, fetchScenarios, startScenario } = useTrainerStore();
-  const { t } = useTranslation();
-  const toast = useToast();
-
-  useEffect(() => {
-    if (scenarios.length === 0) {
-      fetchScenarios();
-    }
-  }, [scenarios.length, fetchScenarios]);
-
-  const handleStartScenario = async (scenarioId: string) => {
-    await startScenario(scenarioId);
-  };
-
-  if (isLoading && scenarios.length === 0) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-2" />
-          <p className="text-gray-500">Загрузка сценариев...</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="h-full flex flex-col">
-      {/* Header */}
-      <div className="px-4 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-            <GraduationCap className="w-6 h-6" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold">AI Тренажёр</h1>
-            <p className="text-sm text-white/80">Практикуйте реальные ситуации</p>
-          </div>
-        </div>
-        <p className="text-sm text-white/90 leading-relaxed">
-          Выберите сценарий для тренировки. AI будет играть роль собеседника и давать обратную связь.
-        </p>
-      </div>
-
-      {/* Legal Disclaimer */}
-      <LegalDisclaimer />
-
-      {/* Knowledge Base */}
-      <KnowledgeBaseSection />
-
-      {/* Error */}
-      {error && (
-        <div className="mx-4 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-600">{error}</p>
-        </div>
-      )}
-
-      {/* Quick Actions */}
-      <div className="px-4 pt-4">
-        <h4 className="text-sm font-semibold text-gray-500 mb-3">
-          Быстрые действия
-        </h4>
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {quickActions.map((action) => {
-            const ActionIcon = action.icon;
-            return (
-              <button
-                key={action.id}
-                onClick={() => {
-                  // Navigate to Services tab or show modal
-                  toast.info(`${action.label} - ${t('common.goToServicesTab')}`);
-                }}
-                className="flex-shrink-0 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-blue-100 active:scale-95 transition-all"
-              >
-                <ActionIcon className="w-4 h-4" />
-                {action.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Scenarios Grid */}
-      <div className="flex-1 overflow-y-auto p-4">
-        <div className="grid grid-cols-1 gap-3">
-          {scenarios.map((scenario) => (
-            <ScenarioCard
-              key={scenario.id}
-              scenario={scenario}
-              onStart={() => handleStartScenario(scenario.id)}
-              isLoading={isLoading}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // Scenario Card Component
 function ScenarioCard({
   scenario,
@@ -793,13 +694,160 @@ function MessageBubble({
   );
 }
 
+// Tab Switcher Component
+function TabSwitcher({
+  activeTab,
+  onTabChange
+}: {
+  activeTab: 'chat' | 'knowledge';
+  onTabChange: (tab: 'chat' | 'knowledge') => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex bg-gray-100 p-1 rounded-xl mx-4 mt-4">
+      <button
+        onClick={() => onTabChange('chat')}
+        className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+          activeTab === 'chat'
+            ? 'bg-white text-blue-600 shadow-sm'
+            : 'text-gray-600 hover:text-gray-900'
+        }`}
+      >
+        <Bot className="w-4 h-4" />
+        {t('assistant.chat.tabTitle')}
+      </button>
+      <button
+        onClick={() => onTabChange('knowledge')}
+        className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+          activeTab === 'knowledge'
+            ? 'bg-white text-blue-600 shadow-sm'
+            : 'text-gray-600 hover:text-gray-900'
+        }`}
+      >
+        <BookOpen className="w-4 h-4" />
+        {t('assistant.chat.knowledgeTab')}
+      </button>
+    </div>
+  );
+}
+
 // Main AssistantScreen Component
 export function AssistantScreen() {
   const { currentSession } = useTrainerStore();
+  const [activeTab, setActiveTab] = useState<'chat' | 'knowledge'>('chat');
+  const { t } = useTranslation();
 
+  // If trainer session is active, show trainer chat
   if (currentSession) {
     return <ChatScreen />;
   }
 
-  return <ScenarioSelectionScreen />;
+  return (
+    <div className="h-full flex flex-col bg-gray-50">
+      {/* Header */}
+      <div className="px-4 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+            <Bot className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold">{t('assistant.title')}</h1>
+            <p className="text-sm text-white/80">{t('assistant.subtitle')}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab Switcher */}
+      <TabSwitcher activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* Tab Content */}
+      <div className="flex-1 min-h-0 overflow-hidden">
+        {activeTab === 'chat' ? (
+          <AIChatPanel />
+        ) : (
+          <div className="h-full overflow-y-auto">
+            <LegalDisclaimer />
+            <KnowledgeBaseSection />
+            <ScenarioSelectionContent />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Extracted content from ScenarioSelectionScreen for reuse
+function ScenarioSelectionContent() {
+  const { scenarios, isLoading, error, fetchScenarios, startScenario } = useTrainerStore();
+  const { t } = useTranslation();
+  const toast = useToast();
+
+  useEffect(() => {
+    if (scenarios.length === 0) {
+      fetchScenarios();
+    }
+  }, [scenarios.length, fetchScenarios]);
+
+  const handleStartScenario = async (scenarioId: string) => {
+    await startScenario(scenarioId);
+  };
+
+  return (
+    <>
+      {/* Error */}
+      {error && (
+        <div className="mx-4 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
+
+      {/* Quick Actions */}
+      <div className="px-4 pt-4">
+        <h4 className="text-sm font-semibold text-gray-500 mb-3">
+          {t('assistant.chat.quickActions')}
+        </h4>
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {quickActions.map((action) => {
+            const ActionIcon = action.icon;
+            return (
+              <button
+                key={action.id}
+                onClick={() => {
+                  toast.info(`${action.label} - ${t('common.goToServicesTab')}`);
+                }}
+                className="flex-shrink-0 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-blue-100 active:scale-95 transition-all"
+              >
+                <ActionIcon className="w-4 h-4" />
+                {action.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Trainer Scenarios */}
+      <div className="px-4 pt-4 pb-20">
+        <h4 className="text-sm font-semibold text-gray-500 mb-3">
+          {t('assistant.chat.trainerScenarios')}
+        </h4>
+        {isLoading && scenarios.length === 0 ? (
+          <div className="text-center py-4">
+            <Loader2 className="w-6 h-6 animate-spin text-blue-600 mx-auto" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3">
+            {scenarios.map((scenario) => (
+              <ScenarioCard
+                key={scenario.id}
+                scenario={scenario}
+                onStart={() => handleStartScenario(scenario.id)}
+                isLoading={isLoading}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  );
 }
