@@ -739,6 +739,10 @@
         "title": "Проверка запретов",
         "subtitle": "Базы МВД/ФССП"
       },
+      "permitStatus": {
+        "title": "Статус РВП/ВНЖ",
+        "subtitle": "Проверить заявление"
+      },
       "payment": {
         "title": "Оплата патента",
         "subtitle": "Быстрая оплата"
@@ -935,6 +939,53 @@
       "title": "Страховка",
       "subtitle": "ДМС и ОМС",
       "description": "Оформите медицинскую страховку"
+    }
+  },
+  "permitStatus": {
+    "title": "Статус РВП/ВНЖ",
+    "subtitle": "Проверка статуса заявления",
+    "permitType": "Тип разрешения",
+    "rvp": "РВП",
+    "rvpFull": "Временное проживание",
+    "vnj": "ВНЖ",
+    "vnjFull": "Вид на жительство",
+    "region": "Регион подачи",
+    "selectRegion": "Выберите регион",
+    "applicationDate": "Дата подачи заявления",
+    "applicationNumber": "Номер заявления",
+    "applicationNumberPlaceholder": "Например: 123456789",
+    "personalData": "Персональные данные",
+    "lastName": "Фамилия",
+    "lastNamePlaceholder": "Латиницей (как в паспорте)",
+    "firstName": "Имя",
+    "firstNamePlaceholder": "Латиницей (как в паспорте)",
+    "middleName": "Отчество",
+    "middleNamePlaceholder": "При наличии",
+    "birthDate": "Дата рождения",
+    "checkStatus": "Проверить статус",
+    "checking": "Проверка...",
+    "checkAnother": "Проверить другое заявление",
+    "estimatedDate": "Ожидаемая дата готовности",
+    "checkDetails": "Детали проверки",
+    "applicant": "Заявитель",
+    "checkedAt": "Проверено",
+    "infoHint": "Данные проверяются в базе МВД России. Результат отражает актуальный статус вашего заявления.",
+    "statuses": {
+      "PENDING": "На рассмотрении",
+      "APPROVED": "Одобрено",
+      "REJECTED": "Отказано",
+      "READY_FOR_PICKUP": "Готово к получению",
+      "ADDITIONAL_DOCS_REQUIRED": "Требуются документы",
+      "NOT_FOUND": "Заявление не найдено",
+      "UNKNOWN": "Статус неизвестен"
+    },
+    "errors": {
+      "regionRequired": "Выберите регион",
+      "applicationDateRequired": "Укажите дату подачи заявления",
+      "lastNameRequired": "Укажите фамилию",
+      "firstNameRequired": "Укажите имя",
+      "birthDateRequired": "Укажите дату рождения",
+      "checkFailed": "Не удалось проверить статус. Попробуйте позже."
     }
   },
   "payment": {

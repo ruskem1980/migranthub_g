@@ -739,6 +739,10 @@
         "title": "Ban check",
         "subtitle": "MVD/FSSP databases"
       },
+      "permitStatus": {
+        "title": "RVP/VNJ Status",
+        "subtitle": "Check application"
+      },
       "payment": {
         "title": "Patent payment",
         "subtitle": "Quick payment"
@@ -908,6 +912,53 @@
       "title": "Insurance",
       "subtitle": "VHI and OMS",
       "description": "Get medical insurance"
+    }
+  },
+  "permitStatus": {
+    "title": "RVP/VNJ Status",
+    "subtitle": "Check application status",
+    "permitType": "Permit type",
+    "rvp": "RVP",
+    "rvpFull": "Temporary residence",
+    "vnj": "VNJ",
+    "vnjFull": "Residence permit",
+    "region": "Application region",
+    "selectRegion": "Select region",
+    "applicationDate": "Application date",
+    "applicationNumber": "Application number",
+    "applicationNumberPlaceholder": "e.g.: 123456789",
+    "personalData": "Personal data",
+    "lastName": "Last name",
+    "lastNamePlaceholder": "In Latin (as in passport)",
+    "firstName": "First name",
+    "firstNamePlaceholder": "In Latin (as in passport)",
+    "middleName": "Middle name",
+    "middleNamePlaceholder": "If applicable",
+    "birthDate": "Date of birth",
+    "checkStatus": "Check status",
+    "checking": "Checking...",
+    "checkAnother": "Check another application",
+    "estimatedDate": "Estimated completion date",
+    "checkDetails": "Check details",
+    "applicant": "Applicant",
+    "checkedAt": "Checked at",
+    "infoHint": "Data is checked against the MVD Russia database. The result reflects the current status of your application.",
+    "statuses": {
+      "PENDING": "Under review",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "READY_FOR_PICKUP": "Ready for pickup",
+      "ADDITIONAL_DOCS_REQUIRED": "Additional documents required",
+      "NOT_FOUND": "Application not found",
+      "UNKNOWN": "Status unknown"
+    },
+    "errors": {
+      "regionRequired": "Select a region",
+      "applicationDateRequired": "Enter the application date",
+      "lastNameRequired": "Enter your last name",
+      "firstNameRequired": "Enter your first name",
+      "birthDateRequired": "Enter your date of birth",
+      "checkFailed": "Could not check status. Please try again later."
     }
   },
   "payment": {
