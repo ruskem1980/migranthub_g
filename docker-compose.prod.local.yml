@@ -1,3 +1,9 @@
+# ===========================================
+# Production Local (HTTP only, no SSL)
+# ===========================================
+# Use for local testing: docker-compose -f docker-compose.prod.local.yml up -d
+# Extends docker-compose.prod.yml with HTTP-only nginx config
+
 services:
   # ===========================================
   # PostgreSQL Database
@@ -19,14 +25,6 @@ services:
       retries: 5
     networks:
       - internal
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
 
   # ===========================================
   # Redis Cache
@@ -45,14 +43,6 @@ services:
       retries: 5
     networks:
       - internal
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
 
   # ===========================================
   # API Core Service (Production)
@@ -64,33 +54,27 @@ services:
       target: runner
     container_name: migranthub-api-core
     restart: always
+    ports:
+      - "3001:3000"  # Expose API directly for debugging
     environment:
       NODE_ENV: production
       PORT: 3000
-
-      # Database
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_DATABASE}
-
-      # Redis
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
-
-      # App
       LOG_LEVEL: ${LOG_LEVEL:-info}
-      CORS_ORIGINS: ${CORS_ORIGINS}
-
-      # JWT
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost}
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN:-24h}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-30d}
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/v1/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3000/api/v1/health"]
       interval: 30s
       timeout: 10s
       start_period: 30s
@@ -102,14 +86,6 @@ services:
         condition: service_healthy
     networks:
       - internal
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
 
   # ===========================================
   # Frontend Service (Production)
@@ -121,7 +97,7 @@ services:
       target: runner
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
-        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://localhost}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost}
     container_name: migranthub-frontend
     restart: always
     environment:
@@ -138,17 +114,9 @@ services:
         condition: service_healthy
     networks:
       - internal
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
 
   # ===========================================
-  # Nginx Reverse Proxy
+  # Nginx Reverse Proxy (HTTP only)
   # ===========================================
   nginx:
     image: nginx:1.25-alpine
@@ -156,13 +124,10 @@ services:
     restart: always
     ports:
       - "${NGINX_HTTP_PORT:-80}:80"
-      - "${NGINX_HTTPS_PORT:-443}:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-      - certbot_webroot:/var/www/certbot:ro
+      - ./nginx/nginx.http-only.conf:/etc/nginx/nginx.conf:ro
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1/health"]
       interval: 30s
       timeout: 10s
       start_period: 10s
@@ -175,14 +140,6 @@ services:
     networks:
       - internal
       - external
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
 
 # ===========================================
 # Volumes
@@ -192,17 +149,13 @@ volumes:
     driver: local
   redis_data:
     driver: local
-  certbot_webroot:
-    driver: local
 
 # ===========================================
 # Networks
 # ===========================================
 networks:
-  # Internal network for backend services
   internal:
     driver: bridge
     internal: true
-  # External network for nginx (public access)
   external:
     driver: bridge
