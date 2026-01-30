@@ -178,6 +178,9 @@ export class InnCheckService implements OnModuleInit {
       // Ждем загрузки страницы
       await page.waitForLoadState('networkidle', { timeout: this.timeout });
 
+      // Обрабатываем страницу согласия на обработку ПДн (если есть)
+      await this.handleConsentPage(page);
+
       // Выбираем тип "Иностранный гражданин"
       await this.selectForeignCitizen(page);
 
@@ -197,6 +200,56 @@ export class InnCheckService implements OnModuleInit {
       if (page && context) {
         await this.browserService.closePage(page, context);
       }
+    }
+  }
+
+  /**
+   * Обработка страницы согласия на обработку персональных данных
+   * ФНС требует подтверждения согласия перед доступом к форме ИНН
+   */
+  private async handleConsentPage(page: Page): Promise<void> {
+    const currentUrl = page.url();
+
+    // Проверяем, находимся ли мы на странице согласия
+    if (!currentUrl.includes('personal-data')) {
+      this.logger.debug('Not on consent page, skipping consent handling');
+      return;
+    }
+
+    this.logger.debug('Consent page detected, accepting...');
+
+    try {
+      // Ищем и кликаем чекбокс согласия
+      const checkbox = await page.$('input[type="checkbox"]');
+      if (checkbox) {
+        const isChecked = await checkbox.isChecked();
+        if (!isChecked) {
+          await checkbox.click();
+          this.logger.debug('Consent checkbox clicked');
+        }
+      }
+
+      // Ждем немного после клика на чекбокс
+      await page.waitForTimeout(300);
+
+      // Ищем и кликаем кнопку "Продолжить"
+      const continueButton = await page.$('button:has-text("Продолжить")');
+      if (continueButton) {
+        await continueButton.click();
+        this.logger.debug('Continue button clicked');
+
+        // Ждем навигации на основную форму
+        await page.waitForURL(/inn\.do/, { timeout: this.timeout });
+        await page.waitForLoadState('networkidle', { timeout: this.timeout });
+
+        this.logger.debug('Successfully navigated to INN form after consent');
+      } else {
+        this.logger.warn('Continue button not found on consent page');
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to handle consent page: ${errorMessage}`);
+      throw new Error(`Consent page handling failed: ${errorMessage}`);
     }
   }
 

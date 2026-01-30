@@ -328,7 +328,7 @@ describe('PatentCheckService with enabled service', () => {
     expect(browserService.getInteractivePage).toHaveBeenCalled();
     expect(result.status).toBe(PatentStatus.VALID);
     expect(result.isValid).toBe(true);
-    expect(result.source).toBe('real');
+    expect(result.source).toBe('fms');
   });
 
   it('should cache successful results', async () => {
