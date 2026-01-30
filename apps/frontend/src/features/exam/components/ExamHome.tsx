@@ -9,6 +9,8 @@ import {
   Flame,
   Target,
   ArrowLeft,
+  Star,
+  Sparkles,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/lib/i18n';
@@ -69,6 +71,8 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const progress = useExamStore((state) => state.progress);
+  const getLevel = useExamStore((state) => state.getLevel);
+  const level = getLevel();
 
   const stats = useMemo(() => {
     const totalAnswered = progress.totalAnswered;
@@ -82,6 +86,7 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
       percentage,
       streak: progress.streak,
       achievements: progress.achievements.length,
+      totalXP: progress.totalXP,
     };
   }, [progress]);
 
@@ -121,6 +126,38 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
 
       {/* Content */}
       <div className="flex-1 min-h-0 overflow-y-auto p-4 pb-24">
+        {/* Level Progress Card */}
+        <div className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl p-4 text-white mb-4 shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                <Star className="w-5 h-5 text-yellow-300" />
+              </div>
+              <span className="font-bold text-lg">{level.name}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Sparkles className="w-4 h-4 text-yellow-300" />
+              <span className="font-semibold">{stats.totalXP} XP</span>
+            </div>
+          </div>
+          <div className="h-2.5 bg-white/20 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-yellow-300 to-yellow-400 rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(level.progress, 100)}%` }}
+            />
+          </div>
+          {level.maxXP !== Infinity && (
+            <p className="text-xs text-purple-200 mt-2">
+              {t('exam.level.toNextLevel', { xp: level.maxXP - stats.totalXP })}
+            </p>
+          )}
+          {level.maxXP === Infinity && (
+            <p className="text-xs text-purple-200 mt-2">
+              {t('exam.level.maxLevel')}
+            </p>
+          )}
+        </div>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-white rounded-xl p-3 border border-gray-200 text-center">

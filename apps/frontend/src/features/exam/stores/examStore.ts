@@ -12,7 +12,9 @@ import type {
   Answer,
   CategoryResult,
   QuestionCategory,
+  CurrentLevel,
 } from '../types';
+import { LEVELS, XP_REWARDS } from '../types';
 
 const initialProgress: ExamProgress = {
   totalAnswered: 0,
@@ -25,6 +27,7 @@ const initialProgress: ExamProgress = {
     law: { answered: 0, correct: 0 },
   },
   achievements: [],
+  totalXP: 0,
 };
 
 const initialState = {
@@ -272,6 +275,32 @@ export const useExamStore = create<ExamState>()(
           }
         });
 
+        // Расчёт XP за правильные ответы
+        let earnedXP = 0;
+        if (currentSession) {
+          currentSession.answers.forEach((answer) => {
+            if (answer.isCorrect) {
+              const question = currentSession.questions.find((q) => q.id === answer.questionId);
+              if (question) {
+                earnedXP += XP_REWARDS[question.difficulty] || 10;
+              }
+            }
+          });
+        }
+
+        // Бонус за streak
+        if (newStreak >= 3) {
+          earnedXP = Math.floor(earnedXP * 1.1); // +10% за streak 3+
+        }
+        if (newStreak >= 7) {
+          earnedXP = Math.floor(earnedXP * 1.1); // ещё +10% за streak 7+
+        }
+
+        // Бонус за идеальный результат
+        if (result.percentage === 100) {
+          earnedXP += 50; // Бонус за 100%
+        }
+
         // Проверка достижений
         const newAchievements = [...progress.achievements];
 
@@ -304,6 +333,7 @@ export const useExamStore = create<ExamState>()(
             lastActivityDate: today,
             byCategory: updatedByCategory,
             achievements: newAchievements,
+            totalXP: progress.totalXP + earnedXP,
           },
           currentSession: null,
         });
@@ -315,6 +345,26 @@ export const useExamStore = create<ExamState>()(
 
       clearError: () => {
         set({ error: null });
+      },
+
+      // XP & Level methods
+      addXP: (amount: number) => {
+        set((state) => ({
+          progress: {
+            ...state.progress,
+            totalXP: state.progress.totalXP + amount,
+          },
+        }));
+      },
+
+      getLevel: (): CurrentLevel => {
+        const xp = get().progress.totalXP;
+        const level = LEVELS.find((l) => xp >= l.minXP && xp < l.maxXP) || LEVELS[LEVELS.length - 1];
+        const progress =
+          level.maxXP === Infinity
+            ? 100
+            : ((xp - level.minXP) / (level.maxXP - level.minXP)) * 100;
+        return { ...level, progress };
       },
     }),
     {

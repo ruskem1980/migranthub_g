@@ -79,6 +79,33 @@ export interface CategoryProgress {
   correct: number;
 }
 
+// ============= Level System =============
+
+export interface LevelDefinition {
+  name: string;
+  minXP: number;
+  maxXP: number;
+}
+
+export interface CurrentLevel extends LevelDefinition {
+  progress: number; // 0-100%
+}
+
+export const LEVELS: LevelDefinition[] = [
+  { name: 'Новичок', minXP: 0, maxXP: 100 },
+  { name: 'Ученик', minXP: 100, maxXP: 300 },
+  { name: 'Знаток', minXP: 300, maxXP: 600 },
+  { name: 'Эксперт', minXP: 600, maxXP: 1000 },
+  { name: 'Мастер', minXP: 1000, maxXP: Infinity },
+];
+
+// XP rewards per correct answer by difficulty
+export const XP_REWARDS: Record<QuestionDifficulty, number> = {
+  [QuestionDifficulty.EASY]: 5,
+  [QuestionDifficulty.MEDIUM]: 10,
+  [QuestionDifficulty.HARD]: 20,
+};
+
 export interface ExamProgress {
   totalAnswered: number;
   correctAnswers: number;
@@ -86,6 +113,7 @@ export interface ExamProgress {
   lastActivityDate: string | null;
   byCategory: Record<QuestionCategory, CategoryProgress>;
   achievements: string[];
+  totalXP: number;
 }
 
 // ============= Result =============
@@ -158,6 +186,10 @@ export interface ExamState {
   updateProgress: (result: ExamResult) => void;
   reset: () => void;
   clearError: () => void;
+
+  // XP & Level Actions
+  addXP: (amount: number) => void;
+  getLevel: () => CurrentLevel;
 }
 
 // ============= Helper Types =============

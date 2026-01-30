@@ -77,6 +77,25 @@
     "outOf": "of",
     "comingSoon": "Coming soon"
   },
+  "date": {
+    "day": "Day",
+    "month": "Month",
+    "year": "Year",
+    "months": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    }
+  },
   "auth": {
     "title": "Sign in to MigrantHub",
     "welcome": "Welcome",
@@ -1455,6 +1474,11 @@
   },
   "wizard": {
     "title": "Legalization wizard",
+    "step": "Step",
+    "of": "of",
+    "next": "Next",
+    "back": "Back",
+    "finish": "Finish",
     "steps": {
       "intro": "Situation analysis",
       "requiredDocs": "Required documents",
@@ -1996,6 +2020,10 @@
       "tip": "Preparation Tip",
       "tipText": "Start with Learning mode to study the material with hints. Then reinforce your knowledge in Practice."
     },
+    "level": {
+      "toNextLevel": "To next level: {xp} XP",
+      "maxLevel": "Maximum level reached!"
+    },
     "progress": {
       "answered": "Answered",
       "correct": "Correct",
@@ -2246,6 +2274,14 @@
     "status": {
       "connected": "Notifications are active",
       "pending": "Connecting to notification service..."
+    }
+  },
+  "passport": {
+    "steps": {
+      "personal": "Personal Info",
+      "passport": "Passport Details",
+      "dates": "Dates & Issue",
+      "additional": "Additional"
     }
   }
 }

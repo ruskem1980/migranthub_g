@@ -107,6 +107,7 @@ function getInitialProgress(): ExamProgress {
         [QuestionCategory.LAW]: { answered: 0, correct: 0 },
       },
       achievements: [],
+      totalXP: 0,
     };
   }
 }
