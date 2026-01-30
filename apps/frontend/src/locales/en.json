@@ -630,10 +630,10 @@
       "family": "Marriage / Birth certificate"
     },
     "groups": {
-      "foundation": "Foundation",
-      "entry": "Entry and stay",
-      "work": "Work",
-      "support": "Support"
+      "foundation": "FOUNDATION",
+      "entry": "ENTRY & STAY",
+      "work": "WORK",
+      "support": "SUPPORT"
     },
     "statusText": {
       "active": "Active",
