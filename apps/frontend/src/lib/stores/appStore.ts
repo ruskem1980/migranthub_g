@@ -24,6 +24,14 @@ interface Notification {
   createdAt: string;
 }
 
+// Anonymous usage statistics for Lazy Auth
+export interface AnonymousUsageStats {
+  calculatorUses: number;
+  examQuestions: number;
+  aiQuestions: number;
+  lastResetDate: string; // ISO date string for daily limit reset
+}
+
 interface AppState {
   // UI State
   theme: Theme;
@@ -54,6 +62,10 @@ interface AppState {
   fcmToken: string | null;
   pushPreferences: PushNotificationPreferences;
 
+  // Lazy Auth: Welcome & Anonymous Usage
+  hasSeenWelcome: boolean;
+  anonymousUsageStats: AnonymousUsageStats;
+
   // Actions
   setTheme: (theme: Theme) => void;
   setOnline: (isOnline: boolean) => void;
@@ -80,8 +92,20 @@ interface AppState {
   setPushPreferences: (preferences: PushNotificationPreferences) => void;
   updatePushPreference: (key: keyof PushNotificationPreferences, value: boolean) => void;
 
+  // Lazy Auth actions
+  setHasSeenWelcome: (seen: boolean) => void;
+  incrementAnonymousUsage: (type: keyof Omit<AnonymousUsageStats, 'lastResetDate'>) => void;
+  resetDailyAnonymousStats: () => void;
+
   reset: () => void;
 }
+
+const getInitialAnonymousStats = (): AnonymousUsageStats => ({
+  calculatorUses: 0,
+  examQuestions: 0,
+  aiQuestions: 0,
+  lastResetDate: new Date().toISOString().split('T')[0],
+});
 
 const initialState = {
   theme: 'system' as Theme,
@@ -103,6 +127,8 @@ const initialState = {
     patent_payment: true,
     news: true,
   } as PushNotificationPreferences,
+  hasSeenWelcome: false,
+  anonymousUsageStats: getInitialAnonymousStats(),
 };
 
 export const useAppStore = create<AppState>()(
@@ -182,6 +208,44 @@ export const useAppStore = create<AppState>()(
           },
         })),
 
+      // Lazy Auth methods
+      setHasSeenWelcome: (hasSeenWelcome) => set({ hasSeenWelcome }),
+
+      incrementAnonymousUsage: (type) =>
+        set((state) => {
+          const today = new Date().toISOString().split('T')[0];
+          const stats = state.anonymousUsageStats;
+
+          // Reset if day changed
+          if (stats.lastResetDate !== today) {
+            return {
+              anonymousUsageStats: {
+                calculatorUses: type === 'calculatorUses' ? 1 : 0,
+                examQuestions: type === 'examQuestions' ? 1 : 0,
+                aiQuestions: type === 'aiQuestions' ? 1 : 0,
+                lastResetDate: today,
+              },
+            };
+          }
+
+          return {
+            anonymousUsageStats: {
+              ...stats,
+              [type]: stats[type] + 1,
+            },
+          };
+        }),
+
+      resetDailyAnonymousStats: () =>
+        set((state) => ({
+          anonymousUsageStats: {
+            ...state.anonymousUsageStats,
+            examQuestions: 0,
+            aiQuestions: 0,
+            lastResetDate: new Date().toISOString().split('T')[0],
+          },
+        })),
+
       reset: () =>
         set(initialState),
     }),
@@ -201,6 +265,8 @@ export const useAppStore = create<AppState>()(
         pushNotificationsEnabled: state.pushNotificationsEnabled,
         fcmToken: state.fcmToken,
         pushPreferences: state.pushPreferences,
+        hasSeenWelcome: state.hasSeenWelcome,
+        anonymousUsageStats: state.anonymousUsageStats,
       }),
     }
   )
