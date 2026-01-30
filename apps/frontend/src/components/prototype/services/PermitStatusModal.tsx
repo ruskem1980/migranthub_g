@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, ClipboardCheck, Loader2, Clock, CheckCircle2, XCircle, AlertCircle, FileWarning, HelpCircle, Calendar } from 'lucide-react';
 import { useLanguageStore } from '@/lib/stores/languageStore';
+import { useTranslation } from '@/lib/i18n';
 
 interface PermitStatusModalProps {
   onClose: () => void;
@@ -57,6 +58,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
   const { language } = useLanguageStore();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<FormData>({
     permitType: 'RVP',
     region: '77',
@@ -78,7 +80,7 @@ export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
 
   const handleSubmit = async () => {
     if (!formData.region || !formData.applicationDate || !formData.lastName || !formData.firstName || !formData.birthDate) {
-      setError(language === 'ru' ? 'Заполните все обязательные поля' : 'Fill all required fields');
+      setError(t('common.fillRequiredFields'));
       return;
     }
     setIsLoading(true);
@@ -102,7 +104,7 @@ export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
       if (!response.ok) throw new Error('Failed');
       setResult(await response.json());
     } catch {
-      setError(language === 'ru' ? 'Ошибка проверки' : 'Check failed');
+      setError(t('common.checkFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -120,8 +122,8 @@ export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
               <ClipboardCheck className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">{language === 'ru' ? 'Статус РВП/ВНЖ' : 'Permit Status'}</h2>
-              <p className="text-xs text-blue-100">{language === 'ru' ? 'Проверка заявления' : 'Check application'}</p>
+              <h2 className="text-xl font-bold text-white">{t('services.permitStatus.title')}</h2>
+              <p className="text-xs text-blue-100">{t('services.permitStatus.subtitle')}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full">
@@ -136,7 +138,7 @@ export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
                   <StatusIcon className={'w-8 h-8 ' + statusConfig.color} />
                   <div>
                     <h3 className={'text-lg font-bold ' + statusConfig.color}>
-                      {language === 'ru' ? statusConfig.label.ru : statusConfig.label.en}
+                      {t(`services.permitStatus.status.${result.status}`)}
                     </h3>
                     <p className="text-sm text-gray-700">{result.message}</p>
                   </div>
@@ -146,8 +148,8 @@ export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
                 <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl flex items-center gap-3">
                   <Calendar className="w-5 h-5 text-blue-600" />
                   <div>
-                    <p className="text-sm font-semibold text-blue-900">{language === 'ru' ? 'Ориентировочно' : 'Estimated'}</p>
-                    <p className="text-sm text-blue-700">{new Date(result.estimatedDate).toLocaleDateString('ru-RU')}</p>
+                    <p className="text-sm font-semibold text-blue-900">{t('services.permitStatus.estimated')}</p>
+                    <p className="text-sm text-blue-700">{new Date(result.estimatedDate).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US')}</p>
                   </div>
                 </div>
               )}
@@ -157,12 +159,10 @@ export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
                   <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-semibold text-orange-900">
-                      {language === 'ru' ? 'Сервис недоступен' : 'Service Unavailable'}
+                      {t('services.permitStatus.serviceUnavailable')}
                     </p>
                     <p className="text-sm text-orange-800">
-                      {language === 'ru'
-                        ? 'Автоматическая проверка временно недоступна. Проверьте статус на официальном сайте ФМС: services.fms.gov.ru'
-                        : 'Automatic verification is temporarily unavailable. Check status on the official FMS website: services.fms.gov.ru'}
+                      {t('services.permitStatus.serviceUnavailableDesc')}
                     </p>
                   </div>
                 </div>

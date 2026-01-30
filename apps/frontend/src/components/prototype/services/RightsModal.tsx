@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, Scale, Shield, Briefcase, Home, Heart, AlertTriangle, Phone, ChevronRight, CheckCircle, XCircle, ExternalLink, Users } from 'lucide-react';
 import { useLanguageStore } from '@/lib/stores/languageStore';
+import { useTranslation } from '@/lib/i18n';
 import { LucideIcon } from 'lucide-react';
 
 interface RightsModalProps {
@@ -234,6 +235,7 @@ const colorClasses: Record<string, { bg: string; icon: string; border: string }>
 
 export function RightsModal({ onClose }: RightsModalProps) {
   const { language } = useLanguageStore();
+  const { t } = useTranslation();
   const [expandedSection, setExpandedSection] = useState<string | null>('work');
 
   return (
@@ -247,10 +249,10 @@ export function RightsModal({ onClose }: RightsModalProps) {
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">
-                {language === 'ru' ? 'Ваши права' : 'Your Rights'}
+                {t('services.rights.title')}
               </h2>
               <p className="text-xs text-rose-100">
-                {language === 'ru' ? 'Правовая защита мигрантов' : 'Legal protection for migrants'}
+                {t('services.rights.subtitle')}
               </p>
             </div>
           </div>
@@ -269,9 +271,7 @@ export function RightsModal({ onClose }: RightsModalProps) {
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
               <p className="text-sm text-amber-800">
-                {language === 'ru'
-                  ? 'Это справочная информация. В сложных ситуациях обращайтесь к юристу.'
-                  : 'This is reference information. In difficult situations, consult a lawyer.'}
+                {t('services.rights.warning')}
               </p>
             </div>
           </div>
@@ -332,7 +332,7 @@ export function RightsModal({ onClose }: RightsModalProps) {
                               <div className="flex items-center gap-1 mb-2">
                                 <CheckCircle className="w-4 h-4 text-green-600" />
                                 <span className="text-xs font-bold text-green-700">
-                                  {language === 'ru' ? 'ДЕЛАЙТЕ' : 'DO'}
+                                  {t('services.rights.do')}
                                 </span>
                               </div>
                               <ul className="space-y-1">
@@ -349,7 +349,7 @@ export function RightsModal({ onClose }: RightsModalProps) {
                               <div className="flex items-center gap-1 mb-2">
                                 <XCircle className="w-4 h-4 text-red-600" />
                                 <span className="text-xs font-bold text-red-700">
-                                  {language === 'ru' ? 'НЕ ДЕЛАЙТЕ' : 'DON\'T'}
+                                  {t('services.rights.dont')}
                                 </span>
                               </div>
                               <ul className="space-y-1">
@@ -373,7 +373,7 @@ export function RightsModal({ onClose }: RightsModalProps) {
           {/* Emergency Contacts */}
           <div className="px-4 pb-4">
             <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-              {language === 'ru' ? 'Экстренные номера' : 'Emergency Numbers'}
+              {t('services.rights.emergencyNumbers')}
             </h3>
             <div className="grid grid-cols-2 gap-2">
               {emergencyContacts.map((contact, index) => (
@@ -395,7 +395,7 @@ export function RightsModal({ onClose }: RightsModalProps) {
           {/* Help Organizations */}
           <div className="px-4 pb-4">
             <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-              {language === 'ru' ? 'Правозащитные организации' : 'Human Rights Organizations'}
+              {t('services.rights.humanRightsOrgs')}
             </h3>
             <div className="space-y-2">
               {helpOrganizations.map((org, index) => (
@@ -442,7 +442,7 @@ export function RightsModal({ onClose }: RightsModalProps) {
             onClick={onClose}
             className="w-full bg-rose-600 text-white font-bold py-4 rounded-xl hover:bg-rose-700 transition-colors"
           >
-            {language === 'ru' ? 'Закрыть' : 'Close'}
+            {t('common.close')}
           </button>
         </div>
       </div>
