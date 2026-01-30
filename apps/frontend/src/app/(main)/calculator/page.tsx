@@ -508,7 +508,7 @@ export default function CalculatorPage() {
     }
   }, []);
 
-  const handleRegionChange = useCallback((region: RegionType, _regionName: string) => {
+  const handleRegionChange = useCallback((region: RegionType) => {
     setSelectedRegion(region);
     saveRegion(region);
   }, []);

@@ -15,13 +15,13 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'MigrantHub - Помощник мигранта',
-  description: 'Мобильный помощник для трудовых мигрантов в России',
+  title: 'Dost — Дўстинг Россияда',
+  description: 'Бесплатный помощник для мигрантов в России. Патент, регистрация, права.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'MigrantHub',
+    title: 'Dost',
   },
   formatDetection: {
     telephone: false,

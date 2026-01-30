@@ -5,7 +5,7 @@ import { useAuthStore } from '@/lib/stores/authStore';
 import { useLanguageStore, type Language } from '@/lib/stores/languageStore';
 
 interface CheckCardProps {
-  id: string;
+  id?: string; // Optional, for future use
   icon: LucideIcon;
   title: string;
   description: string;
@@ -33,7 +33,7 @@ const labels: Record<string, Record<Language, string>> = {
 };
 
 export function CheckCard({
-  id,
+  // id is part of props interface but not used directly - kept for future use
   icon: Icon,
   title,
   description,

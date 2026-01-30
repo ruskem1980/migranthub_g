@@ -42,12 +42,12 @@
 |---|--------|--------|-----------|-------------|
 | 9 | Auth Flow Refactor | ✅ DONE | OK | PASS |
 | 10 | Paywall & Triggers | ✅ DONE | OK | PASS |
-| 11 | Migration & Cleanup | 🔄 IN_PROGRESS | - | - |
+| 11 | Migration & Cleanup | ✅ DONE | OK | PASS |
 
 ### Phase 4: Testing
 | # | Задача | Статус | Результат | Верификация |
 |---|--------|--------|-----------|-------------|
-| 12 | E2E Testing & QA | ⏳ PENDING | - | - |
+| 12 | E2E Testing & QA | 🔄 IN_PROGRESS | - | - |
 
 ### Final Audit
 | Этап | Статус | Результат |

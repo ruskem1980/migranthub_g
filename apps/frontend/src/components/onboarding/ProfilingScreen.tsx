@@ -12,7 +12,6 @@ import {
   getCountryByIso,
   type SupportedLanguage,
   RUSSIAN_CITIES,
-  getMillionaireCities,
 } from '@/data';
 
 interface ProfilingScreenProps {

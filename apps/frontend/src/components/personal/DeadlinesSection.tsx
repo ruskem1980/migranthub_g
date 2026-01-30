@@ -72,7 +72,7 @@ function DeadlineCard({ deadline, language }: { deadline: Deadline; language: st
 
 export function DeadlinesSection({ deadlines }: DeadlinesSectionProps) {
   const router = useRouter();
-  const { t, language } = useTranslation();
+  const { language } = useTranslation();
 
   // Sort by date and show 3 closest deadlines
   const upcomingDeadlines = [...deadlines]

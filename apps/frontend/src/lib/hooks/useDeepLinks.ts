@@ -83,7 +83,7 @@ export function useDeepLinks(options?: UseDeepLinksOptions) {
         }
 
         setState(prev => ({ ...prev, isReady: true }));
-      } catch (error) {
+      } catch {
         // Capacitor not available (running in browser)
         console.log('[DeepLinks] Running in browser mode, Capacitor not available');
         setState(prev => ({ ...prev, isReady: true }));

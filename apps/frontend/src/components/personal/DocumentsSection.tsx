@@ -1,6 +1,6 @@
 'use client';
 
-import { FileText, Plus, ChevronRight, type LucideIcon } from 'lucide-react';
+import { FileText, Plus, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Button } from '@/components/ui/Button';

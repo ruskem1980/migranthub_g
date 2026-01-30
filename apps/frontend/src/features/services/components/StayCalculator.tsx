@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useStayPeriods } from '../hooks/useStayPeriods';
 import { DeportationModeWarning } from './DeportationModeWarning';
-import { formatDate, formatDateShort } from '../calculator/stay-calculator';
+import { formatDateShort } from '../calculator/stay-calculator';
 import {
   RegionType,
   getPenaltyInfo,

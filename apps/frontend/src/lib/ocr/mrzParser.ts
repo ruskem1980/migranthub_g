@@ -60,7 +60,6 @@ function mrzDateToISO(mrzDate: string, isBirthDate: boolean = false): string {
 
   // For birth dates: 00-30 = 2000-2030, 31-99 = 1931-1999
   // For expiry dates: 00-50 = 2000-2050, 51-99 = 1951-1999
-  const currentYear = new Date().getFullYear() % 100;
   const threshold = isBirthDate ? 30 : 50;
 
   const yyyy = yy <= threshold ? 2000 + yy : 1900 + yy;
@@ -194,7 +193,7 @@ function fixOcrErrors(line: string): string {
     .replace(/0/g, 'O') // In names, 0 should be O
     .replace(/P[O0]/g, 'P<') // Document type fix
     .replace(/[|I!]/g, '1') // Vertical lines to 1
-    .replace(/[oO]/g, function(match, offset) {
+    .replace(/[oO]/g, function(match) {
       // In numeric positions (line 2), O should be 0
       // This is a simplified heuristic
       return match;

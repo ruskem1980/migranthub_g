@@ -34,3 +34,6 @@ coverage/
 # Misc
 *.tgz
 .npmrc
+
+# Local Netlify folder
+.netlify

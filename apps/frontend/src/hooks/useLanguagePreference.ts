@@ -27,10 +27,9 @@ function getCookie(name: string): string | null {
   return null;
 }
 
-/**
- * Validates if a string is a valid Language code
- */
-function isValidLanguage(value: string | null): value is Language {
+// isValidLanguage kept for potential future use
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function _isValidLanguage(value: string | null): value is Language {
   if (!value) return false;
   return LANGUAGES.some((lang) => lang.code === value);
 }

@@ -1,7 +1,7 @@
 {
-  "name": "MigrantHub - Помощник мигранта",
-  "short_name": "MigrantHub",
-  "description": "Мобильный помощник для трудовых мигрантов в России",
+  "name": "Dost — Дўстинг Россияда",
+  "short_name": "Dost",
+  "description": "Бесплатный помощник для мигрантов в России. Патент, регистрация, права.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

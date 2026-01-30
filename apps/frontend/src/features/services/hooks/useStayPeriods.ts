@@ -150,7 +150,8 @@ export function useStayPeriods() {
     entryDate: string
   ): Promise<void> => {
     try {
-      const userId = await getOrCreateDeviceId();
+      // Ensure device ID exists
+      await getOrCreateDeviceId();
 
       // Проверяем, есть ли уже период с этой миграционной картой
       const existing = await db.stayPeriods

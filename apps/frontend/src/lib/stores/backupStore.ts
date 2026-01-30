@@ -74,7 +74,7 @@ export const useBackupStore = create<BackupState>()(
 
           // Загружаем на сервер
           set({ progress: 70 });
-          const response = await backupApi.upload(formData);
+          await backupApi.upload(formData);
 
           // Генерируем код восстановления
           const recoveryCode = generateRecoveryCode();

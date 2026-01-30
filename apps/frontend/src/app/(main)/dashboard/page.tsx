@@ -3,7 +3,7 @@
 import { useAuthStore } from '@/lib/stores';
 import { AnonymousDashboard } from '@/components/anonymous';
 import { PersonalDashboard } from '@/components/personal';
-import { DashboardLayout } from '@/components/prototype/DashboardLayout';
+// DashboardLayout available for prototype mode if needed
 
 /**
  * Dashboard Page with Lazy Auth

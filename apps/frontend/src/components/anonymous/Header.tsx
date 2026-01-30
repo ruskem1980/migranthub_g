@@ -2,15 +2,11 @@
 
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
-interface HeaderProps {
-  onLanguageChange?: () => void;
-}
-
 /**
  * Header component for anonymous dashboard
  * Contains logo and language switcher
  */
-export function Header({ onLanguageChange }: HeaderProps) {
+export function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-gray-200">
       <div className="flex items-center justify-between px-4 h-14">

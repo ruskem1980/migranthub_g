@@ -187,7 +187,7 @@ export function openRouteInYandexMaps(poi: POI, userLocation?: [number, number])
 }
 
 export function openIn2GIS(poi: POI): void {
-  const [lat, lng] = poi.coordinates;
+  // coordinates available for potential future use with 2GIS coordinate-based URLs
   const url = `https://2gis.ru/search/${encodeURIComponent(poi.address)}`;
   window.open(url, '_blank');
 }

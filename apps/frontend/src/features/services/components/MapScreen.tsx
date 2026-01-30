@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MapPin, Navigation, Phone, Clock, Train, ChevronRight, X, Filter } from 'lucide-react';
+import { MapPin, Navigation, Phone, Clock, Train, X, Filter } from 'lucide-react';
 import {
   POI_DATA,
   POI_TYPE_LABELS,
@@ -20,7 +20,6 @@ interface MapScreenProps {
 
 export function MapScreen({ onClose, initialFilter }: MapScreenProps) {
   const [selectedType, setSelectedType] = useState<POIType | 'all'>(initialFilter || 'all');
-  const [selectedPOI, setSelectedPOI] = useState<POI | null>(null);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
 
   useEffect(() => {

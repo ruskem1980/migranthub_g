@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, FileCheck, Loader2, CheckCircle, XCircle, AlertCircle, Clock } from 'lucide-react';
 import { useLanguageStore } from '@/lib/stores/languageStore';
+import { useTranslation } from '@/lib/i18n';
 
 interface PatentCheckModalProps {
   onClose: () => void;
@@ -36,6 +37,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
   const { language } = useLanguageStore();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<PatentCheckResponse | null>(null);
@@ -86,9 +88,7 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
       setError(
         err instanceof Error
           ? err.message
-          : language === 'ru'
-            ? 'Произошла ошибка при проверке. Попробуйте позже.'
-            : 'An error occurred during the check. Please try again later.'
+          : t('services.patentCheck.errorOccurred')
       );
     } finally {
       setIsLoading(false);
@@ -112,8 +112,8 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
           borderClass: 'border-green-200',
           bgLight: 'bg-green-50',
           textClass: 'text-green-800',
-          title: language === 'ru' ? 'Патент действителен' : 'Patent is Valid',
-          subtitle: language === 'ru' ? 'Документ прошел проверку' : 'Document verified successfully',
+          title: t('services.patentCheck.status.valid'),
+          subtitle: t('services.patentCheck.status.validSubtitle'),
         };
       case 'expired':
         return {
@@ -124,8 +124,8 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
           borderClass: 'border-red-200',
           bgLight: 'bg-red-50',
           textClass: 'text-red-800',
-          title: language === 'ru' ? 'Патент просрочен' : 'Patent Expired',
-          subtitle: language === 'ru' ? 'Срок действия истек' : 'Validity period has ended',
+          title: t('services.patentCheck.status.expired'),
+          subtitle: t('services.patentCheck.status.expiredSubtitle'),
         };
       case 'invalid':
         return {
@@ -136,8 +136,8 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
           borderClass: 'border-red-200',
           bgLight: 'bg-red-50',
           textClass: 'text-red-800',
-          title: language === 'ru' ? 'Патент недействителен' : 'Patent Invalid',
-          subtitle: language === 'ru' ? 'Документ не прошел проверку' : 'Document verification failed',
+          title: t('services.patentCheck.status.invalid'),
+          subtitle: t('services.patentCheck.status.invalidSubtitle'),
         };
       case 'not_found':
         return {
@@ -148,8 +148,8 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
           borderClass: 'border-yellow-200',
           bgLight: 'bg-yellow-50',
           textClass: 'text-yellow-800',
-          title: language === 'ru' ? 'Патент не найден' : 'Patent Not Found',
-          subtitle: language === 'ru' ? 'Документ не найден в базе' : 'Document not found in database',
+          title: t('services.patentCheck.status.notFound'),
+          subtitle: t('services.patentCheck.status.notFoundSubtitle'),
         };
       default:
         return {
@@ -160,8 +160,8 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
           borderClass: 'border-gray-200',
           bgLight: 'bg-gray-50',
           textClass: 'text-gray-800',
-          title: language === 'ru' ? 'Ошибка проверки' : 'Check Error',
-          subtitle: language === 'ru' ? 'Не удалось выполнить проверку' : 'Could not complete verification',
+          title: t('services.patentCheck.status.error'),
+          subtitle: t('services.patentCheck.status.errorSubtitle'),
         };
     }
   };
@@ -171,7 +171,7 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            {language === 'ru' ? 'Серия патента' : 'Patent Series'} *
+            {t('services.patentCheck.patentSeries')} *
           </label>
           <input
             type="text"
@@ -188,13 +188,13 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
           />
           {formData.series && !isSeriesValid() && (
             <p className="text-xs text-red-500 mt-1">
-              {language === 'ru' ? 'Серия должна содержать 2 цифры' : 'Series must contain 2 digits'}
+              {t('services.patentCheck.seriesError')}
             </p>
           )}
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            {language === 'ru' ? 'Номер патента' : 'Patent Number'} *
+            {t('services.patentCheck.patentNumber')} *
           </label>
           <input
             type="text"
@@ -211,7 +211,7 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
           />
           {formData.number && !isNumberValid() && (
             <p className="text-xs text-red-500 mt-1">
-              {language === 'ru' ? 'Номер должен содержать 8-10 цифр' : 'Number must contain 8-10 digits'}
+              {t('services.patentCheck.numberError')}
             </p>
           )}
         </div>
@@ -219,30 +219,30 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
 
       <div className="pt-2">
         <p className="text-sm text-gray-500 mb-3">
-          {language === 'ru' ? 'Дополнительно (необязательно):' : 'Additional (optional):'}
+          {t('services.patentCheck.additional')}
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              {language === 'ru' ? 'Фамилия (латиницей)' : 'Last Name (Latin)'}
+              {t('form.lastNameLatin')}
             </label>
             <input
               type="text"
               value={formData.lastName}
               onChange={(e) => handleInputChange('lastName', e.target.value.toUpperCase())}
-              placeholder="IVANOV"
+              placeholder={t('placeholders.lastName')}
               className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              {language === 'ru' ? 'Имя (латиницей)' : 'First Name (Latin)'}
+              {t('form.firstNameLatin')}
             </label>
             <input
               type="text"
               value={formData.firstName}
               onChange={(e) => handleInputChange('firstName', e.target.value.toUpperCase())}
-              placeholder="IVAN"
+              placeholder={t('placeholders.firstName')}
               className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
           </div>
@@ -270,21 +270,19 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
         {isLoading ? (
           <>
             <Loader2 className="w-5 h-5 animate-spin" />
-            {language === 'ru' ? 'Проверяем...' : 'Checking...'}
+            {t('common.checking')}
           </>
         ) : (
           <>
             <FileCheck className="w-5 h-5" />
-            {language === 'ru' ? 'Проверить патент' : 'Check Patent'}
+            {t('services.patentCheck.checkPatent')}
           </>
         )}
       </button>
 
       <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
         <p className="text-sm text-blue-800">
-          {language === 'ru'
-            ? 'Проверка выполняется через официальные источники МВД России. Серия и номер указаны на лицевой стороне патента.'
-            : 'The check is performed through the official sources of the Russian Ministry of Internal Affairs. Series and number are indicated on the front of the patent.'}
+          {t('services.patentCheck.infoNote')}
         </p>
       </div>
     </div>
@@ -312,7 +310,7 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">
-                {language === 'ru' ? 'Серия и номер' : 'Series and Number'}
+                {t('services.patentCheck.seriesAndNumber')}
               </span>
               <span className={`font-bold font-mono ${config.textClass}`}>
                 {formData.series} {formData.number}
@@ -321,7 +319,7 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
             {result.validUntil && (
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">
-                  {language === 'ru' ? 'Действителен до' : 'Valid Until'}
+                  {t('services.patentCheck.validUntil')}
                 </span>
                 <span className={`font-bold ${config.textClass}`}>
                   {new Date(result.validUntil).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US')}
@@ -331,7 +329,7 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
             {(formData.lastName || formData.firstName) && (
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">
-                  {language === 'ru' ? 'Владелец' : 'Holder'}
+                  {t('services.patentCheck.holder')}
                 </span>
                 <span className={`font-bold ${config.textClass}`}>
                   {[formData.lastName, formData.firstName].filter(Boolean).join(' ')}
@@ -344,24 +342,12 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
         {result.status === 'not_found' && (
           <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
             <h4 className="font-semibold text-yellow-900 mb-2">
-              {language === 'ru' ? 'Возможные причины:' : 'Possible reasons:'}
+              {t('services.patentCheck.possibleReasons')}
             </h4>
             <ul className="text-sm text-yellow-800 space-y-2">
-              <li>
-                {language === 'ru'
-                  ? '1. Проверьте правильность серии и номера'
-                  : '1. Check that series and number are correct'}
-              </li>
-              <li>
-                {language === 'ru'
-                  ? '2. Данные могут еще не поступить в базу'
-                  : '2. Data may not yet be in the database'}
-              </li>
-              <li>
-                {language === 'ru'
-                  ? '3. Обратитесь в территориальный орган МВД'
-                  : '3. Contact the territorial body of the Ministry of Internal Affairs'}
-              </li>
+              <li>{t('services.patentCheck.reason1')}</li>
+              <li>{t('services.patentCheck.reason2')}</li>
+              <li>{t('services.patentCheck.reason3')}</li>
             </ul>
           </div>
         )}
@@ -369,24 +355,12 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
         {(result.status === 'invalid' || result.status === 'expired') && (
           <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
             <h4 className="font-semibold text-red-900 mb-2">
-              {language === 'ru' ? 'Рекомендации:' : 'Recommendations:'}
+              {t('services.patentCheck.recommendations')}
             </h4>
             <ul className="text-sm text-red-800 space-y-2">
-              <li>
-                {language === 'ru'
-                  ? '1. Обратитесь в миграционный отдел МВД'
-                  : '1. Contact the migration department of the Ministry of Internal Affairs'}
-              </li>
-              <li>
-                {language === 'ru'
-                  ? '2. Уточните статус патента и возможность продления'
-                  : '2. Clarify the patent status and the possibility of extension'}
-              </li>
-              <li>
-                {language === 'ru'
-                  ? '3. Не работайте с недействительным патентом'
-                  : '3. Do not work with an invalid patent'}
-              </li>
+              <li>{t('services.patentCheck.recommendation1')}</li>
+              <li>{t('services.patentCheck.recommendation2')}</li>
+              <li>{t('services.patentCheck.recommendation3')}</li>
             </ul>
           </div>
         )}
@@ -398,16 +372,12 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
               <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-semibold text-orange-900">
-                  {language === 'ru' ? 'Тестовые данные' : 'Test Data'}
+                  {t('common.testData')}
                 </p>
                 <p className="text-sm text-orange-800">
                   {result.source === 'mock'
-                    ? language === 'ru'
-                      ? 'Сервис проверки отключен. Показаны тестовые данные, которые не отражают реальный статус патента. Для реальной проверки используйте официальный сайт ФМС.'
-                      : 'Verification service is disabled. Test data shown, which does not reflect the actual patent status. For real verification, use the official FMS website.'
-                    : language === 'ru'
-                      ? 'Сервис временно недоступен. Попробуйте позже или проверьте на официальном сайте ФМС: services.fms.gov.ru'
-                      : 'Service is temporarily unavailable. Try again later or check on the official FMS website: services.fms.gov.ru'}
+                    ? t('services.patentCheck.mockWarning')
+                    : t('services.patentCheck.fallbackWarning')}
                 </p>
               </div>
             </div>
@@ -415,8 +385,8 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
         )}
 
         <div className="text-center text-xs text-gray-500">
-          {language === 'ru' ? 'Источник' : 'Source'}: {result.source.toUpperCase()} |{' '}
-          {language === 'ru' ? 'Проверено' : 'Checked'}:{' '}
+          {t('common.source')}: {result.source.toUpperCase()} |{' '}
+          {t('common.checked')}:{' '}
           {new Date(result.checkedAt).toLocaleString(language === 'ru' ? 'ru-RU' : 'en-US')}
         </div>
 
@@ -425,13 +395,13 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
             onClick={handleReset}
             className="flex-1 bg-gray-100 text-gray-700 font-semibold py-4 rounded-xl hover:bg-gray-200 transition-colors"
           >
-            {language === 'ru' ? 'Проверить другой' : 'Check Another'}
+            {t('common.checkAnother')}
           </button>
           <button
             onClick={onClose}
             className="flex-1 bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-colors"
           >
-            {language === 'ru' ? 'Готово' : 'Done'}
+            {t('common.done')}
           </button>
         </div>
       </div>
@@ -448,10 +418,10 @@ export function PatentCheckModal({ onClose }: PatentCheckModalProps) {
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">
-                {language === 'ru' ? 'Проверка патента' : 'Patent Check'}
+                {t('services.patentCheck.title')}
               </h2>
               <p className="text-xs text-orange-100">
-                {language === 'ru' ? 'Проверьте действительность патента' : 'Verify patent validity'}
+                {t('services.patentCheck.subtitle')}
               </p>
             </div>
           </div>

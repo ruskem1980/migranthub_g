@@ -1,6 +1,6 @@
 'use client';
 
-import { Calculator, Search, MessageSquare, GraduationCap, Zap, Shield, FileText } from 'lucide-react';
+import { Calculator, Search, MessageSquare, GraduationCap, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { QuickActionCard } from '@/components/ui/QuickActionCard';

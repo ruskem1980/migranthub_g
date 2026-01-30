@@ -93,7 +93,7 @@ const initialState = {
 
 export const useProfileStore = create<ProfileState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       ...initialState,
 
       setProfile: (profile) =>

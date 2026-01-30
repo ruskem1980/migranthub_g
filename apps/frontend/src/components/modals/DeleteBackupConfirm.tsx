@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Trash2, AlertTriangle, Loader2 } from 'lucide-react';
+import { Trash2, AlertTriangle, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { useBackupStore } from '@/lib/stores/backupStore';
 

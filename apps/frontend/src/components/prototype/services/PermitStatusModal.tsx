@@ -169,13 +169,13 @@ export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
               )}
               {result.source && (
                 <div className="text-center text-xs text-gray-500">
-                  {language === 'ru' ? 'Источник' : 'Source'}: {result.source.toUpperCase()} |{' '}
-                  {language === 'ru' ? 'Проверено' : 'Checked'}:{' '}
+                  {t('common.source')}: {result.source.toUpperCase()} |{' '}
+                  {t('common.checked')}:{' '}
                   {new Date(result.checkedAt).toLocaleString(language === 'ru' ? 'ru-RU' : 'en-US')}
                 </div>
               )}
               <button onClick={() => setResult(null)} className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl">
-                {language === 'ru' ? 'Новая проверка' : 'New Check'}
+                {t('services.permitStatus.newCheck')}
               </button>
             </div>
           ) : (
@@ -212,14 +212,14 @@ export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
                 value={formData.lastName}
                 onChange={e => handleInputChange('lastName', e.target.value)}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
-                placeholder={language === 'ru' ? 'Фамилия *' : 'Last Name *'}
+                placeholder={t('form.lastName') + ' *'}
               />
               <input
                 type="text"
                 value={formData.firstName}
                 onChange={e => handleInputChange('firstName', e.target.value)}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
-                placeholder={language === 'ru' ? 'Имя *' : 'First Name *'}
+                placeholder={t('form.firstName') + ' *'}
               />
               <input
                 type="date"
@@ -238,12 +238,12 @@ export function PermitStatusModal({ onClose }: PermitStatusModalProps) {
                 {isLoading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    {language === 'ru' ? 'Проверка...' : 'Checking...'}
+                    {t('common.checking')}
                   </>
                 ) : (
                   <>
                     <ClipboardCheck className="w-5 h-5" />
-                    {language === 'ru' ? 'Проверить' : 'Check'}
+                    {t('common.check')}
                   </>
                 )}
               </button>
