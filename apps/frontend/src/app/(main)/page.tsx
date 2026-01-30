@@ -1,23 +1,23 @@
 'use client';
 
-import { DocumentStatusSection } from '@/components/document-status';
+import { useAuthStore } from '@/lib/stores';
+import { AnonymousDashboard } from '@/components/anonymous';
+import { PersonalDashboard } from '@/components/personal';
 
+/**
+ * Main Home Page
+ *
+ * Lazy Auth Flow:
+ * - Anonymous users see AnonymousDashboard
+ * - Registered users see PersonalDashboard
+ */
 export default function HomePage() {
-  return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-4">
-        <h1 className="text-xl font-bold text-gray-900">MigrantHub</h1>
-        <p className="text-sm text-gray-500">Ваш помощник в миграционных вопросах</p>
-      </header>
+  const { isAnonymous } = useAuthStore();
 
-      {/* Main Content */}
-      <main className="p-4 space-y-4">
-        {/* Document Status Section */}
-        <DocumentStatusSection />
+  // Show appropriate dashboard based on auth state
+  if (isAnonymous) {
+    return <AnonymousDashboard />;
+  }
 
-        {/* Additional sections can be added here */}
-      </main>
-    </div>
-  );
+  return <PersonalDashboard />;
 }
