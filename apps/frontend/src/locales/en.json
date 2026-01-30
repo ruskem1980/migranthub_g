@@ -1307,6 +1307,17 @@
       "illegal": "Illegal"
     }
   },
+  "navigation": {
+    "main": "Main menu"
+  },
+  "nav": {
+    "main": "Main navigation",
+    "home": "Home",
+    "documents": "Documents",
+    "services": "Services",
+    "calculator": "Calculator",
+    "profile": "Profile"
+  },
   "history": {
     "title": "History",
     "subtitle": "Operations and payments log",
@@ -2045,7 +2056,15 @@
       "selectCount": "Number of Questions",
       "allCategories": "All Categories",
       "startButton": "Start Test"
-    }
+    },
+    "selectAnswer": "Select an answer",
+    "option": "Option",
+    "checkAnswer": "Check answer",
+    "nextQuestion": "Next question",
+    "levelProgress": "Level progress",
+    "xpProgress": "Experience points progress",
+    "categories": "Exam categories",
+    "totalAnswered": "{count} questions answered"
   },
   "examTrainer": {
     "header": {
@@ -2283,5 +2302,13 @@
       "dates": "Dates & Issue",
       "additional": "Additional"
     }
+  },
+  "timeline": {
+    "title": "Timeline",
+    "noEvents": "No upcoming events",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "daysLeft": "{days} days left",
+    "daysAgo": "{days} days ago"
   }
 }

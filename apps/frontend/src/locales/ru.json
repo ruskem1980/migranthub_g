@@ -1307,6 +1307,17 @@
       "illegal": "Нелегален"
     }
   },
+  "navigation": {
+    "main": "Главное меню"
+  },
+  "nav": {
+    "main": "Главная навигация",
+    "home": "Главная",
+    "documents": "Документы",
+    "services": "Сервисы",
+    "calculator": "Калькулятор",
+    "profile": "Профиль"
+  },
   "history": {
     "title": "История",
     "subtitle": "Журнал операций и платежей",
@@ -2049,7 +2060,15 @@
       "selectCount": "Количество вопросов",
       "allCategories": "Все категории",
       "startButton": "Начать тест"
-    }
+    },
+    "selectAnswer": "Выберите ответ",
+    "option": "Вариант",
+    "checkAnswer": "Проверить ответ",
+    "nextQuestion": "Следующий вопрос",
+    "levelProgress": "Прогресс уровня",
+    "xpProgress": "Прогресс очков опыта",
+    "categories": "Категории экзамена",
+    "totalAnswered": "Отвечено вопросов: {count}"
   },
   "examTrainer": {
     "header": {
@@ -2287,5 +2306,13 @@
       "dates": "Даты и выдача",
       "additional": "Дополнительно"
     }
+  },
+  "timeline": {
+    "title": "Календарь событий",
+    "noEvents": "Нет предстоящих событий",
+    "today": "Сегодня",
+    "tomorrow": "Завтра",
+    "daysLeft": "Осталось {days} дн.",
+    "daysAgo": "{days} дн. назад"
   }
 }

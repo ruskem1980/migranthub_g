@@ -1301,6 +1301,17 @@
       "illegal": "Мыйзамсыз"
     }
   },
+  "navigation": {
+    "main": "Башкы меню"
+  },
+  "nav": {
+    "main": "Негизги навигация",
+    "home": "Башкы бет",
+    "documents": "Документтер",
+    "services": "Кызматтар",
+    "calculator": "Калькулятор",
+    "profile": "Профиль"
+  },
   "history": {
     "title": "Тарых",
     "subtitle": "Операциялар жана төлөмдөр журналы",
@@ -2043,7 +2054,15 @@
       "selectCount": "Суроолордун саны",
       "allCategories": "Бардык категориялар",
       "startButton": "Тестти баштоо"
-    }
+    },
+    "selectAnswer": "Жоопту тандаңыз",
+    "option": "Вариант",
+    "checkAnswer": "Жоопту текшерүү",
+    "nextQuestion": "Кийинки суроо",
+    "levelProgress": "Деңгээл прогресси",
+    "xpProgress": "Тажрыйба упайларынын прогресси",
+    "categories": "Экзамен категориялары",
+    "totalAnswered": "Жооп берилген суроолор: {count}"
   },
   "examTrainer": {
     "header": {
@@ -2281,5 +2300,13 @@
       "dates": "Датасы жана берилгени",
       "additional": "Кошумча"
     }
+  },
+  "timeline": {
+    "title": "Окуялар календары",
+    "noEvents": "Алдыдагы окуялар жок",
+    "today": "Бүгүн",
+    "tomorrow": "Эртең",
+    "daysLeft": "{days} күн калды",
+    "daysAgo": "{days} күн мурун"
   }
 }

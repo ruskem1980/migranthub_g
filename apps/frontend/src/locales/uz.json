@@ -1301,6 +1301,17 @@
       "illegal": "Noqonuniy"
     }
   },
+  "navigation": {
+    "main": "Asosiy menyu"
+  },
+  "nav": {
+    "main": "Asosiy navigatsiya",
+    "home": "Bosh sahifa",
+    "documents": "Hujjatlar",
+    "services": "Xizmatlar",
+    "calculator": "Kalkulyator",
+    "profile": "Profil"
+  },
   "history": {
     "title": "Tarix",
     "subtitle": "Operatsiyalar va to'lovlar jurnali",
@@ -2280,5 +2291,13 @@
       "dates": "Sanalar va berish",
       "additional": "Qo'shimcha"
     }
+  },
+  "timeline": {
+    "title": "Voqealar taqvimi",
+    "noEvents": "Kelgusi voqealar yo'q",
+    "today": "Bugun",
+    "tomorrow": "Ertaga",
+    "daysLeft": "{days} kun qoldi",
+    "daysAgo": "{days} kun oldin"
   }
 }
