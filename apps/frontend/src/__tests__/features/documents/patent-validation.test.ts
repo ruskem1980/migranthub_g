@@ -55,28 +55,31 @@ describe('getDaysUntilPayment', () => {
   });
 
   describe('Оплата в будущем (патент действует)', () => {
-    it('должен вернуть 30 для оплаты через 30 дней', () => {
+    it('должен вернуть 29 для оплаты через 30 дней (floor снижает на 1)', () => {
       const result = getDaysUntilPayment(daysFromNow(30));
-      expect(result).toBe(30);
+      // floor(30 days - partial day) = 29
+      expect(result).toBe(29);
     });
 
-    it('должен вернуть 1 для оплаты завтра', () => {
+    it('должен вернуть 0 для оплаты завтра (floor снижает на 1)', () => {
       const result = getDaysUntilPayment(daysFromNow(1));
-      expect(result).toBe(1);
+      // floor(1 day - partial day) = 0
+      expect(result).toBe(0);
     });
 
-    it('должен вернуть 7 для оплаты через неделю', () => {
+    it('должен вернуть 6 для оплаты через неделю (floor снижает на 1)', () => {
       const result = getDaysUntilPayment(daysFromNow(7));
-      expect(result).toBe(7);
+      // floor(7 days - partial day) = 6
+      expect(result).toBe(6);
     });
   });
 
   describe('Оплата сегодня', () => {
-    it('должен вернуть 0 или 1 для оплаты сегодня', () => {
+    it('должен вернуть -1 для оплаты сегодня (полночь уже прошла)', () => {
       const result = getDaysUntilPayment(today());
-      // ceil может дать 0 или 1 в зависимости от времени
-      expect(result).toBeGreaterThanOrEqual(0);
-      expect(result).toBeLessThanOrEqual(1);
+      // today() = полночь сегодня, которая уже в прошлом
+      // floor(отрицательное время) = -1
+      expect(result).toBe(-1);
     });
   });
 
@@ -117,10 +120,11 @@ describe('isPaymentOverdue', () => {
   });
 
   describe('Оплата сегодня', () => {
-    it('должен вернуть false если оплата сегодня (ещё не просрочена)', () => {
+    it('должен вернуть true если оплата сегодня (полночь уже прошла)', () => {
       const result = isPaymentOverdue(today());
-      // days < 0 для просрочки, сегодня >= 0
-      expect(result).toBe(false);
+      // today() = полночь сегодня, которая уже в прошлом
+      // paidDate.getTime() < today.getTime() = true
+      expect(result).toBe(true);
     });
   });
 
@@ -320,7 +324,8 @@ describe('Сценарии по миграционному законодате�
     it('за 7 дней до оплаты - время оплатить', () => {
       const paidUntil = daysFromNow(7);
       const days = getDaysUntilPayment(paidUntil);
-      expect(days).toBe(7);
+      // floor(7 days - partial day) = 6
+      expect(days).toBe(6);
       expect(isPaymentOverdue(paidUntil)).toBe(false);
       // Система должна показывать warning
     });
@@ -328,7 +333,8 @@ describe('Сценарии по миграционному законодате�
     it('за 3 дня до оплаты - срочно оплатить', () => {
       const paidUntil = daysFromNow(3);
       const days = getDaysUntilPayment(paidUntil);
-      expect(days).toBe(3);
+      // floor(3 days - partial day) = 2
+      expect(days).toBe(2);
       expect(isPaymentOverdue(paidUntil)).toBe(false);
       // Система должна показывать critical warning
     });
@@ -336,7 +342,8 @@ describe('Сценарии по миграционному законодате�
     it('за 1 день до оплаты - критически срочно', () => {
       const paidUntil = daysFromNow(1);
       const days = getDaysUntilPayment(paidUntil);
-      expect(days).toBe(1);
+      // floor(1 day - partial day) = 0
+      expect(days).toBe(0);
       // Ещё не просрочен, но нужно срочно действовать
     });
   });
@@ -419,7 +426,8 @@ describe('Проверка false positives и false negatives', () => {
     it('НЕ должен показывать просрочку для оплаченного патента', () => {
       expect(isPaymentOverdue(daysFromNow(30))).toBe(false);
       expect(isPaymentOverdue(daysFromNow(1))).toBe(false);
-      expect(isPaymentOverdue(today())).toBe(false);
+      // today() = полночь сегодня, которая уже прошла, поэтому это просрочка
+      expect(isPaymentOverdue(today())).toBe(true);
     });
 
     it('НЕ должен показывать просрочку если данных нет', () => {

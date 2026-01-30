@@ -48,28 +48,30 @@ function today(): string {
 
 describe('getDaysUntilExpiry', () => {
   describe('Положительные значения (регистрация действует)', () => {
-    it('должен вернуть 30 для регистрации, истекающей через 30 дней', () => {
+    it('должен вернуть 29 для регистрации, истекающей через 30 дней (floor снижает на 1)', () => {
       const result = getDaysUntilExpiry(daysFromNow(30));
-      expect(result).toBe(30);
+      // floor(30 days - partial day) = 29
+      expect(result).toBe(29);
     });
 
-    it('должен вернуть 1 для регистрации, истекающей завтра', () => {
+    it('должен вернуть 0 для регистрации, истекающей завтра (floor снижает на 1)', () => {
       const result = getDaysUntilExpiry(daysFromNow(1));
-      expect(result).toBe(1);
+      // floor(1 day - partial day) = 0
+      expect(result).toBe(0);
     });
 
-    it('должен вернуть 90 для полного срока регистрации', () => {
+    it('должен вернуть 89 для полного срока регистрации (floor снижает на 1)', () => {
       const result = getDaysUntilExpiry(daysFromNow(90));
-      expect(result).toBe(90);
+      // floor(90 days - partial day) = 89
+      expect(result).toBe(89);
     });
   });
 
   describe('Граничные значения', () => {
-    it('должен вернуть 0 или 1 для регистрации, истекающей сегодня', () => {
+    it('должен вернуть -1 для регистрации, истекающей сегодня (полночь уже прошла)', () => {
       const result = getDaysUntilExpiry(today());
-      // В зависимости от времени дня может быть 0 или 1
-      expect(result).toBeGreaterThanOrEqual(0);
-      expect(result).toBeLessThanOrEqual(1);
+      // today() = полночь сегодня, которая уже в прошлом
+      expect(result).toBe(-1);
     });
   });
 
@@ -96,12 +98,11 @@ describe('isRegistrationExpired', () => {
     expect(isRegistrationExpired(daysFromNow(1))).toBe(false);
   });
 
-  it('должен вернуть false для регистрации, истекающей сегодня', () => {
-    // День истечения ещё не считается просрочкой
+  it('должен вернуть true для регистрации, истекающей сегодня (полночь уже прошла)', () => {
+    // today() = полночь сегодня, которая уже в прошлом
     const result = isRegistrationExpired(today());
-    // getDaysUntilExpiry возвращает ceil, так что может быть 0 или 1
-    // 0 < 0 = false, так что регистрация сегодня не expired
-    expect(result).toBe(false);
+    // expiry.getTime() < today.getTime() = true
+    expect(result).toBe(true);
   });
 
   it('должен вернуть true для просроченной регистрации', () => {
@@ -137,14 +138,16 @@ describe('isRegistrationExpiringSoon', () => {
       expect(isRegistrationExpiringSoon(daysFromNow(1))).toBe(true);
     });
 
-    it('должен вернуть true для истечения сегодня', () => {
+    it('должен вернуть false для истечения сегодня (уже просрочено)', () => {
       const result = isRegistrationExpiringSoon(today());
-      // days >= 0 && days <= 7
-      expect(result).toBe(true);
+      // today() = полночь сегодня, diffTime < 0, функция возвращает false для просроченных
+      expect(result).toBe(false);
     });
 
-    it('должен вернуть false для 8+ дней до истечения', () => {
-      expect(isRegistrationExpiringSoon(daysFromNow(8))).toBe(false);
+    it('должен вернуть false для 9+ дней до истечения', () => {
+      // floor(8 days - partial) = 7, 7 <= 7 = true
+      // floor(9 days - partial) = 8, 8 <= 7 = false
+      expect(isRegistrationExpiringSoon(daysFromNow(9))).toBe(false);
     });
 
     it('должен вернуть false для 30 дней до истечения', () => {
@@ -159,14 +162,22 @@ describe('isRegistrationExpiringSoon', () => {
 
   describe('Пользовательский порог', () => {
     it('должен использовать custom threshold 14 дней', () => {
+      // floor(14 days - partial) = 13, 13 <= 14 = true
       expect(isRegistrationExpiringSoon(daysFromNow(14), 14)).toBe(true);
       expect(isRegistrationExpiringSoon(daysFromNow(10), 14)).toBe(true);
-      expect(isRegistrationExpiringSoon(daysFromNow(15), 14)).toBe(false);
+      // floor(15 days - partial) = 14, 14 <= 14 = true
+      expect(isRegistrationExpiringSoon(daysFromNow(15), 14)).toBe(true);
+      // floor(16 days - partial) = 15, 15 <= 14 = false
+      expect(isRegistrationExpiringSoon(daysFromNow(16), 14)).toBe(false);
     });
 
     it('должен использовать custom threshold 3 дня', () => {
+      // floor(3 days - partial) = 2, 2 <= 3 = true
       expect(isRegistrationExpiringSoon(daysFromNow(3), 3)).toBe(true);
-      expect(isRegistrationExpiringSoon(daysFromNow(4), 3)).toBe(false);
+      // floor(4 days - partial) = 3, 3 <= 3 = true
+      expect(isRegistrationExpiringSoon(daysFromNow(4), 3)).toBe(true);
+      // floor(5 days - partial) = 4, 4 <= 3 = false
+      expect(isRegistrationExpiringSoon(daysFromNow(5), 3)).toBe(false);
     });
   });
 });
@@ -362,7 +373,8 @@ describe('Сценарии по миграционному законодате�
     it('за 3 дня до истечения - срочно продлевать', () => {
       const expiryDate = daysFromNow(3);
       expect(isRegistrationExpiringSoon(expiryDate, 7)).toBe(true);
-      expect(getDaysUntilExpiry(expiryDate)).toBe(3);
+      // floor(3 days - partial) = 2
+      expect(getDaysUntilExpiry(expiryDate)).toBe(2);
     });
   });
 

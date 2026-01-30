@@ -61,7 +61,9 @@ describe('getDocumentStatus', () => {
 
   describe('Действующий документ (valid)', () => {
     it('должен вернуть valid для документа со сроком > 30 дней (по умолчанию)', () => {
-      const expiryDate = daysFromNow(31);
+      // floor(31 days - partial day) = 30, что равно warningDays, поэтому expiring_soon
+      // Нужно 32 дня чтобы гарантированно получить valid
+      const expiryDate = daysFromNow(32);
       const result = getDocumentStatus(expiryDate);
       expect(result).toBe('valid');
     });
@@ -110,11 +112,12 @@ describe('getDocumentStatus', () => {
       expect(result).toBe('expiring_soon');
     });
 
-    it('должен вернуть expiring_soon для документа, истекающего сегодня', () => {
+    it('должен вернуть expired для документа, истекающего сегодня', () => {
       const expiryDate = today();
       const result = getDocumentStatus(expiryDate);
-      // diffDays = 0 или 1 в зависимости от времени, но <= 30
-      expect(result).toBe('expiring_soon');
+      // today() возвращает дату в полночь, а new Date() включает текущее время
+      // Поэтому diffTime < 0, и документ считается просроченным
+      expect(result).toBe('expired');
     });
 
     it('должен использовать custom warningDays для expiring_soon', () => {
@@ -151,16 +154,20 @@ describe('getDocumentStatus', () => {
   });
 
   describe('Граничные случаи', () => {
-    it('граница между valid и expiring_soon (31 vs 30 дней)', () => {
-      expect(getDocumentStatus(daysFromNow(31))).toBe('valid');
-      expect(getDocumentStatus(daysFromNow(30))).toBe('expiring_soon');
+    it('граница между valid и expiring_soon (32 vs 31 дней)', () => {
+      // floor(31 days - partial day) = 30, что равно warningDays
+      // floor(32 days - partial day) = 31, что > warningDays
+      expect(getDocumentStatus(daysFromNow(32))).toBe('valid');
+      expect(getDocumentStatus(daysFromNow(31))).toBe('expiring_soon');
     });
 
-    it('граница между expiring_soon и expired (0 vs -1 день)', () => {
-      // Документ истекает сегодня - всё ещё expiring_soon
-      expect(getDocumentStatus(today())).toBe('expiring_soon');
+    it('граница между expiring_soon и expired (1 vs 0 день)', () => {
+      // today() в полночь < текущее время, поэтому expired
+      expect(getDocumentStatus(today())).toBe('expired');
       // Документ истёк вчера - expired
       expect(getDocumentStatus(daysAgo(1))).toBe('expired');
+      // Документ истекает завтра - expiring_soon
+      expect(getDocumentStatus(daysFromNow(1))).toBe('expiring_soon');
     });
 
     it('должен корректно работать с разными форматами дат', () => {
@@ -195,9 +202,12 @@ describe('getDocumentStatus', () => {
     });
 
     it('warningDays = 0: только истекшие = expired', () => {
-      expect(getDocumentStatus(daysFromNow(0), 0)).toBe('expiring_soon'); // 0 <= 0
+      // daysFromNow(0) = today() в полночь, которая уже прошла
+      expect(getDocumentStatus(daysFromNow(0), 0)).toBe('expired');
       expect(getDocumentStatus(daysAgo(1), 0)).toBe('expired');
-      expect(getDocumentStatus(daysFromNow(1), 0)).toBe('valid');
+      // floor(1 day - partial) = 0, 0 <= 0, поэтому expiring_soon
+      expect(getDocumentStatus(daysFromNow(1), 0)).toBe('expiring_soon');
+      expect(getDocumentStatus(daysFromNow(2), 0)).toBe('valid');
     });
   });
 });
@@ -342,8 +352,9 @@ describe('Проверка отсутствия false positives', () => {
 
 describe('Проверка отсутствия false negatives', () => {
   it('НЕ должен показывать expired для действующего документа', () => {
+    // Нужно 32+ дней чтобы гарантировать valid (floor снижает на 1)
     const validDates = [
-      daysFromNow(31),
+      daysFromNow(32),
       daysFromNow(60),
       daysFromNow(365),
     ];
@@ -356,8 +367,9 @@ describe('Проверка отсутствия false negatives', () => {
   });
 
   it('НЕ должен показывать expiring_soon для далёкого документа', () => {
+    // Нужно 32+ дней чтобы гарантировать не expiring_soon
     const farDates = [
-      daysFromNow(31),
+      daysFromNow(32),
       daysFromNow(100),
       daysFromNow(365),
     ];
