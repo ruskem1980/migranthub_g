@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ClipboardList, GraduationCap, MessageSquare, Scale } from 'lucide-react';
+import { ClipboardList, GraduationCap, MessageSquare, HelpCircle } from 'lucide-react';
 import { SectionHeader, QuickActionCard } from '@/components/ui';
 import { useTranslation } from '@/lib/i18n';
 
@@ -54,10 +54,10 @@ export function UsefulSection() {
           variant="default"
         />
         <QuickActionCard
-          icon={Scale}
-          title={language === 'ru' ? 'Ваши права' : 'Your Rights'}
-          description={language === 'ru' ? 'Юридическая информация' : 'Legal information'}
-          onClick={() => router.push('/rights')}
+          icon={HelpCircle}
+          title={language === 'ru' ? 'Частые вопросы' : 'FAQ'}
+          description={language === 'ru' ? 'Ответы на популярные вопросы' : 'Answers to common questions'}
+          onClick={() => router.push('/faq')}
           variant="default"
         />
       </div>
