@@ -25,8 +25,8 @@
 | # | Задача | Статус | Результат | Верификация |
 |---|--------|--------|-----------|-------------|
 | 1 | Stores & Types | ✅ DONE | OK | PASS |
-| 2 | Anonymous Components | 🔄 IN_PROGRESS | - | - |
-| 3 | Quick Registration | ⏳ PENDING | - | - |
+| 2 | Anonymous Components | ✅ DONE | OK | PASS |
+| 3 | Quick Registration | 🔄 IN_PROGRESS | - | - |
 | 4 | SOS Screen | ⏳ PENDING | - | - |
 
 ### Phase 2: Screens

@@ -39,3 +39,34 @@ export {
 
 // BottomNavigation
 export { BottomNavigation } from './BottomNavigation';
+
+// QuickActionCard
+export {
+  QuickActionCard,
+  type QuickActionCardProps,
+  type QuickActionVariant,
+} from './QuickActionCard';
+
+// SectionHeader
+export { SectionHeader, type SectionHeaderProps } from './SectionHeader';
+
+// ConversionBanner
+export {
+  ConversionBanner,
+  type ConversionBannerProps,
+  type ConversionBannerVariant,
+} from './ConversionBanner';
+
+// FeatureGate
+export {
+  FeatureGate,
+  type FeatureGateProps,
+  type FeatureCategory,
+} from './FeatureGate';
+
+// EmergencyButton
+export {
+  EmergencyButton,
+  type EmergencyButtonProps,
+  type EmergencyButtonSize,
+} from './EmergencyButton';
