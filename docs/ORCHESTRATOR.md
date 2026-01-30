@@ -35,12 +35,12 @@
 | 5 | Anonymous Dashboard | ✅ DONE | OK | PASS |
 | 6 | Checks Screen | ✅ DONE | OK | PASS |
 | 7 | Personal Dashboard | ✅ DONE | OK | PASS |
-| 8 | Bottom Navigation | 🔄 IN_PROGRESS | - | - |
+| 8 | Bottom Navigation | ✅ DONE | OK | PASS |
 
 ### Phase 3: Integration
 | # | Задача | Статус | Результат | Верификация |
 |---|--------|--------|-----------|-------------|
-| 9 | Auth Flow Refactor | ⏳ PENDING | - | - |
+| 9 | Auth Flow Refactor | 🔄 IN_PROGRESS | - | - |
 | 10 | Paywall & Triggers | ⏳ PENDING | - | - |
 | 11 | Migration & Cleanup | ⏳ PENDING | - | - |
 
