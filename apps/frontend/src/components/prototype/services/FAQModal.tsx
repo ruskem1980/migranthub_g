@@ -8,16 +8,17 @@ interface FAQModalProps {
   onClose: () => void;
 }
 
-type LocalizedText = Record<Language, string>;
+export type LocalizedText = Record<Language, string>;
 
-interface FAQItem {
+export interface FAQItem {
   id: string;
   question: LocalizedText;
   answer: LocalizedText;
   category: string;
 }
 
-const faqData: FAQItem[] = [
+// Export for reuse in /faq page
+export const faqData: FAQItem[] = [
   // ПАТЕНТ (Patent)
   {
     id: '1',
@@ -421,7 +422,7 @@ const faqData: FAQItem[] = [
   },
 ];
 
-const categories = [
+export const faqCategories = [
   { id: 'all', label: { ru: 'Все', en: 'All', uz: 'Barchasi', tg: 'Ҳама', ky: 'Баары' } },
   { id: 'patent', label: { ru: 'Патент', en: 'Patent', uz: 'Patent', tg: 'Патент', ky: 'Патент' } },
   { id: 'rvp', label: { ru: 'РВП', en: 'TRP', uz: 'VYR', tg: 'ИМВ', ky: 'УЖР' } },
@@ -537,7 +538,7 @@ export function FAQModal({ onClose }: FAQModalProps) {
 
         {/* Categories */}
         <div className="px-4 py-3 flex gap-2 overflow-x-auto">
-          {categories.map((cat) => (
+          {faqCategories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
