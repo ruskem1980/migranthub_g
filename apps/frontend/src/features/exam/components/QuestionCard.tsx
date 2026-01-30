@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { CheckCircle2, XCircle, Lightbulb, ChevronRight } from 'lucide-react';
-import { Question, QuestionCategory, QuestionDifficulty } from '../types';
+import { Question, QuestionCategory, QuestionDifficulty, XP_REWARDS } from '../types';
 import { successHaptic, errorHaptic } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
 
@@ -56,6 +56,7 @@ export function QuestionCard({
   const { t } = useTranslation();
   const [isAnimating, setIsAnimating] = useState(false);
   const [showExplanationPanel, setShowExplanationPanel] = useState(false);
+  const [showXPReward, setShowXPReward] = useState(false);
 
   const hasAnswered = selectedAnswer !== undefined;
   const isCorrect = hasAnswered && selectedAnswer === question.correctIndex;
@@ -73,6 +74,7 @@ export function QuestionCard({
   // Reset animation state when question changes
   useEffect(() => {
     setIsAnimating(true);
+    setShowXPReward(false);
     const timer = setTimeout(() => setIsAnimating(false), 300);
     return () => clearTimeout(timer);
   }, [question.id]);
@@ -83,6 +85,8 @@ export function QuestionCard({
     // Trigger haptic feedback based on answer correctness
     if (index === question.correctIndex) {
       successHaptic();
+      setShowXPReward(true);
+      setTimeout(() => setShowXPReward(false), 1500);
     } else {
       errorHaptic();
     }
@@ -135,10 +139,19 @@ export function QuestionCard({
 
   return (
     <div
-      className={`flex flex-col gap-4 transition-opacity duration-200 ${
+      className={`relative flex flex-col gap-4 transition-opacity duration-200 ${
         isAnimating ? 'opacity-0' : 'opacity-100'
       }`}
     >
+      {/* XP reward notification */}
+      {showXPReward && (
+        <div className="absolute top-0 right-0 animate-bounce z-10">
+          <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-500 text-white text-sm font-bold shadow-lg">
+            +{XP_REWARDS[question.difficulty] || 10} XP
+          </span>
+        </div>
+      )}
+
       {/* Category badge */}
       <div className="flex items-center justify-between">
         <span
