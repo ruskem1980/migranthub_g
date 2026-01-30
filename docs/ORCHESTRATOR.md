@@ -41,8 +41,8 @@
 | # | Задача | Статус | Результат | Верификация |
 |---|--------|--------|-----------|-------------|
 | 9 | Auth Flow Refactor | ✅ DONE | OK | PASS |
-| 10 | Paywall & Triggers | 🔄 IN_PROGRESS | - | - |
-| 11 | Migration & Cleanup | ⏳ PENDING | - | - |
+| 10 | Paywall & Triggers | ✅ DONE | OK | PASS |
+| 11 | Migration & Cleanup | 🔄 IN_PROGRESS | - | - |
 
 ### Phase 4: Testing
 | # | Задача | Статус | Результат | Верификация |
