@@ -1,4 +1,7 @@
 {
+  "progress": {
+    "title": "Qonuniylashtirish yo'li"
+  },
   "app": {
     "name": "MigrantHub",
     "tagline": "Rossiyada migrantlar uchun ekotizim",

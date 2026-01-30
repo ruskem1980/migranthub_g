@@ -29,3 +29,10 @@ export { ToastProvider, useToastContext, type ToastProviderProps } from './Toast
 
 // Language Switcher (existing)
 export { LanguageSwitcher } from './LanguageSwitcher';
+
+// ProgressRoadmap
+export {
+  ProgressRoadmap,
+  type ProgressRoadmapProps,
+  type RoadmapStep,
+} from './ProgressRoadmap';

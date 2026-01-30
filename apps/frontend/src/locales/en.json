@@ -1,4 +1,7 @@
 {
+  "progress": {
+    "title": "Legalization path"
+  },
   "app": {
     "name": "MigrantHub",
     "tagline": "Ecosystem for migrants in Russia",
