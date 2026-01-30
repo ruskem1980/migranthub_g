@@ -1994,7 +1994,15 @@
       "selectCount": "Миқдори саволҳо",
       "allCategories": "Ҳамаи категорияҳо",
       "startButton": "Оғоз кардани тест"
-    }
+    },
+    "selectAnswer": "Ҷавобро интихоб кунед",
+    "option": "Вариант",
+    "checkAnswer": "Ҷавобро тафтиш кунед",
+    "nextQuestion": "Саволи навбатӣ",
+    "levelProgress": "Пешрафти сатҳ",
+    "xpProgress": "Пешрафти холҳои таҷриба",
+    "categories": "Категорияҳои имтиҳон",
+    "totalAnswered": "Саволҳои ҷавобдодашуда: {count}"
   },
   "examTrainer": {
     "header": {

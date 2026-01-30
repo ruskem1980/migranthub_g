@@ -127,7 +127,7 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
       {/* Content */}
       <div className="flex-1 min-h-0 overflow-y-auto p-4 pb-24">
         {/* Level Progress Card */}
-        <div className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl p-4 text-white mb-4 shadow-lg">
+        <div role="region" aria-label={t('exam.levelProgress')} className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl p-4 text-white mb-4 shadow-lg">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
@@ -140,7 +140,14 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
               <span className="font-semibold">{stats.totalXP} XP</span>
             </div>
           </div>
-          <div className="h-2.5 bg-white/20 rounded-full overflow-hidden">
+          <div
+            role="progressbar"
+            aria-valuenow={stats.totalXP}
+            aria-valuemin={0}
+            aria-valuemax={level.maxXP === Infinity ? stats.totalXP : level.maxXP}
+            aria-label={t('exam.xpProgress')}
+            className="h-2.5 bg-white/20 rounded-full overflow-hidden"
+          >
             <div
               className="h-full bg-gradient-to-r from-yellow-300 to-yellow-400 rounded-full transition-all duration-500"
               style={{ width: `${Math.min(level.progress, 100)}%` }}
@@ -159,7 +166,7 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div role="status" aria-live="polite" className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-white rounded-xl p-3 border border-gray-200 text-center">
             <div className="flex items-center justify-center gap-1 mb-1">
               <Target className="w-4 h-4 text-blue-500" />
@@ -227,7 +234,7 @@ export function ExamHome({ onSelectCategory, onSelectMode }: ExamHomeProps) {
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
             {t('exam.ui.categories')}
           </h2>
-          <div className="space-y-3">
+          <div role="list" aria-label={t('exam.categories')} className="space-y-3">
             {categories.map((category) => (
               <CategoryCard
                 key={category}

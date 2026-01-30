@@ -2053,7 +2053,15 @@
       "selectCount": "Savollar soni",
       "allCategories": "Barcha kategoriyalar",
       "startButton": "Testni boshlash"
-    }
+    },
+    "selectAnswer": "Javobni tanlang",
+    "option": "Variant",
+    "checkAnswer": "Javobni tekshirish",
+    "nextQuestion": "Keyingi savol",
+    "levelProgress": "Daraja progressi",
+    "xpProgress": "Tajriba ballari progressi",
+    "categories": "Imtihon kategoriyalari",
+    "totalAnswered": "Javob berilgan savollar: {count}"
   },
   "examTrainer": {
     "header": {

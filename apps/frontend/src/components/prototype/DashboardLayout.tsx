@@ -117,13 +117,22 @@ export function DashboardLayout() {
       )}
 
       {/* Content Area */}
-      <main className="flex-1 min-h-0 overflow-y-auto">
+      <main
+        className="flex-1 min-h-0 overflow-y-auto"
+        role="tabpanel"
+        id={`panel-${activeTab}`}
+        aria-labelledby={`tab-${activeTab}`}
+      >
         {renderContent()}
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="flex-shrink-0 bg-white border-t border-gray-200 safe-area-bottom">
-        <div className="flex items-center justify-around h-16 px-2">
+      <nav
+        className="flex-shrink-0 bg-white border-t border-gray-200 safe-area-bottom"
+        role="navigation"
+        aria-label={t('navigation.main')}
+      >
+        <div className="flex items-center justify-around h-16 px-2" role="tablist">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -132,7 +141,11 @@ export function DashboardLayout() {
             return (
               <button
                 key={tab.id}
+                id={`tab-${tab.id}`}
                 onClick={() => setActiveTab(tab.id)}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`panel-${tab.id}`}
                 className={cn(
                   'flex flex-col items-center justify-center flex-1 h-full transition-all duration-200',
                   'active:scale-95 focus:outline-none rounded-lg',

@@ -139,6 +139,8 @@ export function QuestionCard({
 
   return (
     <div
+      role="group"
+      aria-labelledby="question-text"
       className={`relative flex flex-col gap-4 transition-opacity duration-200 ${
         isAnimating ? 'opacity-0' : 'opacity-100'
       }`}
@@ -175,13 +177,16 @@ export function QuestionCard({
       </div>
 
       {/* Question text */}
-      <h2 className="text-lg font-medium text-gray-900 leading-relaxed">{question.question}</h2>
+      <h2 id="question-text" className="text-lg font-medium text-gray-900 leading-relaxed">{question.question}</h2>
 
       {/* Options */}
-      <div className="flex flex-col gap-3">
+      <div role="radiogroup" aria-label={t('exam.selectAnswer')} className="flex flex-col gap-3">
         {question.options.map((option, index) => (
           <button
             key={index}
+            role="radio"
+            aria-checked={selectedAnswer === index}
+            aria-label={`${t('exam.option')} ${index + 1}: ${option}`}
             onClick={() => handleOptionClick(index)}
             disabled={hasAnswered}
             className={getOptionStyles(index)}
@@ -231,6 +236,7 @@ export function QuestionCard({
       {hasAnswered && onNext && (
         <button
           onClick={onNext}
+          aria-label={isLastQuestion ? t('exam.question.finish') : t('exam.nextQuestion')}
           className="mt-2 w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
         >
           {isLastQuestion ? t('exam.question.finish') : t('exam.question.next')}

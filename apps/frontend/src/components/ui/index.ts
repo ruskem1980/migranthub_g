@@ -36,3 +36,6 @@ export {
   type ProgressRoadmapProps,
   type RoadmapStep,
 } from './ProgressRoadmap';
+
+// BottomNavigation
+export { BottomNavigation } from './BottomNavigation';
