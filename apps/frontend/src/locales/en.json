@@ -629,6 +629,12 @@
       "dms": "VHI policy",
       "family": "Marriage / Birth certificate"
     },
+    "groups": {
+      "foundation": "Foundation",
+      "entry": "Entry and stay",
+      "work": "Work",
+      "support": "Support"
+    },
     "statusText": {
       "active": "Active",
       "activeF": "Active",

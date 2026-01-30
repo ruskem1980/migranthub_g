@@ -624,6 +624,12 @@
       "dms": "DMS polisi",
       "family": "Nikoh / tug'ilish guvohnomasi"
     },
+    "groups": {
+      "foundation": "Asos",
+      "entry": "Kirish va turish",
+      "work": "Ish",
+      "support": "Qo'llab-quvvatlash"
+    },
     "statusText": {
       "active": "Faol",
       "activeF": "Faol",

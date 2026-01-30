@@ -1,6 +1,6 @@
 'use client';
 
-import { QrCode, ChevronRight, History, Lock, Edit2, Globe, Trash2, X, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert, ClipboardList, Volume2 } from 'lucide-react';
+import { QrCode, ChevronRight, History, Lock, Edit2, Globe, Trash2, X, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert, ClipboardList, Volume2, FileText, GraduationCap } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState, useMemo, useEffect } from 'react';
 import { LegalizationWizard } from '../wizard/LegalizationWizard';
@@ -639,58 +639,88 @@ export function HomeScreen() {
                 <h4 className="text-sm font-bold text-gray-900 mb-3">{t('profile.myDocuments')}</h4>
                 <p className="text-xs text-gray-500 mb-3">{t('profile.markDocuments')}</p>
 
-                <div className="space-y-2">
+                <div className="space-y-4">
                   {[
-                    // УРОВЕНЬ 1: ОСНОВА
-                    { id: 'passport', label: `🛂 ${t('documents.types.passport')}` },
+                    {
+                      id: 'foundation',
+                      title: t('documents.groups.foundation'),
+                      docs: [
+                        { id: 'passport', label: `🛂 ${t('documents.types.passport')}` },
+                      ]
+                    },
+                    {
+                      id: 'entry',
+                      title: t('documents.groups.entry'),
+                      docs: [
+                        { id: 'mig_card', label: `🎫 ${t('documents.types.migCard')}` },
+                        { id: 'registration', label: `📋 ${t('documents.types.registration')}` },
+                      ]
+                    },
+                    {
+                      id: 'work',
+                      title: t('documents.groups.work'),
+                      docs: [
+                        { id: 'green_card', label: `💳 ${t('documents.types.greenCard')}` },
+                        { id: 'education', label: `🎓 ${t('documents.types.education')}` },
+                        { id: 'patent', label: `📄 ${t('documents.types.patent')}` },
+                        { id: 'contract', label: `📝 ${t('documents.types.contract')}` },
+                      ]
+                    },
+                    {
+                      id: 'support',
+                      title: t('documents.groups.support'),
+                      docs: [
+                        { id: 'inn', label: `🔢 ${t('documents.types.inn')}` },
+                        { id: 'snils', label: `🆔 ${t('documents.types.snils')}` },
+                        { id: 'insurance', label: `🩺 ${t('documents.types.insurance')}` },
+                        { id: 'receipts', label: `🧾 ${t('documents.types.receipts')}` },
+                        { id: 'family', label: `💍 ${t('documents.types.family')}` },
+                      ]
+                    },
+                  ].map((group, index) => (
+                    <div key={group.id} className={index > 0 ? 'pt-4 border-t border-gray-200' : ''}>
+                      {/* Group header */}
+                      <h5 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                        {group.title}
+                      </h5>
 
-                    // УРОВЕНЬ 2: ВЪЕЗД И ПРЕБЫВАНИЕ
-                    { id: 'mig_card', label: `🎫 ${t('documents.types.migCard')}` },
-                    { id: 'registration', label: `📋 ${t('documents.types.registration')}` },
+                      {/* Group documents */}
+                      <div className="space-y-2">
+                        {group.docs.map((doc) => {
+                          const isChecked = checkedDocs.includes(doc.id);
 
-                    // УРОВЕНЬ 3: РАБОТА
-                    { id: 'green_card', label: `💳 ${t('documents.types.greenCard')}` },
-                    { id: 'education', label: `🎓 ${t('documents.types.education')}` },
-                    { id: 'patent', label: `📄 ${t('documents.types.patent')}` },
-                    { id: 'contract', label: `📝 ${t('documents.types.contract')}` },
-
-                    // УРОВЕНЬ 4: ПОДДЕРЖКА
-                    { id: 'receipts', label: `🧾 ${t('documents.types.receipts')}` },
-                    { id: 'insurance', label: `🩺 ${t('documents.types.insurance')}` },
-                    { id: 'inn', label: `🔢 ${t('documents.types.inn')}` },
-                    { id: 'family', label: `💍 ${t('documents.types.family')}` },
-                  ].map((doc) => {
-                    const isChecked = checkedDocs.includes(doc.id);
-                    
-                    return (
-                      <button
-                        key={doc.id}
-                        onClick={() => {
-                          if (isChecked) {
-                            setCheckedDocs(checkedDocs.filter(d => d !== doc.id));
-                          } else {
-                            setCheckedDocs([...checkedDocs, doc.id]);
-                          }
-                        }}
-                        className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
-                          isChecked
-                            ? 'bg-green-50 border-green-300'
-                            : 'bg-white border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                          isChecked
-                            ? 'bg-green-500 border-green-500'
-                            : 'border-gray-300'
-                        }`}>
-                          {isChecked && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
-                        </div>
-                        <span className={`text-sm font-medium ${isChecked ? 'text-green-700' : 'text-gray-700'}`}>
-                          {doc.label}
-                        </span>
-                      </button>
-                    );
-                  })}
+                          return (
+                            <button
+                              key={doc.id}
+                              onClick={() => {
+                                if (isChecked) {
+                                  setCheckedDocs(checkedDocs.filter(d => d !== doc.id));
+                                } else {
+                                  setCheckedDocs([...checkedDocs, doc.id]);
+                                }
+                              }}
+                              className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
+                                isChecked
+                                  ? 'bg-green-50 border-green-300'
+                                  : 'bg-white border-gray-200 hover:border-gray-300'
+                              }`}
+                            >
+                              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                                isChecked
+                                  ? 'bg-green-500 border-green-500'
+                                  : 'border-gray-300'
+                              }`}>
+                                {isChecked && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
+                              </div>
+                              <span className={`text-sm font-medium ${isChecked ? 'text-green-700' : 'text-gray-700'}`}>
+                                {doc.label}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
                 {/* Status Calculation */}
@@ -715,7 +745,7 @@ export function HomeScreen() {
                     )}
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
-                    {t('profile.documentsCount')}: {checkedDocs.length} {t('common.outOf')} 11
+                    {t('profile.documentsCount')}: {checkedDocs.length} {t('common.outOf')} 12
                   </p>
                 </div>
               </div>
