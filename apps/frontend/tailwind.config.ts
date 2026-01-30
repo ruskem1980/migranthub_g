@@ -43,6 +43,23 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        /* Semantic colors */
+        success: {
+          DEFAULT: 'hsl(var(--color-success))',
+          light: 'hsl(var(--color-success-light))',
+        },
+        warning: {
+          DEFAULT: 'hsl(var(--color-warning))',
+          light: 'hsl(var(--color-warning-light))',
+        },
+        danger: {
+          DEFAULT: 'hsl(var(--color-danger))',
+          light: 'hsl(var(--color-danger-light))',
+        },
+        info: {
+          DEFAULT: 'hsl(var(--color-info))',
+          light: 'hsl(var(--color-info-light))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

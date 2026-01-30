@@ -24,6 +24,16 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
+
+    /* Semantic colors */
+    --color-success: 142 76% 36%;
+    --color-success-light: 142 76% 95%;
+    --color-warning: 45 93% 47%;
+    --color-warning-light: 45 93% 95%;
+    --color-danger: 0 84% 60%;
+    --color-danger-light: 0 84% 95%;
+    --color-info: 208 100% 50%;
+    --color-info-light: 208 100% 95%;
   }
 }
 
