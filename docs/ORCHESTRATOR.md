@@ -32,8 +32,8 @@
 ### Phase 2: Screens
 | # | Задача | Статус | Результат | Верификация |
 |---|--------|--------|-----------|-------------|
-| 5 | Anonymous Dashboard | 🔄 IN_PROGRESS | - | - |
-| 6 | Checks Screen | ⏳ PENDING | - | - |
+| 5 | Anonymous Dashboard | ✅ DONE | OK | PASS |
+| 6 | Checks Screen | 🔄 IN_PROGRESS | - | - |
 | 7 | Personal Dashboard | ⏳ PENDING | - | - |
 | 8 | Bottom Navigation | ⏳ PENDING | - | - |
 
