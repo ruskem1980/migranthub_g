@@ -26,14 +26,15 @@ test.describe('Main Dashboard', () => {
   });
 
   test('should display navigation tabs', async ({ page }) => {
-    await page.goto('/prototype');
+    await page.goto('/dashboard');
     await page.waitForLoadState('networkidle');
 
-    // Ищем навигационные элементы
-    const navItems = page.locator('nav button, nav a, [role="navigation"] button, [role="navigation"] a');
+    // DashboardLayout имеет <nav> с кнопками внутри
+    const navItems = page.locator('nav button');
     const count = await navItems.count();
 
-    expect(count).toBeGreaterThan(0);
+    // Ожидаем 5 вкладок: home, documents, services, assistant, sos
+    expect(count).toBeGreaterThanOrEqual(5);
   });
 
   test('should navigate to documents from main page', async ({ page }) => {

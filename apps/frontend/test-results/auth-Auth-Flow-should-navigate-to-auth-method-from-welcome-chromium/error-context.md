@@ -1,7 +1,7 @@
 # Page snapshot
 
 ```yaml
-- generic [active] [ref=e1]:
+- generic [ref=e1]:
   - alert [ref=e2]
   - generic "Notifications"
   - generic [ref=e3]:
@@ -58,21 +58,22 @@
             - heading "Честность и прозрачность" [level=3] [ref=e63]
             - paragraph [ref=e64]: Мы не обещаем невозможного (фиктивных регистраций). Мы даём легальный путь, чтобы вы могли спокойно работать и строить будущее в России.
       - button "Я принимаю Пользовательское соглашение и Политику конфиденциальности, а также согласен на обработку персональных данных Пользовательское соглашение Политика конфиденциальности" [ref=e65] [cursor=pointer]:
-        - generic [ref=e67]:
-          - paragraph [ref=e68]: Я принимаю Пользовательское соглашение и Политику конфиденциальности, а также согласен на обработку персональных данных
-          - generic [ref=e69]:
-            - generic [ref=e70]:
-              - img [ref=e71]
+        - img [ref=e67]
+        - generic [ref=e69]:
+          - paragraph [ref=e70]: Я принимаю Пользовательское соглашение и Политику конфиденциальности, а также согласен на обработку персональных данных
+          - generic [ref=e71]:
+            - generic [ref=e72]:
+              - img [ref=e73]
               - text: Пользовательское соглашение
-            - generic [ref=e75]:
-              - img [ref=e76]
+            - generic [ref=e77]:
+              - img [ref=e78]
               - text: Политика конфиденциальности
-    - generic [ref=e80]:
-      - link "Уже есть код восстановления?" [ref=e81] [cursor=pointer]:
+    - generic [ref=e82]:
+      - link "Уже есть код восстановления?" [ref=e83] [cursor=pointer]:
         - /url: /recovery/
-        - img [ref=e82]
+        - img [ref=e84]
         - text: Уже есть код восстановления?
-      - button "Начать" [disabled] [ref=e86]:
+      - button "Начать" [active] [ref=e88] [cursor=pointer]:
         - text: Начать
-        - img [ref=e87]
+        - img [ref=e89]
 ```
