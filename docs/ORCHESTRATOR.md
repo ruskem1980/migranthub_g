@@ -40,8 +40,8 @@
 ### Phase 3: Integration
 | # | Задача | Статус | Результат | Верификация |
 |---|--------|--------|-----------|-------------|
-| 9 | Auth Flow Refactor | 🔄 IN_PROGRESS | - | - |
-| 10 | Paywall & Triggers | ⏳ PENDING | - | - |
+| 9 | Auth Flow Refactor | ✅ DONE | OK | PASS |
+| 10 | Paywall & Triggers | 🔄 IN_PROGRESS | - | - |
 | 11 | Migration & Cleanup | ⏳ PENDING | - | - |
 
 ### Phase 4: Testing

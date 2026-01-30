@@ -102,19 +102,11 @@ export function useAuth() {
     }
   }, [logoutStore, resetProfile, resetApp, router]);
 
-  // Check if user is authenticated and onboarded
+  // Check if user is authenticated
+  // NOTE: Lazy Auth flow - onboarding is optional, no redirect
   const checkAuth = useCallback(() => {
-    if (!isAuthenticated) {
-      return false;
-    }
-
-    if (!hasCompletedOnboarding) {
-      router.push('/onboarding');
-      return false;
-    }
-
-    return true;
-  }, [isAuthenticated, hasCompletedOnboarding, router]);
+    return isAuthenticated;
+  }, [isAuthenticated]);
 
   return {
     user,

@@ -1,13 +1,12 @@
 import { redirect } from 'next/navigation';
 
 /**
- * Единый поток приложения:
- * 1. Welcome (язык + акцепт) → только первый запуск
- * 2. Auth (авторизация) → только первый раз
- * 3. Profiling (профилирование) → после авторизации
- * 4. Dashboard → основное приложение
+ * Lazy Auth Flow:
+ * - Приложение открывается сразу на dashboard
+ * - Анонимные пользователи видят AnonymousDashboard
+ * - Регистрация происходит только когда пользователю нужны premium-функции
  */
 export default function Home() {
-  // Server-side redirect to welcome page
-  redirect('/welcome');
+  // Редирект на группу (main), которая обслуживает dashboard
+  redirect('/dashboard');
 }
