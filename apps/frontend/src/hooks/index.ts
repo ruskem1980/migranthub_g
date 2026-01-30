@@ -7,6 +7,7 @@ export { useLanguagePreference } from './useLanguagePreference';
 export { useTTS } from './useTTS';
 export { usePushNotifications } from './usePushNotifications';
 export { useQuickRegistration } from './useQuickRegistration';
+export { useDeadlines } from './useDeadlines';
 
 export type { UseDeepLinksReturn } from './useDeepLinks';
 export type { UseLanguagePreferenceReturn } from './useLanguagePreference';
