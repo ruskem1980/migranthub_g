@@ -6,8 +6,10 @@ export { useDeepLinks } from './useDeepLinks';
 export { useLanguagePreference } from './useLanguagePreference';
 export { useTTS } from './useTTS';
 export { usePushNotifications } from './usePushNotifications';
+export { useQuickRegistration } from './useQuickRegistration';
 
 export type { UseDeepLinksReturn } from './useDeepLinks';
 export type { UseLanguagePreferenceReturn } from './useLanguagePreference';
 export type { UseTTSReturn } from './useTTS';
 export type { UsePushNotificationsReturn } from './usePushNotifications';
+export type { UseQuickRegistrationReturn, RegistrationPrefillData } from './useQuickRegistration';

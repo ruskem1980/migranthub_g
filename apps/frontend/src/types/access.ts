@@ -103,9 +103,10 @@ export function getFeatureLockReason(
 
 /**
  * Quick profile for fast registration (3 fields only)
+ * Used in bottom sheet registration flow
  */
 export interface QuickProfile {
-  phone: string;
   citizenship: string;
   entryDate: string;
+  region: string;
 }

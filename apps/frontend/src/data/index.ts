@@ -50,3 +50,12 @@ export {
   formatPrice,
   type PatentRegionPrice,
 } from './patentPrices';
+
+export {
+  citizenshipOptions,
+  russianRegions,
+  getCitizenshipByValue,
+  getRegionByValue,
+  type CitizenshipOption,
+  type RegionOption,
+} from './registration-options';
