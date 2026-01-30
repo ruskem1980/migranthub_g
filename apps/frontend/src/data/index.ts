@@ -59,3 +59,17 @@ export {
   type CitizenshipOption,
   type RegionOption,
 } from './registration-options';
+
+export {
+  emergencyServices,
+  hotlines,
+  embassies,
+  emergencyGuides,
+  getEmbassyByCountryCode,
+  getEmbassiesSortedByCitizenship,
+  getEmergencyGuideById,
+  type EmergencyService,
+  type Hotline,
+  type Embassy,
+  type EmergencyGuide,
+} from './emergency-contacts';

@@ -27,12 +27,12 @@
 | 1 | Stores & Types | ✅ DONE | OK | PASS |
 | 2 | Anonymous Components | ✅ DONE | OK | PASS |
 | 3 | Quick Registration | ✅ DONE | OK | PASS |
-| 4 | SOS Screen | 🔄 IN_PROGRESS | - | - |
+| 4 | SOS Screen | ✅ DONE | OK | PASS |
 
 ### Phase 2: Screens
 | # | Задача | Статус | Результат | Верификация |
 |---|--------|--------|-----------|-------------|
-| 5 | Anonymous Dashboard | ⏳ PENDING | - | - |
+| 5 | Anonymous Dashboard | 🔄 IN_PROGRESS | - | - |
 | 6 | Checks Screen | ⏳ PENDING | - | - |
 | 7 | Personal Dashboard | ⏳ PENDING | - | - |
 | 8 | Bottom Navigation | ⏳ PENDING | - | - |
