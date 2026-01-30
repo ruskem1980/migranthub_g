@@ -1,6 +1,6 @@
 'use client';
 
-import { QrCode, ChevronRight, History, Lock, Edit2, Globe, Trash2, X, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert, ClipboardList, Volume2, AlertTriangle } from 'lucide-react';
+import { QrCode, ChevronRight, History, Lock, Edit2, Globe, Trash2, X, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert, ClipboardList, Volume2, AlertTriangle, MoreHorizontal } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -59,47 +59,6 @@ function DaysCounter({ days, label }: { days: number; label: string }) {
       <span className={`text-xl font-bold ${color}`}>{days}</span>
       <span className="text-xs text-gray-500 block">{label}</span>
     </div>
-  );
-}
-
-// Helper component: Quick Action Card
-function QuickActionCard({
-  icon: Icon,
-  title,
-  subtitle,
-  onClick,
-  color
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  subtitle?: string;
-  onClick: () => void;
-  color: 'blue' | 'amber' | 'teal' | 'purple' | 'indigo';
-}) {
-  const bgColors = {
-    blue: 'bg-blue-50 border-blue-200 hover:bg-blue-100',
-    amber: 'bg-amber-50 border-amber-200 hover:bg-amber-100',
-    teal: 'bg-teal-50 border-teal-200 hover:bg-teal-100',
-    purple: 'bg-purple-50 border-purple-200 hover:bg-purple-100',
-    indigo: 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100',
-  };
-  const iconColors = {
-    blue: 'text-blue-600',
-    amber: 'text-amber-600',
-    teal: 'text-teal-600',
-    purple: 'text-purple-600',
-    indigo: 'text-indigo-600',
-  };
-
-  return (
-    <button
-      onClick={onClick}
-      className={`p-4 rounded-xl border-2 ${bgColors[color]} transition-all active:scale-95 text-left`}
-    >
-      <Icon className={`w-6 h-6 ${iconColors[color]} mb-2`} />
-      <h4 className="font-semibold text-gray-900 text-sm">{title}</h4>
-      {subtitle && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{subtitle}</p>}
-    </button>
   );
 }
 
@@ -411,7 +370,7 @@ export function HomeScreen() {
 
       {/* Progress Roadmap */}
       <div className="px-4 py-2">
-        <ProgressRoadmap checkedDocs={checkedDocs} daysRemaining={daysRemaining} />
+        <ProgressRoadmap checkedDocs={checkedDocs} />
       </div>
 
       {/* Quick Actions Grid */}
@@ -419,35 +378,67 @@ export function HomeScreen() {
         <h3 className="text-sm font-semibold text-gray-700 mb-3">
           {t('dashboard.quickActions')}
         </h3>
-        <div className="grid grid-cols-2 gap-3">
-          <QuickActionCard
-            icon={FileCheck}
-            title={t('dashboard.hero.title')}
-            subtitle={t('dashboard.hero.subtitle')}
+
+        {/* Primary Actions - 2 big buttons */}
+        <div className="space-y-3 mb-4">
+          <button
             onClick={() => setShowWizard(true)}
-            color="blue"
-          />
-          <QuickActionCard
-            icon={ShieldAlert}
-            title={t('services.banCheck.title')}
-            subtitle={t('services.banCheck.subtitle')}
+            className="w-full flex items-center gap-4 p-4 bg-blue-600 text-white rounded-xl active:bg-blue-700 shadow-md"
+          >
+            <FileCheck className="w-7 h-7 flex-shrink-0" />
+            <div className="text-left flex-1">
+              <h4 className="font-bold text-base">{t('dashboard.hero.title')}</h4>
+              <p className="text-sm text-blue-100">{t('dashboard.hero.subtitle')}</p>
+            </div>
+            <ChevronRight className="w-5 h-5 flex-shrink-0" />
+          </button>
+
+          <button
             onClick={() => setShowBanChecker(true)}
-            color="amber"
-          />
-          <QuickActionCard
-            icon={Calculator}
-            title={t('services.items.calculator.title')}
-            subtitle={t('services.items.calculator.subtitle')}
+            className="w-full flex items-center gap-4 p-4 bg-amber-500 text-white rounded-xl active:bg-amber-600 shadow-md"
+          >
+            <ShieldAlert className="w-7 h-7 flex-shrink-0" />
+            <div className="text-left flex-1">
+              <h4 className="font-bold text-base">{t('services.banCheck.title')}</h4>
+              <p className="text-sm text-amber-100">{t('services.banCheck.subtitle')}</p>
+            </div>
+            <ChevronRight className="w-5 h-5 flex-shrink-0" />
+          </button>
+        </div>
+
+        {/* Secondary Actions - compact grid */}
+        <div className="grid grid-cols-4 gap-2">
+          <button
             onClick={() => router.push('/calculator')}
-            color="teal"
-          />
-          <QuickActionCard
-            icon={ClipboardList}
-            title={t('services.items.applications.title')}
-            subtitle={t('services.items.applications.subtitle')}
+            className="flex flex-col items-center p-3 bg-white rounded-xl border-2 border-gray-200 active:border-teal-400 active:bg-teal-50"
+          >
+            <Calculator className="w-6 h-6 text-teal-600 mb-1" />
+            <span className="text-xs text-gray-700 font-medium text-center line-clamp-1">{t('services.items.calculator.title')}</span>
+          </button>
+
+          <button
             onClick={() => router.push('/applications')}
-            color="indigo"
-          />
+            className="flex flex-col items-center p-3 bg-white rounded-xl border-2 border-gray-200 active:border-indigo-400 active:bg-indigo-50"
+          >
+            <ClipboardList className="w-6 h-6 text-indigo-600 mb-1" />
+            <span className="text-xs text-gray-700 font-medium text-center line-clamp-1">{t('services.items.applications.title')}</span>
+          </button>
+
+          <button
+            onClick={() => setShowHistory(true)}
+            className="flex flex-col items-center p-3 bg-white rounded-xl border-2 border-gray-200 active:border-purple-400 active:bg-purple-50"
+          >
+            <History className="w-6 h-6 text-purple-600 mb-1" />
+            <span className="text-xs text-gray-700 font-medium text-center line-clamp-1">{t('history.title')}</span>
+          </button>
+
+          <button
+            onClick={() => setShowOtherServices(true)}
+            className="flex flex-col items-center p-3 bg-white rounded-xl border-2 border-gray-200 active:border-gray-400 active:bg-gray-100"
+          >
+            <MoreHorizontal className="w-6 h-6 text-gray-600 mb-1" />
+            <span className="text-xs text-gray-700 font-medium text-center line-clamp-1">{t('common.more')}</span>
+          </button>
         </div>
       </div>
 
