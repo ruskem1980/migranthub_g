@@ -10,6 +10,7 @@ import { useTranslation, LANGUAGES } from '@/lib/i18n';
 import { CloudSafeSection } from '@/components/settings/CloudSafeSection';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useProfileStore, useAppStore } from '@/lib/stores';
+import { ProgressRoadmap } from '@/components/ui/ProgressRoadmap';
 import {
   COUNTRIES,
   PRIORITY_COUNTRIES,
@@ -86,91 +87,6 @@ function UrgentTaskCard({ task }: {
       >
         {task.action}
       </button>
-    </div>
-  );
-}
-
-// Helper component: Progress Roadmap (simple version)
-function ProgressRoadmap({
-  checkedDocs,
-}: {
-  checkedDocs: string[];
-}) {
-  const { language } = useTranslation();
-
-  const steps = [
-    {
-      id: 'entry',
-      title: language === 'ru' ? 'Въезд' : 'Entry',
-      docs: ['passport', 'mig_card'],
-      icon: '1'
-    },
-    {
-      id: 'registration',
-      title: language === 'ru' ? 'Регистрация' : 'Registration',
-      docs: ['registration'],
-      icon: '2'
-    },
-    {
-      id: 'work',
-      title: language === 'ru' ? 'Работа' : 'Work',
-      docs: ['patent', 'contract', 'inn'],
-      icon: '3'
-    },
-    {
-      id: 'legal',
-      title: language === 'ru' ? 'Легализация' : 'Legal',
-      docs: ['green_card', 'education', 'insurance'],
-      icon: '4'
-    },
-  ];
-
-  const getStepStatus = (docs: string[]) => {
-    const completed = docs.filter(d => checkedDocs.includes(d)).length;
-    if (completed === docs.length) return 'completed';
-    if (completed > 0) return 'in_progress';
-    return 'pending';
-  };
-
-  return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4">
-      <h3 className="text-sm font-semibold text-gray-700 mb-3">
-        {language === 'ru' ? 'Прогресс легализации' : 'Legalization progress'}
-      </h3>
-      <div className="flex items-center justify-between">
-        {steps.map((step, index) => {
-          const status = getStepStatus(step.docs);
-          return (
-            <div key={step.id} className="flex items-center">
-              <div className="flex flex-col items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
-                  status === 'completed'
-                    ? 'bg-green-500 text-white'
-                    : status === 'in_progress'
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-200 text-gray-500'
-                }`}>
-                  {status === 'completed' ? <Check className="w-4 h-4" /> : step.icon}
-                </div>
-                <span className={`text-xs mt-1 ${
-                  status === 'completed'
-                    ? 'text-green-600 font-medium'
-                    : status === 'in_progress'
-                      ? 'text-blue-600 font-medium'
-                      : 'text-gray-400'
-                }`}>
-                  {step.title}
-                </span>
-              </div>
-              {index < steps.length - 1 && (
-                <div className={`w-8 h-0.5 mx-1 ${
-                  status === 'completed' ? 'bg-green-500' : 'bg-gray-200'
-                }`} />
-              )}
-            </div>
-          );
-        })}
-      </div>
     </div>
   );
 }
@@ -292,6 +208,16 @@ export function HomeScreen() {
     return tasks;
   }, [daysRemaining, checkedDocs, editPurpose, t, language]);
 
+  // Roadmap steps for progress visualization
+  const roadmapSteps = useMemo(() => [
+    { id: 'passport', label: t('documents.types.passport'), completed: checkedDocs.includes('passport') },
+    { id: 'mig_card', label: t('documents.types.migCard'), completed: checkedDocs.includes('mig_card') },
+    { id: 'registration', label: t('documents.types.registration'), completed: checkedDocs.includes('registration') },
+    { id: 'patent', label: t('documents.types.patent'), completed: checkedDocs.includes('patent') },
+    { id: 'inn', label: t('documents.types.inn'), completed: checkedDocs.includes('inn') },
+    { id: 'insurance', label: t('documents.types.insurance'), completed: checkedDocs.includes('insurance') },
+  ], [checkedDocs, t]);
+
   // Generate QR code data
   const qrData = useMemo(() => {
     const country = getCountryByIso(editCitizenship);
@@ -369,8 +295,8 @@ export function HomeScreen() {
       )}
 
       {/* Progress Roadmap */}
-      <div className="px-4 py-2">
-        <ProgressRoadmap checkedDocs={checkedDocs} />
+      <div className="px-4 mt-4">
+        <ProgressRoadmap steps={roadmapSteps} />
       </div>
 
       {/* Quick Actions Grid */}
