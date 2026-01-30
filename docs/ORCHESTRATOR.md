@@ -33,8 +33,8 @@
 | # | Задача | Статус | Результат | Верификация |
 |---|--------|--------|-----------|-------------|
 | 5 | Anonymous Dashboard | ✅ DONE | OK | PASS |
-| 6 | Checks Screen | 🔄 IN_PROGRESS | - | - |
-| 7 | Personal Dashboard | ⏳ PENDING | - | - |
+| 6 | Checks Screen | ✅ DONE | OK | PASS |
+| 7 | Personal Dashboard | 🔄 IN_PROGRESS | - | - |
 | 8 | Bottom Navigation | ⏳ PENDING | - | - |
 
 ### Phase 3: Integration
