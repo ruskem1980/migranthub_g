@@ -1,6 +1,7 @@
 export { DocumentWizard } from './DocumentWizard';
 export { DocumentFormWrapper } from './DocumentFormWrapper';
 export { PassportForm } from './PassportForm';
+export { PassportWizard } from './PassportWizard';
 export { MigrationCardForm } from './MigrationCardForm';
 export { PatentForm } from './PatentForm';
 export { RegistrationForm } from './RegistrationForm';
