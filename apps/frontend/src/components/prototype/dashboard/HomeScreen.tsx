@@ -1,8 +1,9 @@
 'use client';
 
-import { QrCode, ChevronRight, History, Lock, Edit2, Globe, Trash2, X, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert, ClipboardList, Volume2, FileText, GraduationCap } from 'lucide-react';
+import { QrCode, ChevronRight, History, Lock, Edit2, Globe, Trash2, X, Languages, Briefcase, Home as HomeIcon, Calculator, Shield, MapPin, FileCheck, Check, ShieldAlert, ClipboardList, Volume2, AlertTriangle } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { LegalizationWizard } from '../wizard/LegalizationWizard';
 import { BanChecker } from '@/features/services/components/BanChecker';
 import { useTranslation, LANGUAGES } from '@/lib/i18n';
@@ -29,10 +30,197 @@ function getInitials(fullName: string): string {
   return fullName.slice(0, 2).toUpperCase();
 }
 
+// Helper component: Status Badge
+function StatusBadge({ status }: { status: 'legal' | 'risk' | 'illegal' }) {
+  const colors = {
+    legal: 'bg-green-500',
+    risk: 'bg-yellow-500',
+    illegal: 'bg-red-500',
+  };
+  const { t } = useTranslation();
+  const labels = {
+    legal: t('dashboard.statusValues.legal'),
+    risk: t('dashboard.statusValues.risk'),
+    illegal: t('dashboard.statusValues.illegal'),
+  };
+  return (
+    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${colors[status]}`}>
+      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+      <span className="text-xs font-bold text-white uppercase">{labels[status]}</span>
+    </div>
+  );
+}
+
+// Helper component: Days Counter
+function DaysCounter({ days, label }: { days: number; label: string }) {
+  const color = days > 30 ? 'text-green-600' : days > 10 ? 'text-yellow-600' : 'text-red-600';
+  return (
+    <div className="text-right">
+      <span className={`text-xl font-bold ${color}`}>{days}</span>
+      <span className="text-xs text-gray-500 block">{label}</span>
+    </div>
+  );
+}
+
+// Helper component: Quick Action Card
+function QuickActionCard({
+  icon: Icon,
+  title,
+  subtitle,
+  onClick,
+  color
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  subtitle?: string;
+  onClick: () => void;
+  color: 'blue' | 'amber' | 'teal' | 'purple' | 'indigo';
+}) {
+  const bgColors = {
+    blue: 'bg-blue-50 border-blue-200 hover:bg-blue-100',
+    amber: 'bg-amber-50 border-amber-200 hover:bg-amber-100',
+    teal: 'bg-teal-50 border-teal-200 hover:bg-teal-100',
+    purple: 'bg-purple-50 border-purple-200 hover:bg-purple-100',
+    indigo: 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100',
+  };
+  const iconColors = {
+    blue: 'text-blue-600',
+    amber: 'text-amber-600',
+    teal: 'text-teal-600',
+    purple: 'text-purple-600',
+    indigo: 'text-indigo-600',
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      className={`p-4 rounded-xl border-2 ${bgColors[color]} transition-all active:scale-95 text-left`}
+    >
+      <Icon className={`w-6 h-6 ${iconColors[color]} mb-2`} />
+      <h4 className="font-semibold text-gray-900 text-sm">{title}</h4>
+      {subtitle && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{subtitle}</p>}
+    </button>
+  );
+}
+
+// Helper component: Urgent Task Card
+function UrgentTaskCard({ task }: {
+  task: {
+    id: string;
+    type: string;
+    title: string;
+    description: string;
+    action: string;
+    actionUrl: string;
+  }
+}) {
+  const router = useRouter();
+  return (
+    <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center justify-between gap-3">
+      <div className="flex-1 min-w-0">
+        <h4 className="font-semibold text-red-800 text-sm truncate">{task.title}</h4>
+        <p className="text-xs text-red-600 truncate">{task.description}</p>
+      </div>
+      <button
+        onClick={() => router.push(task.actionUrl)}
+        className="px-3 py-1.5 bg-red-600 text-white text-xs font-semibold rounded-lg flex-shrink-0 hover:bg-red-700 transition-colors active:scale-95"
+      >
+        {task.action}
+      </button>
+    </div>
+  );
+}
+
+// Helper component: Progress Roadmap (simple version)
+function ProgressRoadmap({
+  checkedDocs,
+}: {
+  checkedDocs: string[];
+}) {
+  const { language } = useTranslation();
+
+  const steps = [
+    {
+      id: 'entry',
+      title: language === 'ru' ? 'Въезд' : 'Entry',
+      docs: ['passport', 'mig_card'],
+      icon: '1'
+    },
+    {
+      id: 'registration',
+      title: language === 'ru' ? 'Регистрация' : 'Registration',
+      docs: ['registration'],
+      icon: '2'
+    },
+    {
+      id: 'work',
+      title: language === 'ru' ? 'Работа' : 'Work',
+      docs: ['patent', 'contract', 'inn'],
+      icon: '3'
+    },
+    {
+      id: 'legal',
+      title: language === 'ru' ? 'Легализация' : 'Legal',
+      docs: ['green_card', 'education', 'insurance'],
+      icon: '4'
+    },
+  ];
+
+  const getStepStatus = (docs: string[]) => {
+    const completed = docs.filter(d => checkedDocs.includes(d)).length;
+    if (completed === docs.length) return 'completed';
+    if (completed > 0) return 'in_progress';
+    return 'pending';
+  };
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-4">
+      <h3 className="text-sm font-semibold text-gray-700 mb-3">
+        {language === 'ru' ? 'Прогресс легализации' : 'Legalization progress'}
+      </h3>
+      <div className="flex items-center justify-between">
+        {steps.map((step, index) => {
+          const status = getStepStatus(step.docs);
+          return (
+            <div key={step.id} className="flex items-center">
+              <div className="flex flex-col items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                  status === 'completed'
+                    ? 'bg-green-500 text-white'
+                    : status === 'in_progress'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-500'
+                }`}>
+                  {status === 'completed' ? <Check className="w-4 h-4" /> : step.icon}
+                </div>
+                <span className={`text-xs mt-1 ${
+                  status === 'completed'
+                    ? 'text-green-600 font-medium'
+                    : status === 'in_progress'
+                      ? 'text-blue-600 font-medium'
+                      : 'text-gray-400'
+                }`}>
+                  {step.title}
+                </span>
+              </div>
+              {index < steps.length - 1 && (
+                <div className={`w-8 h-0.5 mx-1 ${
+                  status === 'completed' ? 'bg-green-500' : 'bg-gray-200'
+                }`} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function HomeScreen() {
   const { t, language, setLanguage: setAppLanguage } = useTranslation();
   const { profile, updateProfile, reset: resetProfile } = useProfileStore();
   const { ttsEnabled, setTtsEnabled } = useAppStore();
+  const router = useRouter();
 
   const [showHistory, setShowHistory] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
@@ -79,12 +267,78 @@ export function HomeScreen() {
     return Math.max(0, diff);
   }, [editEntryDate]);
 
+  // Determine status based on checked documents
+  const status = useMemo((): 'legal' | 'risk' | 'illegal' => {
+    if (checkedDocs.length >= 7) return 'legal';
+    if (checkedDocs.length >= 4) return 'risk';
+    return 'illegal';
+  }, [checkedDocs]);
+
+  // Get country name
+  const countryName = useMemo(() => {
+    const country = getCountryByIso(editCitizenship);
+    if (country) {
+      return `${country.flag} ${country.name[language as SupportedLanguage] || country.name.ru}`;
+    }
+    return editCitizenship;
+  }, [editCitizenship, language]);
+
+  // Calculate urgent tasks
+  const urgentTasks = useMemo(() => {
+    const tasks: Array<{
+      id: string;
+      type: string;
+      title: string;
+      description: string;
+      action: string;
+      actionUrl: string;
+    }> = [];
+
+    // Patent expiring soon
+    if (daysRemaining <= 7 && daysRemaining > 0 && checkedDocs.includes('patent')) {
+      tasks.push({
+        id: 'patent',
+        type: 'urgent',
+        title: t('documents.patent.title'),
+        description: t('dashboard.cards.patent.expiresIn', { days: String(daysRemaining) }),
+        action: t('payment.pay'),
+        actionUrl: '/payment',
+      });
+    }
+
+    // Registration expiring (mock - if registration is checked but days are low)
+    if (daysRemaining <= 14 && daysRemaining > 0 && checkedDocs.includes('registration')) {
+      tasks.push({
+        id: 'registration',
+        type: 'warning',
+        title: t('documents.registration.title'),
+        description: t('dashboard.cards.registration.needExtend'),
+        action: t('common.extend'),
+        actionUrl: '/documents',
+      });
+    }
+
+    // No patent - critical
+    if (!checkedDocs.includes('patent') && editPurpose === 'work') {
+      tasks.push({
+        id: 'no_patent',
+        type: 'critical',
+        title: t('documents.patent.title'),
+        description: language === 'ru' ? 'Требуется для работы' : 'Required for work',
+        action: language === 'ru' ? 'Получить' : 'Get',
+        actionUrl: '/applications',
+      });
+    }
+
+    return tasks;
+  }, [daysRemaining, checkedDocs, editPurpose, t, language]);
+
   // Generate QR code data
   const qrData = useMemo(() => {
     const country = getCountryByIso(editCitizenship);
-    const countryName = country?.name[language as SupportedLanguage] || country?.name.ru || editCitizenship;
+    const countryNameQr = country?.name[language as SupportedLanguage] || country?.name.ru || editCitizenship;
 
-    const status = checkedDocs.length >= 7
+    const statusQr = checkedDocs.length >= 7
       ? 'LEGAL'
       : checkedDocs.length >= 4
         ? 'AT_RISK'
@@ -95,8 +349,8 @@ export function HomeScreen() {
 
     return JSON.stringify({
       name: editFullName,
-      citizenship: countryName,
-      status: status,
+      citizenship: countryNameQr,
+      status: statusQr,
       patentExpiry: patentExpiry.toISOString().split('T')[0],
       daysRemaining: daysRemaining,
       generatedAt: new Date().toISOString(),
@@ -104,18 +358,12 @@ export function HomeScreen() {
   }, [editFullName, editCitizenship, checkedDocs, editEntryDate, daysRemaining, language]);
 
   return (
-    <div className="h-full overflow-y-auto pb-4">
-      {/* Header */}
+    <div className="h-full overflow-y-auto pb-4 bg-gray-50">
+      {/* Compact Header */}
       <div className="px-4 py-3 bg-white border-b border-gray-200 sticky top-0 z-20">
-        {/* Top row: Language switcher */}
-        <div className="flex justify-end mb-2">
-          <LanguageSwitcher variant="compact" />
-        </div>
-
-        {/* Main row: User info + Status + Days */}
         <div className="flex items-center justify-between">
-          {/* Left: User Info + Edit */}
-          <div className="flex items-center gap-2">
+          {/* Left: Avatar + Name */}
+          <div className="flex items-center gap-3">
             <div className="relative">
               <button
                 onClick={() => setShowProfileEdit(true)}
@@ -133,226 +381,80 @@ export function HomeScreen() {
               </button>
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <h2 className="text-lg font-bold text-gray-900">{editFullName}</h2>
-                <button
-                  onClick={() => setShowProfileEdit(true)}
-                  className="p-1 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors active:scale-95"
-                  title={t('profile.editTitle')}
-                >
-                  <Edit2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-              <p className="text-xs text-gray-500">
-                {(() => {
-                  const country = getCountryByIso(editCitizenship);
-                  if (country) {
-                    return `${country.flag} ${country.name[language as SupportedLanguage] || country.name.ru}`;
-                  }
-                  return editCitizenship;
-                })()}
-              </p>
+              <h2 className="font-semibold text-gray-900 text-base">{editFullName || (language === 'ru' ? 'Гость' : 'Guest')}</h2>
+              <p className="text-xs text-gray-500">{countryName}</p>
             </div>
           </div>
 
-          {/* Right: Status Badge + Days Counter */}
+          {/* Right: Status + Days */}
           <div className="flex items-center gap-3">
-            {/* Status Badge */}
-            {checkedDocs.length >= 7 ? (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-green-500 rounded-full">
-                <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
-                <span className="text-base font-bold text-white">{t('dashboard.statusValues.legal')}</span>
-              </div>
-            ) : checkedDocs.length >= 4 ? (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-500 rounded-full">
-                <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
-                <span className="text-base font-bold text-white">{t('dashboard.statusValues.risk')}</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500 rounded-full">
-                <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
-                <span className="text-base font-bold text-white">{t('dashboard.statusValues.illegal')}</span>
-              </div>
-            )}
-
-            <div className="text-right">
-              <p className="text-xs text-gray-500 mb-0.5">{t('dashboard.daysRemaining')}</p>
-              <div className={`text-xl font-bold ${daysRemaining > 30 ? 'text-green-600' : daysRemaining > 10 ? 'text-yellow-600' : 'text-red-600'}`}>
-                {daysRemaining}
-              </div>
-              <p className="text-xs text-gray-500">{t('common.days')}</p>
-            </div>
+            <StatusBadge status={status} />
+            <DaysCounter days={daysRemaining} label={t('common.days')} />
           </div>
         </div>
       </div>
 
-      {/* Hero Section - Two Primary Actions */}
-      <div className="px-4 py-6">
-        <div className="grid grid-cols-2 gap-3">
-          {/* Legalization Wizard with Tooltip */}
-          <div className="relative group/tooltip">
-            <button
-              onClick={() => setShowWizard(true)}
-              className="w-full bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-600 text-white rounded-2xl p-5 shadow-xl hover:shadow-2xl transition-all active:scale-98 relative overflow-hidden group"
-            >
-              {/* Animated Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-              {/* Decorative Elements */}
-              <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-10 translate-x-10"></div>
-
-              {/* Content */}
-              <div className="relative z-10">
-                <div className="flex items-center justify-center mb-3">
-                  <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <FileCheck className="w-7 h-7 text-white" />
-                  </div>
-                </div>
-
-                <h2 className="text-base font-bold text-center mb-1">
-                  {t('dashboard.hero.title')}
-                </h2>
-                <p className="text-center text-blue-100 text-xs">
-                  {t('dashboard.hero.subtitle')}
-                </p>
-              </div>
-            </button>
-            {/* Tooltip */}
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-30">
-              {language === 'ru' ? 'Проверяет: патент, ИНН, запрет въезда, 90/180' : 'Checks: patent, INN, entry ban, 90/180'}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
-            </div>
+      {/* Urgent Tasks Section */}
+      {urgentTasks.length > 0 && (
+        <div className="px-4 py-4">
+          <h3 className="text-sm font-semibold text-red-600 mb-2 flex items-center gap-1">
+            <AlertTriangle className="w-4 h-4" />
+            {t('dashboard.urgent')} ({urgentTasks.length})
+          </h3>
+          <div className="space-y-2">
+            {urgentTasks.map(task => (
+              <UrgentTaskCard key={task.id} task={task} />
+            ))}
           </div>
-
-          {/* Ban Checker */}
-          <button
-            onClick={() => setShowBanChecker(true)}
-            className="bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 text-white rounded-2xl p-5 shadow-xl hover:shadow-2xl transition-all active:scale-98 relative overflow-hidden group"
-          >
-            {/* Animated Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-red-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-            {/* Decorative Elements */}
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-10 translate-x-10"></div>
-
-            {/* Content */}
-            <div className="relative z-10">
-              <div className="flex items-center justify-center mb-3">
-                <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <ShieldAlert className="w-7 h-7 text-white" />
-                </div>
-              </div>
-
-              <h2 className="text-base font-bold text-center mb-1">
-                {t('services.banCheck.title')}
-              </h2>
-              <p className="text-center text-amber-100 text-xs">
-                {t('services.banCheck.subtitle')}
-              </p>
-            </div>
-          </button>
         </div>
+      )}
 
-        {/* Second Row - Calculator & Applications */}
-        <div className="grid grid-cols-2 gap-3 mt-3">
-          {/* Residency Calculator */}
-          <button
-            onClick={() => window.location.href = '/calculator'}
-            className="bg-gradient-to-br from-teal-500 via-emerald-500 to-green-600 text-white rounded-2xl p-5 shadow-xl hover:shadow-2xl transition-all active:scale-98 relative overflow-hidden group"
-          >
-            {/* Animated Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-green-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-            {/* Decorative Elements */}
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-10 translate-x-10"></div>
-
-            {/* Content */}
-            <div className="relative z-10">
-              <div className="flex items-center justify-center mb-3">
-                <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <Calculator className="w-7 h-7 text-white" />
-                </div>
-              </div>
-
-              <h2 className="text-base font-bold text-center mb-1">
-                {t('services.items.calculator.title')}
-              </h2>
-              <p className="text-center text-teal-100 text-xs">
-                {t('services.items.calculator.subtitle')}
-              </p>
-            </div>
-          </button>
-
-          {/* My Applications */}
-          <button
-            onClick={() => window.location.href = '/applications'}
-            className="bg-gradient-to-br from-indigo-500 via-purple-500 to-violet-600 text-white rounded-2xl p-5 shadow-xl hover:shadow-2xl transition-all active:scale-98 relative overflow-hidden group"
-          >
-            {/* Animated Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-400 to-violet-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-            {/* Decorative Elements */}
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-10 translate-x-10"></div>
-
-            {/* Content */}
-            <div className="relative z-10">
-              <div className="flex items-center justify-center mb-3">
-                <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <ClipboardList className="w-7 h-7 text-white" />
-                </div>
-              </div>
-
-              <h2 className="text-base font-bold text-center mb-1">
-                {t('services.items.applications.title')}
-              </h2>
-              <p className="text-center text-indigo-100 text-xs">
-                {t('services.items.applications.subtitle')}
-              </p>
-            </div>
-          </button>
-        </div>
+      {/* Progress Roadmap */}
+      <div className="px-4 py-2">
+        <ProgressRoadmap checkedDocs={checkedDocs} daysRemaining={daysRemaining} />
       </div>
 
-      {/* Task Carousel */}
-      <div className="px-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">
-          {t('dashboard.attentionRequired')}
+      {/* Quick Actions Grid */}
+      <div className="px-4 py-4">
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">
+          {t('dashboard.quickActions')}
         </h3>
-
         <div className="grid grid-cols-2 gap-3">
-          {/* Urgent Card - Patent */}
-          <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-4 shadow-xl">
-            <div className="inline-block px-2 py-0.5 bg-white/20 rounded-md text-xs font-semibold text-white mb-2">
-              {t('common.urgent')}
-            </div>
-            <h4 className="text-white font-bold text-base mb-1">
-              {t('documents.patent.title')}
-            </h4>
-            <p className="text-white/90 text-xs mb-3">
-              {t('dashboard.cards.patent.expiresIn', { days: '3' })}
-            </p>
-            <button className="w-full bg-white text-red-600 font-semibold py-2.5 px-3 rounded-xl hover:bg-gray-50 transition-colors active:scale-98 flex items-center justify-center shadow-lg text-sm">
-              {t('payment.pay')}
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </button>
-          </div>
+          <QuickActionCard
+            icon={FileCheck}
+            title={t('dashboard.hero.title')}
+            subtitle={t('dashboard.hero.subtitle')}
+            onClick={() => setShowWizard(true)}
+            color="blue"
+          />
+          <QuickActionCard
+            icon={ShieldAlert}
+            title={t('services.banCheck.title')}
+            subtitle={t('services.banCheck.subtitle')}
+            onClick={() => setShowBanChecker(true)}
+            color="amber"
+          />
+          <QuickActionCard
+            icon={Calculator}
+            title={t('services.items.calculator.title')}
+            subtitle={t('services.items.calculator.subtitle')}
+            onClick={() => router.push('/calculator')}
+            color="teal"
+          />
+          <QuickActionCard
+            icon={ClipboardList}
+            title={t('services.items.applications.title')}
+            subtitle={t('services.items.applications.subtitle')}
+            onClick={() => router.push('/applications')}
+            color="indigo"
+          />
+        </div>
+      </div>
 
-          {/* Secondary Card - Registration */}
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-4 shadow-lg">
-            <div className="inline-block px-2 py-0.5 bg-white/20 rounded-md text-xs font-semibold text-white mb-2">
-              {t('common.new')}
-            </div>
-            <h4 className="text-white font-bold text-base mb-1">
-              {t('documents.registration.title')}
-            </h4>
-            <p className="text-white/90 text-xs mb-3">
-              {t('dashboard.cards.registration.needExtend')}
-            </p>
-            <button className="w-full bg-white text-blue-600 font-semibold py-2.5 px-3 rounded-xl hover:bg-gray-50 transition-colors active:scale-98 flex items-center justify-center shadow-lg text-sm">
-              {t('common.extend')}
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </button>
-          </div>
+      {/* Language Switcher row */}
+      <div className="px-4 pb-4">
+        <div className="flex justify-center">
+          <LanguageSwitcher variant="compact" />
         </div>
       </div>
 
@@ -363,10 +465,10 @@ export function HomeScreen() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <History className="w-6 h-6 text-purple-600" />
-                <h3 className="text-xl font-bold text-gray-900">📜 {t('history.title')}</h3>
+                <h3 className="text-xl font-bold text-gray-900">{t('history.title')}</h3>
               </div>
               <button onClick={() => setShowHistory(false)} className="p-2 hover:bg-gray-100 rounded-full">
-                ✕
+                <X className="w-6 h-6" />
               </button>
             </div>
 
@@ -379,7 +481,7 @@ export function HomeScreen() {
                   <h4 className="font-bold text-gray-900">{t('history.items.patentPayment')}</h4>
                   <span className="text-xs text-gray-500">15.01.2024</span>
                 </div>
-                <p className="text-sm text-gray-600">{t('history.details.amount')}: 5,000₽</p>
+                <p className="text-sm text-gray-600">{t('history.details.amount')}: 5,000</p>
                 <div className="flex items-center gap-1 mt-1">
                   <Lock className="w-3 h-3 text-green-600" />
                   <span className="text-xs text-green-600 font-medium">{t('common.encrypted')}</span>
@@ -403,7 +505,7 @@ export function HomeScreen() {
                   <h4 className="font-bold text-gray-900">{t('history.items.medicalCertificate')}</h4>
                   <span className="text-xs text-gray-500">05.01.2024</span>
                 </div>
-                <p className="text-sm text-gray-600">{t('history.details.receivedAt')} ММЦ №3</p>
+                <p className="text-sm text-gray-600">{t('history.details.receivedAt')} MMC #3</p>
                 <div className="flex items-center gap-1 mt-1">
                   <Lock className="w-3 h-3 text-purple-600" />
                   <span className="text-xs text-purple-600 font-medium">{t('common.encrypted')}</span>
@@ -415,7 +517,7 @@ export function HomeScreen() {
                   <h4 className="font-bold text-gray-900">{t('history.items.entryRF')}</h4>
                   <span className="text-xs text-gray-500">01.01.2024</span>
                 </div>
-                <p className="text-sm text-gray-600">{t('history.details.border')}: Домодедово</p>
+                <p className="text-sm text-gray-600">{t('history.details.border')}: Domodedovo</p>
                 <div className="flex items-center gap-1 mt-1">
                   <Lock className="w-3 h-3 text-orange-600" />
                   <span className="text-xs text-orange-600 font-medium">{t('common.encrypted')}</span>
@@ -478,7 +580,7 @@ export function HomeScreen() {
                     .map(country => (
                       <option key={country.iso} value={country.iso}>
                         {country.flag} {country.name[language as SupportedLanguage] || country.name.ru}
-                        {isEAEUCountry(country.iso) ? ' (ЕАЭС)' : ''}
+                        {isEAEUCountry(country.iso) ? ' (EAEU)' : ''}
                       </option>
                     ))
                   }
@@ -503,7 +605,7 @@ export function HomeScreen() {
                 {isEAEUCountry(editCitizenship) && (
                   <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg">
                     <p className="text-xs text-green-800">
-                      ✅ {t('profile.eaeuNote')}
+                      {t('profile.eaeuNote')}
                     </p>
                   </div>
                 )}
@@ -520,9 +622,9 @@ export function HomeScreen() {
                   className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   {/* Top 3 cities with icons */}
-                  <option value="moscow">🏙️ {RUSSIAN_CITIES.find(c => c.id === 'moscow')?.name[language === 'en' ? 'en' : 'ru'] || 'Москва'}</option>
-                  <option value="saint-petersburg">🏛️ {RUSSIAN_CITIES.find(c => c.id === 'saint-petersburg')?.name[language === 'en' ? 'en' : 'ru'] || 'Санкт-Петербург'}</option>
-                  <option value="novosibirsk">❄️ {RUSSIAN_CITIES.find(c => c.id === 'novosibirsk')?.name[language === 'en' ? 'en' : 'ru'] || 'Новосибирск'}</option>
+                  <option value="moscow">{RUSSIAN_CITIES.find(c => c.id === 'moscow')?.name[language === 'en' ? 'en' : 'ru'] || 'Moscow'}</option>
+                  <option value="saint-petersburg">{RUSSIAN_CITIES.find(c => c.id === 'saint-petersburg')?.name[language === 'en' ? 'en' : 'ru'] || 'St. Petersburg'}</option>
+                  <option value="novosibirsk">{RUSSIAN_CITIES.find(c => c.id === 'novosibirsk')?.name[language === 'en' ? 'en' : 'ru'] || 'Novosibirsk'}</option>
                   <option disabled>──────────</option>
                   {/* Other millionaire cities */}
                   {getMillionaireCities()
@@ -583,7 +685,7 @@ export function HomeScreen() {
                   </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
-                  ⚠️ {t('profile.dateHint')}
+                  {t('profile.dateHint')}
                 </p>
               </div>
 
@@ -594,13 +696,13 @@ export function HomeScreen() {
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { value: 'work', label: `💼 ${t('onboarding.profiling.purposes.work')}`, subtitle: t('onboarding.profiling.purposes.workDesc') },
-                    { value: 'study', label: `📚 ${t('onboarding.profiling.purposes.study')}`, subtitle: t('onboarding.profiling.purposes.studyDesc') },
-                    { value: 'tourism', label: `✈️ ${t('onboarding.profiling.purposes.tourism')}`, subtitle: t('onboarding.profiling.purposes.tourismDesc') },
-                    { value: 'private', label: `🏠 ${t('onboarding.profiling.purposes.private')}`, subtitle: t('onboarding.profiling.purposes.privateDesc') },
-                    { value: 'business', label: `💼 ${t('onboarding.profiling.purposes.business')}`, subtitle: t('onboarding.profiling.purposes.businessDesc') },
-                    { value: 'official', label: `🏛️ ${t('onboarding.profiling.purposes.official')}`, subtitle: t('onboarding.profiling.purposes.officialDesc') },
-                    { value: 'transit', label: `🚗 ${t('onboarding.profiling.purposes.transit')}`, subtitle: t('onboarding.profiling.purposes.transitDesc') },
+                    { value: 'work', label: t('onboarding.profiling.purposes.work'), subtitle: t('onboarding.profiling.purposes.workDesc') },
+                    { value: 'study', label: t('onboarding.profiling.purposes.study'), subtitle: t('onboarding.profiling.purposes.studyDesc') },
+                    { value: 'tourism', label: t('onboarding.profiling.purposes.tourism'), subtitle: t('onboarding.profiling.purposes.tourismDesc') },
+                    { value: 'private', label: t('onboarding.profiling.purposes.private'), subtitle: t('onboarding.profiling.purposes.privateDesc') },
+                    { value: 'business', label: t('onboarding.profiling.purposes.business'), subtitle: t('onboarding.profiling.purposes.businessDesc') },
+                    { value: 'official', label: t('onboarding.profiling.purposes.official'), subtitle: t('onboarding.profiling.purposes.officialDesc') },
+                    { value: 'transit', label: t('onboarding.profiling.purposes.transit'), subtitle: t('onboarding.profiling.purposes.transitDesc') },
                   ].map((option) => (
                     <button
                       key={option.value}
@@ -629,7 +731,7 @@ export function HomeScreen() {
                 </div>
                 <div className="mt-3 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
                   <p className="text-xs text-yellow-800">
-                    ⚠️ {t('profile.purposeHint')}
+                    {t('profile.purposeHint')}
                   </p>
                 </div>
               </div>
@@ -645,36 +747,36 @@ export function HomeScreen() {
                       id: 'foundation',
                       title: t('documents.groups.foundation'),
                       docs: [
-                        { id: 'passport', label: `🛂 ${t('documents.types.passport')}` },
+                        { id: 'passport', label: t('documents.types.passport') },
                       ]
                     },
                     {
                       id: 'entry',
                       title: t('documents.groups.entry'),
                       docs: [
-                        { id: 'mig_card', label: `🎫 ${t('documents.types.migCard')}` },
-                        { id: 'registration', label: `📋 ${t('documents.types.registration')}` },
+                        { id: 'mig_card', label: t('documents.types.migCard') },
+                        { id: 'registration', label: t('documents.types.registration') },
                       ]
                     },
                     {
                       id: 'work',
                       title: t('documents.groups.work'),
                       docs: [
-                        { id: 'green_card', label: `💳 ${t('documents.types.greenCard')}` },
-                        { id: 'education', label: `🎓 ${t('documents.types.education')}` },
-                        { id: 'patent', label: `📄 ${t('documents.types.patent')}` },
-                        { id: 'contract', label: `📝 ${t('documents.types.contract')}` },
+                        { id: 'green_card', label: t('documents.types.greenCard') },
+                        { id: 'education', label: t('documents.types.education') },
+                        { id: 'patent', label: t('documents.types.patent') },
+                        { id: 'contract', label: t('documents.types.contract') },
                       ]
                     },
                     {
                       id: 'support',
                       title: t('documents.groups.support'),
                       docs: [
-                        { id: 'inn', label: `🔢 ${t('documents.types.inn')}` },
-                        { id: 'snils', label: `🆔 ${t('documents.types.snils')}` },
-                        { id: 'insurance', label: `🩺 ${t('documents.types.insurance')}` },
-                        { id: 'receipts', label: `🧾 ${t('documents.types.receipts')}` },
-                        { id: 'family', label: `💍 ${t('documents.types.family')}` },
+                        { id: 'inn', label: t('documents.types.inn') },
+                        { id: 'snils', label: t('documents.types.snils') },
+                        { id: 'insurance', label: t('documents.types.insurance') },
+                        { id: 'receipts', label: t('documents.types.receipts') },
+                        { id: 'family', label: t('documents.types.family') },
                       ]
                     },
                   ].map((group, index) => (
@@ -727,22 +829,7 @@ export function HomeScreen() {
                 <div className="mt-4 p-3 rounded-xl border-2 bg-gradient-to-br from-gray-50 to-gray-100">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-gray-700">{t('common.status')}:</span>
-                    {checkedDocs.length >= 7 ? (
-                      <div className="flex items-center gap-1.5 px-3 py-1 bg-green-500 rounded-full">
-                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                        <span className="text-xs font-bold text-white">{t('dashboard.statusValues.legal')}</span>
-                      </div>
-                    ) : checkedDocs.length >= 4 ? (
-                      <div className="flex items-center gap-1.5 px-3 py-1 bg-yellow-500 rounded-full">
-                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                        <span className="text-xs font-bold text-white">{t('dashboard.statusValues.risk')}</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1.5 px-3 py-1 bg-red-500 rounded-full">
-                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                        <span className="text-xs font-bold text-white">{t('dashboard.statusValues.illegal')}</span>
-                      </div>
-                    )}
+                    <StatusBadge status={status} />
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
                     {t('profile.documentsCount')}: {checkedDocs.length} {t('common.outOf')} 12
@@ -759,7 +846,7 @@ export function HomeScreen() {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     {t('profile.settings.interfaceLanguage')}
                   </label>
-                  <button 
+                  <button
                     onClick={() => setShowLanguageModal(true)}
                     className="w-full flex items-center justify-between px-4 py-3 bg-white border-2 border-gray-200 rounded-xl hover:border-gray-300 transition-colors"
                   >
@@ -768,7 +855,7 @@ export function HomeScreen() {
                       <span className="font-medium text-gray-700">
                         {LANGUAGES.find(l => l.code === language)
                           ? `${LANGUAGES.find(l => l.code === language)?.flag} ${LANGUAGES.find(l => l.code === language)?.nativeName}`
-                          : `🌐 ${language}`}
+                          : `${language}`}
                       </span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-gray-400" />
@@ -920,7 +1007,7 @@ export function HomeScreen() {
 
               {/* Calculator */}
               <button
-                onClick={() => window.location.href = '/calculator'}
+                onClick={() => router.push('/calculator')}
                 className="bg-blue-50 border-2 border-gray-200 rounded-2xl p-5 transition-all hover:scale-105 active:scale-100 shadow-md"
               >
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-3 shadow-md mx-auto">
@@ -985,11 +1072,11 @@ export function HomeScreen() {
                 <h3 className="text-xl font-bold text-gray-900">{t('languages.selectTitle')}</h3>
                 <p className="text-sm text-gray-500">{t('languages.selectSubtitle')}</p>
               </div>
-              <button 
+              <button
                 onClick={() => {
                   setShowLanguageModal(false);
                   setShowAILanguages(false);
-                }} 
+                }}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
                 <X className="w-6 h-6 text-gray-600" />
@@ -1038,7 +1125,7 @@ export function HomeScreen() {
                     <Globe className="w-5 h-5 text-white" />
                   </div>
                   <div className="text-left">
-                    <p className="font-semibold text-gray-900">🌍 {t('languages.otherLanguages')}</p>
+                    <p className="font-semibold text-gray-900">{t('languages.otherLanguages')}</p>
                     <p className="text-xs text-gray-600">{t('languages.aiTranslation')}</p>
                   </div>
                 </div>
@@ -1050,15 +1137,15 @@ export function HomeScreen() {
                 <div className="mt-3 space-y-2 pl-4">
                   {[
                     { code: 'en', flag: '🇬🇧', name: 'English' },
-                    { code: 'ar', flag: '🇸🇦', name: 'العربية' },
-                    { code: 'fa', flag: '🇮🇷', name: 'فارسی' },
-                    { code: 'tr', flag: '🇹🇷', name: 'Türkçe' },
-                    { code: 'hi', flag: '🇮🇳', name: 'हिन्दी' },
-                    { code: 'zh', flag: '🇨🇳', name: '中文' },
-                    { code: 'vi', flag: '🇻🇳', name: 'Tiếng Việt' },
-                    { code: 'am', flag: '🇦🇲', name: 'Հայերեն' },
-                    { code: 'az', flag: '🇦🇿', name: 'Azərbaycan' },
-                    { code: 'ka', flag: '🇬🇪', name: 'ქართული' },
+                    { code: 'ar', flag: '🇸🇦', name: 'Arabic' },
+                    { code: 'fa', flag: '🇮🇷', name: 'Persian' },
+                    { code: 'tr', flag: '🇹🇷', name: 'Turkish' },
+                    { code: 'hi', flag: '🇮🇳', name: 'Hindi' },
+                    { code: 'zh', flag: '🇨🇳', name: 'Chinese' },
+                    { code: 'vi', flag: '🇻🇳', name: 'Vietnamese' },
+                    { code: 'am', flag: '🇦🇲', name: 'Armenian' },
+                    { code: 'az', flag: '🇦🇿', name: 'Azerbaijani' },
+                    { code: 'ka', flag: '🇬🇪', name: 'Georgian' },
                   ].map((lang) => (
                     <div
                       key={lang.code}
@@ -1158,25 +1245,15 @@ export function HomeScreen() {
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                   <span className="text-sm text-gray-500">{t('profile.fields.citizenship')}</span>
-                  <span className="text-sm font-semibold text-gray-900">
-                    {(() => {
-                      const country = getCountryByIso(editCitizenship);
-                      if (country) {
-                        return `${country.flag} ${country.name[language as SupportedLanguage] || country.name.ru}`;
-                      }
-                      return editCitizenship;
-                    })()}
-                  </span>
+                  <span className="text-sm font-semibold text-gray-900">{countryName}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                   <span className="text-sm text-gray-500">{t('common.status')}</span>
-                  {checkedDocs.length >= 7 ? (
-                    <span className="text-sm font-semibold text-green-600">{t('dashboard.statusValues.legal')}</span>
-                  ) : checkedDocs.length >= 4 ? (
-                    <span className="text-sm font-semibold text-yellow-600">{t('dashboard.statusValues.risk')}</span>
-                  ) : (
-                    <span className="text-sm font-semibold text-red-600">{t('dashboard.statusValues.illegal')}</span>
-                  )}
+                  <span className={`text-sm font-semibold ${
+                    status === 'legal' ? 'text-green-600' : status === 'risk' ? 'text-yellow-600' : 'text-red-600'
+                  }`}>
+                    {status === 'legal' ? t('dashboard.statusValues.legal') : status === 'risk' ? t('dashboard.statusValues.risk') : t('dashboard.statusValues.illegal')}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-sm text-gray-500">{t('dashboard.daysRemaining')}</span>

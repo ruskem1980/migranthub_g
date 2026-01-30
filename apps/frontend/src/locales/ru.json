@@ -1242,6 +1242,7 @@
     "status": "Статус",
     "actions": "Требуемые действия",
     "quickActions": "Быстрые действия",
+    "urgent": "Требует внимания",
     "recentDocuments": "Недавние документы",
     "notifications": "Уведомления",
     "noNotifications": "Нет новых уведомлений",

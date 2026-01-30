@@ -1242,6 +1242,7 @@
     "status": "Status",
     "actions": "Required actions",
     "quickActions": "Quick actions",
+    "urgent": "Requires attention",
     "recentDocuments": "Recent documents",
     "notifications": "Notifications",
     "noNotifications": "No new notifications",

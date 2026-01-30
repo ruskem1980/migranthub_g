@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ShieldCheck, Wallet, LayoutGrid, Bot, Siren, RefreshCw, Cloud, CloudOff } from 'lucide-react';
+import { Home, FolderOpen, Wrench, MessageCircle, AlertTriangle, RefreshCw, Cloud, CloudOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/lib/i18n';
 import { useOfflineQueue } from '@/hooks/useOfflineQueue';
@@ -29,27 +29,27 @@ export function DashboardLayout() {
     {
       id: 'home' as TabId,
       label: t('dashboard.tabs.home'),
-      icon: ShieldCheck,
+      icon: Home,
     },
     {
       id: 'documents' as TabId,
       label: t('dashboard.tabs.documents'),
-      icon: Wallet,
+      icon: FolderOpen,
     },
     {
       id: 'services' as TabId,
       label: t('dashboard.tabs.services'),
-      icon: LayoutGrid,
+      icon: Wrench,
     },
     {
       id: 'assistant' as TabId,
       label: t('dashboard.tabs.assistant'),
-      icon: Bot,
+      icon: MessageCircle,
     },
     {
       id: 'sos' as TabId,
       label: t('dashboard.tabs.sos'),
-      icon: Siren,
+      icon: AlertTriangle,
     },
   ];
 
@@ -152,7 +152,7 @@ export function DashboardLayout() {
                 />
                 <span
                   className={cn(
-                    'text-xs font-medium transition-colors',
+                    'text-sm font-medium transition-colors',
                     isActive
                       ? isSOS
                         ? 'text-red-600'
