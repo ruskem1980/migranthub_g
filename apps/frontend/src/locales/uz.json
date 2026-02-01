@@ -1413,7 +1413,11 @@
       "medical": "Tibbiy guvohnamalar",
       "fingerprints": "Barmoq izlari"
     },
-    "info": "Hujjatlarni olganingizda belgilang. Bu muhim qadamlarni o'tkazib yubormaslikka yordam beradi."
+    "info": "Hujjatlarni olganingizda belgilang. Bu muhim qadamlarni o'tkazib yubormaslikka yordam beradi.",
+    "days_left": "{{count}} kun qoldi",
+    "enter_entry_date": "Muddatlarni hisoblash uchun kirish sanasini kiriting",
+    "specify_entry_date": "Kirish sanasini ko'rsating",
+    "deadline_passed": "Muddat tugadi"
   },
   "assistant": {
     "title": "AI-Yordamchi",

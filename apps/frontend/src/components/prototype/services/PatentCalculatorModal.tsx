@@ -9,6 +9,7 @@ interface PatentRegion {
   code: string;
   name: string;
   monthlyCost: number;
+  coefficient: number;
 }
 
 interface PatentCalculateResponse {
@@ -26,6 +27,26 @@ interface PatentCalculatorModalProps {
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+// Local fallback data for offline mode (2024 rates)
+const BASE_NDFL = 1200;
+const LOCAL_PATENT_REGIONS: PatentRegion[] = [
+  { code: '77', name: 'Москва', coefficient: 2.2591, monthlyCost: 6502 },
+  { code: '50', name: 'Московская область', coefficient: 2.1831, monthlyCost: 6287 },
+  { code: '78', name: 'Санкт-Петербург', coefficient: 1.8315, monthlyCost: 5275 },
+  { code: '47', name: 'Ленинградская область', coefficient: 1.8315, monthlyCost: 5275 },
+  { code: '23', name: 'Краснодарский край', coefficient: 1.8581, monthlyCost: 5351 },
+  { code: '61', name: 'Ростовская область', coefficient: 1.678, monthlyCost: 4832 },
+  { code: '16', name: 'Республика Татарстан', coefficient: 1.8321, monthlyCost: 5277 },
+  { code: '54', name: 'Новосибирская область', coefficient: 1.815, monthlyCost: 5228 },
+  { code: '66', name: 'Свердловская область', coefficient: 1.8791, monthlyCost: 5412 },
+  { code: '63', name: 'Самарская область', coefficient: 1.7098, monthlyCost: 4924 },
+  { code: '52', name: 'Нижегородская область', coefficient: 1.82, monthlyCost: 5242 },
+  { code: '74', name: 'Челябинская область', coefficient: 1.7653, monthlyCost: 5084 },
+  { code: '02', name: 'Республика Башкортостан', coefficient: 1.725, monthlyCost: 4968 },
+  { code: '59', name: 'Пермский край', coefficient: 1.71, monthlyCost: 4925 },
+  { code: '38', name: 'Иркутская область', coefficient: 1.9527, monthlyCost: 5624 },
+];
 
 export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
   const { language } = useLanguageStore();
@@ -62,8 +83,13 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
           setSelectedRegion(moscow);
         }
       } catch (err) {
-        console.error('Error fetching regions:', err);
-        setError(t('services.patentCalculator.loadError'));
+        console.error('Error fetching regions, using local data:', err);
+        // Use local fallback data when API is unavailable
+        setRegions(LOCAL_PATENT_REGIONS);
+        const moscow = LOCAL_PATENT_REGIONS.find(r => r.code === '77');
+        if (moscow) {
+          setSelectedRegion(moscow);
+        }
       } finally {
         setIsLoadingRegions(false);
       }
@@ -81,6 +107,25 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
       region.code.includes(query)
     );
   }, [regions, searchQuery]);
+
+  function calculateLocally(region: PatentRegion, numMonths: number): PatentCalculateResponse {
+    const monthlyPrice = region.monthlyCost;
+    const totalPrice = monthlyPrice * numMonths;
+    const breakdown = Array.from({ length: numMonths }, (_, i) => ({
+      month: i + 1,
+      price: monthlyPrice,
+    }));
+
+    return {
+      regionCode: region.code,
+      regionName: region.name,
+      baseRate: BASE_NDFL,
+      coefficient: region.coefficient,
+      months: numMonths,
+      totalPrice,
+      breakdown,
+    };
+  }
 
   async function handleCalculate() {
     if (!selectedRegion) return;
@@ -105,8 +150,10 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
       const data: PatentCalculateResponse = await response.json();
       setResult(data);
     } catch (err) {
-      console.error('Error calculating patent:', err);
-      setError(t('services.patentCalculator.calcError'));
+      console.error('Error calculating via API, using local calculation:', err);
+      // Calculate locally when API is unavailable
+      const localResult = calculateLocally(selectedRegion, months);
+      setResult(localResult);
     } finally {
       setIsCalculating(false);
     }

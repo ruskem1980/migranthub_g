@@ -1419,7 +1419,11 @@
       "medical": "Medical Certificates",
       "fingerprints": "Fingerprinting"
     },
-    "info": "Check off documents as you receive them. This will help you not miss important steps."
+    "info": "Check off documents as you receive them. This will help you not miss important steps.",
+    "days_left": "{{count}} days left",
+    "enter_entry_date": "Enter your entry date to calculate deadlines",
+    "specify_entry_date": "Specify entry date",
+    "deadline_passed": "Deadline passed"
   },
   "assistant": {
     "title": "AI Assistant",

@@ -286,6 +286,13 @@ const labels: Record<string, Record<Language, string>> = {
     tg: 'Сайти расмии ВКД',
     ky: 'ИИМдин расмий сайты',
   },
+  cancel: {
+    ru: 'Отмена',
+    en: 'Cancel',
+    uz: 'Bekor qilish',
+    tg: 'Бекор кардан',
+    ky: 'Жокко чыгаруу',
+  },
   officialFssp: {
     ru: 'База ФССП',
     en: 'FSSP Database',
@@ -750,6 +757,18 @@ export function BanChecker({ onClose }: BanCheckerProps) {
         <div className="flex-1 min-h-0 overflow-y-auto p-6">
           {result ? renderResult() : renderForm()}
         </div>
+
+        {/* Footer with close button (only shown when form is displayed) */}
+        {!result && (
+          <div className="flex-shrink-0 px-6 pb-6">
+            <button
+              onClick={onClose}
+              className="w-full bg-gray-100 text-gray-600 font-medium py-3 rounded-xl hover:bg-gray-200 transition-colors"
+            >
+              {t('cancel')}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
