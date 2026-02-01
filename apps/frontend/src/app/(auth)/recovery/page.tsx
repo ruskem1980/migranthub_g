@@ -17,7 +17,7 @@ export default function RecoveryPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const { recoverAccess } = useAuthStore();
+  const recoverAccess = useAuthStore((state) => state.recoverAccess);
 
   useEffect(() => {
     // Focus first input on mount

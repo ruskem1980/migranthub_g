@@ -27,9 +27,8 @@ export function AnonymousDashboard() {
   // Conversion banner texts with fallbacks
   const bannerTitle = language === 'ru' ? 'Создайте профиль' : 'Create Profile';
   const bannerDescription = language === 'ru'
-    ? 'Сохраняйте результаты и получайте напоминания'
-    : 'Save results and get reminders';
-  const bannerCta = language === 'ru' ? 'Создать' : 'Create';
+    ? 'Сохраняйте результаты и получайте напоминания. Формируйте любые документы и платежи автоматически'
+    : 'Save results and get reminders. Generate any documents and payments automatically';
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -50,10 +49,9 @@ export function AnonymousDashboard() {
 
         {/* Conversion Banner */}
         <ConversionBanner
-          variant="subtle"
+          variant="prominent"
           title={bannerTitle}
           description={bannerDescription}
-          ctaLabel={bannerCta}
           onCtaClick={() => quickReg.open('general')}
         />
       </main>

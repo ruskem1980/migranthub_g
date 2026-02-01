@@ -68,7 +68,7 @@ function calculateLegalStatus(
 }
 
 export function PersonalDashboard() {
-  const { profile } = useProfileStore();
+  const profile = useProfileStore((state) => state.profile);
   const deadlines = useDeadlines();
 
   const { status, daysRemaining } = useMemo(

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { X, Calculator, Loader2, ChevronDown, Plus, Minus, Search, RefreshCw } from 'lucide-react';
+import { X, Calculator, Loader2, Plus, Minus, Search, RefreshCw, MapPin, ChevronDown } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { usePatentRegions, type PatentCalculateResult } from '@/features/services/hooks/usePatentRegions';
 import type { PatentRegionData } from '@/lib/db';
@@ -12,38 +12,37 @@ interface PatentCalculatorModalProps {
 
 export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
   const { t } = useTranslation();
-  const { regions, isLoading, isFromCache, refresh, calculateCost } = usePatentRegions();
+  const { regions, isLoading, isFromCache, refresh, calculateCost, searchRegions } = usePatentRegions();
 
   const [selectedRegion, setSelectedRegion] = useState<PatentRegionData | null>(null);
   const [months, setMonths] = useState(1);
   const [result, setResult] = useState<PatentCalculateResult | null>(null);
-  const [showRegionDropdown, setShowRegionDropdown] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Auto-select Moscow when regions load
-  useMemo(() => {
-    if (regions.length > 0 && !selectedRegion) {
-      const moscow = regions.find(r => r.code === '77');
-      if (moscow) {
-        setSelectedRegion(moscow);
-      }
-    }
-  }, [regions, selectedRegion]);
-
-  const filteredRegions = useMemo(() => {
+  // Search results - show all regions or filtered
+  const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return regions;
+    return searchRegions(searchQuery);
+  }, [searchQuery, regions, searchRegions]);
 
-    const query = searchQuery.toLowerCase();
-    return regions.filter(region =>
-      region.name.toLowerCase().includes(query) ||
-      region.code.includes(query)
+  // Get matching city for display
+  const getMatchingCity = (region: PatentRegionData, query: string): string | null => {
+    if (!query.trim()) return null;
+    const searchLower = query.toLowerCase().trim();
+    const matchingCity = region.cities.find(city =>
+      city.toLowerCase().includes(searchLower)
     );
-  }, [regions, searchQuery]);
+    return matchingCity || null;
+  };
 
-  function handleCalculate() {
-    if (!selectedRegion) return;
-    const calcResult = calculateCost(selectedRegion.code, months);
-    setResult(calcResult);
+  function formatPriceShort(price: number): string {
+    return new Intl.NumberFormat('ru-RU', {
+      style: 'currency',
+      currency: 'RUB',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
   }
 
   function formatPrice(price: number): string {
@@ -53,6 +52,12 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price);
+  }
+
+  function handleCalculate() {
+    if (!selectedRegion) return;
+    const calcResult = calculateCost(selectedRegion.code, months);
+    setResult(calcResult);
   }
 
   function decreaseMonths() {
@@ -69,9 +74,9 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
     }
   }
 
-  function selectRegion(region: PatentRegionData) {
+  function handleSelectRegion(region: PatentRegionData) {
     setSelectedRegion(region);
-    setShowRegionDropdown(false);
+    setShowDropdown(false);
     setSearchQuery('');
     setResult(null);
   }
@@ -117,36 +122,40 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
               {isFromCache && (
                 <div className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-sm">
                   <span className="text-yellow-800">
-                    {t('services.patentCalculator.usingCachedData') || 'Используются кэшированные данные'}
+                    {t('services.patentCalculator.usingCachedData')}
                   </span>
                   <button
                     onClick={refresh}
                     className="flex items-center gap-1 text-yellow-700 hover:text-yellow-900"
                   >
                     <RefreshCw className="w-4 h-4" />
-                    {t('common.refresh') || 'Обновить'}
+                    {t('common.refresh')}
                   </button>
                 </div>
               )}
 
-              {/* Region Selector */}
+              {/* Region Selector - Dropdown style like StayCalculator */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  {t('services.patentCalculator.selectRegion')}
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                  <MapPin className="w-4 h-4" />
+                  {t('services.patentCalculator.searchCityOrRegion')}
                 </label>
+
                 <div className="relative">
                   <button
                     type="button"
-                    onClick={() => setShowRegionDropdown(!showRegionDropdown)}
-                    className="w-full flex items-center justify-between px-4 py-3 bg-white border-2 border-gray-200 rounded-xl hover:border-green-300 focus:border-green-500 focus:outline-none transition-colors"
+                    onClick={() => setShowDropdown(!showDropdown)}
+                    className={`w-full flex items-center justify-between px-4 py-3 bg-white border-2 rounded-xl transition-colors ${
+                      selectedRegion ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-green-300'
+                    }`}
                   >
-                    <span className={selectedRegion ? 'text-gray-900' : 'text-gray-500'}>
-                      {selectedRegion ? selectedRegion.name : t('services.patentCalculator.chooseRegion')}
+                    <span className={selectedRegion ? 'text-gray-900 font-medium' : 'text-gray-500'}>
+                      {isLoading ? t('common.loading') : selectedRegion ? selectedRegion.name : t('services.patentCalculator.typeToSearch')}
                     </span>
-                    <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${showRegionDropdown ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
                   </button>
 
-                  {showRegionDropdown && (
+                  {showDropdown && (
                     <div className="absolute z-20 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-lg overflow-hidden">
                       <div className="p-2 border-b border-gray-100">
                         <div className="relative">
@@ -155,45 +164,83 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder={t('common.search')}
+                            placeholder={t('services.patentCalculator.typeToSearch')}
                             className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                             autoFocus
                           />
                         </div>
                       </div>
 
-                      <div className="max-h-60 overflow-y-auto">
-                        {filteredRegions.length === 0 ? (
+                      <div className="max-h-72 overflow-y-auto">
+                        {searchResults.length === 0 ? (
                           <div className="px-4 py-6 text-center text-gray-500 text-sm">
                             {t('common.noResults')}
                           </div>
                         ) : (
-                          filteredRegions.map((region) => (
-                            <button
-                              key={region.code}
-                              type="button"
-                              onClick={() => selectRegion(region)}
-                              className={`w-full flex items-center justify-between px-4 py-3 hover:bg-green-50 transition-colors ${
-                                selectedRegion?.code === region.code ? 'bg-green-50' : ''
-                              }`}
-                            >
-                              <span className="text-gray-900">{region.name}</span>
-                              <span className="text-sm text-gray-500 font-mono">
-                                {formatPrice(region.monthlyCost)}/{t('common.monthShort')}
-                              </span>
-                            </button>
-                          ))
+                          searchResults.map((region) => {
+                            const matchingCity = getMatchingCity(region, searchQuery);
+                            return (
+                              <button
+                                key={region.code}
+                                type="button"
+                                onClick={() => handleSelectRegion(region)}
+                                className={`w-full flex items-center justify-between px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-50 last:border-b-0 ${
+                                  selectedRegion?.code === region.code ? 'bg-green-50' : ''
+                                }`}
+                              >
+                                <div className="flex flex-col items-start">
+                                  <span className="text-gray-900 font-medium">{region.name}</span>
+                                  {matchingCity && matchingCity.toLowerCase() !== region.name.toLowerCase() && (
+                                    <div className="flex items-center gap-1 mt-0.5 text-xs text-gray-500">
+                                      <MapPin className="w-3 h-3" />
+                                      <span>г. {matchingCity}</span>
+                                    </div>
+                                  )}
+                                </div>
+                                <span className="text-sm text-green-600 font-semibold whitespace-nowrap ml-3">
+                                  {formatPriceShort(region.monthlyCost)}/мес
+                                </span>
+                              </button>
+                            );
+                          })
                         )}
+                      </div>
+
+                      <div className="px-4 py-2 bg-gray-50 border-t border-gray-100 text-xs text-gray-500 text-center">
+                        {searchQuery
+                          ? `${t('services.patentCalculator.found')}: ${searchResults.length}`
+                          : `${t('services.patentCalculator.totalRegions')}: ${regions.length}`}
                       </div>
                     </div>
                   )}
                 </div>
 
+                {/* Selected region card */}
                 {selectedRegion && (
-                  <div className="mt-2 px-4 py-2 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-sm text-green-800">
-                      {t('services.patentCalculator.monthlyRate')}: <strong>{formatPrice(selectedRegion.monthlyCost)}</strong>
-                    </p>
+                  <div className="mt-3 p-4 bg-green-50 border border-green-200 rounded-xl">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-3">
+                        <MapPin className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-semibold text-gray-900">
+                            {selectedRegion.name}
+                          </p>
+                          <p className="text-lg font-bold text-green-700 mt-1">
+                            {formatPrice(selectedRegion.monthlyCost)}/мес
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setSelectedRegion(null);
+                          setResult(null);
+                        }}
+                        className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                        title={t('common.clear')}
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -277,7 +324,9 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">{t('services.patentCalculator.region')}</span>
-                      <span className="font-semibold text-gray-900">{result.regionName}</span>
+                      <span className="font-semibold text-gray-900">
+                        {result.regionName}
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">{t('services.patentCalculator.baseRate')}</span>

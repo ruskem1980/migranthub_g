@@ -262,7 +262,7 @@ All critical UI gaps identified in `audit.md` have been addressed with visual re
 **Status:** ✅ **ENHANCED**  
 **Implementation:**
 - Updated subtitles to be more descriptive:
-  - "Проверка запретов" → "**Базы МВД/ФССП**" (specifies databases)
+  - "Проверка запрета въезда" → "**Базы МВД/ФССП**" (specifies databases)
   - "Конструктор Договоров" → "**RU + Родной язык**" (highlights bilingual feature)
   - "Оплата штрафов" → "**Интеграция Госуслуги**" (clarifies integration)
 - Added visual badge for Housing tile

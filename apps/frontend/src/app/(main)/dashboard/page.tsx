@@ -13,7 +13,9 @@ import { PersonalDashboard } from '@/components/personal';
  * - Если есть профиль (prototype mode) - показываем DashboardLayout
  */
 export default function DashboardPage() {
-  const { isAnonymous, _hasHydrated } = useAuthStore();
+  // Use stable selectors to prevent re-render loops
+  const isAnonymous = useAuthStore((state) => state.isAnonymous);
+  const _hasHydrated = useAuthStore((state) => state._hasHydrated);
 
   // Ждем гидрации Zustand для избежания hydration mismatch
   if (!_hasHydrated) {

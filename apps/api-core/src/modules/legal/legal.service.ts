@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { categories, laws, forms, faqItems, patentRegions, BASE_NDFL } from './data';
 import {
   CategoryDto,
@@ -16,24 +16,62 @@ import {
   LegalMetadataDto,
 } from './dto';
 
-// Legal data metadata - update this when data changes
-const LEGAL_DATA_METADATA = {
-  lastUpdatedAt: '2025-01-28',
+// Default metadata - will be updated dynamically via RabbitMQ
+const DEFAULT_METADATA = {
+  lastUpdatedAt: '2026-01-01',
   source: 'consultant.ru',
-  version: '1.0.0',
+  version: '2.0.0',
 };
+
+/**
+ * Interface for metadata update
+ */
+export interface MetadataUpdate {
+  lastUpdatedAt?: string;
+  source?: string;
+  version?: string;
+}
 
 @Injectable()
 export class LegalService {
+  private readonly logger = new Logger(LegalService.name);
+
+  // Dynamic metadata storage (in-memory)
+  private metadata = { ...DEFAULT_METADATA };
+
   // ==================== Metadata ====================
 
   getMetadata(): LegalMetadataDto {
     return {
-      ...LEGAL_DATA_METADATA,
+      ...this.metadata,
       lawsCount: laws.length,
       formsCount: forms.length,
       faqCount: faqItems.length,
     };
+  }
+
+  /**
+   * Update metadata dynamically (called by LegalSyncService)
+   */
+  updateMetadata(update: MetadataUpdate): void {
+    if (update.lastUpdatedAt) {
+      this.metadata.lastUpdatedAt = update.lastUpdatedAt;
+    }
+    if (update.source) {
+      this.metadata.source = update.source;
+    }
+    if (update.version) {
+      this.metadata.version = update.version;
+    }
+    this.logger.log(`Metadata updated: lastUpdatedAt=${this.metadata.lastUpdatedAt}`);
+  }
+
+  /**
+   * Reset metadata to defaults (for testing)
+   */
+  resetMetadata(): void {
+    this.metadata = { ...DEFAULT_METADATA };
+    this.logger.log('Metadata reset to defaults');
   }
 
   // ==================== Categories ====================
@@ -154,7 +192,9 @@ export class LegalService {
     return patentRegions.map((r) => ({
       code: r.code,
       name: r.name,
+      coefficient: r.coefficient,
       monthlyCost: r.monthlyCost,
+      cities: r.cities,
     }));
   }
 

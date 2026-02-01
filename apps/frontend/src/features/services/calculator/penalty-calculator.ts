@@ -5,7 +5,14 @@
  * - Other regions: 2000-5000₽, deportation unlikely for first offense
  */
 
+// Region code (e.g. '77' for Moscow, '78' for St. Petersburg)
+export type RegionCode = string;
+
+// Legacy type for backwards compatibility
 export type RegionType = 'moscow' | 'spb' | 'other';
+
+// Regions with higher penalties (Moscow, Moscow Oblast, St. Petersburg, Leningrad Oblast)
+const HIGH_PENALTY_REGIONS = ['77', '50', '78', '47'];
 
 export interface PenaltyInfo {
   minFine: number;
@@ -15,29 +22,34 @@ export interface PenaltyInfo {
 }
 
 /**
- * Get penalty information based on region.
+ * Check if a region code belongs to high-penalty regions
+ * (Moscow, Moscow Oblast, St. Petersburg, Leningrad Oblast)
+ */
+export function isHighPenaltyRegion(regionCode: RegionCode): boolean {
+  return HIGH_PENALTY_REGIONS.includes(regionCode);
+}
+
+/**
+ * Get penalty information based on region code.
  * According to Russian migration law, penalties in Moscow, Moscow Oblast,
  * St. Petersburg, and Leningrad Oblast are higher than in other regions.
  */
-export function getPenaltyInfo(region: RegionType): PenaltyInfo {
-  switch (region) {
-    case 'moscow':
-    case 'spb':
-      return {
-        minFine: 5000,
-        maxFine: 7000,
-        canBeDeported: true,
-        description: 'penalty.deportation',
-      };
-    case 'other':
-    default:
-      return {
-        minFine: 2000,
-        maxFine: 5000,
-        canBeDeported: false,
-        description: 'penalty.noDeportation',
-      };
+export function getPenaltyInfo(regionCode: RegionCode): PenaltyInfo {
+  if (isHighPenaltyRegion(regionCode)) {
+    return {
+      minFine: 5000,
+      maxFine: 7000,
+      canBeDeported: true,
+      description: 'penalty.deportation',
+    };
   }
+
+  return {
+    minFine: 2000,
+    maxFine: 5000,
+    canBeDeported: false,
+    description: 'penalty.noDeportation',
+  };
 }
 
 /**
@@ -46,24 +58,24 @@ export function getPenaltyInfo(region: RegionType): PenaltyInfo {
 export const REGION_STORAGE_KEY = 'selectedRegion';
 
 /**
- * Get saved region from localStorage
+ * Get saved region code from localStorage
  */
-export function getSavedRegion(): RegionType | null {
+export function getSavedRegion(): RegionCode | null {
   if (typeof window === 'undefined') {
     return null;
   }
   const saved = localStorage.getItem(REGION_STORAGE_KEY);
-  if (saved === 'moscow' || saved === 'spb' || saved === 'other') {
+  if (saved) {
     return saved;
   }
   return null;
 }
 
 /**
- * Save region to localStorage
+ * Save region code to localStorage
  */
-export function saveRegion(region: RegionType): void {
+export function saveRegion(regionCode: RegionCode): void {
   if (typeof window !== 'undefined') {
-    localStorage.setItem(REGION_STORAGE_KEY, region);
+    localStorage.setItem(REGION_STORAGE_KEY, regionCode);
   }
 }

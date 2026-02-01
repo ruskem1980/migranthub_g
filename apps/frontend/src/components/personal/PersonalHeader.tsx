@@ -10,7 +10,7 @@ import { getCountryByIso, type SupportedLanguage } from '@/data';
 
 export function PersonalHeader() {
   const router = useRouter();
-  const { profile } = useProfileStore();
+  const profile = useProfileStore((state) => state.profile);
   const { language } = useTranslation();
 
   const countryName = profile?.citizenship

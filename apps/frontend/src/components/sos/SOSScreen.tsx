@@ -19,7 +19,7 @@ import {
 } from '@/data/emergency-contacts';
 
 export function SOSScreen() {
-  const { profile } = useProfileStore();
+  const profile = useProfileStore((state) => state.profile);
   const [selectedGuide, setSelectedGuide] = useState<EmergencyGuide | null>(null);
   const [showAllEmbassies, setShowAllEmbassies] = useState(false);
 

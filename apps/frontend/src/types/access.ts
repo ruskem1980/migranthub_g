@@ -102,11 +102,19 @@ export function getFeatureLockReason(
 }
 
 /**
- * Quick profile for fast registration (3 fields only)
+ * Visit purpose types according to Russian migration legislation
+ */
+export type VisitPurpose = 'work' | 'study' | 'tourist' | 'private' | 'business' | 'official' | 'transit';
+
+/**
+ * Quick profile for fast registration
  * Used in bottom sheet registration flow
  */
 export interface QuickProfile {
+  fullName: string;
+  birthDate: string;
   citizenship: string;
   entryDate: string;
   region: string;
+  purpose: VisitPurpose;
 }

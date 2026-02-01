@@ -11,7 +11,7 @@ import { UserPlus, Shield, Bell, History } from 'lucide-react';
 export default function LoginPage() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { isAnonymous } = useAuthStore();
+  const isAnonymous = useAuthStore((state) => state.isAnonymous);
   const [showRegistration, setShowRegistration] = useState(false);
 
   useEffect(() => {

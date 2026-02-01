@@ -27,7 +27,7 @@
 | 16 | Аналитика | Yandex.Metrika + PostHog (self-hosted) |
 | 17 | Платежи | СБП + ЮKassa |
 | 18 | Карты | Yandex.Карты + 2ГИС |
-| 19 | Проверка запретов | API партнёра |
+| 19 | Проверка запрета въезда | API партнёра |
 | 20 | Структура компонентов | Гибрид /components + /features |
 | 21 | Обработка ошибок | Полная (PostHog + offline fallbacks) |
 | 22 | Offline | Full PWA (SW + Background Sync + IndexedDB) |

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   Calendar,
   AlertTriangle,
@@ -13,34 +13,73 @@ import {
   RefreshCw,
   Clock,
   MapPin,
+  ChevronDown,
+  Search,
 } from 'lucide-react';
 import { useStayPeriods } from '../hooks/useStayPeriods';
 import { DeportationModeWarning } from './DeportationModeWarning';
 import { formatDateShort } from '../calculator/stay-calculator';
 import {
-  RegionType,
+  RegionCode,
   getPenaltyInfo,
   getSavedRegion,
   saveRegion,
+  isHighPenaltyRegion,
 } from '../calculator/penalty-calculator';
+import { usePatentRegions } from '../hooks/usePatentRegions';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import type { PatentRegionData } from '@/lib/db';
 
 interface StayCalculatorProps {
   onClose: () => void;
 }
 
 /**
- * Region selector component
+ * Region selector component with full list of Russian regions
  */
 function RegionSelector({
   value,
   onChange,
+  regions,
+  isLoading,
+  searchRegions,
   t,
 }: {
-  value: RegionType | null;
-  onChange: (region: RegionType) => void;
+  value: RegionCode | null;
+  onChange: (regionCode: RegionCode) => void;
+  regions: PatentRegionData[];
+  isLoading: boolean;
+  searchRegions: (query: string) => PatentRegionData[];
   t: (key: string) => string;
 }) {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const selectedRegion = useMemo(() => {
+    if (!value) return null;
+    return regions.find(r => r.code === value) || null;
+  }, [value, regions]);
+
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return regions;
+    return searchRegions(searchQuery);
+  }, [searchQuery, regions, searchRegions]);
+
+  const getMatchingCity = (region: PatentRegionData, query: string): string | null => {
+    if (!query.trim()) return null;
+    const searchLower = query.toLowerCase().trim();
+    const matchingCity = region.cities.find(city =>
+      city.toLowerCase().includes(searchLower)
+    );
+    return matchingCity || null;
+  };
+
+  const handleSelect = (region: PatentRegionData) => {
+    onChange(region.code);
+    setShowDropdown(false);
+    setSearchQuery('');
+  };
+
   return (
     <div className="mb-6">
       <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
@@ -50,41 +89,95 @@ function RegionSelector({
       {!value && (
         <p className="text-sm text-orange-600 mb-2">Выберите ваш регион пребывания</p>
       )}
-      <div className="grid grid-cols-1 gap-2">
-        <label className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${value === 'moscow' ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-50 hover:bg-gray-100'}`}>
-          <input
-            type="radio"
-            name="region"
-            value="moscow"
-            checked={value === 'moscow'}
-            onChange={() => onChange('moscow')}
-            className="w-4 h-4 text-blue-600 focus:ring-blue-500"
-          />
-          <span className="text-sm text-gray-900">{t('services.calculator.regionMoscow')}</span>
-        </label>
-        <label className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${value === 'spb' ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-50 hover:bg-gray-100'}`}>
-          <input
-            type="radio"
-            name="region"
-            value="spb"
-            checked={value === 'spb'}
-            onChange={() => onChange('spb')}
-            className="w-4 h-4 text-blue-600 focus:ring-blue-500"
-          />
-          <span className="text-sm text-gray-900">{t('services.calculator.regionSpb')}</span>
-        </label>
-        <label className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${value === 'other' ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-50 hover:bg-gray-100'}`}>
-          <input
-            type="radio"
-            name="region"
-            value="other"
-            checked={value === 'other'}
-            onChange={() => onChange('other')}
-            className="w-4 h-4 text-blue-600 focus:ring-blue-500"
-          />
-          <span className="text-sm text-gray-900">{t('services.calculator.regionOther')}</span>
-        </label>
+
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setShowDropdown(!showDropdown)}
+          className={`w-full flex items-center justify-between px-4 py-3 bg-white border-2 rounded-xl transition-colors ${
+            value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'
+          }`}
+        >
+          <span className={selectedRegion ? 'text-gray-900 font-medium' : 'text-gray-500'}>
+            {isLoading ? 'Загрузка...' : selectedRegion ? selectedRegion.name : 'Выберите регион'}
+          </span>
+          <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
+        </button>
+
+        {showDropdown && (
+          <div className="absolute z-20 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-lg overflow-hidden">
+            <div className="p-2 border-b border-gray-100">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Выберите регион или город"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            <div className="max-h-72 overflow-y-auto">
+              {searchResults.length === 0 ? (
+                <div className="px-4 py-6 text-center text-gray-500 text-sm">
+                  Ничего не найдено
+                </div>
+              ) : (
+                searchResults.map((region) => {
+                  const matchingCity = getMatchingCity(region, searchQuery);
+                  const isHighPenalty = isHighPenaltyRegion(region.code);
+                  return (
+                    <button
+                      key={region.code}
+                      type="button"
+                      onClick={() => handleSelect(region)}
+                      className={`w-full flex flex-col items-start px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0 ${
+                        value === region.code ? 'bg-blue-50' : ''
+                      }`}
+                    >
+                      <div className="w-full flex items-center justify-between">
+                        <span className="text-gray-900 font-medium">{region.name}</span>
+                        {isHighPenalty && (
+                          <span className="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded">
+                            Повышенные штрафы
+                          </span>
+                        )}
+                      </div>
+                      {matchingCity && matchingCity.toLowerCase() !== region.name.toLowerCase() && (
+                        <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
+                          <MapPin className="w-3 h-3" />
+                          <span>г. {matchingCity}</span>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+
+            <div className="px-4 py-2 bg-gray-50 border-t border-gray-100 text-xs text-gray-500 text-center">
+              {searchQuery
+                ? `Найдено: ${searchResults.length}`
+                : `Всего регионов: ${regions.length}`}
+            </div>
+          </div>
+        )}
       </div>
+
+      {selectedRegion && (
+        <div className={`mt-2 px-3 py-2 rounded-lg text-sm ${
+          isHighPenaltyRegion(selectedRegion.code)
+            ? 'bg-red-50 border border-red-200 text-red-800'
+            : 'bg-green-50 border border-green-200 text-green-800'
+        }`}>
+          {isHighPenaltyRegion(selectedRegion.code)
+            ? '⚠️ В этом регионе повышенные штрафы за нарушение правила 90 дней'
+            : '✓ Стандартные штрафы за нарушение правила 90 дней'}
+        </div>
+      )}
     </div>
   );
 }
@@ -93,13 +186,13 @@ function RegionSelector({
  * Penalty warning component shown when status is danger or overstay
  */
 function PenaltyWarning({
-  region,
+  regionCode,
   t,
 }: {
-  region: RegionType;
+  regionCode: RegionCode;
   t: (key: string, params?: Record<string, string | number>) => string;
 }) {
-  const penaltyInfo = getPenaltyInfo(region);
+  const penaltyInfo = getPenaltyInfo(regionCode);
 
   return (
     <div className="p-4 bg-red-50 border border-red-200 rounded-xl mb-6">
@@ -291,9 +384,15 @@ export function StayCalculator({ onClose }: StayCalculatorProps) {
     refresh,
   } = useStayPeriods();
 
+  const {
+    regions,
+    isLoading: regionsLoading,
+    searchRegions,
+  } = usePatentRegions();
+
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingPeriodId, setEditingPeriodId] = useState<string | null>(null);
-  const [selectedRegion, setSelectedRegion] = useState<RegionType | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<RegionCode | null>(null);
 
   // Load saved region from localStorage on mount
   useEffect(() => {
@@ -304,9 +403,9 @@ export function StayCalculator({ onClose }: StayCalculatorProps) {
   }, []);
 
   // Save region to localStorage when changed
-  const handleRegionChange = useCallback((region: RegionType) => {
-    setSelectedRegion(region);
-    saveRegion(region);
+  const handleRegionChange = useCallback((regionCode: RegionCode) => {
+    setSelectedRegion(regionCode);
+    saveRegion(regionCode);
   }, []);
 
   const showPenaltyWarning = calculation.status === 'danger' || calculation.status === 'overstay';
@@ -398,12 +497,15 @@ export function StayCalculator({ onClose }: StayCalculatorProps) {
           <RegionSelector
             value={selectedRegion}
             onChange={handleRegionChange}
+            regions={regions}
+            isLoading={regionsLoading}
+            searchRegions={searchRegions}
             t={t}
           />
 
           {/* Penalty warning - shown when status is danger or overstay */}
           {showPenaltyWarning && selectedRegion && (
-            <PenaltyWarning region={selectedRegion} t={t} />
+            <PenaltyWarning regionCode={selectedRegion} t={t} />
           )}
 
           {/* Circular progress card */}

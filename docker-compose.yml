@@ -12,10 +12,34 @@ services:
       POSTGRES_DB: ${DB_DATABASE:-migranthub}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./scripts/db:/docker-entrypoint-initdb.d:ro
     ports:
       - "${DB_PORT:-5432}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-migranthub}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - migranthub-network
+
+  # ===========================================
+  # RabbitMQ Message Broker
+  # ===========================================
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: migranthub-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -105,6 +129,49 @@ services:
     networks:
       - migranthub-network
 
+  # ===========================================
+  # Legal Core Service
+  # ===========================================
+  legal-core:
+    build:
+      context: ./apps/legal-core
+      dockerfile: Dockerfile
+    container_name: migranthub-legal-core
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3000
+
+      # Database (shared PostgreSQL, separate database)
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-migranthub}
+      DB_PASSWORD: ${DB_PASSWORD:-migranthub_secret}
+      DB_DATABASE: ${LEGAL_CORE_DB_NAME:-legal_core}
+
+      # RabbitMQ
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE:-legislation_updates}
+
+      # AI Service
+      AI_SERVICE_ENABLED: ${AI_SERVICE_ENABLED:-false}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    ports:
+      - "${LEGAL_CORE_PORT:-3002}:3000"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/legislation/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - migranthub-network
+
 # ===========================================
 # Volumes
 # ===========================================
@@ -112,6 +179,8 @@ volumes:
   postgres_data:
     driver: local
   redis_data:
+    driver: local
+  rabbitmq_data:
     driver: local
 
 # ===========================================

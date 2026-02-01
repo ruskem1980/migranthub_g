@@ -157,6 +157,11 @@ export const useAuthStore = create<AuthState>()(
           const platform = getPlatform();
           const response = await authApi.deviceAuth(deviceId, platform, APP_VERSION);
 
+          // Validate response structure
+          if (!response?.tokens?.accessToken) {
+            throw new Error('Ошибка авторизации: неверный ответ сервера');
+          }
+
           // Save tokens
           await tokenStorage.setTokens(
             response.tokens.accessToken,
@@ -210,6 +215,11 @@ export const useAuthStore = create<AuthState>()(
           // Call recovery API
           const response = await authApi.verifyRecovery(deviceId, recoveryCode);
 
+          // Validate response structure
+          if (!response?.tokens?.accessToken) {
+            throw new Error('Ошибка восстановления: неверный ответ сервера');
+          }
+
           // Save tokens
           await tokenStorage.setTokens(
             response.tokens.accessToken,
@@ -251,7 +261,10 @@ export const useAuthStore = create<AuthState>()(
         isRegistered: state.isRegistered,
       }),
       onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true);
+        // Only hydrate once to prevent infinite loops
+        if (state && !state._hasHydrated) {
+          state.setHasHydrated(true);
+        }
       },
     }
   )

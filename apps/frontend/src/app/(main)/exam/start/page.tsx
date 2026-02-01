@@ -181,8 +181,8 @@ function ExamStartContent() {
         </div>
       </div>
 
-      {/* Fixed bottom button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 safe-area-pb">
+      {/* Fixed bottom button - above BottomNavigation and SyncStatusBar */}
+      <div className="fixed bottom-16 left-0 right-0 p-4 bg-white border-t border-gray-200 safe-area-pb z-[45]">
         <button
           onClick={handleStart}
           className="w-full py-4 px-6 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg"

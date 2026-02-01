@@ -527,6 +527,10 @@
   "profile": {
     "title": "My Profile",
     "editTitle": "Edit Profile",
+    "tab": {
+      "profile": "Profile",
+      "documents": "Documents"
+    },
     "scanPassport": "Scan passport",
     "scanPassportDesc": "Automatic data filling",
     "completeness": "Profile completeness",
@@ -627,6 +631,8 @@
   },
   "documents": {
     "title": "My Documents",
+    "addDocument": "Add document",
+    "localStorageNote": "All data is stored only on your device in encrypted form",
     "encrypted": "Encrypted",
     "activeRegistry": "Document registry",
     "create": "Create document",

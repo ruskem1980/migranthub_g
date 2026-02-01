@@ -54,10 +54,13 @@ export {
 export {
   citizenshipOptions,
   russianRegions,
+  purposeOptions,
   getCitizenshipByValue,
   getRegionByValue,
+  getPurposeByValue,
   type CitizenshipOption,
   type RegionOption,
+  type PurposeOption,
 } from './registration-options';
 
 export {

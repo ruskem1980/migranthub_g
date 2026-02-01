@@ -6,7 +6,8 @@ import { Law, LawStatus } from '../database/entities/law.entity';
 import { ScraperService, ScrapedLaw } from './scraper.service';
 import { DiffEngineService } from './diff-engine.service';
 import { AlertingService, LegislationUpdateEvent } from './alerting.service';
-import { AIAnalysisService } from './ai-analysis.service';
+import { AIAnalysisService, AIAnalysisResponse } from './ai-analysis.service';
+import { ReportingService } from './reporting.service';
 
 @Injectable()
 export class LegislationWatcherService {
@@ -20,6 +21,7 @@ export class LegislationWatcherService {
     private readonly diffEngineService: DiffEngineService,
     private readonly alertingService: AlertingService,
     private readonly aiAnalysisService: AIAnalysisService,
+    private readonly reportingService: ReportingService,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
@@ -49,12 +51,15 @@ export class LegislationWatcherService {
       }
 
       const updates = await this.processScrapedLaws(scrapedLaws);
-      
+
       if (updates.length > 0) {
         this.logger.log(`Detected ${updates.length} legislation updates`);
         await this.handleUpdates(updates);
       } else {
         this.logger.log('No legislation changes detected');
+        // Generate empty report for days with no changes
+        await this.reportingService.generateEmptyReport();
+        this.logger.log('Empty daily report generated');
       }
 
       const duration = ((Date.now() - startTime) / 1000).toFixed(2);
@@ -177,6 +182,8 @@ export class LegislationWatcherService {
 
     await this.alertingService.sendBatchUpdates(updates);
 
+    let analyses: AIAnalysisResponse[] = [];
+
     if (this.aiAnalysisService.isEnabled()) {
       const analysisRequests = updates.map(update => ({
         lawId: update.lawId,
@@ -184,8 +191,8 @@ export class LegislationWatcherService {
         diff: update.diff
       }));
 
-      const analyses = await this.aiAnalysisService.analyzeMultipleChanges(analysisRequests);
-      
+      analyses = await this.aiAnalysisService.analyzeMultipleChanges(analysisRequests);
+
       analyses.forEach((analysis, index) => {
         this.logger.log(
           `AI Analysis for "${updates[index].title}": ` +
@@ -193,8 +200,21 @@ export class LegislationWatcherService {
         );
       });
     } else {
-      this.logger.log('AI Analysis is disabled. Skipping analysis step.');
+      this.logger.log('AI Analysis is disabled. Generating stub analyses for report.');
+      // Generate stub analyses for reporting even when AI is disabled
+      analyses = updates.map(update => ({
+        summary: `Обнаружены изменения в документе "${update.title}"`,
+        impactForMigrants: 'Требуется детальный анализ влияния на мигрантов',
+        urgency: 'medium' as const,
+        actionRequired: false,
+        recommendations: ['Проверить изменения вручную'],
+        analyzedAt: new Date(),
+      }));
     }
+
+    // Generate daily report with updates and analyses
+    await this.reportingService.generateDailyReport({ updates, analyses });
+    this.logger.log('Daily report generated successfully');
   }
 
   async getLawById(id: string): Promise<Law | null> {

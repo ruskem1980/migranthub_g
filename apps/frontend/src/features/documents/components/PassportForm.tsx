@@ -433,8 +433,8 @@ export function PassportForm({
           </div>
         </section>
 
-        {/* Кнопки */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 flex gap-3">
+        {/* Кнопки - above BottomNavigation and SyncStatusBar */}
+        <div className="fixed bottom-16 left-0 right-0 p-4 bg-white border-t border-gray-200 flex gap-3 z-[45]">
           <button
             type="button"
             onClick={handleCancel}

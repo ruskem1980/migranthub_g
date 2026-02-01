@@ -1,12 +1,147 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { Lock, ChevronDown, AlertCircle, Loader2 } from 'lucide-react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { Lock, ChevronDown, Search, MapPin } from 'lucide-react';
 import { Sheet } from '@/components/ui/Sheet';
 import { Button } from '@/components/ui/Button';
-import { useAuthStore, useProfileStore } from '@/lib/stores';
-import { citizenshipOptions, russianRegions } from '@/data/registration-options';
-import type { QuickProfile } from '@/types/access';
+import { useProfileStore } from '@/lib/stores';
+import { citizenshipOptions, purposeOptions } from '@/data/registration-options';
+import { usePatentRegions } from '@/features/services/hooks/usePatentRegions';
+import { isHighPenaltyRegion } from '@/features/services/calculator/penalty-calculator';
+import type { QuickProfile, VisitPurpose } from '@/types/access';
+import type { PatentRegionData } from '@/lib/db';
+
+/**
+ * Region selector component with search
+ */
+function RegionSelector({
+  value,
+  onChange,
+  regions,
+  isLoading,
+  searchRegions,
+  hasError,
+}: {
+  value: string;
+  onChange: (regionCode: string) => void;
+  regions: PatentRegionData[];
+  isLoading: boolean;
+  searchRegions: (query: string) => PatentRegionData[];
+  hasError: boolean;
+}) {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const selectedRegion = useMemo(() => {
+    if (!value) return null;
+    return regions.find(r => r.code === value) || null;
+  }, [value, regions]);
+
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return regions;
+    return searchRegions(searchQuery);
+  }, [searchQuery, regions, searchRegions]);
+
+  const getMatchingCity = (region: PatentRegionData, query: string): string | null => {
+    if (!query.trim()) return null;
+    const searchLower = query.toLowerCase().trim();
+    const matchingCity = region.cities.find(city =>
+      city.toLowerCase().includes(searchLower)
+    );
+    return matchingCity || null;
+  };
+
+  const handleSelect = (region: PatentRegionData) => {
+    onChange(region.code);
+    setShowDropdown(false);
+    setSearchQuery('');
+  };
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setShowDropdown(!showDropdown)}
+        className={[
+          'w-full flex items-center justify-between px-4 py-3 bg-background border-2 rounded-xl transition-colors',
+          hasError
+            ? 'border-destructive'
+            : value
+              ? 'border-primary bg-primary/5'
+              : 'border-input hover:border-primary/50',
+        ].join(' ')}
+      >
+        <span className={selectedRegion ? 'text-foreground font-medium' : 'text-muted-foreground'}>
+          {isLoading ? 'Загрузка...' : selectedRegion ? selectedRegion.name : 'Выберите регион'}
+        </span>
+        <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
+      </button>
+
+      {showDropdown && (
+        <div className="absolute z-50 w-full mt-2 bg-background border-2 border-input rounded-xl shadow-lg overflow-hidden">
+          <div className="p-2 border-b border-border">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Выберите город"
+                className="w-full pl-10 pr-4 py-2 bg-muted border border-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                autoFocus
+              />
+            </div>
+          </div>
+
+          <div className="max-h-72 overflow-y-auto">
+            {searchResults.length === 0 ? (
+              <div className="px-4 py-6 text-center text-muted-foreground text-sm">
+                Ничего не найдено
+              </div>
+            ) : (
+              searchResults.map((region) => {
+                const matchingCity = getMatchingCity(region, searchQuery);
+                const isHighPenalty = isHighPenaltyRegion(region.code);
+                return (
+                  <button
+                    key={region.code}
+                    type="button"
+                    onClick={() => handleSelect(region)}
+                    className={`w-full flex flex-col items-start px-4 py-3 hover:bg-primary/10 transition-colors border-b border-border/50 last:border-b-0 ${
+                      value === region.code ? 'bg-primary/10' : ''
+                    }`}
+                  >
+                    <div className="w-full flex items-center justify-between">
+                      <span className="text-foreground font-medium">{region.name}</span>
+                      {isHighPenalty && (
+                        <span className="text-xs px-2 py-0.5 bg-destructive/10 text-destructive rounded">
+                          Повышенные штрафы
+                        </span>
+                      )}
+                    </div>
+                    {matchingCity && matchingCity.toLowerCase() !== region.name.toLowerCase() && (
+                      <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                        <MapPin className="w-3 h-3" />
+                        <span>г. {matchingCity}</span>
+                      </div>
+                    )}
+                  </button>
+                );
+              })
+            )}
+          </div>
+
+          <div className="px-4 py-2 bg-muted border-t border-border text-xs text-muted-foreground text-center">
+            {searchQuery
+              ? `Найдено: ${searchResults.length}`
+              : `Всего регионов: ${regions.length}`}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 /**
  * Registration trigger types - describes what action triggered the registration sheet
@@ -73,18 +208,24 @@ function getTriggerDescription(trigger: RegistrationTrigger): string {
  * Form state interface
  */
 interface FormState {
+  fullName: string;
+  birthDate: string;
   citizenship: string;
   entryDate: string;
   region: string;
+  purpose: string;
 }
 
 /**
  * Form errors interface
  */
 interface FormErrors {
+  fullName?: string;
+  birthDate?: string;
   citizenship?: string;
   entryDate?: string;
   region?: string;
+  purpose?: string;
 }
 
 /**
@@ -98,14 +239,25 @@ export function QuickRegistrationSheet({
   prefillData,
   trigger = 'general',
 }: QuickRegistrationSheetProps) {
-  const { convertToRegistered, isLoading, error: authError } = useAuthStore();
-  const { updateProfile } = useProfileStore();
+  const router = useRouter();
+  const updateProfile = useProfileStore((state) => state.updateProfile);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load regions from API
+  const {
+    regions,
+    isLoading: regionsLoading,
+    searchRegions,
+  } = usePatentRegions();
 
   // Form state
   const [form, setForm] = useState<FormState>({
+    fullName: '',
+    birthDate: '',
     citizenship: prefillData?.citizenship || '',
     entryDate: prefillData?.entryDate || '',
     region: prefillData?.region || '',
+    purpose: '',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -115,9 +267,12 @@ export function QuickRegistrationSheet({
   useEffect(() => {
     if (isOpen) {
       setForm({
+        fullName: '',
+        birthDate: '',
         citizenship: prefillData?.citizenship || '',
         entryDate: prefillData?.entryDate || '',
         region: prefillData?.region || '',
+        purpose: '',
       });
       setErrors({});
       setTouched({});
@@ -127,6 +282,31 @@ export function QuickRegistrationSheet({
   // Validate form
   const validate = useCallback((): boolean => {
     const newErrors: FormErrors = {};
+
+    if (!form.fullName.trim()) {
+      newErrors.fullName = 'Введите ФИО';
+    } else if (form.fullName.trim().split(/\s+/).length < 2) {
+      newErrors.fullName = 'Введите фамилию и имя';
+    }
+
+    if (!form.birthDate) {
+      newErrors.birthDate = 'Укажите дату рождения';
+    } else {
+      const birthDate = new Date(form.birthDate);
+      const today = new Date();
+      const minAge = new Date();
+      minAge.setFullYear(minAge.getFullYear() - 14);
+      const maxAge = new Date();
+      maxAge.setFullYear(maxAge.getFullYear() - 100);
+
+      if (birthDate > today) {
+        newErrors.birthDate = 'Дата рождения не может быть в будущем';
+      } else if (birthDate > minAge) {
+        newErrors.birthDate = 'Минимальный возраст - 14 лет';
+      } else if (birthDate < maxAge) {
+        newErrors.birthDate = 'Проверьте дату рождения';
+      }
+    }
 
     if (!form.citizenship) {
       newErrors.citizenship = 'Выберите гражданство';
@@ -155,6 +335,10 @@ export function QuickRegistrationSheet({
       newErrors.region = 'Выберите регион';
     }
 
+    if (!form.purpose) {
+      newErrors.purpose = 'Выберите цель визита';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [form]);
@@ -171,38 +355,51 @@ export function QuickRegistrationSheet({
   }, [errors]);
 
   // Handle form submission
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(() => {
     // Mark all fields as touched
-    setTouched({ citizenship: true, entryDate: true, region: true });
+    setTouched({
+      fullName: true,
+      birthDate: true,
+      citizenship: true,
+      entryDate: true,
+      region: true,
+      purpose: true,
+    });
 
     if (!validate()) {
       return;
     }
 
+    setIsSubmitting(true);
+
     const quickProfile: QuickProfile = {
+      fullName: form.fullName.trim().toUpperCase(),
+      birthDate: form.birthDate,
       citizenship: form.citizenship,
       entryDate: form.entryDate,
       region: form.region,
+      purpose: form.purpose as VisitPurpose,
     };
 
-    try {
-      // Convert to registered user (device auth)
-      await convertToRegistered(quickProfile);
+    // Save profile data locally (without server auth)
+    // Mark onboarding as completed so OTP page skips /onboarding
+    updateProfile({
+      fullName: quickProfile.fullName,
+      birthDate: quickProfile.birthDate,
+      citizenship: quickProfile.citizenship,
+      entryDate: quickProfile.entryDate,
+      patentRegion: quickProfile.region,
+      purpose: quickProfile.purpose,
+      onboardingCompleted: true,
+    });
 
-      // Save profile data locally
-      updateProfile({
-        citizenship: quickProfile.citizenship,
-        entryDate: quickProfile.entryDate,
-        patentRegion: quickProfile.region,
-      });
+    // Call completion callback
+    onComplete(quickProfile);
+    onClose();
 
-      // Call completion callback
-      onComplete(quickProfile);
-      onClose();
-    } catch {
-      // Error is handled by authStore
-    }
-  }, [form, validate, convertToRegistered, updateProfile, onComplete, onClose]);
+    // Redirect to auth method selection (phone/telegram binding)
+    router.push('/auth/method');
+  }, [form, validate, updateProfile, onComplete, onClose, router]);
 
   // Quick action for today's date
   const setToday = useCallback(() => {
@@ -217,7 +414,7 @@ export function QuickRegistrationSheet({
     handleChange('entryDate', yesterday.toISOString().split('T')[0]);
   }, [handleChange]);
 
-  const isValid = form.citizenship && form.entryDate && form.region;
+  const isValid = form.fullName.trim() && form.birthDate && form.citizenship && form.entryDate && form.region && form.purpose;
 
   return (
     <Sheet
@@ -240,15 +437,56 @@ export function QuickRegistrationSheet({
           </span>
         </div>
 
-        {/* Auth error message */}
-        {authError && (
-          <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-950/30 rounded-xl border border-red-200 dark:border-red-800">
-            <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 flex-shrink-0" />
-            <span className="text-xs text-red-700 dark:text-red-300">
-              {authError}
-            </span>
-          </div>
-        )}
+
+        {/* Full name input */}
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-foreground">
+            ФИО (как в паспорте)
+          </label>
+          <input
+            type="text"
+            value={form.fullName}
+            onChange={(e) => handleChange('fullName', e.target.value.toUpperCase())}
+            placeholder="ИВАНОВ ИВАН ИВАНОВИЧ"
+            className={[
+              'w-full px-4 py-3 bg-background border-2 rounded-xl',
+              'text-foreground',
+              'transition-all duration-200',
+              'focus:outline-none focus:ring-2 focus:ring-offset-0',
+              touched.fullName && errors.fullName
+                ? 'border-destructive focus:border-destructive focus:ring-destructive/30'
+                : 'border-input focus:border-primary focus:ring-primary/30',
+            ].join(' ')}
+          />
+          {touched.fullName && errors.fullName && (
+            <p className="text-sm text-destructive">{errors.fullName}</p>
+          )}
+        </div>
+
+        {/* Birth date input */}
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-foreground">
+            Дата рождения
+          </label>
+          <input
+            type="date"
+            value={form.birthDate}
+            onChange={(e) => handleChange('birthDate', e.target.value)}
+            max={new Date().toISOString().split('T')[0]}
+            className={[
+              'w-full px-4 py-3 bg-background border-2 rounded-xl',
+              'text-foreground',
+              'transition-all duration-200',
+              'focus:outline-none focus:ring-2 focus:ring-offset-0',
+              touched.birthDate && errors.birthDate
+                ? 'border-destructive focus:border-destructive focus:ring-destructive/30'
+                : 'border-input focus:border-primary focus:ring-primary/30',
+            ].join(' ')}
+          />
+          {touched.birthDate && errors.birthDate && (
+            <p className="text-sm text-destructive">{errors.birthDate}</p>
+          )}
+        </div>
 
         {/* Citizenship select */}
         <div className="space-y-2">
@@ -327,54 +565,65 @@ export function QuickRegistrationSheet({
 
         {/* Region select */}
         <div className="space-y-2">
-          <label className="block text-sm font-semibold text-foreground">
-            Регион пребывания
+          <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <MapPin className="w-4 h-4" />
+            Регион пребывания <span className="text-destructive">*</span>
           </label>
-          <div className="relative">
-            <select
-              value={form.region}
-              onChange={(e) => handleChange('region', e.target.value)}
-              className={[
-                'w-full appearance-none px-4 py-3 bg-background border-2 rounded-xl',
-                'text-foreground pr-10',
-                'transition-all duration-200',
-                'focus:outline-none focus:ring-2 focus:ring-offset-0',
-                touched.region && errors.region
-                  ? 'border-destructive focus:border-destructive focus:ring-destructive/30'
-                  : 'border-input focus:border-primary focus:ring-primary/30',
-              ].join(' ')}
-            >
-              <option value="">Выберите регион</option>
-              {russianRegions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
-          </div>
+          {!form.region && (
+            <p className="text-sm text-orange-600">Выберите ваш регион пребывания</p>
+          )}
+          <RegionSelector
+            value={form.region}
+            onChange={(regionCode) => handleChange('region', regionCode)}
+            regions={regions}
+            isLoading={regionsLoading}
+            searchRegions={searchRegions}
+            hasError={!!(touched.region && errors.region)}
+          />
           {touched.region && errors.region && (
             <p className="text-sm text-destructive">{errors.region}</p>
+          )}
+        </div>
+
+        {/* Purpose select */}
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-foreground">
+            Цель визита
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {purposeOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => handleChange('purpose', option.value)}
+                className={[
+                  'px-4 py-2 rounded-xl text-sm font-medium',
+                  'transition-all duration-200',
+                  'border-2',
+                  form.purpose === option.value
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-background text-foreground border-input hover:border-primary/50',
+                ].join(' ')}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+          {touched.purpose && errors.purpose && (
+            <p className="text-sm text-destructive">{errors.purpose}</p>
           )}
         </div>
 
         {/* Submit button */}
         <Button
           onClick={handleSubmit}
-          disabled={!isValid || isLoading}
-          loading={isLoading}
+          disabled={!isValid || isSubmitting}
+          loading={isSubmitting}
           fullWidth
           size="lg"
           className="mt-2"
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin mr-2" />
-              Создание профиля...
-            </>
-          ) : (
-            'Создать профиль'
-          )}
+          {isSubmitting ? 'Сохранение...' : 'Создать профиль'}
         </Button>
 
         {/* Privacy note */}

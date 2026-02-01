@@ -93,8 +93,12 @@ function UrgentTaskCard({ task }: {
 
 export function HomeScreen() {
   const { t, language, setLanguage: setAppLanguage } = useTranslation();
-  const { profile, updateProfile, reset: resetProfile } = useProfileStore();
-  const { ttsEnabled, setTtsEnabled } = useAppStore();
+  // Use stable selectors to prevent re-render loops
+  const profile = useProfileStore((state) => state.profile);
+  const updateProfile = useProfileStore((state) => state.updateProfile);
+  const resetProfile = useProfileStore((state) => state.reset);
+  const ttsEnabled = useAppStore((state) => state.ttsEnabled);
+  const setTtsEnabled = useAppStore((state) => state.setTtsEnabled);
   const router = useRouter();
 
   const [showHistory, setShowHistory] = useState(false);

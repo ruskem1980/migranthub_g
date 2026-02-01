@@ -70,7 +70,7 @@
 - **Action:** Opens Document Generator
 - **Priority:** #1 (main monetization feature)
 
-#### **2. 🛡️ Проверка запретов** (Ban Check)
+#### **2. 🛡️ Проверка запрета въезда** (Ban Check)
 - **Icon:** Shield
 - **Color:** Red
 - **Subtitle:** "Базы МВД/ФССП"
@@ -340,7 +340,7 @@ border-dashed
 // Core Services (Main Grid)
 const coreServices = [
   { id: 'autofill', icon: Wand2, title: '✍️ Мои Заявления', ... },
-  { id: 'check', icon: Shield, title: 'Проверка запретов', ... },
+  { id: 'check', icon: Shield, title: 'Проверка запрета въезда', ... },
   { id: 'payment', icon: CreditCard, title: 'Оплата патента', ... },
   { id: 'map', icon: MapPin, title: 'Карта Мигранта', ... },
   { id: 'other', icon: Grid3x3, title: '🧩 Другие услуги', ... },
@@ -406,7 +406,7 @@ const [showOtherServices, setShowOtherServices] = useState(false);
 - **Value:** Immediate, tangible
 - **Placement:** Top-left (prime position)
 
-#### **2. Проверка запретов** (Priority: HIGH)
+#### **2. Проверка запрета въезда** (Priority: HIGH)
 - **Legal:** Critical for status check
 - **Usage:** High (frequent checks)
 - **Value:** Prevents legal issues

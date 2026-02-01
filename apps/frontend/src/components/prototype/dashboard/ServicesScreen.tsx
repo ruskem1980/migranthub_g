@@ -24,7 +24,8 @@ import { RoadmapScreen } from './RoadmapScreen';
 export function ServicesScreen() {
   const { t } = useTranslation();
   const { language } = useLanguageStore();
-  const { profile, updateProfile } = useProfileStore();
+  const profile = useProfileStore((state) => state.profile);
+  const updateProfile = useProfileStore((state) => state.updateProfile);
   const [showMapModal, setShowMapModal] = useState(false);
   const [showDocGenerator, setShowDocGenerator] = useState(false);
   const [showExamTrainer, setShowExamTrainer] = useState(false);

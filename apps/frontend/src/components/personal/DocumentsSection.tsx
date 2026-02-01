@@ -64,8 +64,8 @@ function DocumentCard({ document, language }: DocumentCardProps) {
 
 export function DocumentsSection() {
   const router = useRouter();
-  const { documents } = useProfileStore();
-  const { subscriptionTier } = useAuthStore();
+  const documents = useProfileStore((state) => state.documents);
+  const subscriptionTier = useAuthStore((state) => state.subscriptionTier);
   const { language } = useTranslation();
 
   // Free: 3 documents max, Plus: unlimited

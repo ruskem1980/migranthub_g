@@ -111,6 +111,7 @@ export interface DBPatentRegion {
   name: string;
   coefficient: number;
   monthlyCost: number;
+  cities: string; // JSON array of city names
   cachedAt: string;
 }
 
@@ -334,6 +335,7 @@ export interface PatentRegionData {
   name: string;
   coefficient: number;
   monthlyCost: number;
+  cities: string[];
 }
 
 const PATENT_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -341,7 +343,11 @@ const PATENT_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 export async function savePatentRegions(regions: PatentRegionData[]): Promise<void> {
   const cachedAt = new Date().toISOString();
   const dbRegions: DBPatentRegion[] = regions.map((r) => ({
-    ...r,
+    code: r.code,
+    name: r.name,
+    coefficient: r.coefficient,
+    monthlyCost: r.monthlyCost,
+    cities: JSON.stringify(r.cities),
     cachedAt,
   }));
   await db.patentRegions.clear();
@@ -355,11 +361,12 @@ export async function savePatentRegions(regions: PatentRegionData[]): Promise<vo
 
 export async function getPatentRegions(): Promise<PatentRegionData[]> {
   const regions = await db.patentRegions.toArray();
-  return regions.map(({ code, name, coefficient, monthlyCost }) => ({
+  return regions.map(({ code, name, coefficient, monthlyCost, cities }) => ({
     code,
     name,
     coefficient,
     monthlyCost,
+    cities: JSON.parse(cities) as string[],
   }));
 }
 
@@ -375,4 +382,45 @@ export async function isPatentCacheValid(): Promise<boolean> {
 export async function clearPatentRegionsCache(): Promise<void> {
   await db.patentRegions.clear();
   await db.legalDataMeta.delete('patent-regions');
+}
+
+/**
+ * Invalidate all legal data caches
+ * Called when server notifies about data updates via legal-data-updated event
+ */
+export async function invalidateLegalCache(): Promise<void> {
+  try {
+    // Clear all legal data meta entries
+    await db.legalDataMeta.clear();
+    // Clear patent regions cache
+    await db.patentRegions.clear();
+    // Add more cache clears here as new legal data types are added
+    // e.g., await db.faqCache.clear();
+  } catch (error) {
+    console.error('Failed to invalidate legal cache:', error);
+  }
+}
+
+/**
+ * Invalidate cache for a specific key
+ * @param key The cache key to invalidate (e.g., 'patent-regions', 'legal-metadata')
+ */
+export async function invalidateCacheForKey(key: string): Promise<void> {
+  try {
+    // Remove the meta entry for this key
+    await db.legalDataMeta.delete(key);
+
+    // Clear associated data based on key
+    switch (key) {
+      case 'patent-regions':
+        await db.patentRegions.clear();
+        break;
+      // Add more cases as needed for other data types
+      default:
+        // Just clear the meta entry
+        break;
+    }
+  } catch (error) {
+    console.error(`Failed to invalidate cache for key ${key}:`, error);
+  }
 }

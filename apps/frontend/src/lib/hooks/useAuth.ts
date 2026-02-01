@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Capacitor } from '@capacitor/core';
 import { useAuthStore } from '../stores/authStore';
@@ -25,25 +25,29 @@ const getPlatform = (): DevicePlatform => {
 
 export function useAuth() {
   const router = useRouter();
-  const {
-    user,
-    isAuthenticated,
-    isLoading,
-    isInitialized,
-    error,
-    setUser,
-    setLoading,
-    setInitialized,
-    setError,
-    logout: logoutStore,
-  } = useAuthStore();
+  const initializingRef = useRef(false);
 
-  const { reset: resetProfile } = useProfileStore();
-  const { reset: resetApp, hasCompletedOnboarding } = useAppStore();
+  // Use stable selectors to prevent unnecessary re-renders
+  const user = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const isInitialized = useAuthStore((state) => state.isInitialized);
+  const error = useAuthStore((state) => state.error);
+  const setUser = useAuthStore((state) => state.setUser);
+  const setLoading = useAuthStore((state) => state.setLoading);
+  const setInitialized = useAuthStore((state) => state.setInitialized);
+  const setError = useAuthStore((state) => state.setError);
+  const logoutStore = useAuthStore((state) => state.logout);
 
-  // Initialize auth on app start
+  const resetProfile = useProfileStore((state) => state.reset);
+  const resetApp = useAppStore((state) => state.reset);
+  const hasCompletedOnboarding = useAppStore((state) => state.hasCompletedOnboarding);
+
+  // Initialize auth on app start - use ref to prevent re-runs
   const initializeAuth = useCallback(async () => {
-    if (isInitialized) return;
+    // Use ref to prevent concurrent initialization
+    if (initializingRef.current || useAuthStore.getState().isInitialized) return;
+    initializingRef.current = true;
 
     setLoading(true);
 
@@ -69,6 +73,11 @@ export function useAuth() {
       const platform = getPlatform();
       const response = await authApi.deviceAuth(deviceId, platform, APP_VERSION);
 
+      // Validate response structure
+      if (!response?.tokens?.accessToken) {
+        throw new Error('Ошибка авторизации: неверный ответ сервера');
+      }
+
       // Store tokens
       await tokenStorage.setTokens(
         response.tokens.accessToken,
@@ -84,8 +93,9 @@ export function useAuth() {
     } finally {
       setLoading(false);
       setInitialized(true);
+      initializingRef.current = false;
     }
-  }, [isInitialized, setLoading, setUser, setInitialized, setError]);
+  }, [setLoading, setUser, setInitialized, setError]);
 
   // Fetch current user profile
   const fetchProfile = useCallback(async () => {
@@ -140,12 +150,15 @@ export function useAuth() {
 // Hook for automatic device auth on app start
 export function useDeviceAuth() {
   const { initializeAuth, isInitialized, isLoading } = useAuth();
+  const initCalled = useRef(false);
 
   useEffect(() => {
-    if (!isInitialized && !isLoading) {
+    // Only call once per mount
+    if (!initCalled.current) {
+      initCalled.current = true;
       initializeAuth();
     }
-  }, [initializeAuth, isInitialized, isLoading]);
+  }, [initializeAuth]);
 
   return { isInitialized, isLoading };
 }

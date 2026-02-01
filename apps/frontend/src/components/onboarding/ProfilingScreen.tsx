@@ -20,7 +20,7 @@ interface ProfilingScreenProps {
 
 export function ProfilingScreen({ onNext }: ProfilingScreenProps) {
   const { t, language } = useTranslation();
-  const { updateProfile } = useProfileStore();
+  const updateProfile = useProfileStore((state) => state.updateProfile);
   const [citizenship, setCitizenship] = useState('');
   const [entryDate, setEntryDate] = useState('');
   const [region, setRegion] = useState('');

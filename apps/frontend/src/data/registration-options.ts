@@ -1,6 +1,6 @@
 /**
  * Registration options for quick registration form
- * Citizenship and region dropdown data
+ * Citizenship, region, and purpose dropdown data
  */
 
 export interface CitizenshipOption {
@@ -10,6 +10,11 @@ export interface CitizenshipOption {
 }
 
 export interface RegionOption {
+  value: string;
+  label: string;
+}
+
+export interface PurposeOption {
   value: string;
   label: string;
 }
@@ -55,6 +60,20 @@ export const russianRegions: RegionOption[] = [
 ];
 
 /**
+ * Visit purpose options according to Russian migration legislation
+ * Based on migration card purposes
+ */
+export const purposeOptions: PurposeOption[] = [
+  { value: 'work', label: 'Работа' },
+  { value: 'study', label: 'Учёба' },
+  { value: 'tourist', label: 'Туризм' },
+  { value: 'private', label: 'Частный визит' },
+  { value: 'business', label: 'Деловой визит' },
+  { value: 'official', label: 'Служебный визит' },
+  { value: 'transit', label: 'Транзит' },
+];
+
+/**
  * Get citizenship option by value
  */
 export function getCitizenshipByValue(value: string): CitizenshipOption | undefined {
@@ -66,4 +85,11 @@ export function getCitizenshipByValue(value: string): CitizenshipOption | undefi
  */
 export function getRegionByValue(value: string): RegionOption | undefined {
   return russianRegions.find(opt => opt.value === value);
+}
+
+/**
+ * Get purpose option by value
+ */
+export function getPurposeByValue(value: string): PurposeOption | undefined {
+  return purposeOptions.find(opt => opt.value === value);
 }

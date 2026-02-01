@@ -80,7 +80,8 @@ export default function DocumentsPage() {
   const [showTypeSelector, setShowTypeSelector] = useState(false);
   const [editingDocumentType, setEditingDocumentType] = useState<DocumentTypeValue | null>(null);
   const [documents, setDocuments] = useState<TypedDocument[]>([]);
-  const { profile, updateProfile } = useProfileStore();
+  const profile = useProfileStore((state) => state.profile);
+  const updateProfile = useProfileStore((state) => state.updateProfile);
   const { getDocuments, isLoading, deleteDocument } = useDocumentStorage();
 
   // Загрузка документов

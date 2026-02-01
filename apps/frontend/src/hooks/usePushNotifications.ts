@@ -59,7 +59,7 @@ export interface UsePushNotificationsReturn {
  */
 export function usePushNotifications(): UsePushNotificationsReturn {
   const router = useRouter();
-  const { addNotification } = useAppStore();
+  const addNotification = useAppStore((state) => state.addNotification);
 
   const [isSupported, setIsSupported] = useState(false);
   const [isPermissionGranted, setIsPermissionGranted] = useState(false);

@@ -54,6 +54,10 @@ interface AppState {
   lawSyncSuccess: boolean;
   lawSyncNoChanges: boolean;
 
+  // Legal Metadata (from API)
+  legalDataUpdatedAt: string | null; // Date from API metadata.lastUpdatedAt
+  lastSyncAt: string | null; // When client last fetched the data
+
   // Accessibility
   ttsEnabled: boolean;
 
@@ -85,6 +89,9 @@ interface AppState {
 
   // Law Sync actions
   setLawSyncStatus: (date: string, success: boolean, noChanges?: boolean) => void;
+
+  // Legal Metadata actions
+  setLegalMetadata: (dataUpdatedAt: string, syncAt: string) => void;
 
   // Push Notification actions
   setPushNotificationsEnabled: (enabled: boolean) => void;
@@ -119,6 +126,8 @@ const initialState = {
   lawSyncDate: null as string | null,
   lawSyncSuccess: false,
   lawSyncNoChanges: false,
+  legalDataUpdatedAt: null as string | null,
+  lastSyncAt: null as string | null,
   ttsEnabled: true,
   pushNotificationsEnabled: false,
   fcmToken: null as string | null,
@@ -187,6 +196,9 @@ export const useAppStore = create<AppState>()(
 
       setLawSyncStatus: (lawSyncDate, lawSyncSuccess, lawSyncNoChanges = false) =>
         set({ lawSyncDate, lawSyncSuccess, lawSyncNoChanges }),
+
+      setLegalMetadata: (legalDataUpdatedAt, lastSyncAt) =>
+        set({ legalDataUpdatedAt, lastSyncAt }),
 
       setTtsEnabled: (ttsEnabled) =>
         set({ ttsEnabled }),
@@ -261,6 +273,8 @@ export const useAppStore = create<AppState>()(
         lawSyncDate: state.lawSyncDate,
         lawSyncSuccess: state.lawSyncSuccess,
         lawSyncNoChanges: state.lawSyncNoChanges,
+        legalDataUpdatedAt: state.legalDataUpdatedAt,
+        lastSyncAt: state.lastSyncAt,
         ttsEnabled: state.ttsEnabled,
         pushNotificationsEnabled: state.pushNotificationsEnabled,
         fcmToken: state.fcmToken,

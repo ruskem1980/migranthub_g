@@ -51,14 +51,23 @@ function getNestedValue(obj: NestedObject, path: string): string | string[] | un
 
 /**
  * Replace placeholders in a string with values
- * Example: interpolate('Hello, {name}!', { name: 'John' }) returns 'Hello, John!'
+ * Supports both {{name}} (i18next format) and {name} formats
+ * Example: interpolate('Hello, {{name}}!', { name: 'John' }) returns 'Hello, John!'
  */
 function interpolate(str: string, params?: Record<string, string | number>): string {
   if (!params) return str;
 
-  return str.replace(/\{(\w+)\}/g, (_, key) => {
+  // First replace {{key}} format (i18next style)
+  let result = str.replace(/\{\{(\w+)\}\}/g, (_, key) => {
+    return params[key]?.toString() ?? `{{${key}}}`;
+  });
+
+  // Then replace {key} format (simple style)
+  result = result.replace(/\{(\w+)\}/g, (_, key) => {
     return params[key]?.toString() ?? `{${key}}`;
   });
+
+  return result;
 }
 
 /**

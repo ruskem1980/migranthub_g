@@ -13,7 +13,7 @@ export default function PhonePage() {
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const { setLoading } = useAuthStore();
+  const setLoading = useAuthStore((state) => state.setLoading);
 
   const formatPhone = (value: string) => {
     // Remove all non-digits

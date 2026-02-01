@@ -136,7 +136,7 @@
 | Service | Before | After | Status |
 |---------|--------|-------|--------|
 | **Автозаполнение** | ❌ Missing | ✅ Added (position 1, "NEW" badge) | ✅ FIXED |
-| **Проверка запретов** | ⚠️ Generic subtitle | ✅ "Базы МВД/ФССП" | ✅ ENHANCED |
+| **Проверка запрета въезда** | ⚠️ Generic subtitle | ✅ "Базы МВД/ФССП" | ✅ ENHANCED |
 | **Конструктор Договоров** | ⚠️ Generic subtitle | ✅ "RU + Родной язык" | ✅ ENHANCED |
 | **Калькулятор 90/180** | ✅ Good | ✅ Good | ✅ VERIFIED |
 | **Поиск Жилья** | ✅ Good | ✅ Good | ✅ VERIFIED |

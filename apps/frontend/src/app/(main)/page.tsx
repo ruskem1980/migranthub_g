@@ -12,7 +12,8 @@ import { PersonalDashboard } from '@/components/personal';
  * - Registered users see PersonalDashboard
  */
 export default function HomePage() {
-  const { isAnonymous } = useAuthStore();
+  // Use stable selector to prevent unnecessary re-renders
+  const isAnonymous = useAuthStore((state) => state.isAnonymous);
 
   // Show appropriate dashboard based on auth state
   if (isAnonymous) {

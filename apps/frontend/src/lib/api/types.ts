@@ -344,6 +344,26 @@ export interface LegalMetadataDto {
   faqCount: number;
 }
 
+// Legal Reports Types
+export type LegalChangeUrgency = 'low' | 'medium' | 'high' | 'critical';
+
+export interface LegalChangeDto {
+  lawId: string;
+  title: string;
+  changePercentage: number;
+  urgency: LegalChangeUrgency;
+  summary: string;
+  recommendations: string[];
+}
+
+export interface DailyReportDto {
+  id: string;
+  date: string;
+  changesCount: number;
+  changes: LegalChangeDto[];
+  generatedAt: string;
+}
+
 // Assistant Types
 export interface ChatHistoryMessage {
   role: 'user' | 'assistant';

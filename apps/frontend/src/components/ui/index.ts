@@ -40,6 +40,9 @@ export {
 // BottomNavigation
 export { BottomNavigation } from './BottomNavigation';
 
+// SyncStatusBar
+export { SyncStatusBar } from './SyncStatusBar';
+
 // QuickActionCard
 export {
   QuickActionCard,

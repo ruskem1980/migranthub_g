@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Shield, Search, CheckCircle, AlertTriangle, X, ExternalLink, Loader2, AlertCircle, User } from 'lucide-react';
 import { useLanguageStore, Language } from '@/lib/stores/languageStore';
 import { useProfileStore } from '@/lib/stores/profileStore';
+import { getAllCountries, type SupportedLanguage } from '@/data/countries';
 
 interface BanCheckerProps {
   onClose: () => void;
@@ -42,7 +43,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 const labels: Record<string, Record<Language, string>> = {
   title: {
-    ru: 'Проверка запретов',
+    ru: 'Проверка запрета въезда',
     en: 'Ban Check',
     uz: 'Taqiqlarni tekshirish',
     tg: 'Санҷиши манъият',
@@ -337,22 +338,20 @@ const labels: Record<string, Record<Language, string>> = {
   },
 };
 
-const citizenshipOptions = [
-  { code: '', label: { ru: 'Не указано', en: 'Not specified', uz: 'Ko\'rsatilmagan', tg: 'Нишон дода нашудааст', ky: 'Корсотулгон эмес' } },
-  { code: 'UZ', label: { ru: 'Узбекистан', en: 'Uzbekistan', uz: 'O\'zbekiston', tg: 'Узбекистон', ky: 'Озбекстан' } },
-  { code: 'TJ', label: { ru: 'Таджикистан', en: 'Tajikistan', uz: 'Tojikiston', tg: 'Тоҷикистон', ky: 'Тажикстан' } },
-  { code: 'KG', label: { ru: 'Кыргызстан', en: 'Kyrgyzstan', uz: 'Qirg\'iziston', tg: 'Қирғизистон', ky: 'Кыргызстан' } },
-  { code: 'AM', label: { ru: 'Армения', en: 'Armenia', uz: 'Armaniston', tg: 'Арманистон', ky: 'Армения' } },
-  { code: 'AZ', label: { ru: 'Азербайджан', en: 'Azerbaijan', uz: 'Ozarbayjon', tg: 'Озарбойҷон', ky: 'Азербайжан' } },
-  { code: 'MD', label: { ru: 'Молдова', en: 'Moldova', uz: 'Moldova', tg: 'Молдова', ky: 'Молдова' } },
-  { code: 'UA', label: { ru: 'Украина', en: 'Ukraine', uz: 'Ukraina', tg: 'Украина', ky: 'Украина' } },
-  { code: 'BY', label: { ru: 'Беларусь', en: 'Belarus', uz: 'Belarus', tg: 'Беларус', ky: 'Беларусь' } },
-  { code: 'KZ', label: { ru: 'Казахстан', en: 'Kazakhstan', uz: 'Qozog\'iston', tg: 'Қазоқистон', ky: 'Казакстан' } },
-];
+const notSpecifiedLabel: Record<Language, string> = {
+  ru: 'Не указано',
+  en: 'Not specified',
+  uz: 'Ko\'rsatilmagan',
+  tg: 'Нишон дода нашудааст',
+  ky: 'Корсотулгон эмес',
+};
 
 export function BanChecker({ onClose }: BanCheckerProps) {
   const { language } = useLanguageStore();
-  const { profile } = useProfileStore();
+
+  // Get all countries sorted by priority (CIS first, then alphabetically)
+  const countries = useMemo(() => getAllCountries(language as SupportedLanguage), [language]);
+  const profile = useProfileStore((state) => state.profile);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<BanCheckResponse | null>(null);
@@ -550,9 +549,10 @@ export function BanChecker({ onClose }: BanCheckerProps) {
           onChange={(e) => handleInputChange('citizenship', e.target.value)}
           className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
         >
-          {citizenshipOptions.map((option) => (
-            <option key={option.code} value={option.code}>
-              {option.label[language]}
+          <option value="">{notSpecifiedLabel[language]}</option>
+          {countries.map((country) => (
+            <option key={country.iso} value={country.iso}>
+              {country.flag} {country.name[language as SupportedLanguage]}
             </option>
           ))}
         </select>
@@ -589,8 +589,8 @@ export function BanChecker({ onClose }: BanCheckerProps) {
         )}
       </button>
 
-      <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl">
-        <p className="text-sm text-red-800">{t('infoText')}</p>
+      <div className="p-3 bg-white/70 rounded-xl border border-red-200">
+        <p className="text-xs text-gray-600 leading-relaxed">{t('infoText')}</p>
       </div>
 
       {/* External links */}
@@ -734,41 +734,30 @@ export function BanChecker({ onClose }: BanCheckerProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-red-600 to-red-700">
+    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-lg bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <Shield className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+              <Shield className="w-6 h-6 text-red-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">{t('title')}</h2>
-              <p className="text-xs text-red-100">{t('subtitle')}</p>
+              <h2 className="text-xl font-bold text-black">{t('title')}</h2>
+              <p className="text-xs text-gray-700">{t('subtitle')}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/10 rounded-full transition-colors"
+            className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+            aria-label="Close"
           >
-            <X className="w-6 h-6 text-white" />
+            <X className="w-6 h-6 text-gray-600" />
           </button>
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto p-6">
           {result ? renderResult() : renderForm()}
         </div>
-
-        {/* Footer with close button (only shown when form is displayed) */}
-        {!result && (
-          <div className="flex-shrink-0 px-6 pb-6">
-            <button
-              onClick={onClose}
-              className="w-full bg-gray-100 text-gray-600 font-medium py-3 rounded-xl hover:bg-gray-200 transition-colors"
-            >
-              {t('cancel')}
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

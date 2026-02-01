@@ -8,7 +8,8 @@ import type { Deadline, DeadlineType } from '@/components/personal/DeadlinesSect
  * Hook to calculate deadlines based on user profile and documents
  */
 export function useDeadlines(): Deadline[] {
-  const { profile, documents } = useProfileStore();
+  const profile = useProfileStore((state) => state.profile);
+  const documents = useProfileStore((state) => state.documents);
 
   const deadlines = useMemo(() => {
     const result: Deadline[] = [];

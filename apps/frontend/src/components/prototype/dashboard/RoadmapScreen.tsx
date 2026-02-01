@@ -36,7 +36,7 @@ interface RoadmapScreenProps {
 
 export function RoadmapScreen({ onClose }: RoadmapScreenProps) {
   const { t } = useTranslation();
-  const { profile } = useProfileStore();
+  const profile = useProfileStore((state) => state.profile);
   const [expandedStage, setExpandedStage] = useState<string | null>(null);
 
   // Parse entry date from profile

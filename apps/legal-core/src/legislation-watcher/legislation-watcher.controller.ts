@@ -1,12 +1,17 @@
-import { Controller, Get, Post, Param, Query, HttpCode, HttpStatus, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Param, Query, HttpCode, HttpStatus, Logger, NotFoundException } from '@nestjs/common';
 import { LegislationWatcherService } from './legislation-watcher.service';
 import { Law, LawStatus } from '../database/entities/law.entity';
+import { DailyReport } from '../database/entities/report.entity';
+import { ReportingService } from './reporting.service';
 
 @Controller('legislation')
 export class LegislationWatcherController {
   private readonly logger = new Logger(LegislationWatcherController.name);
 
-  constructor(private readonly legislationWatcherService: LegislationWatcherService) {}
+  constructor(
+    private readonly legislationWatcherService: LegislationWatcherService,
+    private readonly reportingService: ReportingService,
+  ) {}
 
   @Get('laws')
   async getAllLaws(@Query('status') status?: LawStatus): Promise<Law[]> {
@@ -47,5 +52,53 @@ export class LegislationWatcherController {
       status: 'ok',
       timestamp: new Date()
     };
+  }
+
+  // ========== Reports Endpoints ==========
+
+  @Get('reports')
+  async getReports(@Query('limit') limit?: number): Promise<DailyReport[]> {
+    const limitValue = limit ? parseInt(limit.toString(), 10) : 10;
+    this.logger.log(`Fetching ${limitValue} recent reports`);
+    return await this.reportingService.getRecentReports(limitValue);
+  }
+
+  @Get('reports/latest')
+  async getLatestReport(): Promise<DailyReport> {
+    this.logger.log('Fetching latest report');
+    const report = await this.reportingService.getLatestReport();
+
+    if (!report) {
+      throw new NotFoundException('No reports found');
+    }
+
+    return report;
+  }
+
+  @Get('reports/urgent')
+  async getUrgentReports(@Query('limit') limit?: number): Promise<DailyReport[]> {
+    const limitValue = limit ? parseInt(limit.toString(), 10) : 10;
+    this.logger.log(`Fetching ${limitValue} urgent reports`);
+    return await this.reportingService.getUrgentReports(limitValue);
+  }
+
+  @Get('reports/:date')
+  async getReportByDate(@Param('date') dateString: string): Promise<DailyReport> {
+    this.logger.log(`Fetching report for date: ${dateString}`);
+
+    // Parse date string (expected format: YYYY-MM-DD)
+    const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) {
+      throw new NotFoundException(`Invalid date format: ${dateString}. Use YYYY-MM-DD format.`);
+    }
+
+    const report = await this.reportingService.getDailyReport(date);
+
+    if (!report) {
+      throw new NotFoundException(`No report found for date: ${dateString}`);
+    }
+
+    return report;
   }
 }

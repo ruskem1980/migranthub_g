@@ -227,7 +227,7 @@ interface POI {
 ```
 
 ### 4.3 Services Implementation
-- [ ] `BanCheckService.tsx` - проверка запретов
+- [ ] `BanCheckService.tsx` - проверка запрета въезда
 - [ ] `StayCalculator.tsx` - калькулятор 90/180
 - [ ] `TranslatorDeeplink.tsx` - deeplink на Яндекс.Переводчик
 - [ ] `ExamTrainer.tsx` - тренажер экзамена

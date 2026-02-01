@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
-import { useAuthStore } from '@/lib/stores';
+import { useAuthStore, useProfileStore } from '@/lib/stores';
 import { useTranslation } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
@@ -19,7 +19,8 @@ export default function OtpPage() {
   const [resendTimer, setResendTimer] = useState(RESEND_TIMEOUT);
   const [phone, setPhone] = useState('');
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const { setUser } = useAuthStore();
+  const setUser = useAuthStore((state) => state.setUser);
+  const profile = useProfileStore((state) => state.profile);
 
   useEffect(() => {
     // Get phone from session storage
@@ -145,8 +146,17 @@ export default function OtpPage() {
         };
         setUser(mockUser);
 
-        // Navigate to onboarding
-        router.push('/onboarding');
+        // Check if profile already has key data from QuickRegistrationSheet
+        const hasProfile = profile?.citizenship && profile?.entryDate;
+
+        // Navigate based on profile completeness
+        if (hasProfile) {
+          // Profile already filled via QuickRegistrationSheet - go to dashboard
+          router.push('/dashboard');
+        } else {
+          // No profile yet - go to onboarding
+          router.push('/onboarding');
+        }
         return;
       }
 

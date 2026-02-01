@@ -369,8 +369,8 @@ export function PassportWizard({
         )}
       </form>
 
-      {/* Navigation buttons */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-border bg-background">
+      {/* Navigation buttons - above BottomNavigation and SyncStatusBar */}
+      <div className="fixed bottom-16 left-0 right-0 p-4 border-t border-border bg-background z-[45]">
         <div className="flex gap-3 max-w-lg mx-auto">
           {!isFirstStep ? (
             <Button

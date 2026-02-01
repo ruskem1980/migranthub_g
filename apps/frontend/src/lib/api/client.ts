@@ -20,6 +20,7 @@ import type {
   FormDto,
   FaqItemDto,
   LegalMetadataDto,
+  DailyReportDto,
   CheckPatentRequest,
   PatentCheckResponse,
   GetInnRequest,
@@ -377,6 +378,18 @@ export const legalApi = {
     const query = categoryId ? `?categoryId=${categoryId}` : '';
     return apiClient.get<FaqItemDto[]>(`/legal/faq${query}`, { skipAuth: true });
   },
+
+  // Reports API (from legal-core)
+  getReports: (limit = 10) => {
+    const query = `?limit=${limit}`;
+    return apiClient.get<DailyReportDto[]>(`/legislation/reports${query}`, { skipAuth: true });
+  },
+
+  getLatestReport: () =>
+    apiClient.get<DailyReportDto>('/legislation/reports/latest', { skipAuth: true }),
+
+  getReportByDate: (date: string) =>
+    apiClient.get<DailyReportDto>(`/legislation/reports/${date}`, { skipAuth: true }),
 };
 
 // Assistant API
