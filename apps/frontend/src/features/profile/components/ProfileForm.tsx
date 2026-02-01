@@ -6,11 +6,13 @@ import { z } from 'zod';
 import { Camera, Save, User, FileText, Briefcase, MapPin } from 'lucide-react';
 import { useState } from 'react';
 import { PassportScanner } from './PassportScanner';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { useTranslation } from '@/lib/i18n';
 import {
   COUNTRIES,
-  PRIORITY_COUNTRIES,
   isEAEUCountry,
   RUSSIAN_CITIES,
+  type SupportedLanguage,
 } from '@/data';
 
 const profileSchema = z.object({
@@ -58,15 +60,35 @@ interface ProfileFormProps {
   isLoading?: boolean;
 }
 
-// Get priority countries for citizenship dropdown
-const CITIZENSHIPS = COUNTRIES
-  .filter(c => PRIORITY_COUNTRIES.includes(c.iso))
-  .map(c => ({
-    code: c.iso,
-    name: c.name.ru,
-    flag: c.flag,
-    isEAEU: isEAEUCountry(c.iso),
-  }));
+// Top 10 migration countries to Russia (by migration flow 2023-2024)
+const TOP_MIGRATION_COUNTRIES = ['UZ', 'TJ', 'KG', 'KZ', 'AM', 'AZ', 'UA', 'MD', 'BY', 'TM'];
+
+// Get all countries for citizenship dropdown, with top migration countries first
+const getCitizenships = (lang: SupportedLanguage = 'ru') => {
+  const topCountries = TOP_MIGRATION_COUNTRIES
+    .map(iso => COUNTRIES.find(c => c.iso === iso))
+    .filter((c): c is NonNullable<typeof c> => c !== undefined)
+    .map(c => ({
+      code: c.iso,
+      name: c.name[lang] || c.name.ru,
+      flag: c.flag,
+      isEAEU: isEAEUCountry(c.iso),
+      isTop: true,
+    }));
+
+  const otherCountries = COUNTRIES
+    .filter(c => !TOP_MIGRATION_COUNTRIES.includes(c.iso) && c.iso !== 'RU') // Exclude Russia and top countries
+    .sort((a, b) => (a.name[lang] || a.name.ru).localeCompare(b.name[lang] || b.name.ru, lang))
+    .map(c => ({
+      code: c.iso,
+      name: c.name[lang] || c.name.ru,
+      flag: c.flag,
+      isEAEU: isEAEUCountry(c.iso),
+      isTop: false,
+    }));
+
+  return [...topCountries, ...otherCountries];
+};
 
 // Get major cities for patent regions
 const PATENT_REGIONS = RUSSIAN_CITIES
@@ -74,8 +96,12 @@ const PATENT_REGIONS = RUSSIAN_CITIES
   .map(city => city.name.ru);
 
 export function ProfileForm({ initialData, onSubmit, isLoading }: ProfileFormProps) {
+  const { language } = useTranslation();
   const [showScanner, setShowScanner] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('personal');
+
+  // Get citizenships based on current language
+  const citizenships = getCitizenships(language as SupportedLanguage);
 
   const {
     register,
@@ -127,6 +153,11 @@ export function ProfileForm({ initialData, onSubmit, isLoading }: ProfileFormPro
       )}
 
       <form onSubmit={handleSubmit(onSubmit)}>
+        {/* Language Switcher */}
+        <div className="flex justify-end mb-4">
+          <LanguageSwitcher variant="compact" />
+        </div>
+
         {/* Scan passport button */}
         <button
           type="button"
@@ -226,7 +257,15 @@ export function ProfileForm({ initialData, onSubmit, isLoading }: ProfileFormPro
                 }`}
               >
                 <option value="">Выберите страну</option>
-                {CITIZENSHIPS.map((c) => (
+                {/* Top migration countries */}
+                {citizenships.filter(c => c.isTop).map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.flag} {c.name}{c.isEAEU ? ' (ЕАЭС)' : ''}
+                  </option>
+                ))}
+                <option disabled>──────────</option>
+                {/* All other countries */}
+                {citizenships.filter(c => !c.isTop).map((c) => (
                   <option key={c.code} value={c.code}>
                     {c.flag} {c.name}{c.isEAEU ? ' (ЕАЭС)' : ''}
                   </option>
@@ -455,8 +494,8 @@ export function ProfileForm({ initialData, onSubmit, isLoading }: ProfileFormPro
           </div>
         )}
 
-        {/* Submit button */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
+        {/* Submit button - above BottomNavigation and SyncStatusBar */}
+        <div className="fixed bottom-16 left-0 right-0 p-4 bg-white border-t border-gray-200 z-[45]">
           <button
             type="submit"
             disabled={isLoading || !isDirty}
