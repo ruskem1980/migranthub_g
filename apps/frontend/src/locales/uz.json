@@ -1020,9 +1020,11 @@
       "loadError": "Maʼlumotlarni yuklashda xatolik",
       "calcError": "Hisoblash xatosi",
       "searchCityOrRegion": "Shahar yoki mintaqa boʻyicha qidirish...",
+      "typeToSearch": "Viloyat yoki shaharni tanlang",
       "found": "Topildi",
       "totalRegions": "Jami mintaqalar",
-      "usingCachedData": "Kesh maʼlumotlari ishlatilmoqda"
+      "usingCachedData": "Kesh maʼlumotlari ishlatilmoqda",
+      "popularCities": "Mashhur shaharlar"
     },
     "patentCheck": {
       "title": "Patent tekshiruvi",
@@ -1395,8 +1397,16 @@
     "profile": "Profil",
     "checklist": "Roʻyxat",
     "checks": "Tekshirish",
+    "payments": "Toʻlovlar",
     "sos": "SOS",
     "login": "Kirish"
+  },
+  "payments": {
+    "title": "Toʻlovlar",
+    "patent": "Patent toʻlovi",
+    "patentDesc": "YooKassa orqali toʻlov",
+    "history": "Toʻlovlar tarixi",
+    "historyDesc": "Barcha tranzaksiyalarni koʻrish"
   },
   "history": {
     "title": "Tarix",
@@ -1428,9 +1438,13 @@
     "use_profile_data": "Profildan",
     "info": "Hujjatlarni olganingizda belgilang. Bu muhim qadamlarni o'tkazib yubormaslikka yordam beradi.",
     "days_left": "{{count}} kun qoldi",
+    "deadline_date": "{{date}}gacha",
+    "deadline_today": "Bugun!",
+    "deadline_passed": "Muddat tugadi",
+    "term_info": "Muddat: kirishdan {{days}} kun",
+    "migration_card_info": "Chegaradan o'tishda beriladi",
     "enter_entry_date": "Muddatlarni hisoblash uchun kirish sanasini kiriting",
-    "specify_entry_date": "Kirish sanasini ko'rsating",
-    "deadline_passed": "Muddat tugadi"
+    "specify_entry_date": "Kirish sanasini ko'rsating"
   },
   "assistant": {
     "title": "AI-Yordamchi",
@@ -1570,13 +1584,33 @@
     "lawSyncFailed": "amalga oshmadi",
     "lawSyncNever": "hech qachon sinxronlanmagan",
     "lawSyncNoChanges": "o'zgarishlar yo'q",
+    "asOf": "sanasiga",
     "dataAsOf": "Ma'lumotlar sanasi",
     "lastSync": "Yangilangan",
     "neverSynced": "Sinxronlanmagan",
     "statusBarLabel": "Sinxronlash holati",
     "connectionStatus": "Ulanish",
     "dataActuality": "Ma'lumotlar dolzarbligi",
-    "lastSyncLabel": "Oxirgi yangilanish"
+    "lastSyncLabel": "Oxirgi yangilanish",
+    "dataUpdating": "Ma'lumotlar yangilanmoqda..."
+  },
+  "legalUpdates": {
+    "title": "Qonunchilikdagi o'zgarishlar",
+    "subtitle": "Rossiya migratsiya qonunchiligidagi o'zgarishlar tarixi",
+    "newChanges": "{count} ta yangi o'zgarish",
+    "noChanges": "O'zgarishlar yo'q",
+    "noChangesDescription": "Hozirda qonunchilikda yangi o'zgarishlar yo'q",
+    "urgency": {
+      "critical": "Juda muhim",
+      "high": "Muhim",
+      "medium": "O'rtacha",
+      "low": "Ahamiyatsiz"
+    },
+    "recommendations": "Tavsiyalar",
+    "understood": "Tushunarli",
+    "viewAll": "Barcha o'zgarishlar",
+    "changePercent": "O'zgarishlar",
+    "disclaimer": "Ma'lumotlar faqat tanishish uchun berilgan. Joriy ma'lumotlar uchun rasmiy manbalarga murojaat qiling."
   },
   "poi": {
     "mvd": "IIV bo'limlari",
@@ -2082,7 +2116,20 @@
         "description": "60 daqiqada 30 ta savol"
       }
     },
-    "categories": "Imtihon kategoriyalari",
+    "categories": {
+      "label": "Imtihon kategoriyalari",
+      "russian": "Rus tili",
+      "history": "Rossiya tarixi",
+      "law": "Qonunchilik asoslari"
+    },
+    "start": {
+      "title": "Test sozlamalari",
+      "back": "Orqaga",
+      "allCategories": "Barcha kategoriyalar",
+      "selectCategory": "Kategoriyani tanlang",
+      "selectCount": "Savollar soni",
+      "startButton": "Testni boshlash"
+    },
     "difficulty": {
       "easy": "Oson",
       "medium": "O'rtacha",

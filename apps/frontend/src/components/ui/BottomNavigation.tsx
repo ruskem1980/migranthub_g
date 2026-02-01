@@ -5,9 +5,8 @@ import { useTranslation } from '@/lib/i18n';
 import { useAuthStore } from '@/lib/stores';
 import {
   Home,
-  FileText,
   ClipboardList,
-  Search,
+  Wallet,
   AlertTriangle,
   User,
   LogIn,
@@ -25,7 +24,7 @@ interface NavItem {
 const anonymousItems: NavItem[] = [
   { href: '/', labelKey: 'nav.home', icon: Home },
   { href: '/checklist', labelKey: 'nav.checklist', icon: ClipboardList },
-  { href: '/checks', labelKey: 'nav.checks', icon: Search },
+  { href: '/payments', labelKey: 'nav.payments', icon: Wallet },
   { href: '/sos', labelKey: 'nav.sos', icon: AlertTriangle, highlight: true },
   { href: '/login', labelKey: 'nav.login', icon: LogIn },
 ];
@@ -33,8 +32,8 @@ const anonymousItems: NavItem[] = [
 // Navigation items for registered users
 const registeredItems: NavItem[] = [
   { href: '/', labelKey: 'nav.home', icon: Home },
-  { href: '/documents', labelKey: 'nav.documents', icon: FileText },
-  { href: '/checks', labelKey: 'nav.checks', icon: Search },
+  { href: '/checklist', labelKey: 'nav.checklist', icon: ClipboardList },
+  { href: '/payments', labelKey: 'nav.payments', icon: Wallet },
   { href: '/sos', labelKey: 'nav.sos', icon: AlertTriangle, highlight: true },
   { href: '/profile', labelKey: 'nav.profile', icon: User },
 ];
@@ -43,7 +42,7 @@ export function BottomNavigation() {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useTranslation();
-  const { isAnonymous } = useAuthStore();
+  const isAnonymous = useAuthStore((state) => state.isAnonymous);
 
   const items = isAnonymous ? anonymousItems : registeredItems;
 

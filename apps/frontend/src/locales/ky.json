@@ -1020,9 +1020,11 @@
       "loadError": "Маалыматтарды жүктөөдө ката",
       "calcError": "Эсептөө катасы",
       "searchCityOrRegion": "Шаар же аймак боюнча издөө...",
+      "typeToSearch": "Региону же шаарды тандаңыз",
       "found": "Табылды",
       "totalRegions": "Жалпы аймактар",
-      "usingCachedData": "Кэштелген маалыматтар колдонулууда"
+      "usingCachedData": "Кэштелген маалыматтар колдонулууда",
+      "popularCities": "Популярдуу шаарлар"
     },
     "patentCheck": {
       "title": "Патентти текшерүү",
@@ -1395,8 +1397,16 @@
     "profile": "Профиль",
     "checklist": "Тизме",
     "checks": "Текшерүү",
+    "payments": "Төлөмдөр",
     "sos": "SOS",
     "login": "Кирүү"
+  },
+  "payments": {
+    "title": "Төлөмдөр",
+    "patent": "Патент төлөмү",
+    "patentDesc": "YooKassa аркылуу төлөм",
+    "history": "Төлөмдөр тарыхы",
+    "historyDesc": "Бардык транзакцияларды көрүү"
   },
   "history": {
     "title": "Тарых",
@@ -1616,13 +1626,33 @@
     "lawSyncFailed": "ишке ашкан жок",
     "lawSyncNever": "эч качан синхрондоштурулган эмес",
     "lawSyncNoChanges": "өзгөрүүлөр жок",
+    "asOf": "күнүнө",
     "dataAsOf": "Маалыматтар күнү",
     "lastSync": "Жаңыртылды",
     "neverSynced": "Синхрондоштурулган эмес",
     "statusBarLabel": "Синхрондоштуруу абалы",
     "connectionStatus": "Байланыш",
     "dataActuality": "Маалыматтын актуалдуулугу",
-    "lastSyncLabel": "Акыркы жаңыртуу"
+    "lastSyncLabel": "Акыркы жаңыртуу",
+    "dataUpdating": "Маалыматтар жаңыртылууда..."
+  },
+  "legalUpdates": {
+    "title": "Мыйзамдардагы өзгөрүүлөр",
+    "subtitle": "Россиянын миграция мыйзамдарындагы өзгөрүүлөрдүн тарыхы",
+    "newChanges": "{count} жаңы өзгөрүү",
+    "noChanges": "Өзгөрүүлөр жок",
+    "noChangesDescription": "Учурда мыйзамдарда жаңы өзгөрүүлөр жок",
+    "urgency": {
+      "critical": "Өтө маанилүү",
+      "high": "Маанилүү",
+      "medium": "Орточо",
+      "low": "Анча маанилүү эмес"
+    },
+    "recommendations": "Сунуштар",
+    "understood": "Түшүндүм",
+    "viewAll": "Бардык өзгөрүүлөр",
+    "changePercent": "Өзгөрүүлөр",
+    "disclaimer": "Маалымат таанышуу үчүн гана берилген. Учурдагы маалымат үчүн расмий булактарга кайрылыңыз."
   },
   "poi": {
     "mvd": "ИИМ бөлүмдөрү",
@@ -2130,9 +2160,18 @@
       }
     },
     "categories": {
+      "label": "Экзамен категориялары",
       "russian": "Орус тили",
-      "history": "Тарых",
-      "law": "Мыйзамдар"
+      "history": "Россия тарыхы",
+      "law": "Мыйзам негиздери"
+    },
+    "start": {
+      "title": "Тест жөндөөлөрү",
+      "back": "Артка",
+      "allCategories": "Бардык категориялар",
+      "selectCategory": "Категорияны тандаңыз",
+      "selectCount": "Суроолордун саны",
+      "startButton": "Тестти баштоо"
     },
     "difficulty": {
       "easy": "Жеңил",

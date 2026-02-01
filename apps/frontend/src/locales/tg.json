@@ -960,9 +960,11 @@
       "loadError": "Хатои боркунии маълумот",
       "calcError": "Хатои ҳисобкунӣ",
       "searchCityOrRegion": "Ҷустуҷӯ аз рӯи шаҳр ё минтақа...",
+      "typeToSearch": "Минтақа ё шаҳрро интихоб кунед",
       "found": "Ёфт шуд",
       "totalRegions": "Ҳамагӣ минтақаҳо",
-      "usingCachedData": "Маълумоти кэш истифода мешавад"
+      "usingCachedData": "Маълумоти кэш истифода мешавад",
+      "popularCities": "Шаҳрҳои маъмул"
     },
     "patentCheck": {
       "title": "Санҷиши патент",
@@ -1335,8 +1337,16 @@
     "profile": "Профил",
     "checklist": "Рӯйхат",
     "checks": "Санҷиш",
+    "payments": "Пардохтҳо",
     "sos": "SOS",
     "login": "Даромадан"
+  },
+  "payments": {
+    "title": "Пардохтҳо",
+    "patent": "Пардохти патент",
+    "patentDesc": "Пардохт тавассути YooKassa",
+    "history": "Таърихи пардохтҳо",
+    "historyDesc": "Дидани ҳамаи амалиётҳо"
   },
   "history": {
     "title": "Таърих",
@@ -1556,13 +1566,33 @@
     "lawSyncFailed": "иҷро нашуд",
     "lawSyncNever": "ҳеҷ гоҳ ҳамоҳанг нашудааст",
     "lawSyncNoChanges": "тағйирот нест",
+    "asOf": "аз",
     "dataAsOf": "Маълумот санаи",
     "lastSync": "Навсозӣ шуд",
     "neverSynced": "Ҳамоҳанг нашудааст",
     "statusBarLabel": "Ҳолати ҳамоҳангсозӣ",
     "connectionStatus": "Пайваст",
     "dataActuality": "Долзарбии маълумот",
-    "lastSyncLabel": "Навсозии охирин"
+    "lastSyncLabel": "Навсозии охирин",
+    "dataUpdating": "Маълумот навсозӣ мешавад..."
+  },
+  "legalUpdates": {
+    "title": "Тағйиротҳо дар қонунгузорӣ",
+    "subtitle": "Таърихи тағйиротҳо дар қонунгузории муҳоҷирати Россия",
+    "newChanges": "{count} тағйироти нав",
+    "noChanges": "Тағйирот нест",
+    "noChangesDescription": "Дар айни замон тағйироти нав дар қонунгузорӣ нест",
+    "urgency": {
+      "critical": "Фаврӣ",
+      "high": "Муҳим",
+      "medium": "Миёна",
+      "low": "Ночиз"
+    },
+    "recommendations": "Тавсияҳо",
+    "understood": "Фаҳмо",
+    "viewAll": "Ҳамаи тағйиротҳо",
+    "changePercent": "Тағйиротҳо",
+    "disclaimer": "Маълумот танҳо барои шиносоӣ пешниҳод шудааст. Барои маълумоти ҷорӣ ба манбаъҳои расмӣ муроҷиат кунед."
   },
   "poi": {
     "mvd": "Шӯъбаҳои ВКД",
@@ -2069,9 +2099,18 @@
       }
     },
     "categories": {
+      "label": "Категорияҳои имтиҳон",
       "russian": "Забони русӣ",
-      "history": "Таърих",
-      "law": "Қонунгузорӣ"
+      "history": "Таърихи Русия",
+      "law": "Асосҳои қонунгузорӣ"
+    },
+    "start": {
+      "title": "Танзимоти тест",
+      "back": "Бозгашт",
+      "allCategories": "Ҳама категорияҳо",
+      "selectCategory": "Категорияро интихоб кунед",
+      "selectCount": "Шумораи саволҳо",
+      "startButton": "Оғоз кардани тест"
     },
     "difficulty": {
       "easy": "Осон",

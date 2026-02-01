@@ -1020,9 +1020,11 @@
       "loadError": "Failed to load data",
       "calcError": "Calculation error",
       "searchCityOrRegion": "Search by city or region...",
+      "typeToSearch": "Select region or city",
       "found": "Found",
       "totalRegions": "Total regions",
-      "usingCachedData": "Using cached data"
+      "usingCachedData": "Using cached data",
+      "popularCities": "Popular cities"
     },
     "patentCheck": {
       "title": "Patent Check",
@@ -1395,8 +1397,16 @@
     "profile": "Profile",
     "checklist": "Checklist",
     "checks": "Checks",
+    "payments": "Payments",
     "sos": "SOS",
     "login": "Login"
+  },
+  "payments": {
+    "title": "Payments",
+    "patent": "Patent Payment",
+    "patentDesc": "Pay via YooKassa",
+    "history": "Payment History",
+    "historyDesc": "View all transactions"
   },
   "history": {
     "title": "History",
@@ -1616,13 +1626,33 @@
     "lawSyncFailed": "failed",
     "lawSyncNever": "never synced",
     "lawSyncNoChanges": "no changes",
+    "asOf": "as of",
     "dataAsOf": "Data as of",
     "lastSync": "Updated",
     "neverSynced": "Not synced",
     "statusBarLabel": "Sync status",
     "connectionStatus": "Connection",
     "dataActuality": "Data currency",
-    "lastSyncLabel": "Last update"
+    "lastSyncLabel": "Last update",
+    "dataUpdating": "Data updating..."
+  },
+  "legalUpdates": {
+    "title": "Legislative Changes",
+    "subtitle": "History of changes in Russian migration legislation",
+    "newChanges": "{count} new changes",
+    "noChanges": "No changes",
+    "noChangesDescription": "There are currently no new legislative changes",
+    "urgency": {
+      "critical": "Critical",
+      "high": "Important",
+      "medium": "Moderate",
+      "low": "Minor"
+    },
+    "recommendations": "Recommendations",
+    "understood": "Understood",
+    "viewAll": "View all changes",
+    "changePercent": "Changes",
+    "disclaimer": "Information provided for informational purposes only. Please refer to official sources for current information."
   },
   "poi": {
     "mvd": "Migration departments",
@@ -2128,7 +2158,20 @@
         "description": "30 questions in 60 minutes"
       }
     },
-    "categories": "Exam categories",
+    "categories": {
+      "label": "Exam categories",
+      "russian": "Russian Language",
+      "history": "Russian History",
+      "law": "Legal Fundamentals"
+    },
+    "start": {
+      "title": "Test Settings",
+      "back": "Back",
+      "allCategories": "All categories",
+      "selectCategory": "Select category",
+      "selectCount": "Number of questions",
+      "startButton": "Start test"
+    },
     "difficulty": {
       "easy": "Easy",
       "medium": "Medium",
