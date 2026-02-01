@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { Shield, Search, CheckCircle, AlertTriangle, X, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Shield, Search, CheckCircle, AlertTriangle, X, ExternalLink, Loader2, AlertCircle, User } from 'lucide-react';
 import { useLanguageStore, Language } from '@/lib/stores/languageStore';
+import { useProfileStore } from '@/lib/stores/profileStore';
 
 interface BanCheckerProps {
   onClose: () => void;
@@ -292,6 +293,27 @@ const labels: Record<string, Record<Language, string>> = {
     tg: 'Базаи ФССП',
     ky: 'ФССП базасы',
   },
+  myProfile: {
+    ru: 'Мой профиль',
+    en: 'My Profile',
+    uz: 'Mening profilim',
+    tg: 'Профили ман',
+    ky: 'Менин профилим',
+  },
+  fillFromProfile: {
+    ru: 'Заполнить из профиля',
+    en: 'Fill from profile',
+    uz: 'Profildan to\'ldirish',
+    tg: 'Аз профил пур кунед',
+    ky: 'Профилден толтуруу',
+  },
+  noProfileData: {
+    ru: 'Данные профиля не заполнены',
+    en: 'Profile data not filled',
+    uz: 'Profil ma\'lumotlari to\'ldirilmagan',
+    tg: 'Маълумоти профил пур карда нашудааст',
+    ky: 'Профиль маалыматтары толтурулган эмес',
+  },
   recommendation: {
     ru: 'Рекомендация',
     en: 'Recommendation',
@@ -323,6 +345,7 @@ const citizenshipOptions = [
 
 export function BanChecker({ onClose }: BanCheckerProps) {
   const { language } = useLanguageStore();
+  const { profile } = useProfileStore();
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<BanCheckResponse | null>(null);
@@ -331,6 +354,32 @@ export function BanChecker({ onClose }: BanCheckerProps) {
   const t = (key: string): string => {
     return labels[key]?.[language] || labels[key]?.en || key;
   };
+
+  // Parse fullName into parts
+  const parseFullName = (fullName: string): { lastName: string; firstName: string; middleName: string } => {
+    const parts = fullName.trim().toUpperCase().split(/\s+/);
+    return {
+      lastName: parts[0] || '',
+      firstName: parts[1] || '',
+      middleName: parts.slice(2).join(' ') || '',
+    };
+  };
+
+  const fillFromProfile = () => {
+    if (!profile) return;
+
+    const nameParts = profile.fullName ? parseFullName(profile.fullName) : { lastName: '', firstName: '', middleName: '' };
+
+    setFormData({
+      lastName: nameParts.lastName,
+      firstName: nameParts.firstName,
+      middleName: nameParts.middleName,
+      birthDate: profile.birthDate || '',
+      citizenship: profile.citizenship || '',
+    });
+  };
+
+  const hasProfileData = profile && (profile.fullName || profile.birthDate);
 
   const getBanTypeLabel = (type: string): string => {
     const labels: Record<string, string> = {
@@ -407,6 +456,32 @@ export function BanChecker({ onClose }: BanCheckerProps) {
 
   const renderForm = () => (
     <div className="space-y-4">
+      {/* My Profile Block */}
+      {hasProfileData && (
+        <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <User className="w-5 h-5 text-blue-600" />
+              <span className="font-semibold text-blue-900">{t('myProfile')}</span>
+            </div>
+            <button
+              onClick={fillFromProfile}
+              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+            >
+              {t('fillFromProfile')}
+            </button>
+          </div>
+          <div className="text-sm text-blue-800">
+            {profile?.fullName && <p>{profile.fullName}</p>}
+            {profile?.birthDate && (
+              <p className="text-blue-600">
+                {new Date(profile.birthDate).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US')}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">

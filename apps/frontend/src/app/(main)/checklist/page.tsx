@@ -1,11 +1,13 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { ClipboardList, CheckCircle2, Circle } from 'lucide-react';
 
-// Placeholder checklist items - to be replaced with actual data
-const checklistItems = [
+const STORAGE_KEY = 'migranthub_checklist';
+
+const defaultItems = [
   { id: '1', title: 'checklist.items.migration_card', completed: false },
   { id: '2', title: 'checklist.items.registration', completed: false },
   { id: '3', title: 'checklist.items.patent', completed: false },
@@ -15,6 +17,32 @@ const checklistItems = [
 
 export default function ChecklistPage() {
   const { t } = useTranslation();
+  const [items, setItems] = useState(defaultItems);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        setItems(JSON.parse(saved));
+      } catch {
+        // ignore parse errors
+      }
+    }
+  }, []);
+
+  // Save to localStorage on change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }, [items]);
+
+  const toggleItem = (id: string) => {
+    setItems(prev =>
+      prev.map(item =>
+        item.id === id ? { ...item, completed: !item.completed } : item
+      )
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -38,10 +66,11 @@ export default function ChecklistPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {checklistItems.map((item) => (
+            {items.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                onClick={() => toggleItem(item.id)}
+                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer active:scale-[0.98]"
               >
                 {item.completed ? (
                   <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />

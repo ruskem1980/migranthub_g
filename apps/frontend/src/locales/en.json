@@ -242,6 +242,20 @@
     },
     "readMore": "Read full"
   },
+  "login": {
+    "title": "Create a profile",
+    "subtitle": "To save results and receive reminders",
+    "benefits": {
+      "save_results": "Save your results",
+      "save_results_desc": "Your progress and documents are always at hand",
+      "reminders": "Reminders",
+      "reminders_desc": "Get notifications about important deadlines",
+      "history": "History",
+      "history_desc": "Access to check and consultation history"
+    },
+    "create_profile": "Create profile",
+    "privacy_note": "Your data is stored only on your device"
+  },
   "onboarding": {
     "language": {
       "title": "Select language",
@@ -1393,6 +1407,19 @@
       "receivedAt": "Received at",
       "border": "Border"
     }
+  },
+  "checklist": {
+    "title": "Document Checklist",
+    "subtitle": "Track your document readiness",
+    "required_documents": "Required Documents",
+    "items": {
+      "migration_card": "Migration Card",
+      "registration": "Registration at place of stay",
+      "patent": "Work Patent",
+      "medical": "Medical Certificates",
+      "fingerprints": "Fingerprinting"
+    },
+    "info": "Check off documents as you receive them. This will help you not miss important steps."
   },
   "assistant": {
     "title": "AI Assistant",

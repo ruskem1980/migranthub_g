@@ -242,6 +242,20 @@
     },
     "readMore": "To'liq o'qish"
   },
+  "login": {
+    "title": "Profil yarating",
+    "subtitle": "Natijalarni saqlash va eslatmalar olish uchun",
+    "benefits": {
+      "save_results": "Natijalarni saqlang",
+      "save_results_desc": "Sizning taraqqiyotingiz va hujjatlaringiz doimo qo'l ostida",
+      "reminders": "Eslatmalar",
+      "reminders_desc": "Muhim muddatlar haqida bildirishnomalar oling",
+      "history": "Tarix",
+      "history_desc": "Tekshiruvlar va maslahatlar tarixiga kirish"
+    },
+    "create_profile": "Profil yaratish",
+    "privacy_note": "Ma'lumotlaringiz faqat qurilmangizda saqlanadi"
+  },
   "onboarding": {
     "language": {
       "title": "Tilni tanlang",
@@ -1387,6 +1401,19 @@
       "receivedAt": "Olingan joy",
       "border": "Chegara"
     }
+  },
+  "checklist": {
+    "title": "Hujjatlar ro'yxati",
+    "subtitle": "Hujjatlaringiz tayinligini kuzating",
+    "required_documents": "Zarur hujjatlar",
+    "items": {
+      "migration_card": "Migratsiya kartasi",
+      "registration": "Yashash joyida ro'yxatga olish",
+      "patent": "Ish patenti",
+      "medical": "Tibbiy guvohnamalar",
+      "fingerprints": "Barmoq izlari"
+    },
+    "info": "Hujjatlarni olganingizda belgilang. Bu muhim qadamlarni o'tkazib yubormaslikka yordam beradi."
   },
   "assistant": {
     "title": "AI-Yordamchi",
