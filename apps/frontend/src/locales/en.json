@@ -56,6 +56,7 @@
     "days": "days",
     "month": "month",
     "months": "months",
+    "monthShort": "mo",
     "year": "year",
     "years": "years",
     "hour": "hour",
@@ -65,7 +66,7 @@
     "second": "second",
     "seconds": "seconds",
     "rubles": "₽",
-    "rublesShort": "rub.",
+    "rublesShort": "RUB",
     "or": "or",
     "start": "Start",
     "saving": "Saving...",
@@ -75,7 +76,8 @@
     "encrypted": "Encrypted",
     "status": "Status",
     "outOf": "of",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "refresh": "Refresh"
   },
   "date": {
     "day": "Day",
@@ -166,7 +168,7 @@
     }
   },
   "welcome": {
-    "tagline": "Your personal protector. We help you process documents quickly, avoid fines and control the legalization process.",
+    "tagline": "Your personal protector. We help you process documents quickly, avoid fines, and stay in control of your legalization journey.",
     "selectLanguage": "Select language",
     "moreLanguages": "More...",
     "chooseLanguage": "Choose language",
@@ -175,23 +177,23 @@
     "benefits": {
       "safety": {
         "title": "Life Without Fear",
-        "description": "We ensure legal compliance at every step. You no longer fear police, inspections, or sudden deportation."
+        "description": "We ensure legal compliance at every step. No more worrying about inspections or unexpected complications."
       },
       "language": {
         "title": "Everything in Your Language",
-        "description": "Russian laws are complex, but we've translated them into simple language. No barriers — you understand exactly what you're signing."
+        "description": "Russian laws are complex, but we explain them in plain language. No barriers - you'll understand exactly what you're signing."
       },
       "savings": {
         "title": "Money to Family, Not Middlemen",
-        "description": "By processing documents directly through the app, you save on 'helpers' and protect yourself from fake receipts and registrations."
+        "description": "Process documents directly through the app - save money on middlemen and protect yourself from fake receipts and registrations."
       },
       "technology": {
         "title": "Technology on Your Side",
-        "description": "AI monitors your deadlines 24/7. People can forget or make mistakes, our algorithm — never."
+        "description": "AI monitors your deadlines 24/7. People forget; our system never does."
       },
       "honesty": {
         "title": "Honesty and Transparency",
-        "description": "We don't promise the impossible (fake registrations). We provide a legal path so you can work peacefully and build a future in Russia."
+        "description": "We never promise the impossible. We provide a legal path so you can work with confidence and build a future in Russia."
       }
     },
     "agreement": {
@@ -199,23 +201,23 @@
       "terms": "User Agreement",
       "privacy": "Privacy Policy"
     },
-    "whatCanDo": "What the app can do",
+    "whatCanDo": "What This App Can Do",
     "features": {
       "legal": {
-        "title": "Legal processing",
-        "description": "Work patent, registration, migration record — all according to Russian law"
+        "title": "Legal Processing",
+        "description": "Work patent, registration, and migration records in full compliance with Russian law"
       },
       "documents": {
-        "title": "Document storage",
-        "description": "Secure encrypted storage of document copies"
+        "title": "Document Storage",
+        "description": "Secure encrypted storage for your document copies"
       },
       "notifications": {
         "title": "Reminders",
-        "description": "Notifications about patent and registration renewal deadlines"
+        "description": "Timely notifications about patent and registration deadlines"
       },
       "map": {
-        "title": "Services map",
-        "description": "Ministry of Interior, medical centers, exams — all necessary addresses nearby"
+        "title": "Services Map",
+        "description": "Migration offices, medical centers, exam locations, and more nearby"
       }
     }
   },
@@ -224,7 +226,7 @@
     "subtitle": "Please review and confirm",
     "warning": {
       "title": "Important",
-      "description": "We do not make fake registrations. We only work according to Russian law. The app helps you process documents correctly."
+      "description": "We do not provide fake registrations. We only operate within Russian law. The app helps you process documents correctly."
     },
     "agreements": {
       "terms": {
@@ -319,7 +321,7 @@
         "transitDesc": "Passing through Russia"
       },
       "important": "Important",
-      "purposeWarning": "To obtain a work patent, select \"Work\". You cannot change the purpose of visit without leaving Russia (except for EAEU citizens)."
+      "purposeWarning": "To obtain a work patent, select \"Work\". You cannot change your purpose of visit without leaving Russia (except for Eurasian Economic Union citizens)."
     }
   },
   "languages": {
@@ -578,7 +580,7 @@
       "workStartDate": "Work start date",
       "inn": "TIN",
       "snils": "SNILS",
-      "omsPolicy": "OMS policy",
+      "omsPolicy": "Public health insurance",
       "region": "Destination region"
     },
     "genders": {
@@ -613,7 +615,7 @@
     "saveChanges": "Save changes",
     "dateHint": "Changing entry date will recalculate the 90/180 days counter",
     "purposeHint": "Changing the purpose of visit may affect patent eligibility",
-    "eaeuNote": "EAEU: Patent not required",
+    "eaeuNote": "Eurasian Economic Union: Patent not required",
     "myDocuments": "My documents",
     "markDocuments": "Mark documents you have",
     "documentsCount": "Documents",
@@ -659,10 +661,10 @@
       "patent": "Patent",
       "contract": "Employment contract",
       "receipts": "Receipts (Tax)",
-      "insurance": "VHI policy",
+      "insurance": "Health insurance policy",
       "inn": "TIN",
       "snils": "SNILS",
-      "dms": "VHI policy",
+      "dms": "Health insurance policy",
       "family": "Marriage / Birth certificate"
     },
     "groups": {
@@ -731,14 +733,14 @@
         "description": "When moving to another region"
       },
       "employerNotification": {
-        "title": "Employment contract notification",
-        "titleShort": "Employment notification",
-        "description": "Employer must notify the Ministry of Interior within 3 days"
+        "title": "Employment Contract Notification",
+        "titleShort": "Employment Notification",
+        "description": "Employer must notify the migration office within 3 days"
       },
       "employerTermination": {
-        "title": "Employment termination notification",
-        "titleShort": "Termination notification",
-        "description": "Employer notifies the Ministry of Interior upon dismissal"
+        "title": "Employment Termination Notification",
+        "titleShort": "Termination Notification",
+        "description": "Employer notifies the migration office upon dismissal"
       },
       "rvpApplication": {
         "title": "Temporary residence permit application",
@@ -833,20 +835,20 @@
         "subtitle": "Document generation"
       },
       "check": {
-        "title": "Ban check",
-        "subtitle": "MVD/FSSP databases"
+        "title": "Ban Check",
+        "subtitle": "Entry ban databases"
       },
       "permitStatus": {
-        "title": "RVP/VNJ Status",
-        "subtitle": "Check application"
+        "title": "Permit Status",
+        "subtitle": "Check application status"
       },
       "fsspCheck": {
-        "title": "FSSP Debt Check",
-        "subtitle": "Bailiff debts"
+        "title": "Debt Check",
+        "subtitle": "Court debts and fines"
       },
       "passportValidity": {
         "title": "Passport Check",
-        "subtitle": "RF passport validity"
+        "subtitle": "Russian passport validity"
       },
       "workPermitCheck": {
         "title": "Work Permit Check",
@@ -854,7 +856,7 @@
       },
       "gibddCheck": {
         "title": "Traffic Fines",
-        "subtitle": "Check GIBDD fines"
+        "subtitle": "Check traffic violations"
       },
       "payment": {
         "title": "Patent payment",
@@ -862,7 +864,7 @@
       },
       "map": {
         "title": "Migrant Map",
-        "subtitle": "MVD, MMC, Routes"
+        "subtitle": "Offices and centers nearby"
       },
       "other": {
         "title": "Other services",
@@ -897,12 +899,12 @@
         "subtitle": "Find mosque"
       },
       "insurance": {
-        "title": "VHI / Medical",
-        "subtitle": "Insurance"
+        "title": "Health Insurance",
+        "subtitle": "Medical coverage"
       },
       "banCheck": {
-        "title": "Check",
-        "subtitle": "MVD/FSSP"
+        "title": "Ban Check",
+        "subtitle": "Entry restrictions"
       },
       "applications": {
         "title": "My Applications",
@@ -915,11 +917,11 @@
       "openMap": "Open map"
     },
     "banCheck": {
-      "title": "Ban check",
-      "subtitle": "MVD / FSSP",
+      "title": "Ban Check",
+      "subtitle": "Entry Restrictions",
       "description": "Check for entry ban to Russia",
-      "checkMvd": "Check MVD database",
-      "checkFssp": "Check debts (FSSP)",
+      "checkMvd": "Check migration database",
+      "checkFssp": "Check court debts",
       "enterPassport": "Enter passport data",
       "noRestrictions": "No bans found",
       "hasRestrictions": "Restrictions found",
@@ -945,10 +947,10 @@
       "exemptions": {
         "title": "This rule does NOT apply to:",
         "items": {
-          "vnzh": "Residence permit (VNZh) holders",
-          "rvp": "Temporary residence permit (RVP) holders",
+          "vnzh": "Residence Permit holders",
+          "rvp": "Temporary Residence Permit holders",
           "patent": "Work patent holders",
-          "eaeu": "EAEU citizens with employment contract",
+          "eaeu": "Eurasian Economic Union citizens with employment contract",
           "student": "Students with study permit",
           "refugee": "Refugees and temporary asylum holders"
         }
@@ -988,7 +990,7 @@
         "addEntry": "Add entry",
         "noPeriods": "No stay records",
         "addDatesHint": "Add entry and exit dates",
-        "currentlyInRussia": "Currently in RF",
+        "currentlyInRussia": "Currently in Russia",
         "linkedToMigrationCard": "Linked to migration card"
       },
       "resetLimit": {
@@ -1014,9 +1016,13 @@
       "coefficient": "Coefficient",
       "monthlyPayment": "Monthly payment",
       "period": "Period",
-      "infoNote": "Data is current as of today. Check with MVD for updates.",
+      "infoNote": "Data is current as of today. Check with migration authorities for updates.",
       "loadError": "Failed to load data",
-      "calcError": "Calculation error"
+      "calcError": "Calculation error",
+      "searchCityOrRegion": "Search by city or region...",
+      "found": "Found",
+      "totalRegions": "Total regions",
+      "usingCachedData": "Using cached data"
     },
     "patentCheck": {
       "title": "Patent Check",
@@ -1028,7 +1034,7 @@
       "numberError": "Enter patent number",
       "additional": "Additional information",
       "checkPatent": "Check patent",
-      "infoNote": "Verification is performed using MVD databases",
+      "infoNote": "Verification is performed using official migration databases",
       "seriesAndNumber": "Series and number",
       "validUntil": "Valid until",
       "holder": "Holder",
@@ -1038,7 +1044,7 @@
       "reason3": "Patent canceled",
       "recommendations": "Recommendations",
       "recommendation1": "Check patent payment",
-      "recommendation2": "Contact MVD",
+      "recommendation2": "Contact migration office",
       "recommendation3": "Consult a lawyer",
       "mockWarning": "This is test data",
       "fallbackWarning": "Service temporarily unavailable",
@@ -1056,13 +1062,13 @@
       }
     },
     "map": {
-      "title": "Migrant map",
-      "subtitle": "MVD, MMC, Medical centers",
+      "title": "Migrant Map",
+      "subtitle": "Migration offices and centers",
       "description": "Find nearest offices and centers",
       "filters": {
         "all": "All",
-        "mvd": "MVD",
-        "mmc": "MMC",
+        "mvd": "Migration offices",
+        "mmc": "Migration centers",
         "medical": "Medical exam",
         "exam": "Exam",
         "mosque": "Mosques"
@@ -1106,18 +1112,18 @@
     },
     "insurance": {
       "title": "Insurance",
-      "subtitle": "VHI and OMS",
+      "subtitle": "Health insurance options",
       "description": "Get medical insurance"
     }
   },
   "permitStatus": {
-    "title": "RVP/VNJ Status",
+    "title": "Permit Status",
     "subtitle": "Check application status",
     "permitType": "Permit type",
-    "rvp": "RVP",
-    "rvpFull": "Temporary residence",
-    "vnj": "VNJ",
-    "vnjFull": "Residence permit",
+    "rvp": "TRP",
+    "rvpFull": "Temporary Residence Permit",
+    "vnj": "RP",
+    "vnjFull": "Residence Permit",
     "region": "Application region",
     "selectRegion": "Select region",
     "applicationDate": "Application date",
@@ -1138,7 +1144,7 @@
     "checkDetails": "Check details",
     "applicant": "Applicant",
     "checkedAt": "Checked at",
-    "infoHint": "Data is checked against the MVD Russia database. The result reflects the current status of your application.",
+    "infoHint": "Data is checked against official government databases. The result reflects the current status of your application.",
     "statuses": {
       "PENDING": "Under review",
       "APPROVED": "Approved",
@@ -1165,7 +1171,7 @@
     "paymentMethod": "Payment method",
     "total": "Total to pay",
     "perMonth": "per month",
-    "months": "mo.",
+    "months": "mo",
     "pay": "Pay",
     "monthsCount": {
       "1": "1 month",
@@ -1213,11 +1219,11 @@
       "important": "Important",
       "contacts": "Contacts",
       "showDocumentsCalmly": "Present your passport and registration calmly",
-      "rightToRecord": "You have the right to record video (Art. 29 of the Russian Constitution)",
+      "rightToRecord": "You have the right to record video (Article 29, Russian Constitution)",
       "demandProtocol": "Demand a protocol in a language you understand",
-      "dontBeRude": "Don't be rude or resist",
-      "noBribery": "Don't give bribes (criminal offense)",
-      "rightToTranslator": "Right to an interpreter (Art. 25.10 of the Administrative Code)",
+      "dontBeRude": "Do not be rude or resist",
+      "noBribery": "Do not offer bribes (criminal offense)",
+      "rightToTranslator": "Right to an interpreter (Article 25.10, Administrative Code)",
       "rightToCall": "Right to call a lawyer/relatives",
       "rightNotToSign": "Right not to sign the protocol without understanding",
       "demandStatement": "Say: \"I demand an interpreter and a lawyer. I will not sign the protocol.\"",
@@ -1254,7 +1260,7 @@
     "police": "Police",
     "ambulance": "Ambulance",
     "fire": "Fire department",
-    "hotline": "MVD hotline",
+    "hotline": "Migration hotline",
     "lawyer": "Call lawyer",
     "call": "Call",
     "instructions": {
@@ -1283,21 +1289,21 @@
         ]
       },
       "migCard": {
-        "instruction": "Migration card. Recovered at the MVD department (only after passport recovery).",
+        "instruction": "Migration card. Recovered at the migration department (only after passport recovery).",
         "steps": [
-          "Contact the MVD department at your place of stay",
+          "Contact the migration department at your place of stay",
           "File a loss report",
           "Get a migration card duplicate"
         ]
       },
       "greenCard": {
-        "instruction": "Green card. Duplicate issued at MMC/MVD."
+        "instruction": "Green card. Duplicate issued at the migration center or migration department."
       },
       "education": {
         "instruction": "Certificate/Diploma. Contact the testing center or educational institution for a duplicate."
       },
       "registration": {
-        "instruction": "Registration. Done by the host at the MVD.",
+        "instruction": "Registration. Done by the host at the migration department.",
         "steps": [
           "Contact the host",
           "Submit a new arrival notification",
@@ -1305,24 +1311,24 @@
         ]
       },
       "patent": {
-        "instruction": "Patent. At the MMC that issued the patent (full document package required).",
+        "instruction": "Patent. At the migration center that issued the patent (full document package required).",
         "steps": [
-          "Contact the migration center (MMC)",
+          "Contact the migration center",
           "Submit a duplicate application",
           "Pay the state fee for the duplicate"
         ]
       },
       "receipts": {
-        "instruction": "Receipts. At the MMC that issued the patent (full document package required)."
+        "instruction": "Receipts. At the migration center that issued the patent (full document package required)."
       },
       "contract": {
         "instruction": "Employment contract. Request a copy from your employer."
       },
       "insurance": {
-        "instruction": "VHI policy. Contact the insurance company for a duplicate."
+        "instruction": "Health insurance policy. Contact the insurance company for a duplicate."
       },
       "inn": {
-        "instruction": "TIN/SNILS. Contact the tax office or MFC."
+        "instruction": "TIN/SNILS. Contact the tax office or public services center."
       },
       "family": {
         "instruction": "Marriage/birth certificate. Contact the registry office where the act was registered."
@@ -1410,20 +1416,67 @@
   },
   "checklist": {
     "title": "Document Checklist",
-    "subtitle": "Track your document readiness",
+    "subtitle": "Simulate your situation and track deadlines",
     "required_documents": "Required Documents",
+    "simulator_title": "Situation Parameters",
+    "entry_date": "Entry date to Russia",
+    "citizenship": "Citizenship",
+    "select_citizenship": "Select country",
+    "entry_point": "Entry point",
+    "purpose": "Purpose of visit",
+    "fill_simulator": "Enter your entry date and citizenship to calculate deadlines",
     "items": {
       "migration_card": "Migration Card",
       "registration": "Registration at place of stay",
-      "patent": "Work Patent",
-      "medical": "Medical Certificates",
-      "fingerprints": "Fingerprinting"
+      "patent": "Work patent application",
+      "medical": "Medical certificates",
+      "fingerprints": "Fingerprinting",
+      "stay_limit": "Stay limit (90 days)",
+      "enrollment": "University enrollment confirmation"
     },
-    "info": "Check off documents as you receive them. This will help you not miss important steps.",
-    "days_left": "{{count}} days left",
-    "enter_entry_date": "Enter your entry date to calculate deadlines",
-    "specify_entry_date": "Specify entry date",
-    "deadline_passed": "Deadline passed"
+    "countries": {
+      "uzbekistan": "Uzbekistan",
+      "tajikistan": "Tajikistan",
+      "kyrgyzstan": "Kyrgyzstan",
+      "kazakhstan": "Kazakhstan",
+      "armenia": "Armenia",
+      "azerbaijan": "Azerbaijan",
+      "moldova": "Moldova",
+      "belarus": "Belarus",
+      "ukraine": "Ukraine",
+      "georgia": "Georgia",
+      "turkmenistan": "Turkmenistan",
+      "other_country": "Other country"
+    },
+    "entry_air": "Air (airport)",
+    "entry_land_kz": "Car/train from Kazakhstan",
+    "entry_land_by": "Car/train from Belarus",
+    "entry_land_other": "Other land border",
+    "purpose_work": "Work",
+    "purpose_private": "Private",
+    "purpose_tourism": "Tourism",
+    "purpose_study": "Study",
+    "purpose_business": "Business",
+    "purpose_transit": "Transit",
+    "purpose_official": "Official",
+    "eaeu_info": "Eurasian Economic Union citizens (Kazakhstan, Kyrgyzstan, Armenia, Belarus) have simplified conditions: 30 days for registration, right to work without a patent.",
+    "use_profile_data": "From profile",
+    "info": "Check off documents as you receive them.",
+    "days_left": "{{count}} days",
+    "deadline_date": "By {{date}}",
+    "deadline_today": "Today!",
+    "deadline_passed": "Overdue!",
+    "term_info": "Term: {{days}} days from entry",
+    "migration_card_info": "Issued at border crossing",
+    "legal_disclaimer": "This information is for reference only. Deadlines may vary by region and individual situation. Consult a lawyer for accurate advice.",
+    "risks": {
+      "registration": "Fine 2-5K ₽, possible deportation and entry ban",
+      "patent": "Fine 5-7K ₽, unable to work legally",
+      "medical": "Patent will not be issued without certificates",
+      "fingerprints": "Required when applying for patent",
+      "stay_limit": "Violation of stay rules, deportation, 3-10 year entry ban",
+      "enrollment": "Student visa cancellation"
+    }
   },
   "assistant": {
     "title": "AI Assistant",
@@ -1539,7 +1592,11 @@
     "forbidden": "Access denied",
     "notFound": "Not found",
     "validation": "Validation error",
-    "tryAgain": "Please try again"
+    "tryAgain": "Please try again",
+    "boundary": {
+      "title": "Something went wrong",
+      "description": "An unexpected error occurred"
+    }
   },
   "offline": {
     "title": "No connection",
@@ -1548,6 +1605,7 @@
     "noConnection": "No internet connection"
   },
   "sync": {
+    "online": "Online",
     "offline": "Offline",
     "pending": "{count} changes pending sync",
     "synced": "Synced",
@@ -1557,17 +1615,24 @@
     "lawSyncSuccess": "updated",
     "lawSyncFailed": "failed",
     "lawSyncNever": "never synced",
-    "lawSyncNoChanges": "no changes"
+    "lawSyncNoChanges": "no changes",
+    "dataAsOf": "Data as of",
+    "lastSync": "Updated",
+    "neverSynced": "Not synced",
+    "statusBarLabel": "Sync status",
+    "connectionStatus": "Connection",
+    "dataActuality": "Data currency",
+    "lastSyncLabel": "Last update"
   },
   "poi": {
-    "mvd": "MVD departments",
+    "mvd": "Migration departments",
     "migrationDepts": "Migration departments",
-    "medCenters": "Medical centers (MMC)",
+    "medCenters": "Medical centers",
     "authorizedOnly": "Accredited only",
     "examCenters": "Russian/History exam",
     "testingCenters": "Testing centers",
     "types": {
-      "mvd": "MVD department",
+      "mvd": "Migration department",
       "mmc": "Migration center",
       "medical": "Medical exam",
       "exam": "Testing center",
@@ -1647,7 +1712,7 @@
         "contractDesc": "Contract with employer",
         "receipts": "Receipts (Tax)",
         "receiptsDesc": "Patent payment receipts",
-        "insurance": "VHI policy",
+        "insurance": "Health insurance policy",
         "insuranceDesc": "Medical insurance",
         "inn": "TIN / SNILS",
         "innDesc": "Tax number",
@@ -1700,8 +1765,8 @@
     "processing": {
       "generating": "Generating documents",
       "analyzingLaws": "Analyzing Russian laws",
-      "selectingForms": "Selecting MVD forms",
-      "generatingApplications": "Generating applications",
+      "selectingForms": "Selecting official forms",
+      "generatingApplications": "Preparing applications",
       "usuallyTakes": "This usually takes 10-15 seconds"
     },
     "actionPlan": {
@@ -1750,7 +1815,7 @@
         "description": "Certificate from testing center"
       },
       "insurance": {
-        "title": "VHI policy",
+        "title": "Health Insurance Policy",
         "description": "Medical insurance contract"
       },
       "contract": {
@@ -1879,12 +1944,12 @@
       "educationSubtitle": "Russian language or education",
       "patent": "Patent",
       "contract": "Employment contract",
-      "contractSubtitle": "Critical for EAEU citizens",
+      "contractSubtitle": "Required for Eurasian Economic Union citizens",
       "receipts": "Receipts (Tax)",
-      "insurance": "VHI policy",
+      "insurance": "Health insurance policy",
       "inn": "TIN / SNILS",
       "family": "Marriage / Birth certificate",
-      "familySubtitle": "For TRP/Residence permit"
+      "familySubtitle": "For TRP/Residence Permit"
     }
   },
   "reference": {
@@ -1932,7 +1997,7 @@
     "downloadPdf": "Download PDF",
     "edit": "Edit",
     "readyToUse": "Document ready to use",
-    "printAndSubmit": "Print the document and submit to the appropriate authority. All data is filled according to Russian MVD requirements.",
+    "printAndSubmit": "Print the document and submit to the appropriate authority. All data is formatted according to official requirements.",
     "great": "Great!",
     "categories": {
       "work": "Work",
@@ -1954,12 +2019,12 @@
       "employment_notification": {
         "title": "Employment contract notification",
         "subtitle": "Must be sent to MVD within 2 months!",
-        "formNumber": "MVD Order No. 846"
+        "formNumber": "Order No. 846"
       },
       "termination_notification": {
         "title": "Contract termination notification",
         "subtitle": "Submit upon dismissal within 3 days",
-        "formNumber": "MVD Order No. 846"
+        "formNumber": "Order No. 846"
       },
       "arrival": {
         "title": "Arrival notification",
@@ -2063,11 +2128,7 @@
         "description": "30 questions in 60 minutes"
       }
     },
-    "categories": {
-      "russian": "Russian Language",
-      "history": "History",
-      "law": "Legislation"
-    },
+    "categories": "Exam categories",
     "difficulty": {
       "easy": "Easy",
       "medium": "Medium",
@@ -2154,7 +2215,6 @@
     "nextQuestion": "Next question",
     "levelProgress": "Level progress",
     "xpProgress": "Experience points progress",
-    "categories": "Exam categories",
     "totalAnswered": "{count} questions answered"
   },
   "examTrainer": {
@@ -2250,7 +2310,7 @@
     "hints": {
       "correct": "Correct!",
       "explanation": "Explanation:",
-      "hint": "💡 Hint: Think about the key concepts related to this topic."
+      "hint": "Hint: Think about the key concepts related to this topic."
     }
   },
   "roadmap": {
@@ -2317,8 +2377,8 @@
     "categories": {
       "patent": "Patent",
       "registration": "Registration",
-      "rvp": "TRP",
-      "vnj": "Residence",
+      "rvp": "Temporary Residence",
+      "vnj": "Residence Permit",
       "work": "Work",
       "medical": "Medical",
       "sos": "SOS",

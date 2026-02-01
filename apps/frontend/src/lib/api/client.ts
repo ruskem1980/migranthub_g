@@ -279,8 +279,8 @@ export const apiClient = new ApiClient(API_BASE_URL);
 
 // Auth API
 export const authApi = {
-  deviceAuth: (deviceId: string) =>
-    apiClient.post<AuthResponse>('/auth/device', { deviceId } as DeviceAuthRequest, {
+  deviceAuth: (deviceId: string, platform: DevicePlatform, appVersion: string) =>
+    apiClient.post<AuthResponse>('/auth/device', { deviceId, platform, appVersion } as DeviceAuthRequest, {
       skipAuth: true,
     }),
 

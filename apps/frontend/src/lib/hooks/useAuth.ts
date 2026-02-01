@@ -2,12 +2,26 @@
 
 import { useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Capacitor } from '@capacitor/core';
 import { useAuthStore } from '../stores/authStore';
 import { useProfileStore } from '../stores/profileStore';
 import { useAppStore } from '../stores/appStore';
 import { authApi, usersApi } from '../api/client';
 import { tokenStorage } from '../api/storage';
 import { getOrCreateDeviceId } from '../api/device';
+import type { DevicePlatform } from '../api/types';
+
+// App version
+const APP_VERSION = '1.0.0';
+
+// Get device platform
+const getPlatform = (): DevicePlatform => {
+  if (typeof window === 'undefined') return 'web';
+  const platform = Capacitor.getPlatform();
+  if (platform === 'ios') return 'ios';
+  if (platform === 'android') return 'android';
+  return 'web';
+};
 
 export function useAuth() {
   const router = useRouter();
@@ -52,7 +66,8 @@ export function useAuth() {
 
       // Perform device auth
       const deviceId = await getOrCreateDeviceId();
-      const response = await authApi.deviceAuth(deviceId);
+      const platform = getPlatform();
+      const response = await authApi.deviceAuth(deviceId, platform, APP_VERSION);
 
       // Store tokens
       await tokenStorage.setTokens(

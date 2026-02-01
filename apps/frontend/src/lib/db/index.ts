@@ -106,6 +106,20 @@ export interface DBExamQuestion {
   cachedAt: string;
 }
 
+export interface DBPatentRegion {
+  code: string;
+  name: string;
+  coefficient: number;
+  monthlyCost: number;
+  cachedAt: string;
+}
+
+export interface DBLegalDataMeta {
+  id: string; // 'patent-regions' | 'faq' | etc.
+  updatedAt: string;
+  cachedAt: string;
+}
+
 // Database class
 export class MigrantHubDB extends Dexie {
   profiles!: Table<DBProfile>;
@@ -115,6 +129,8 @@ export class MigrantHubDB extends Dexie {
   stayPeriods!: Table<DBStayPeriod>;
   offlineQueue!: Table<DBOfflineQueueItem>;
   examQuestions!: Table<DBExamQuestion>;
+  patentRegions!: Table<DBPatentRegion>;
+  legalDataMeta!: Table<DBLegalDataMeta>;
 
   constructor() {
     super('migranthub');
@@ -151,6 +167,18 @@ export class MigrantHubDB extends Dexie {
       stayPeriods: 'id, oderId, entryDate, exitDate, migrationCardId, createdAt',
       offlineQueue: 'id, action, endpoint, method, status, createdAt, retryCount',
       examQuestions: 'id, category, difficulty, cachedAt',
+    });
+
+    this.version(5).stores({
+      profiles: 'id, oderId, fullName, passportNumber, citizenship, updatedAt, syncedAt',
+      documents: 'id, oderId, type, expiryDate, createdAt, syncedAt',
+      forms: 'id, oderId, formType, status, createdAt, updatedAt, syncedAt',
+      syncQueue: 'id, action, table, recordId, createdAt, attempts',
+      stayPeriods: 'id, oderId, entryDate, exitDate, migrationCardId, createdAt',
+      offlineQueue: 'id, action, endpoint, method, status, createdAt, retryCount',
+      examQuestions: 'id, category, difficulty, cachedAt',
+      patentRegions: 'code, name, cachedAt',
+      legalDataMeta: 'id, updatedAt, cachedAt',
     });
   }
 }
@@ -298,4 +326,53 @@ export async function getExamQuestionsCount(): Promise<number> {
 
 export async function clearExamQuestionsCache(): Promise<void> {
   await db.examQuestions.clear();
+}
+
+// Patent regions cache helpers
+export interface PatentRegionData {
+  code: string;
+  name: string;
+  coefficient: number;
+  monthlyCost: number;
+}
+
+const PATENT_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+export async function savePatentRegions(regions: PatentRegionData[]): Promise<void> {
+  const cachedAt = new Date().toISOString();
+  const dbRegions: DBPatentRegion[] = regions.map((r) => ({
+    ...r,
+    cachedAt,
+  }));
+  await db.patentRegions.clear();
+  await db.patentRegions.bulkPut(dbRegions);
+  await db.legalDataMeta.put({
+    id: 'patent-regions',
+    updatedAt: cachedAt,
+    cachedAt,
+  });
+}
+
+export async function getPatentRegions(): Promise<PatentRegionData[]> {
+  const regions = await db.patentRegions.toArray();
+  return regions.map(({ code, name, coefficient, monthlyCost }) => ({
+    code,
+    name,
+    coefficient,
+    monthlyCost,
+  }));
+}
+
+export async function isPatentCacheValid(): Promise<boolean> {
+  const meta = await db.legalDataMeta.get('patent-regions');
+  if (!meta) return false;
+
+  const cachedTime = new Date(meta.cachedAt).getTime();
+  const now = Date.now();
+  return now - cachedTime < PATENT_CACHE_TTL_MS;
+}
+
+export async function clearPatentRegionsCache(): Promise<void> {
+  await db.patentRegions.clear();
+  await db.legalDataMeta.delete('patent-regions');
 }

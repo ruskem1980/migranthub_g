@@ -4,7 +4,7 @@
   },
   "app": {
     "name": "MigrantHub",
-    "tagline": "Rossiyada migrantlar uchun ekotizim",
+    "tagline": "Rossiyada muhojirlar uchun ekotizim",
     "mission": "Bizning maqsadimiz — Rossiyada oson va qonuniy ishlashingizga yordam berish",
     "version": "1.0.0",
     "updateAvailable": "Yangilanish mavjud",
@@ -75,7 +75,9 @@
     "encrypted": "Shifrlangan",
     "status": "Holat",
     "outOf": "dan",
-    "comingSoon": "Tez kunda"
+    "comingSoon": "Tez kunda",
+    "monthShort": "oy",
+    "refresh": "Yangilash"
   },
   "date": {
     "day": "Kun",
@@ -319,7 +321,7 @@
         "transitDesc": "RF orqali o'tish"
       },
       "important": "Muhim",
-      "purposeWarning": "Patent olish uchun «Ish» ni tanlang. RF dan chiqmasdan tashrif maqsadini o'zgartirib bo'lmaydi (YEAES fuqarolaridan tashqari)."
+      "purposeWarning": "Patent olish uchun «Ish» ni tanlang. RF dan chiqmasdan tashrif maqsadini o'zgartirib bo'lmaydi (YOII fuqarolaridan tashqari)."
     }
   },
   "languages": {
@@ -571,12 +573,12 @@
       "patentIssueDate": "Patent berilgan sana",
       "patentExpiry": "Patent amal qilish muddati",
       "employerName": "Ish beruvchi nomi",
-      "employerINN": "Ish beruvchi INN",
+      "employerINN": "Ish beruvchi STIR",
       "employerAddress": "Ish beruvchi manzili",
       "position": "Lavozim",
       "salary": "Maosh",
       "workStartDate": "Ishga kirish sanasi",
-      "inn": "INN",
+      "inn": "STIR",
       "snils": "SNILS",
       "omsPolicy": "OMS polisi",
       "region": "Qayerga keldi (Hudud)"
@@ -613,10 +615,15 @@
     "saveChanges": "O'zgarishlarni saqlash",
     "dateHint": "Kirish sanasini o'zgartirish 90/180 kun hisoblagichini qayta hisoblaydi",
     "purposeHint": "Tashrif maqsadini o'zgartirish patent olish huquqiga ta'sir qilishi mumkin",
-    "eaeuNote": "YEAES: Patent talab qilinmaydi",
+    "eaeuNote": "YOII: Patent talab qilinmaydi",
     "myDocuments": "Mening hujjatlarim",
     "markDocuments": "Sizda mavjud hujjatlarni belgilang",
-    "documentsCount": "Hujjatlar"
+    "documentsCount": "Hujjatlar",
+    "showQR": "QR-kodni ko'rsatish",
+    "qrCode": {
+      "title": "Shaxsiy karta",
+      "hint": "Tez identifikatsiya qilish uchun ushbu QR-kodni ko'rsating"
+    }
   },
   "documents": {
     "title": "Mening hujjatlarim",
@@ -653,9 +660,9 @@
       "education": "Sertifikat / Diplom",
       "patent": "Patent",
       "contract": "Mehnat shartnomasi",
-      "receipts": "Cheklar (NDFL)",
+      "receipts": "Cheklar (JSHDS)",
       "insurance": "DMS polisi",
-      "inn": "INN",
+      "inn": "STIR",
       "snils": "SNILS",
       "dms": "DMS polisi",
       "family": "Nikoh / tug'ilish guvohnomasi"
@@ -820,23 +827,23 @@
     "otherServices": {
       "title": "Boshqa xizmatlar",
       "subtitle": "Qo'shimcha vositalar",
-      "tip": "💡 Maslahat: Bu vositalar Rossiyadagi kundalik hayotingizda yordam beradi."
+      "tip": "Maslahat: Bu vositalar Rossiyadagi kundalik hayotingizda yordam beradi."
     },
     "items": {
       "autofill": {
-        "title": "✍️ Mening arizalarim",
+        "title": "Mening arizalarim",
         "subtitle": "Hujjatlar yaratish"
       },
       "check": {
         "title": "Taqiqlarni tekshirish",
-        "subtitle": "IIV/FSSP bazalari"
+        "subtitle": "IIV/FSSQ bazalari"
       },
       "permitStatus": {
         "title": "RVP/VNJ holati",
         "subtitle": "Arizani tekshirish"
       },
       "fsspCheck": {
-        "title": "FSSP tekshiruvi",
+        "title": "FSSQ tekshiruvi",
         "subtitle": "Sud ijrochilari qarzi"
       },
       "passportValidity": {
@@ -856,65 +863,65 @@
         "subtitle": "Tezkor to'lov"
       },
       "map": {
-        "title": "Migrant xaritasi",
+        "title": "Muhojirlar xaritasi",
         "subtitle": "IIV, MMM, Yo'nalishlar"
       },
       "other": {
-        "title": "🧩 Boshqa xizmatlar",
+        "title": "Boshqa xizmatlar",
         "subtitle": "qo'shimcha"
       },
       "translator": {
-        "title": "🗣️ Tarjimon",
+        "title": "Tarjimon",
         "subtitle": "Matn/Ovoz/Rasm"
       },
       "contracts": {
-        "title": "📝 Shartnoma konstruktori",
+        "title": "Shartnoma konstruktori",
         "subtitle": "RU + Ona tili"
       },
       "jobs": {
-        "title": "💼 Ish qidirish",
+        "title": "Ish qidirish",
         "subtitle": "Patentli vakansiyalar"
       },
       "housing": {
-        "title": "🏠 Uy-joy qidirish",
+        "title": "Uy-joy qidirish",
         "subtitle": "Ro'yxat bilan"
       },
       "calculator": {
-        "title": "🧮 Kalkulyator",
+        "title": "Kalkulyator",
         "subtitle": "90 kun/yil"
       },
       "exam": {
-        "title": "📚 Rus tili imtihoni",
+        "title": "Rus tili imtihoni",
         "subtitle": "Test trenajyori"
       },
       "mosques": {
-        "title": "🕌 Masjidlar xaritasi",
+        "title": "Masjidlar xaritasi",
         "subtitle": "Masjid topish"
       },
       "insurance": {
-        "title": "🏥 DMS / Tibbiy",
+        "title": "DMS / Tibbiy",
         "subtitle": "Sug'urta"
       },
       "banCheck": {
-        "title": "🛡️ Tekshirish",
-        "subtitle": "IIV/FSSP"
+        "title": "Tekshirish",
+        "subtitle": "IIV/FSSQ"
       },
       "applications": {
-        "title": "📋 Mening arizalarim",
+        "title": "Mening arizalarim",
         "subtitle": "Ariza holati"
       }
     },
     "migrantMap": {
-      "title": "Migrant xaritasi",
+      "title": "Muhojirlar xaritasi",
       "selectCategory": "Qidiruv kategoriyasini tanlang:",
       "openMap": "Xaritani ochish"
     },
     "banCheck": {
       "title": "Taqiqlarni tekshirish",
-      "subtitle": "IIV / FSSP",
+      "subtitle": "IIV / FSSQ",
       "description": "RFga kirish taqiqi mavjudligini tekshiring",
       "checkMvd": "IIV bazasida tekshirish",
-      "checkFssp": "Qarzlarni tekshirish (FSSP)",
+      "checkFssp": "Qarzlarni tekshirish (FSSQ)",
       "enterPassport": "Pasport ma'lumotlarini kiriting",
       "noRestrictions": "Taqiqlar topilmadi",
       "hasRestrictions": "Cheklovlar aniqlandi",
@@ -943,7 +950,7 @@
           "vnzh": "Yashash huquqiga ega (VNJ)",
           "rvp": "Vaqtinchalik yashash ruxsatnomasi (RVP) egalari",
           "patent": "Ish patenti egalari",
-          "eaeu": "Mehnat shartnomasi bilan YEAIO fuqarolari",
+          "eaeu": "Mehnat shartnomasi bilan YOII fuqarolari",
           "student": "O'qish ruxsatnomasi bilan talabalar",
           "refugee": "Qochqinlar va vaqtinchalik boshpana egalari"
         }
@@ -1011,7 +1018,11 @@
       "period": "Davr",
       "infoNote": "Maʼlumotlar bugungi kunga mos. IIVda tekshiring.",
       "loadError": "Maʼlumotlarni yuklashda xatolik",
-      "calcError": "Hisoblash xatosi"
+      "calcError": "Hisoblash xatosi",
+      "searchCityOrRegion": "Shahar yoki mintaqa boʻyicha qidirish...",
+      "found": "Topildi",
+      "totalRegions": "Jami mintaqalar",
+      "usingCachedData": "Kesh maʼlumotlari ishlatilmoqda"
     },
     "patentCheck": {
       "title": "Patent tekshiruvi",
@@ -1028,7 +1039,7 @@
       "validUntil": "Amal qilish muddati",
       "holder": "Egasi",
       "possibleReasons": "Mumkin boʻlgan sabablar",
-      "reason1": "JSHDS toʻlovi kechiktirilgan",
+      "reason1": "Jismoniy shaxs daromad soligʻi toʻlovi kechiktirilgan",
       "reason2": "Amal qilish muddati tugagan",
       "reason3": "Patent bekor qilingan",
       "recommendations": "Tavsiyalar",
@@ -1051,7 +1062,7 @@
       }
     },
     "map": {
-      "title": "Migrant xaritasi",
+      "title": "Muhojirlar xaritasi",
       "subtitle": "IIV, MMM, Tibbiyot",
       "description": "Eng yaqin bo'limlar va markazlarni toping",
       "filters": {
@@ -1110,9 +1121,9 @@
     "subtitle": "Ariza holatini tekshirish",
     "permitType": "Ruxsatnoma turi",
     "rvp": "RVP",
-    "rvpFull": "Vaqtinchalik yashash ruxsati",
+    "rvpFull": "Vaqtinchalik yashash ruxsatnomasi",
     "vnj": "VNJ",
-    "vnjFull": "Yashash guvohnomasi",
+    "vnjFull": "Doimiy yashash guvohnomasi",
     "region": "Topshirish hududi",
     "selectRegion": "Hududni tanlang",
     "applicationDate": "Ariza topshirish sanasi",
@@ -1330,6 +1341,7 @@
     "actions": "Talab qilinadigan harakatlar",
     "quickActions": "Tezkor harakatlar",
     "recentDocuments": "So'nggi hujjatlar",
+    "urgent": "E'tibor talab etiladi",
     "notifications": "Bildirishnomalar",
     "noNotifications": "Yangi bildirishnomalar yo'q",
     "daysRemaining": "Qoldi",
@@ -1413,6 +1425,7 @@
       "medical": "Tibbiy guvohnamalar",
       "fingerprints": "Barmoq izlari"
     },
+    "use_profile_data": "Profildan",
     "info": "Hujjatlarni olganingizda belgilang. Bu muhim qadamlarni o'tkazib yubormaslikka yordam beradi.",
     "days_left": "{{count}} kun qoldi",
     "enter_entry_date": "Muddatlarni hisoblash uchun kirish sanasini kiriting",
@@ -1546,6 +1559,7 @@
     "noConnection": "Internet aloqasi yo'q"
   },
   "sync": {
+    "online": "Onlayn",
     "offline": "Oflayn",
     "pending": "{count} ta o'zgarish sinxronlanishni kutmoqda",
     "synced": "Sinxronlangan",
@@ -1555,7 +1569,14 @@
     "lawSyncSuccess": "yangilandi",
     "lawSyncFailed": "amalga oshmadi",
     "lawSyncNever": "hech qachon sinxronlanmagan",
-    "lawSyncNoChanges": "o'zgarishlar yo'q"
+    "lawSyncNoChanges": "o'zgarishlar yo'q",
+    "dataAsOf": "Ma'lumotlar sanasi",
+    "lastSync": "Yangilangan",
+    "neverSynced": "Sinxronlanmagan",
+    "statusBarLabel": "Sinxronlash holati",
+    "connectionStatus": "Ulanish",
+    "dataActuality": "Ma'lumotlar dolzarbligi",
+    "lastSyncLabel": "Oxirgi yangilanish"
   },
   "poi": {
     "mvd": "IIV bo'limlari",
@@ -1643,11 +1664,11 @@
         "patentDesc": "Ishlash ruxsati",
         "contract": "Mehnat shartnomasi",
         "contractDesc": "Ish beruvchi bilan shartnoma",
-        "receipts": "Cheklar (NDFL)",
+        "receipts": "Cheklar (JSHDS)",
         "receiptsDesc": "Patent to'lovi kvitansiyalari",
         "insurance": "DMS polisi",
         "insuranceDesc": "Tibbiy sug'urta",
-        "inn": "INN / SNILS",
+        "inn": "STIR / SNILS",
         "innDesc": "Soliq raqami",
         "family": "Nikoh / tug'ilish guvohnomasi",
         "familyDesc": "RVP/VNJ uchun guvohnoma"
@@ -1788,11 +1809,11 @@
         "description": "Ishlash ruxsati"
       },
       "receipts": {
-        "title": "Cheklar (NDFL)",
+        "title": "Cheklar (JSHDS)",
         "description": "Patent to'lovi kvitansiyalari"
       },
       "inn": {
-        "title": "INN / SNILS",
+        "title": "STIR / SNILS",
         "description": "Soliq raqami"
       },
       "family": {
@@ -1822,7 +1843,7 @@
       "policyNumber": "Polis raqami",
       "insuranceCompany": "Sug'urta kompaniyasi",
       "employerName": "Ish beruvchi nomi",
-      "employerINN": "Ish beruvchi INN",
+      "employerINN": "Ish beruvchi STIR",
       "jobTitle": "Lavozim",
       "salary": "Maosh (rubl/oy)",
       "startDate": "Ishga kirish sanasi",
@@ -1866,22 +1887,22 @@
     "hint": "Maslahat",
     "tip": "Tavsiya",
     "tipText": "Hujjatlar ko'p bo'lsa, legalizatsiya osonroq bo'ladi.",
-    "receiptsHint": "Cheklar (NDFL) odatda faqat Patent mavjud bo'lganda bo'ladi. Patentingiz borligini tekshiring.",
+    "receiptsHint": "Cheklar (JSHDS) odatda faqat Patent mavjud bo'lganda bo'ladi. Patentingiz borligini tekshiring.",
     "documents": {
-      "passport": "🛂 Pasport",
-      "migCard": "🎫 Migratsiya kartasi",
-      "registration": "📋 Ro'yxatga olish (Bildirish)",
-      "greenCard": "💳 Yashil karta (Daktiloskopiya)",
+      "passport": "Pasport",
+      "migCard": "Migratsiya kartasi",
+      "registration": "Ro'yxatga olish (Xabarnoma)",
+      "greenCard": "Yashil karta (Daktiloskopiya)",
       "greenCardSubtitle": "Daktiloskopiya va tibbiyot kartasi",
-      "education": "🎓 Sertifikat / Diplom",
+      "education": "Sertifikat / Diplom",
       "educationSubtitle": "Rus tili yoki ta'lim",
-      "patent": "📄 Patent",
-      "contract": "📝 Mehnat shartnomasi",
+      "patent": "Patent",
+      "contract": "Mehnat shartnomasi",
       "contractSubtitle": "YOII fuqarolari uchun muhim",
-      "receipts": "🧾 Cheklar (NDFL)",
-      "insurance": "🩺 DMS polisi",
-      "inn": "🔢 INN / SNILS",
-      "family": "💍 Nikoh / tug'ilish guvohnomasi",
+      "receipts": "Cheklar (JSHDS)",
+      "insurance": "DMS polisi",
+      "inn": "STIR / SNILS",
+      "family": "Nikoh / tug'ilish guvohnomasi",
       "familySubtitle": "RVP/VNZh uchun"
     }
   },
@@ -1951,7 +1972,7 @@
       },
       "employment_notification": {
         "title": "Shartnoma tuzilganligi haqida xabarnoma",
-        "subtitle": "⚠️ 2 oy ichida IIVga yuborish shart!",
+        "subtitle": "2 oy ichida IIVga yuborish shart!",
         "formNumber": "IIV buyrug'i №846"
       },
       "termination_notification": {
@@ -1965,7 +1986,7 @@
         "formNumber": "21-shakl"
       },
       "employer_petition": {
-        "title": "Ish beruvchidan iltimosNOMA",
+        "title": "Ish beruvchidan iltimosnoma",
         "subtitle": "Ro'yxatga olishni uzaytirish uchun asos",
         "formNumber": "Erkin shakl"
       },
@@ -2061,11 +2082,7 @@
         "description": "60 daqiqada 30 ta savol"
       }
     },
-    "categories": {
-      "russian": "Rus tili",
-      "history": "Tarix",
-      "law": "Qonunchilik"
-    },
+    "categories": "Imtihon kategoriyalari",
     "difficulty": {
       "easy": "Oson",
       "medium": "O'rtacha",
@@ -2086,7 +2103,8 @@
       "error": "Xato",
       "tryAgain": "Qaytadan urinib ko'ring",
       "testPaused": "Test to'xtatildi. Davom ettirish uchun bosing.",
-      "loadError": "Savollarni yuklab bo'lmadi"
+      "loadError": "Savollarni yuklab bo'lmadi",
+      "noQuestions": "Tanlangan kategoriya uchun savollar mavjud emas"
     },
     "question": {
       "correct": "To'g'ri!",
@@ -2151,7 +2169,6 @@
     "nextQuestion": "Keyingi savol",
     "levelProgress": "Daraja progressi",
     "xpProgress": "Tajriba ballari progressi",
-    "categories": "Imtihon kategoriyalari",
     "totalAnswered": "Javob berilgan savollar: {count}"
   },
   "examTrainer": {
@@ -2247,12 +2264,12 @@
     "hints": {
       "correct": "To'g'ri!",
       "explanation": "Tushuntirish:",
-      "hint": "💡 Maslahat: Ushbu mavzu bilan bog'liq asosiy tushunchalar haqida o'ylang."
+      "hint": "Maslahat: Ushbu mavzu bilan bog'liq asosiy tushunchalar haqida o'ylang."
     }
   },
   "roadmap": {
     "title": "Yo'l xaritasi",
-    "subtitle": "Sizning legallashuv yo'lingiz",
+    "subtitle": "Sizning qonuniylashtirish yo'lingiz",
     "entryDate": "Kirish sanasi",
     "daysInRussia": "Rossiyada kunlar",
     "deadlineBy": "Muddat",

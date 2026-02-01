@@ -332,19 +332,19 @@ describe('Auth API', () => {
       };
       mockFetch(authResponse);
 
-      const result = await authApi.deviceAuth('device-123');
+      const result = await authApi.deviceAuth('device-123', 'web', '1.0.0');
 
       expect(result).toEqual(authResponse);
       const [url, config] = getLastFetchCall()!;
       expect(url).toContain('/auth/device');
-      expect(JSON.parse(config.body as string)).toEqual({ deviceId: 'device-123' });
+      expect(JSON.parse(config.body as string)).toEqual({ deviceId: 'device-123', platform: 'web', appVersion: '1.0.0' });
     });
 
     it('does not send auth header for device auth', async () => {
       setMockTokenState({ accessToken: 'existing-token', isExpired: false });
       mockFetch({ user: {}, tokens: {} });
 
-      await authApi.deviceAuth('device-123');
+      await authApi.deviceAuth('device-123', 'web', '1.0.0');
 
       const [, config] = getLastFetchCall()!;
       expect((config.headers as Record<string, string>)['Authorization']).toBeUndefined();

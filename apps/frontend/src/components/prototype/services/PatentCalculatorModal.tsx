@@ -1,102 +1,34 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { X, Calculator, Loader2, AlertCircle, ChevronDown, Plus, Minus, Search } from 'lucide-react';
-import { useLanguageStore } from '@/lib/stores/languageStore';
+import { useState, useMemo } from 'react';
+import { X, Calculator, Loader2, ChevronDown, Plus, Minus, Search, RefreshCw } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
-
-interface PatentRegion {
-  code: string;
-  name: string;
-  monthlyCost: number;
-  coefficient: number;
-}
-
-interface PatentCalculateResponse {
-  regionCode: string;
-  regionName: string;
-  baseRate: number;
-  coefficient: number;
-  months: number;
-  totalPrice: number;
-  breakdown: Array<{ month: number; price: number }>;
-}
+import { usePatentRegions, type PatentCalculateResult } from '@/features/services/hooks/usePatentRegions';
+import type { PatentRegionData } from '@/lib/db';
 
 interface PatentCalculatorModalProps {
   onClose: () => void;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
-// Local fallback data for offline mode (2024 rates)
-const BASE_NDFL = 1200;
-const LOCAL_PATENT_REGIONS: PatentRegion[] = [
-  { code: '77', name: 'Москва', coefficient: 2.2591, monthlyCost: 6502 },
-  { code: '50', name: 'Московская область', coefficient: 2.1831, monthlyCost: 6287 },
-  { code: '78', name: 'Санкт-Петербург', coefficient: 1.8315, monthlyCost: 5275 },
-  { code: '47', name: 'Ленинградская область', coefficient: 1.8315, monthlyCost: 5275 },
-  { code: '23', name: 'Краснодарский край', coefficient: 1.8581, monthlyCost: 5351 },
-  { code: '61', name: 'Ростовская область', coefficient: 1.678, monthlyCost: 4832 },
-  { code: '16', name: 'Республика Татарстан', coefficient: 1.8321, monthlyCost: 5277 },
-  { code: '54', name: 'Новосибирская область', coefficient: 1.815, monthlyCost: 5228 },
-  { code: '66', name: 'Свердловская область', coefficient: 1.8791, monthlyCost: 5412 },
-  { code: '63', name: 'Самарская область', coefficient: 1.7098, monthlyCost: 4924 },
-  { code: '52', name: 'Нижегородская область', coefficient: 1.82, monthlyCost: 5242 },
-  { code: '74', name: 'Челябинская область', coefficient: 1.7653, monthlyCost: 5084 },
-  { code: '02', name: 'Республика Башкортостан', coefficient: 1.725, monthlyCost: 4968 },
-  { code: '59', name: 'Пермский край', coefficient: 1.71, monthlyCost: 4925 },
-  { code: '38', name: 'Иркутская область', coefficient: 1.9527, monthlyCost: 5624 },
-];
-
 export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
-  const { language } = useLanguageStore();
   const { t } = useTranslation();
+  const { regions, isLoading, isFromCache, refresh, calculateCost } = usePatentRegions();
 
-  const [regions, setRegions] = useState<PatentRegion[]>([]);
-  const [selectedRegion, setSelectedRegion] = useState<PatentRegion | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<PatentRegionData | null>(null);
   const [months, setMonths] = useState(1);
-  const [result, setResult] = useState<PatentCalculateResponse | null>(null);
-
-  const [isLoadingRegions, setIsLoadingRegions] = useState(true);
-  const [isCalculating, setIsCalculating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<PatentCalculateResult | null>(null);
   const [showRegionDropdown, setShowRegionDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    async function fetchRegions() {
-      setIsLoadingRegions(true);
-      setError(null);
-
-      try {
-        const response = await fetch(`${API_BASE_URL}/legal/calculators/patent/regions`);
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch regions');
-        }
-
-        const data: PatentRegion[] = await response.json();
-        setRegions(data);
-
-        const moscow = data.find(r => r.code === '77');
-        if (moscow) {
-          setSelectedRegion(moscow);
-        }
-      } catch (err) {
-        console.error('Error fetching regions, using local data:', err);
-        // Use local fallback data when API is unavailable
-        setRegions(LOCAL_PATENT_REGIONS);
-        const moscow = LOCAL_PATENT_REGIONS.find(r => r.code === '77');
-        if (moscow) {
-          setSelectedRegion(moscow);
-        }
-      } finally {
-        setIsLoadingRegions(false);
+  // Auto-select Moscow when regions load
+  useMemo(() => {
+    if (regions.length > 0 && !selectedRegion) {
+      const moscow = regions.find(r => r.code === '77');
+      if (moscow) {
+        setSelectedRegion(moscow);
       }
     }
-
-    fetchRegions();
-  }, [language]);
+  }, [regions, selectedRegion]);
 
   const filteredRegions = useMemo(() => {
     if (!searchQuery.trim()) return regions;
@@ -108,55 +40,10 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
     );
   }, [regions, searchQuery]);
 
-  function calculateLocally(region: PatentRegion, numMonths: number): PatentCalculateResponse {
-    const monthlyPrice = region.monthlyCost;
-    const totalPrice = monthlyPrice * numMonths;
-    const breakdown = Array.from({ length: numMonths }, (_, i) => ({
-      month: i + 1,
-      price: monthlyPrice,
-    }));
-
-    return {
-      regionCode: region.code,
-      regionName: region.name,
-      baseRate: BASE_NDFL,
-      coefficient: region.coefficient,
-      months: numMonths,
-      totalPrice,
-      breakdown,
-    };
-  }
-
-  async function handleCalculate() {
+  function handleCalculate() {
     if (!selectedRegion) return;
-
-    setIsCalculating(true);
-    setError(null);
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/legal/calculators/patent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          regionCode: selectedRegion.code,
-          months: months,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to calculate');
-      }
-
-      const data: PatentCalculateResponse = await response.json();
-      setResult(data);
-    } catch (err) {
-      console.error('Error calculating via API, using local calculation:', err);
-      // Calculate locally when API is unavailable
-      const localResult = calculateLocally(selectedRegion, months);
-      setResult(localResult);
-    } finally {
-      setIsCalculating(false);
-    }
+    const calcResult = calculateCost(selectedRegion.code, months);
+    setResult(calcResult);
   }
 
   function formatPrice(price: number): string {
@@ -182,7 +69,7 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
     }
   }
 
-  function selectRegion(region: PatentRegion) {
+  function selectRegion(region: PatentRegionData) {
     setSelectedRegion(region);
     setShowRegionDropdown(false);
     setSearchQuery('');
@@ -217,30 +104,31 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
 
         {/* Content */}
         <div className="flex-1 min-h-0 overflow-y-auto p-6">
-          {isLoadingRegions && (
+          {isLoading && regions.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12">
               <Loader2 className="w-10 h-10 text-green-600 animate-spin mb-4" />
               <p className="text-gray-600">{t('common.loading')}</p>
             </div>
           )}
 
-          {error && !isLoadingRegions && (
-            <div className="flex flex-col items-center justify-center py-12">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                <AlertCircle className="w-8 h-8 text-red-600" />
-              </div>
-              <p className="text-red-600 text-center mb-4">{error}</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="px-6 py-2 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-colors"
-              >
-                {t('common.retry')}
-              </button>
-            </div>
-          )}
-
-          {!isLoadingRegions && !error && (
+          {!isLoading || regions.length > 0 ? (
             <div className="space-y-6">
+              {/* Cache indicator */}
+              {isFromCache && (
+                <div className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-sm">
+                  <span className="text-yellow-800">
+                    {t('services.patentCalculator.usingCachedData') || 'Используются кэшированные данные'}
+                  </span>
+                  <button
+                    onClick={refresh}
+                    className="flex items-center gap-1 text-yellow-700 hover:text-yellow-900"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    {t('common.refresh') || 'Обновить'}
+                  </button>
+                </div>
+              )}
+
               {/* Region Selector */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -366,21 +254,14 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
               <button
                 type="button"
                 onClick={handleCalculate}
-                disabled={!selectedRegion || isCalculating}
+                disabled={!selectedRegion}
                 className={`w-full font-bold py-4 rounded-xl transition-all ${
-                  !selectedRegion || isCalculating
+                  !selectedRegion
                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     : 'bg-green-600 text-white hover:bg-green-700 active:scale-98'
                 }`}
               >
-                {isCalculating ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    {t('services.patentCalculator.calculating')}
-                  </span>
-                ) : (
-                  t('services.patentCalculator.calculate')
-                )}
+                {t('services.patentCalculator.calculate')}
               </button>
 
               {/* Result */}
@@ -404,7 +285,7 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">{t('services.patentCalculator.coefficient')}</span>
-                      <span className="font-semibold text-gray-900">{result.coefficient.toFixed(4)}</span>
+                      <span className="font-semibold text-gray-900">{result.coefficient.toFixed(3)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">{t('services.patentCalculator.monthlyPayment')}</span>
@@ -434,7 +315,7 @@ export function PatentCalculatorModal({ onClose }: PatentCalculatorModalProps) {
                 </div>
               )}
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* Footer */}

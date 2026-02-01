@@ -1,6 +1,11 @@
+// Common Types (used across multiple sections)
+export type DevicePlatform = 'ios' | 'android' | 'web';
+
 // Auth Types
 export interface DeviceAuthRequest {
   deviceId: string;
+  platform: DevicePlatform;
+  appVersion: string;
 }
 
 export interface RefreshTokenRequest {
@@ -447,7 +452,6 @@ export interface OcrProcessResponse {
 
 // Push Notification Types
 export type NotificationType = 'document_expiry' | 'patent_payment' | 'news' | 'system';
-export type DevicePlatform = 'ios' | 'android' | 'web';
 
 export interface NotificationPreferences {
   document_expiry: boolean;

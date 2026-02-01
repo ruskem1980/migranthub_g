@@ -2,11 +2,24 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { ApiUser } from '../api/types';
+import { Capacitor } from '@capacitor/core';
+import type { ApiUser, DevicePlatform } from '../api/types';
 import { authApi, usersApi } from '../api/client';
 import { tokenStorage, deviceStorage } from '../api/storage';
 import type { AccessMode, SubscriptionTier, Feature, QuickProfile } from '@/types';
 import { canAccessFeature } from '@/types';
+
+// App version from package.json
+const APP_VERSION = '1.0.0';
+
+// Get device platform
+const getPlatform = (): DevicePlatform => {
+  if (typeof window === 'undefined') return 'web';
+  const platform = Capacitor.getPlatform();
+  if (platform === 'ios') return 'ios';
+  if (platform === 'android') return 'android';
+  return 'web';
+};
 
 // Fallback UUID generator for non-secure contexts
 const generateUUID = () => {
@@ -141,7 +154,8 @@ export const useAuthStore = create<AuthState>()(
           }
 
           // Use device auth to create/get user account
-          const response = await authApi.deviceAuth(deviceId);
+          const platform = getPlatform();
+          const response = await authApi.deviceAuth(deviceId, platform, APP_VERSION);
 
           // Save tokens
           await tokenStorage.setTokens(
